@@ -1,0 +1,153 @@
+#!/usr/bin/perl
+
+# csv2xls: Convert csv to xls
+#	   (m)'07 [21 Sep 2007]
+
+use strict;
+use warnings;
+
+our $VERSION = "1.3";
+
+sub usage
+{
+    my $err = shift and select STDERR;
+    print <<EOU;
+usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
+               [-o <xls>] [file.csv]
+       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ';'
+       -q <quot>  use <quot>  as quotation char. Default = '"'
+       -w <width> use <width> as default minimum column width (4)
+       -o <xls>   write output to file named <xls>, defaults
+		  to input file name with .csv replaced with .xls
+		  if from standard input, defaults to csv2xls.xls
+       -f         force usage of <xls> if already exists (unlink before use)
+       -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
+       -u         CSV is UTF8
+EOU
+    exit $err;
+    } # usage
+
+use Getopt::Long qw(:config bundling nopermute passthrough);
+my $sep;	# Set after reading first line in a flurry attempt to auto-detect
+my $quo = '"';
+my $wdt = 4;	# Default minimal column width
+my $xls;	# Excel out file name
+my $frc = 0;	# Force use of file
+my $utf = 0;	# Data is encoded in Unicode
+my $dtf = "dd-mm-yyyy";	# Date format
+
+GetOptions (
+    "help|?"	=> sub { usage (0); },
+
+    "c|s=s"	=> \$sep,
+    "q=s"	=> \$quo,
+    "w=i"	=> \$wdt,
+    "o|x=s"	=> \$xls,
+    "d=s"	=> \$dtf,
+    "f"		=> \$frc,
+    "u"		=> \$utf,
+    ) or usage (1);
+
+my $title = @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xls";
+($xls ||= $title) =~ s/\.csv$/.xls/;
+
+-s $xls && $frc and unlink $xls;
+if (-s $xls) {
+    print STDERR "File '$xls' already exists. Overwrite? [y/N] > N\b";
+    scalar <STDIN> =~ m/^[yj](es|a)?$/i or exit;
+    }
+my $swe = "Spreadsheet::WriteExcel";
+@ARGV && -f $ARGV[0] && -s $ARGV[0] < 5_000_000 or $swe .= "::Big";
+
+# Don't split ourselves when modules do it _much_ better, and follow the standards
+use Text::CSV_XS;
+use Date::Calc qw( Delta_Days Days_in_Month );
+use Spreadsheet::WriteExcel;
+use Spreadsheet::WriteExcel::Big;
+use Encode qw( from_to );
+
+my $csv;
+
+my $wbk = $swe->new ($xls);
+my $wks = $wbk->add_worksheet ();
+   $dtf =~ s/j/y/g;
+my %fmt = (
+    date	=> $wbk->add_format (
+	num_format	=> $dtf,
+	align		=> "center",
+	),
+
+    rest	=> $wbk->add_format (
+	align		=> "left",
+	),
+    );
+
+my ($h, $w, @w) = (0, 1); # data height, -width, and default column widths
+while (<>) {
+    unless ($csv) {
+	$sep = # If explicitely set, use it
+	       defined $sep ? $sep :
+	       # otherwise start auto-detect with quoted strings
+	       m/["\d];["\d;]/  ? ";"  :
+	       m/["\d],["\d,]/  ? ","  :
+	       m/["\d]\t["\d,]/ ? "\t" :
+	       # If neither, then for unquoted strings
+	       m/\w;[\w;]/      ? ";"  :
+	       m/\w,[\w,]/      ? ","  :
+	       m/\w\t[\w,]/     ? "\t" :
+				  ";"  ;
+	    # Yeah I know it should be a ',' (hence Csv), but the majority
+	    # of the csv files to be shown comes from fucking Micky$hit,
+	    # that uses semiColon ';' instead.
+	$csv = Text::CSV_XS-> new ({
+	    sep_char       => $sep,
+	    quote_char     => $quo,
+	    binary         => 1,
+	    keep_meta_info => 1,
+	    });
+	}
+    $csv->parse ($_);
+    my @row = $csv->fields () or next;
+    @row > $w and push @w, ($wdt) x (($w = @row) - @w);
+    foreach my $c (0 .. $#row) {
+	my $val = $row[$c];
+	my $l = length $val;
+	$l > $w[$c] and $w[$c] = $l;
+
+	if ($utf and $csv->is_binary ($c)) {
+	    from_to ($val, "utf-8", "ucs2");
+	    $wks->write_unicode ($h, $c, $val);
+	    next;
+	    }
+
+	if ($csv->is_quoted ($c)) {
+	    if ($utf) {
+		from_to ($val, "utf-8", "ucs2");
+		$wks->write_unicode ($h, $c, $val);
+		}
+	    else {
+		$wks->write_string  ($h, $c, $val);
+		}
+	    next;
+	    }
+
+	my @d = (0, 0, 0);	# Y, M, D
+	$val =~ m/^(\d{4})(\d{2})(\d{2})$/   and @d = ($1, $2, $3);
+	$val =~ m/^(\d{2})-(\d{2})-(\d{4})$/ and @d = ($3, $2, $1);
+	if ($d[1] >= 1 && $d[1] <= 12 && $d[0] >= 1900) {
+	    my $dm = Days_in_Month (@d[0,1]);
+	    $d[2] <   1 and $d[2] = 1;
+	    $d[2] > $dm and $d[2] = $dm;
+	    my $dt = 2 + Delta_Days (1900, 1, 1, @d);
+	    $wks->write ($h, $c, $dt, $fmt{date});
+	    next;
+	    }
+
+	$wks->write ($h, $c, $val);
+	}
+    ++$h % 100 or printf STDERR "%6d x %6d\r", $w, $h;
+    }
+printf STDERR "%6d x %6d\n", $w, $h;
+
+$wks->set_column ($_, $_, $w[$_]) for 0 .. $#w;
+$wbk->close ();

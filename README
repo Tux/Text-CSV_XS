@@ -1,0 +1,38 @@
+Module:
+    Text::CSV_XS
+
+Description:
+    Text::CSV_XS provides facilities for the composition and decomposition of
+    comma-separated values.  An instance of the Text::CSV_XS class can combine
+    fields into a CSV string and parse a CSV string into fields.
+
+Copying:
+    Copyright (c) 2007-2007 H.Merijn Brand.  All rights reserved.
+    Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
+    Portions Copyright (c) 1997 Alan Citterman. All rights reserved.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the same terms as Perl itself.
+
+Prerequisites:
+    perl 5.005
+
+Build/Installation:
+    Standard build/installation supported by ExtUtils::MakeMaker(3)...
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+Author:
+    H.Merijn Brand <h.m.brand@xs4all.nl>
+    Jochen Wiedmann <joe@ispsoft.de>
+
+    Interface design by Alan Citterman <alan@mfgrtl.com>
+
+    A pure-perl version is being maintained by Makamaka Hannyaharamitu
+    as Text::CSV_PP, which tries to follow Text::CSV_XS very closely.
+
+    Expect Text::CSV to be a wrapper module over Text::CSV_XS and
+    Text::CSV_PP that will select Text::CSV_XS if available, and
+    otherwise use Text::PP.
