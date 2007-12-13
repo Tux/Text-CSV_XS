@@ -1,2 +1,7 @@
-.git
+\.git
+blib/
+cover_db/
+Makefile
 MANIFEST.SKIP
+pm_to_blib
+sandbox/

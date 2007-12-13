@@ -1,0 +1,18 @@
+#!/pro/bin/perl
+use strict;
+use warnings;
+use IO::Handle;
+use Text::CSV_XS;
+my $csv_in  = Text::CSV_XS->new ({
+    binary => 1,
+    });
+my $csv_out = Text::CSV_XS->new ({
+    binary      => 1,
+    sep_char    => "|",
+    escape_char => "\\",
+    eol         => "\n",
+    });
+while (my $row = $csv_in->getline (*ARGV)) {
+    $csv_out->print (*STDOUT, $row);
+    }
+
