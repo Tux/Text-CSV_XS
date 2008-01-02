@@ -6,3 +6,6 @@ Text
 *.tar.gz
 *.tgz
 *.old
+*.o
+*.c
+*.bs
