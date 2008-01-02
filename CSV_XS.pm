@@ -1,6 +1,6 @@
 package Text::CSV_XS;
 
-# Copyright (c) 2007-2007 H.Merijn Brand.  All rights reserved.
+# Copyright (c) 2007-2008 H.Merijn Brand.  All rights reserved.
 # Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
 # Portions Copyright (c) 1997 Alan Citterman. All rights reserved.
 #
@@ -1226,7 +1226,7 @@ completed the documentation, fixed some RT bugs. See ChangeLog releases
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007-2007 H.Merijn Brand for PROCURA B.V.
+Copyright (C) 2007-2008 H.Merijn Brand for PROCURA B.V.
 Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
 Portions Copyright (C) 1997 Alan Citterman. All rights reserved.
 
