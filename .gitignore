@@ -3,3 +3,6 @@ cover_db
 Makefile
 pm_to_blib
 Text
+*.tar.gz
+*.tgz
+*.old
