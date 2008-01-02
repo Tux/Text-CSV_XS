@@ -1,6 +1,9 @@
-2007-10-24  0.33 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-01-02  0.33 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
-	* 
+	* Text-CSV_XS now under git
+	* Upped copyright to 2008
+	* Added all prereq's to Makefile.PL
+	* Tested under perl 5.10
 
 2007-10-24  0.32 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
