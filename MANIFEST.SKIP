@@ -1,3 +1,7 @@
+\.[oc]$
+\.bs$
+\.tgz$
+\.tar\.gz$
 \.git
 blib/
 cover_db/
