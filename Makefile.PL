@@ -25,7 +25,10 @@ my %wm = (
     ABSTRACT     => "Comma-Separated Values manipulation routines",
     AUTHOR       => "H.Merijn Brand <h.merijn\@xs4all.nl>",
     VERSION_FROM => "CSV_XS.pm",
-    PREREQ_PM	 => { "Test::More"	=> 0,
+    PREREQ_PM	 => { "Dynaloader"	=> 0,
+		      "Config"		=> 0,
+		      "IO::Handle"	=> 0,
+		      "Test::More"	=> 0,
 		      "Test::Harness"	=> 0,
 		      },
     clean        => { FILES => join " ", qw(
