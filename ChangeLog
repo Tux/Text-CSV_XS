@@ -1,3 +1,7 @@
+2008-01-04  0.34 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* No change, but 0.33 was shipped with an old META.yml
+
 2008-01-02  0.33 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Text-CSV_XS now under git

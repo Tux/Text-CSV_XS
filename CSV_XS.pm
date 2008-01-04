@@ -28,7 +28,7 @@ use strict;
 use DynaLoader ();
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.33";
+$VERSION = "0.34";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
