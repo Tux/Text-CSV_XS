@@ -24,11 +24,12 @@ package Text::CSV_XS;
 require 5.005;
 
 use strict;
+use warnings;
 
 use DynaLoader ();
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.34";
+$VERSION = "0.35";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }

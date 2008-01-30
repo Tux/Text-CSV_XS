@@ -50,7 +50,7 @@ package MY;
 
 sub postamble
 {
-    join "\n" =>
+    my $pa = join "\n" =>
 	'cover test_cover:',
 	'	cover -delete',
 	'	make',
@@ -62,4 +62,11 @@ sub postamble
 	'test_speed: pure_all',
 	'	PERL_DL_NONLAZY=1 $(FULLPERLRUN) -I"$(INST_LIB)" -I"$(INST_ARCHLIB)" examples/speed.pl',
 	'';
+    $] < 5.006 and $pa .= join "\n" => '',
+	'pure_all ::',
+	'	rm -f blib/lib/Text/CSV_XS.pm',
+	q{	$(PERL) -p -e 's/^use warnings;/local \\044^W = 1;/' CSV_XS.pm > blib/lib/Text/CSV_XS.pm},
+	'	chmod -w blib/lib/Text/CSV_XS.pm',
+	'';
+    $pa;
     } # postamble
