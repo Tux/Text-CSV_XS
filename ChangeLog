@@ -1,7 +1,7 @@
 2008-01-30  0.35 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* use warnings/$^W = 1
-	* Tested on 5.10.0, 5.8.8, 5.6.2, and 5.005_04
+	* Tested on 5.10.0, 5.8.8, 5.6.2, and 5.005_04, Strawberry and Cygwin
 
 2008-01-04  0.34 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

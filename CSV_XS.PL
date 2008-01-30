@@ -17,8 +17,10 @@ my $mod;
     ($mod = <>) =~ s{^use warnings;}{local \$^W = 1;}m;
     }
 
+chmod 0666, $pm;
 unlink $pm;
-open  PM, "> $pm" or die "Cannot rewrite $pm\n";
-print PM $mod;
-close PM;
+open    PM, "> $pm" or die "Cannot rewrite $pm: $!\n";
+binmode PM;
+print   PM $mod;
+close   PM;
 chmod 0444, $pm;
