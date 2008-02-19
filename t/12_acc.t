@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 39;
+use Test::More tests => 44;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -23,6 +23,7 @@ is ($csv->keep_meta_info,		0,		"keep_meta_info");
 is ($csv->allow_loose_quotes,		0,		"allow_loose_quotes");
 is ($csv->allow_loose_escapes,		0,		"allow_loose_escapes");
 is ($csv->allow_whitespace,		0,		"allow_whitespace");
+is ($csv->blank_is_undef,		0,		"blank_is_undef");
 is ($csv->verbatim,			0,		"verbatim");
 
 is ($csv->binary (1),			1,		"binary (1)");
@@ -39,6 +40,7 @@ is ($csv->always_quote (1),		1,		"always_quote (1)");
 is ($csv->allow_loose_quotes (1),	1,		"allow_loose_quotes (1)");
 is ($csv->allow_loose_escapes (1),	1,		"allow_loose_escapes (1)");
 is ($csv->allow_whitespace (1),		1,		"allow_whitespace (1)");
+is ($csv->blank_is_undef (1),		1,		"blank_is_undef (1)");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
 is ($csv->escape_char ("\\"),		"\\",		"escape_char (\\)");
 ok ($csv->combine (@fld),				"combine");
@@ -66,7 +68,11 @@ ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
 # And test erroneous calls
 
 is (Text::CSV_XS::new (0),		   undef,	"new () as function");
+is (Text::CSV_XS::error_diag (), "usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);",
+							"Generic usage () message");
 is (Text::CSV_XS->new ({ oel     => "" }), undef,	"typo in attr");
+is (Text::CSV_XS::error_diag (), "Unknown attribute 'oel'",	"Unsupported attr");
 is (Text::CSV_XS->new ({ _STATUS => "" }), undef,	"private attr");
+is (Text::CSV_XS::error_diag (), "Unknown attribute '_STATUS'",	"Unsupported private attr");
 
 1;

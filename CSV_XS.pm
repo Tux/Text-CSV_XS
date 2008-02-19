@@ -62,6 +62,7 @@ my %def_attr = (
     allow_loose_quotes	=> 0,
     allow_loose_escapes	=> 0,
     allow_whitespace	=> 0,
+    blank_is_undef	=> 0,
     verbatim		=> 0,
     types		=> undef,
 
@@ -72,18 +73,22 @@ my %def_attr = (
     _STRING		=> undef,
     _ERROR_INPUT	=> undef,
     );
+my $last_new_err = "";
 
 sub new
 {
+    $last_new_err =
+	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);";
     my $proto = shift;
     my $attr  = shift || {};
     my $class = ref ($proto) || $proto	or return;
     for (keys %{$attr}) {
 	m/^[a-z]/ && exists $def_attr{$_} and next;
 #	croak?
-#	print STDERR "### Cannot set attribute '$_'\n";
+	$last_new_err = "Unknown attribute '$_'";
 	return;
 	}
+    $last_new_err = "";
     my $self  = {%def_attr, %{$attr}};
     bless $self, $class;
     defined $self->{types} and $self->types ($self->{types});
@@ -99,14 +104,15 @@ my %_cache_id = (	# Keep in sync with XS!
     always_quote	=>  5,
     allow_loose_quotes	=>  6,
     allow_loose_escapes	=>  7,
-    allow_whitespace	=>  8,
-    allow_double_quoted	=>  9,
+    allow_double_quoted	=>  8,
+    allow_whitespace	=>  9,
+    blank_is_undef	=> 10,
 
-    eol			=> 10,	# 10 .. 17
-    eol_len		=> 18,
-    eol_is_cr		=> 19,
-    has_types		=> 20,
-    verbatim		=> 21,
+    eol			=> 11,	# 11 .. 18
+    eol_len		=> 19,
+    eol_is_cr		=> 20,
+    has_types		=> 21,
+    verbatim		=> 22,
     );
 sub _set_attr
 {
@@ -205,6 +211,13 @@ sub allow_whitespace
     $self->{allow_whitespace};
     } # allow_whitespace
 
+sub blank_is_undef
+{
+    my $self = shift;
+    @_ and $self->_set_attr ("blank_is_undef", shift);
+    $self->{blank_is_undef};
+    } # blank_is_undef
+
 sub verbatim
 {
     my $self = shift;
@@ -248,6 +261,7 @@ sub error_input
 sub error_diag
 {
     my $self = shift;
+    $self && ref $self eq __PACKAGE__ or return $last_new_err;
     exists $self->{_ERROR_DIAG} or return;
     my $diag = $self->{_ERROR_DIAG};
     my $context = wantarray;
@@ -604,6 +618,23 @@ will now be parsed as
 
 even if the original line was perfectly sane CSV.
 
+=item blank_is_undef
+
+Under normal circumstances, CSV data makes no distinction between
+quoted- and unquoted empty fields. They both end up in an empty
+string field once read, so
+
+ 1,"",," ",2
+
+is read as
+
+ ("1", "", "", " ", "2")
+
+When I<writing> CSV files with C<always_quote> set, the unquoted empty
+field is the result of an undefined value. To make it possible to also
+make this distinction when reading CSV data, the C<blank_is_undef> option
+will cause unquoted empty fields to be set to undef.
+
 =item quote_char
 
 The char used for quoting fields containing blanks, by default the
@@ -738,6 +769,7 @@ is equivalent to
      allow_loose_quotes  => 0,
      allow_loose_escapes => 0,
      allow_whitespace    => 0,
+     blank_is_undef      => 0,
      verbatim            => 0,
      });
 
@@ -751,6 +783,16 @@ the value
 It is unwise to change these settings halfway through writing CSV
 data to a stream. If however, you want to create a new stream using
 the available CSV object, there is no harm in changing them.
+
+If the C<new ()> constructor call fails, it returns C<undef>, and makes
+the fail reason available through the C<error_diag ()> method.
+
+ $csv = Text::CSV_XS->new ({ ecs_char => 1 }) or
+     die Text::CSV_XS->error_diag ();
+
+C<error_diag ()> will return a string like
+
+ "Unknown attribute 'ecs_char'"
 
 =item combine
 
@@ -1032,11 +1074,6 @@ work to be done here.
 Basic calls should croak or warn on illegal parameters. Errors
 should be documented.
 
-If ->new () fails, there should be a way to obtain the reason why.
-Currently it is almost impossible to make new () fail, but in the
-future there should be a (default) option to have it fail when
-unsupported options are passed.
-
 =item eol
 
 Discuss an option to make the eol honor the $/ setting. Maybe
@@ -1054,19 +1091,6 @@ combine ()/string () combination.
 
   $csv->meta_info (0, 1, 1, 3, 0, 0);
   $csv->is_quoted (3, 1);
-
-=item parse returning undefined fields
-
-Adding an option that enables the parser to distinguish between
-empty fields and undefined fields, like
-
-  $csv->always_quote (1);
-  $csv->allow_undef (1);
-  $csv->parse (qq{,"",1,"2",,""});
-  my @fld = $csv->fields ();
-
-Then would return (undef, "", "1", "2", undef, "") in @fld, instead
-of the current ("", "", "1", "2", "", "").
 
 =item combined methods
 
@@ -1128,19 +1152,17 @@ No guarantees, but this is what I have in mind right now:
 
 =over 2
 
-=item 0.33
+=item next
 
  - croak / carp
- - error cause for failing new ()
- - return undef
  - DIAGNOSTICS setction in pod to *describe* the errors (see below)
 
-=item 0.34
+=item next + 1
 
  - allow_double_quoted
  - Text::CSV_XS::Encoded (maybe)
 
-=item 0.35
+=item next + 2
 
  - csv2csv - a script to regenerate a CSV file to follow standards
  - EBCDIC support
@@ -1151,20 +1173,28 @@ No guarantees, but this is what I have in mind right now:
 
 Still under construction ...
 
-If an error occured, $csv->error_diag () can be used to get more information
+If an error occured, C<$csv->error_diag ()> can be used to get more information
 on the cause of the failure. Note that for speed reasons, the internal value
-is never cleared on success, so using the value returned by error_diag () in
+is never cleared on success, so using the value returned by C<error_diag ()> in
 normal cases - when no error occured - may cause unexpected results.
 
-Currently these errors are available:
+Currently the following errors are available. I've tried to make the error
+itself explainatory enough, but more descriptions will be added:
 
 =over 2
 
 =item 1001 "sep_char is equal to quote_char or escape_char"
 
+The separation character cannot be equal to either the quotation character
+or the escape character, as that will invalidate all parsing rules.
+
 =item 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 
 =item 2011 "ECR - Characters after end of quoted field"
+
+Sequences like C<1,foo,"bar"baz,2> are not allowed. C<"bar"> is a quoted
+field, and after the closing quote, there should be either a new-line
+sequence or a separation character.
 
 =item 2012 "EOF - End of data in parsing input stream"
 

@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 617;
+ use Test::More tests => 666;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -150,12 +150,33 @@ ok (1, "Allow whitespace, esc = +");
 	}
     }
 
+ok (1, "blank_is_undef");
+foreach my $conf (
+	[ 0, 0, 0,	1, "",    " ", '""', 2, "",    ""	],
+	[ 0, 0, 1,	1, undef, " ", '""', 2, undef, undef	],
+	[ 0, 1, 0,	1, "",    "",  '""', 2, "",    ""	],
+	[ 0, 1, 1,	1, undef, "",  '""', 2, undef, undef	],
+	[ 1, 0, 0,	1, "",    " ", '""', 2, "",    ""	],
+	[ 1, 0, 1,	1, "",    " ", '""', 2, undef, ""	],
+	[ 1, 1, 0,	1, "",    "",  '""', 2, "",    ""	],
+	[ 1, 1, 1,	1, "",    "",  '""', 2, undef, ""	],
+	) {
+    my ($aq, $aw, $bu, @expect, $str) = @$conf;
+    $csv = Text::CSV_XS->new ({ always_quote => $aq, allow_whitespace => $aw, blank_is_undef => $bu });
+    ok ($csv,	"new ({ aq $aq aw $aw bu $bu })");
+    ok ($csv->combine (1, "", " ", '""', 2, undef, ""), "combine ()");
+    ok ($str = $csv->string,			"string ()");
+    ok ($csv->parse ($str),			"parse (*$str*)");
+    ok (my @f = $csv->fields,			"fields ()");
+    is_deeply (\@f, \@expect,			"result");
+    }
+
 ok (1, "Trailing junk");
 foreach my $bin (0, 1) {
     foreach my $eol (undef, "\r") {
 	my $s_eol = _readable ($eol);
 	my $csv = Text::CSV_XS->new ({ binary => $bin, eol => $eol });
-	ok ($csv, "$s_eol - new)");
+	ok ($csv, "$s_eol - new ()");
 	my @bad = (
 	    # test, line
 	    [ 1, qq{"\r\r\n"\r},	],

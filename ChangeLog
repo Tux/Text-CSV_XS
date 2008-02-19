@@ -1,7 +1,12 @@
-2008-01-30  0.35 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-02-19  0.35 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* use warnings/$^W = 1
 	* Tested on 5.10.0, 5.8.8, 5.6.2, and 5.005_04, Strawberry and Cygwin
+	* Diagnostics for failed new ()
+	* New 'blank_is_undef' option
+	* Updated docs
+	* Extended the DIAGNOSTICS a bit
+	* Updated TODO
 
 2008-01-04  0.34 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
