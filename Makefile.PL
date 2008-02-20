@@ -59,6 +59,9 @@ sub postamble
 	'	find * -name \*.gcov -exec gcov2perl {} \;',
 	'	cover',
 	'',
+	'tgzdist:	$(DISTVNAME).tar.gz',
+	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',
+	'',
 	'test_speed: pure_all',
 	'	PERL_DL_NONLAZY=1 $(FULLPERLRUN) -I"$(INST_LIB)" -I"$(INST_ARCHLIB)" examples/speed.pl',
 	'';
