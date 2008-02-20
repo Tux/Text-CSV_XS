@@ -38,7 +38,7 @@ timethese (-$duration, {
     });
 
 sub max { $_[0] >= $_[1] ? $_[0] : $_[1] }
-my $line_count = max (1_000_000, 50_000 * $duration);
+my $line_count = max (1_000_000, 20_000 * $duration);
 
 open our $io, ">", $bigfile;
 $csv->print ($io, \@fields10) or die "Cannot print ()\n";
