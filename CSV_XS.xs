@@ -493,23 +493,21 @@ static int CsvGet (csv_t *csv, SV *src)
     if (!(f & CSV_FLAGS_QUO) && SvCUR (sv) == 0 && csv->blank_is_undef)	\
 	av_push (fields, &PL_sv_undef);		\
     else {					\
-	if (csv->allow_whitespace)		\
+	if (csv->allow_whitespace && ! (f & CSV_FLAGS_QUO))	\
 	    strip_trail_whitespace (sv);	\
 	av_push (fields, sv);			\
 	}					\
-    if (csv->keep_meta_info) {			\
+    if (csv->keep_meta_info)			\
 	av_push (fflags, newSViv (f));		\
-	f = 0;					\
-	}					\
+    f = 0;					\
     }
 #else
 #define AV_PUSH(sv) {				\
     *SvEND (sv) = (char)0;			\
     av_push (fields, sv);			\
-    if (csv->keep_meta_info) {			\
+    if (csv->keep_meta_info)			\
 	av_push (fflags, newSViv (f));		\
-	f = 0;					\
-	}					\
+    f = 0;					\
     }
 #endif
 

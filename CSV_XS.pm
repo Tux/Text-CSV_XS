@@ -1063,6 +1063,17 @@ An example for parsing CSV lines:
 
 =over 2
 
+=item Weird passes
+
+Find out why qq{1,foo,bar, "baz",quux} is parsed as valid when
+escape_char = "+".
+
+=item More tests
+
+For anything I can think of. e.g. qq{1, " ", " " , ,,} should
+return (1, " ", " ", "", undef, undef with allow_whitespace +
+blank_is_undef.
+
 =item More Errors & Warnings
 
 At current, it is hard to tell where or why an error occured (if

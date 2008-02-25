@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 666;
+ use Test::More tests => 746;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -111,31 +111,34 @@ ok (1, "Allow whitespace");
 	}
     }
 
-ok (1, "Allow whitespace, esc = +");
+ok (1, "Allow whitespace");
 # Allow whitespace to surround sep char
 {   my @bad = (
-	# valid, line
+	# test, ok, line
 	[  1, 1, qq{1,foo,bar,baz,quux},			],
 	[  2, 1, qq{1,foo,bar,"baz",quux},			],
 	[  3, 1, qq{1, foo,bar,"baz",quux},			],
 	[  4, 1, qq{ 1,foo,bar,"baz",quux},			],
-#	[  5, 0, qq{1,foo,bar, "baz",quux},			],
+	[  5, 0, qq{1,foo,bar, "baz",quux},			],
 	[  6, 1, qq{1,foo ,bar,"baz",quux},			],
 	[  7, 1, qq{1,foo,bar,"baz",quux },			],
 	[  8, 1, qq{1,foo,bar,"baz","quux"},			],
 	[  9, 0, qq{1,foo,bar,"baz" ,quux},			],
 	[ 10, 0, qq{1,foo,bar,"baz","quux" },			],
 	[ 11, 0, qq{1,foo,bar,"baz","quux" },			],
-#	[ 12, 0, qq{ 1 , foo , bar , "baz" , quux },		],
-#	[ 13, 0, qq{  1  ,  foo  ,  bar  ,  "baz"  ,  quux  },	],
-#	[ 14, 0, qq{  1  ,  foo  ,  bar  ,  "baz"\t ,  quux  },	],
+	[ 12, 0, qq{ 1 , foo , bar , "baz" , quux },		],
+	[ 13, 0, qq{  1  ,  foo  ,  bar  ,  "baz"  ,  quux  },	],
+	[ 14, 0, qq{  1  ,  foo  ,  bar  ,  "baz"\t ,  quux  },	],
 	);
 
     foreach my $eol ("", "\n", "\r", "\r\n") {
 	my $s_eol = _readable ($eol);
 	for (@bad) {
 	    my ($tst, $ok, $bad) = @$_;
-	    $csv = Text::CSV_XS->new ({ eol => $eol, binary => 1, escape_char => "+" });
+	    $csv = Text::CSV_XS->new ({
+		eol		 => $eol,
+		binary		 => 1,
+		});
 	    ok ($csv,				"$s_eol / $tst - new - '$bad')");
 	    is ($csv->parse ($bad), $ok,	"$s_eol / $tst - parse () fail");
 
@@ -154,12 +157,12 @@ ok (1, "blank_is_undef");
 foreach my $conf (
 	[ 0, 0, 0,	1, "",    " ", '""', 2, "",    ""	],
 	[ 0, 0, 1,	1, undef, " ", '""', 2, undef, undef	],
-	[ 0, 1, 0,	1, "",    "",  '""', 2, "",    ""	],
-	[ 0, 1, 1,	1, undef, "",  '""', 2, undef, undef	],
+	[ 0, 1, 0,	1, "",    " ", '""', 2, "",    ""	],
+	[ 0, 1, 1,	1, undef, " ", '""', 2, undef, undef	],
 	[ 1, 0, 0,	1, "",    " ", '""', 2, "",    ""	],
 	[ 1, 0, 1,	1, "",    " ", '""', 2, undef, ""	],
-	[ 1, 1, 0,	1, "",    "",  '""', 2, "",    ""	],
-	[ 1, 1, 1,	1, "",    "",  '""', 2, undef, ""	],
+	[ 1, 1, 0,	1, "",    " ", '""', 2, "",    ""	],
+	[ 1, 1, 1,	1, "",    " ", '""', 2, undef, ""	],
 	) {
     my ($aq, $aw, $bu, @expect, $str) = @$conf;
     $csv = Text::CSV_XS->new ({ always_quote => $aq, allow_whitespace => $aw, blank_is_undef => $bu });
