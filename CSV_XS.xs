@@ -108,7 +108,7 @@ typedef struct {
 xs_error_t xs_errors[] =  {
 
     /* Generic errors */
-    { 1001, "sep_char is equal to quote_char or escape_char"			},
+    { 1001, "INI - sep_char is equal to quote_char or escape_char"			},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
@@ -679,7 +679,7 @@ restart:
 		}
 	    } /* CH_CR */
 	else
-	if (c == csv->quote_char) {
+	if (csv->quote_char && c == csv->quote_char) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%d pos %d = QUO '%c'\n",
 		waitingForField ? 1 : 0, insideQuotes ? 1 : 0,
@@ -799,14 +799,13 @@ restart:
 		    }
 		}
 	    else
-	    /* ! wiatingForField, !InsideQuotes */
-	    if (csv->quote_char && csv->quote_char != csv->escape_char) {
+	    /* !waitingForField, !InsideQuotes */
+	    if ((f & CSV_FLAGS_QUO) && csv->quote_char != csv->escape_char) {
 		if (is_csv_binary (c)) {
 		    f |= CSV_FLAGS_BIN;
 		    unless (csv->binary)
 			ERROR_INSIDE_FIELD (2033);
 		    }
-
 		CSV_PUT_SV (insideField, c);
 		}
 	    else

@@ -63,7 +63,7 @@ ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
 $csv->escape_char ("\\");
 ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
 $csv->binary (1);
-ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
+ok ( $csv->parse ("foo,foo\0bar"),		"parse (foo)");
 
 # And test erroneous calls
 

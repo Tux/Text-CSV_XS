@@ -1063,11 +1063,6 @@ An example for parsing CSV lines:
 
 =over 2
 
-=item Weird passes
-
-Find out why qq{1,foo,bar, "baz",quux} is parsed as valid when
-escape_char = "+".
-
 =item More tests
 
 For anything I can think of. e.g. qq{1, " ", " " , ,,} should
@@ -1189,12 +1184,41 @@ on the cause of the failure. Note that for speed reasons, the internal value
 is never cleared on success, so using the value returned by C<error_diag ()> in
 normal cases - when no error occured - may cause unexpected results.
 
-Currently the following errors are available. I've tried to make the error
-itself explainatory enough, but more descriptions will be added:
+Currently errors as described below are available. I've tried to make the error
+itself explainatory enough, but more descriptions will be added. For most of
+these errors, the first three capitals describe the error category:
 
 =over 2
 
-=item 1001 "sep_char is equal to quote_char or escape_char"
+=item INI
+
+Initialization error or option conflict.
+
+=item ECR
+
+Carriage-Return related parse error.
+
+=item EOF
+
+Enf-Of-File related parse error.
+
+=item EIQ
+
+Parse error inside quotation.
+
+=item EIF
+
+Parse error inside field.
+
+=item ECB
+
+Combine error
+
+=back
+
+=over 2
+
+=item 1001 "INI - sep_char is equal to quote_char or escape_char"
 
 The separation character cannot be equal to either the quotation character
 or the escape character, as that will invalidate all parsing rules.
@@ -1211,9 +1235,18 @@ sequence or a separation character.
 
 =item 2021 "EIQ - NL char inside quotes, binary off"
 
+Sequences like C<1,"foo\nbar",2> are only allowed when the binary option
+has been selected with the constructor.
+
 =item 2022 "EIQ - CR char inside quotes, binary off"
 
+Sequences like C<1,"foo\rbar",2> are only allowed when the binary option
+has been selected with the constructor.
+
 =item 2023 "EIQ - QUO ..."
+
+I have not been able yet to generate this error. Please inform me how you
+got it when you get it.
 
 =item 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
 

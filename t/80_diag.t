@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
- use Test::More tests => 10;
+ use Test::More tests => 14;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -14,7 +14,7 @@ BEGIN {
 
 $| = 1;
 
-my $csv = Text::CSV_XS->new ({ escape_char => "+" });
+my ($csv, $c_diag, $s_diag) = (Text::CSV_XS->new ({ escape_char => "+" }));
 
 is ($csv->error_diag (), undef,		"No errors yet");
 
@@ -26,9 +26,16 @@ is ($csv->error_diag () + 0, 2027,	"Diag in numerical context");
 is ($csv->error_diag (), "EIQ - Quoted field not terminated",
 					"Diag in string context");
 
-my ($c_diag, $s_diag) = $csv->error_diag ();
+   ($c_diag, $s_diag) = $csv->error_diag ();
 is ($c_diag, 2027,			"Diag in numerical context");
 is ($s_diag, "EIQ - Quoted field not terminated",
+					"Diag in string context");
+
+is ($csv->escape_char ("+"), "+",	"Set escape char to +");
+is ($csv->parse (q{1, "bar",2}), 0,	"Parse error");
+   ($c_diag, $s_diag) = $csv->error_diag ();
+is ($c_diag, 2034,			"Diag in numerical context");
+is ($s_diag, "EIF - Loose unescaped quote",
 					"Diag in string context");
 
 is (Text::CSV_XS::error_diag (), "",	"Last failure for new () - OK");
