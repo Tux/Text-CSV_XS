@@ -12,6 +12,7 @@ foreach my $d (@INC) {
     }
 -f $pm	or die "CSV_XS.pm is missing\n";
 
+print STDERR "Changing 'use warnings;' to 'local \$^W = 1;' in $pm ...\n";
 my $mod;
 {   local (@ARGV, $/) = ($pm);
     ($mod = <>) =~ s{^use warnings;}{local \$^W = 1;}m;
