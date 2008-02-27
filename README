@@ -15,7 +15,7 @@ Copying:
     it under the same terms as Perl itself.
 
 Prerequisites:
-    perl 5.005
+    perl 5.005. 5.005 will not be able to build the manual pages.
 
 Build/Installation:
     Standard build/installation supported by ExtUtils::MakeMaker(3)...
@@ -23,6 +23,7 @@ Build/Installation:
 	make
 	make test
 	make install
+    (The 'make' step cannot be ommitted for perl-5.005)
 
 Author:
     H.Merijn Brand <h.m.brand@xs4all.nl>
