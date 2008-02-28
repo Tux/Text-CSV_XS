@@ -633,7 +633,10 @@ is read as
 When I<writing> CSV files with C<always_quote> set, the unquoted empty
 field is the result of an undefined value. To make it possible to also
 make this distinction when reading CSV data, the C<blank_is_undef> option
-will cause unquoted empty fields to be set to undef.
+will cause unquoted empty fields to be set to undef, causing the above to
+be parsed as
+
+ ("1", "", undef, " ", "2")
 
 =item quote_char
 
@@ -1103,7 +1106,7 @@ combine ()/string () combination.
 Requests for adding means (methods) that combine C<combine ()> and
 C<string ()> in a single call will B<not> be honored. Likewise for
 C<parse ()> and C<fields ()>. Given the trouble with embedded newlines,
-using C<getline ()> and C<print ()> instead is the prefered way to go.
+Using C<getline ()> and C<print ()> instead is the prefered way to go.
 
 =item Unicode
 
@@ -1160,8 +1163,8 @@ No guarantees, but this is what I have in mind right now:
 
 =item next
 
- - croak / carp
  - DIAGNOSTICS setction in pod to *describe* the errors (see below)
+ - croak / carp
 
 =item next + 1
 
@@ -1225,6 +1228,11 @@ or the escape character, as that will invalidate all parsing rules.
 
 =item 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 
+When C<eol> has been set to something specific, other than the default,
+like C<"\r\t\n">, and the C<"\r"> is following the B<second> (closing)
+C<quote_char>, where the characters following the C<"\r"> do not make up
+the C<eol> sequence, this is an error.
+
 =item 2011 "ECR - Characters after end of quoted field"
 
 Sequences like C<1,foo,"bar"baz,2> are not allowed. C<"bar"> is a quoted
@@ -1232,6 +1240,10 @@ field, and after the closing quote, there should be either a new-line
 sequence or a separation character.
 
 =item 2012 "EOF - End of data in parsing input stream"
+
+Self-explaining. End-of-file while inside parsing a stream. Can only
+happen when reading from streams with C<getline ()>, as using C<parse ()>
+is done on strings that are not required to have a trailing C<eol>.
 
 =item 2021 "EIQ - NL char inside quotes, binary off"
 
