@@ -128,7 +128,6 @@ xs_error_t xs_errors[] =  {
     { 2030, "EIF - NL char inside unquoted verbatim, binary off"		},
     { 2031, "EIF - CR char is first char of field, not part of EOL"		},
     { 2032, "EIF - CR char inside unquoted, not part of EOL"			},
-    { 2033, "EIF - QUO, QUO != ESC, binary off"					},
     { 2034, "EIF - Loose unescaped quote"					},
     { 2035, "EIF - Escaped EOF in unquoted field"				},
     { 2036, "EIF - ESC error"							},
@@ -800,15 +799,6 @@ restart:
 		}
 	    else
 	    /* !waitingForField, !InsideQuotes */
-	    if ((f & CSV_FLAGS_QUO) && csv->quote_char != csv->escape_char) {
-		if (is_csv_binary (c)) {
-		    f |= CSV_FLAGS_BIN;
-		    unless (csv->binary)
-			ERROR_INSIDE_FIELD (2033);
-		    }
-		CSV_PUT_SV (insideField, c);
-		}
-	    else
 #if ALLOW_ALLOW
 	    if (csv->allow_loose_quotes) { /* 1,foo "boo" d'uh,1 */
 		f |= CSV_FLAGS_EIF;

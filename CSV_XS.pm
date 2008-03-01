@@ -1274,8 +1274,6 @@ got it when you get it.
 
 =item 2032 "EIF - CR char inside unquoted, not part of EOL"
 
-=item 2033 "EIF - QUO, QUO != ESC, binary off"
-
 =item 2034 "EIF - Loose unescaped quote"
 
 =item 2035 "EIF - Escaped EOF in unquoted field"
