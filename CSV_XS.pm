@@ -1068,9 +1068,10 @@ An example for parsing CSV lines:
 
 =item More tests
 
-For anything I can think of. e.g. qq{1, " ", " " , ,,} should
-return (1, " ", " ", "", undef, undef with allow_whitespace +
-blank_is_undef.
+For all possible errors, there should be a test.
+
+All XS code should be covered in the test cases, except for perl
+internal failure, like failing to store a hash value.
 
 =item More Errors & Warnings
 
