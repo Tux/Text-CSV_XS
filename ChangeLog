@@ -11,6 +11,9 @@
 	* Re-enabled some tests
 	* Fixed parse error that passed for q{1, "bar",2} with escape_char +
 	* Reversed an erroneous test result in the funny combo section
+	* Extended diagnostics tests
+	* Extended XS coverage
+	* Removed error 2033
 
 2008-01-04  0.34 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
