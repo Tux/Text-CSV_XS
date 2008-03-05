@@ -147,7 +147,7 @@ static int  io_handle_loaded = 0;
 #define require_IO_Handle					\
     unless (io_handle_loaded) {					\
 	ENTER;							\
-	load_module (aTHX_ PERL_LOADMOD_NOIMPORT,		\
+	load_module (PERL_LOADMOD_NOIMPORT,			\
 	    newSVpv ("IO::Handle", 0), NULL, NULL, NULL);	\
 	LEAVE;							\
 	io_handle_loaded = 1;					\
