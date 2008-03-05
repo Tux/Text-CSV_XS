@@ -9,3 +9,6 @@ Text
 *.o
 *.c
 *.bs
+*.gcov
+*.gcda
+*.gcno
