@@ -3,6 +3,9 @@
 \.tgz$
 \.tar\.gz$
 \.git
+\.gcov$
+\.gcda$
+\.gcno$
 blib/
 cover_db/
 Makefile
