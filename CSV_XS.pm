@@ -29,7 +29,7 @@ use warnings;
 use DynaLoader ();
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.35";
+$VERSION = "0.36";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -467,7 +467,6 @@ will break, as the while might read broken lines, as that doesn't care
 about the quoting. If you need to support embedded newlines, the way to go
 is either
 
- use IO::Handle;
  my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
  while (my $row = $csv->getline (*ARGV)) {
      my @fields = @$row;

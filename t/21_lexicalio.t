@@ -20,8 +20,6 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
-use IO::Handle;
-
 my $io;
 my $csv = Text::CSV_XS->new ();
 

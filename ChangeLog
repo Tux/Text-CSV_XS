@@ -1,3 +1,8 @@
+2008-03-05  0.36 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Updated ppport.h
+	* auto-load IO::Handle when needed
+
 2008-03-01  0.35 (Valloire) - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* use warnings/$^W = 1

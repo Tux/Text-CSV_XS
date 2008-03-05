@@ -11,8 +11,6 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
-use IO::Handle;
-
 my $csv = Text::CSV_XS->new ();
 
 ok (!$csv->print (*FH, ["abc", "def\007", "ghi"]), "print bad character");

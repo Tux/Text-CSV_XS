@@ -41,7 +41,6 @@ while (<DATA>) {
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
     # 21530: getline () does not return documented value at end of filehandle
     # IO::Handle  was first released with perl 5.00307
-    use IO::Handle;
     open  FH, ">_test.csv";
     print FH @{$input{21530}};
     close FH;

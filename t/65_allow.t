@@ -260,7 +260,6 @@ foreach my $bin (0, 1) {
 	}
 
     ok (1, "verbatim on getline (*FH)");
-    use IO::Handle;
     open  FH, ">_test.csv";
     print FH @str, "M^Abe^*\r\n";
     close FH;

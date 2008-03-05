@@ -7,6 +7,9 @@
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+#define NEED_load_module
+#define NEED_newRV_noinc
+#define NEED_vload_module
 #include "ppport.h"
 
 #define MAINT_DEBUG	0
@@ -138,6 +141,17 @@ xs_error_t xs_errors[] =  {
 
     {    0, "" },
     };
+
+static int  io_handle_loaded = 0;
+
+#define require_IO_Handle					\
+    unless (io_handle_loaded) {					\
+	ENTER;							\
+	load_module (aTHX_ PERL_LOADMOD_NOIMPORT,		\
+	    newSVpv ("IO::Handle", 0), NULL, NULL, NULL);	\
+	LEAVE;							\
+	io_handle_loaded = 1;					\
+	}
 
 static void SetDiag (csv_t *csv, int xse)
 {
@@ -293,12 +307,13 @@ static int Print (csv_t *csv, SV *dst)
     if (csv->useIO) {
 	SV *tmp = newSVpv (csv->buffer, csv->used);
 	dSP;
+	require_IO_Handle;
 	PUSHMARK (sp);
 	EXTEND (sp, 2);
 	PUSHs ((dst));
 	PUSHs (tmp);
 	PUTBACK;
-	result = perl_call_method ("print", G_SCALAR);
+	result = call_method ("print", G_SCALAR);
 	SPAGAIN;
 	if (result)
 	    result = POPi;
@@ -426,11 +441,14 @@ static int CsvGet (csv_t *csv, SV *src)
     {   int	result;
 
 	dSP;
+
+	require_IO_Handle;
+
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-	result = perl_call_method ("getline", G_SCALAR);
+	result = call_method ("getline", G_SCALAR);
 	SPAGAIN;
 	csv->tmp = result ? POPs : NULL;
 	PUTBACK;

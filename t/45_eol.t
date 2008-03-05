@@ -15,8 +15,6 @@ $| = 1;
 
 # Embedded newline tests
 
-use IO::Handle;
-
 foreach my $rs ("\n", "\r\n", "\r") {
 
     my $csv = Text::CSV_XS->new ({ binary => 1 });
