@@ -1,4 +1,8 @@
-2008-03-05  0.36 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-03-07  0.37 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Copied GIT repo to github
+
+2008-03-06  0.36 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Updated ppport.h
 	* auto-load IO::Handle when needed
