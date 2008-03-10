@@ -15,7 +15,7 @@ Copying:
     it under the same terms as Perl itself.
 
     Recent changes can be (re)viewed in the public GIT repository at
-    http://github.com/Tux/text--csv_xs/tree/master
+    git://repo.or.cz/Text-CSV_XS.git
 
 Prerequisites:
     perl 5.005. 5.005 will not be able to build the manual pages.

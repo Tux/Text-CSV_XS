@@ -29,7 +29,7 @@ use warnings;
 use DynaLoader ();
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.36";
+$VERSION = "0.37";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
