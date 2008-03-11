@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 794;
+ use Test::More tests => 803;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -285,6 +285,38 @@ foreach my $bin (0, 1) {
     is (@$row, 3,				"#\\r\\n $gc fields");
     is ($row->[2], "*\r\n",			"#\\r\\n $gc fld 2");
 
+    close FH;
+    unlink "_test.csv";
+    }
+
+{   ok (1, "keep_meta_info on getline ()");
+
+    my $csv = Text::CSV_XS->new ({ eol => "\n" });
+
+    open  FH, ">_test.csv";
+    print FH qq{1,"",,"Q",2\n};
+    close FH;
+
+    is ($csv->keep_meta_info (0), 0,		"No meta info");
+    open  FH, "<_test.csv";
+    my $row = $csv->getline (*FH);
+    ok ($row,					"Get 1st line");
+    $csv->error_diag ();
+    is ($csv->is_quoted (2), undef,		"Is field 2 quoted?");
+    is ($csv->is_quoted (3), undef,		"Is field 3 quoted?");
+    close FH;
+
+    open  FH, ">_test.csv";
+    print FH qq{1,"",,"Q",2\n};
+    close FH;
+
+    is ($csv->keep_meta_info (1), 1,		"Keep meta info");
+    open  FH, "<_test.csv";
+    $row = $csv->getline (*FH);
+    ok ($row,					"Get 2nd line");
+    $csv->error_diag ();
+    is ($csv->is_quoted (2), 0,			"Is field 2 quoted?");
+    is ($csv->is_quoted (3), 1,			"Is field 3 quoted?");
     close FH;
     unlink "_test.csv";
     }

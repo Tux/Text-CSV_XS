@@ -969,6 +969,16 @@ static int xsParse (HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 	hv_store (hv, "_EOF", 4, &PL_sv_yes, 0);
     else
 	hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
+    if (csv.useIO) {
+	if (csv.keep_meta_info) {
+	    hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
+	    hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
+	    }
+	else {
+	    av_undef (avf);
+	    sv_free ((SV *)avf);
+	    }
+	}
 #endif
     if (result && csv.types) {
 	I32	i;
