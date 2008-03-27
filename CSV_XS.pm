@@ -1116,7 +1116,14 @@ important, also for C<getline ()> and C<print ()>.
 
 Probably the best way to do this is to make a subclass
 Text::CSV_XS::Encoded that can be passed the required encoding and
-then behaves transparently (but slower).
+then behaves transparently (but slower), something like this:
+
+    use Text::CSV::Encoded;
+    my $csv = Text::CSV::Encoded->new ({
+        encoding     => "utf-8",      # Both in and out
+        encoding_in  => "iso-8859-1", # Only the input
+        encoding_out => "cp1252",     # Only the output
+        });
 
 =item Double double quotes
 
