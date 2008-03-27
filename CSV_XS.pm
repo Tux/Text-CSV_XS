@@ -29,7 +29,7 @@ use warnings;
 use DynaLoader ();
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.37";
+$VERSION = "0.38";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -65,6 +65,8 @@ my %def_attr = (
     blank_is_undef	=> 0,
     verbatim		=> 0,
     types		=> undef,
+
+    _hr_keys		=> undef,
 
     _EOF		=> 0,
     _STATUS		=> undef,
@@ -379,6 +381,23 @@ sub parse
 	}
     $self->{_STATUS};
     } # parse
+
+sub hr_keys
+{
+    my ($self, @keys) = @_;
+    @keys or return defined $self->{_hr_keys} ? @{$self->{_hr_keys}} : undef;
+    $self->{_hr_keys} = [ @keys ];
+    @keys;
+    } # hrt_keys
+
+sub getline_hr
+{
+    my ($self, @args, %hr) = @_;
+    $self->{_hr_keys} or return undef;
+    my $fr = $self->getline (@args) or return undef;
+    @hr{@{$self->{_hr_keys}}} = @$fr;
+    \%hr;
+    } # getline_hr
 
 bootstrap Text::CSV_XS $VERSION;
 
@@ -861,6 +880,17 @@ by the function or undef for failure.
 
 The I<$csv-E<gt>string ()>, I<$csv-E<gt>fields ()> and I<$csv-E<gt>status ()>
 methods are meaningless, again.
+
+=item getline_hr
+
+ $csv->hr_keys (qw( code name price description ));
+ $hr = $csv->getline_hr ($io);
+ print "Price for $hr->{name} is $hr->{price} EUR\n";
+
+=item hr_keys
+
+Set the keys that will be used in the C<getline_hr ()> calls. If no keys
+(column names) are passed, it'll return the current setting.
 
 =item eof
 
