@@ -393,7 +393,7 @@ sub hr_keys
 sub getline_hr
 {
     my ($self, @args, %hr) = @_;
-    $self->{_hr_keys} or return undef;
+    $self->{_hr_keys} or return undef; # error "getline_hr () without keys" wanted
     my $fr = $self->getline (@args) or return undef;
     @hr{@{$self->{_hr_keys}}} = @$fr;
     \%hr;
@@ -581,13 +581,11 @@ options to the object creator.
 
 =head1 FUNCTIONS
 
-=over 4
-
-=item version ()
+=head2 version ()
 
 (Class method) Returns the current module version.
 
-=item new (\%attr)
+=head2 new (\%attr)
 
 (Class method) Returns a new instance of Text::CSV_XS. The objects
 attributes are described by the (optional) hash ref C<\%attr>.
@@ -815,7 +813,7 @@ C<error_diag ()> will return a string like
 
  "Unknown attribute 'ecs_char'"
 
-=item combine
+=head2 combine
 
  $status = $csv->combine (@columns);
 
@@ -826,7 +824,7 @@ retrieve the resultant CSV string.  Upon failure, the value returned by
 C<string ()> is undefined and C<error_input ()> can be called to retrieve an
 invalid argument.
 
-=item print
+=head2 print
 
  $status = $csv->print ($io, $colref);
 
@@ -848,14 +846,14 @@ In particular the I<$csv-E<gt>string ()>, I<$csv-E<gt>status ()>,
 I<$csv->fields ()> and I<$csv-E<gt>error_input ()> methods are meaningless
 after executing this method.
 
-=item string
+=head2 string
 
  $line = $csv->string ();
 
 This object function returns the input to C<parse ()> or the resultant CSV
 string of C<combine ()>, whichever was called more recently.
 
-=item parse
+=head2 parse
 
  $status = $csv->parse ($line);
 
@@ -869,7 +867,7 @@ to retrieve the invalid argument.
 You may use the I<types ()> method for setting column types. See the
 description below.
 
-=item getline
+=head2 getline
 
  $colref = $csv->getline ($io);
 
@@ -881,18 +879,18 @@ by the function or undef for failure.
 The I<$csv-E<gt>string ()>, I<$csv-E<gt>fields ()> and I<$csv-E<gt>status ()>
 methods are meaningless, again.
 
-=item getline_hr
+=head2 getline_hr
 
  $csv->hr_keys (qw( code name price description ));
  $hr = $csv->getline_hr ($io);
  print "Price for $hr->{name} is $hr->{price} EUR\n";
 
-=item hr_keys
+=head2 hr_keys
 
 Set the keys that will be used in the C<getline_hr ()> calls. If no keys
 (column names) are passed, it'll return the current setting.
 
-=item eof
+=head2 eof
 
  $eof = $csv->eof ();
 
@@ -901,7 +899,7 @@ method will return true (1) if the last call hit end of file, otherwise
 it will return false (''). This is useful to see the difference between
 a failure and end of file.
 
-=item types
+=head2 types
 
  $csv->types (\@tref);
 
@@ -941,14 +939,14 @@ Set field type to string.
 
 =back
 
-=item fields
+=head2 fields
 
  @columns = $csv->fields ();
 
 This object function returns the input to C<combine ()> or the resultant
 decomposed fields of C<parse ()>, whichever was called more recently.
 
-=item meta_info
+=head2 meta_info
 
  @flags = $csv->meta_info ();
 
@@ -974,7 +972,7 @@ The field was binary.
 
 See the C<is_*** ()> methods below.
 
-=item is_quoted
+=head2 is_quoted
 
   my $quoted = $csv->is_quoted ($column_idx);
 
@@ -986,7 +984,7 @@ enclosed in C<quote_char> quotes. This might be important for data
 where C<,20070108,> is to be treated as a numeric value, and where
 C<,"20070108",> is explicitly marked as character string data.
 
-=item is_binary
+=head2 is_binary
 
   my $binary = $csv->is_binary ($column_idx);
 
@@ -996,21 +994,21 @@ last result of C<parse ()>.
 This returns a true value if the data in the indicated column
 contained any byte in the range [\x00-\x08,\x10-\x1F,\x7F-\xFF]
 
-=item status
+=head2 status
 
  $status = $csv->status ();
 
 This object function returns success (or failure) of C<combine ()> or
 C<parse ()>, whichever was called more recently.
 
-=item error_input
+=head2 error_input
 
  $bad_argument = $csv->error_input ();
 
 This object function returns the erroneous argument (if it exists) of
 C<combine ()> or C<parse ()>, whichever was called more recently.
 
-=item error_diag
+=head2 error_diag
 
  $csv->error_diag ();
  $error_code  = 0  + $csv->error_diag ();
@@ -1029,8 +1027,6 @@ message in that order.
 If called in scalar context, it will return the diagnostics in a single
 scalar, a-la $!. It will contain the error code in numeric context, and
 the diagnostics message in string context.
-
-=back
 
 =head1 INTERNALS
 
@@ -1154,6 +1150,16 @@ then behaves transparently (but slower), something like this:
         encoding_in  => "iso-8859-1", # Only the input
         encoding_out => "cp1252",     # Only the output
         });
+
+=item bind_keys ()
+
+With the new hr_keys (), it would be nice to do a DBI like bind_keys ()
+so fields are stored in the same scalar over and over again, instead of
+creating a new scalar on parsing for every field line after line again.
+
+This *could* mean a big speed gain, but otoh it could also slow down
+regular parses. If the gain is high enough, compared to the speed loss,
+this could then be proagated to be the `standard' way of parsing.
 
 =item Double double quotes
 
