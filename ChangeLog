@@ -1,3 +1,10 @@
+2008-04-04  0.38 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Implemented getline_hr () and column_names () RT 34474
+	  (suggestions accepted from Mark Stosberg)
+	* Corrected misspelled variable names in XS
+	* Functions are now =head2 type doc entries (Mark Stosberg)
+
 2008-03-11  0.37 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Copied GIT repo to public mirror
