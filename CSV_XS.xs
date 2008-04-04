@@ -29,7 +29,7 @@
 #define CACHE_ID_sep_char		2
 #define CACHE_ID_binary			3
 #define CACHE_ID_keep_meta_info		4
-#define CACHE_ID_alwasy_quote		5
+#define CACHE_ID_always_quote		5
 #define CACHE_ID_allow_loose_quotes	6
 #define CACHE_ID_allow_loose_escapes	7
 #define CACHE_ID_allow_double_quoted	8
@@ -69,7 +69,7 @@ typedef struct {
     byte	 binary;
 
     byte	 keep_meta_info;
-    byte	 alwasy_quote;
+    byte	 always_quote;
     byte	 useIO;		/* Also used to indicate EOF */
     byte	 eol_is_cr;
 
@@ -184,7 +184,7 @@ static void SetupCsv (csv_t *csv, HV *self)
 	csv->binary			= csv->cache[CACHE_ID_binary		];
 
 	csv->keep_meta_info		= csv->cache[CACHE_ID_keep_meta_info	];
-	csv->alwasy_quote		= csv->cache[CACHE_ID_alwasy_quote	];
+	csv->always_quote		= csv->cache[CACHE_ID_always_quote	];
 
 #if ALLOW_ALLOW
 	csv->allow_loose_quotes		= csv->cache[CACHE_ID_allow_loose_quotes];
@@ -261,7 +261,7 @@ static void SetupCsv (csv_t *csv, HV *self)
 
 	csv->binary			= bool_opt ("binary");
 	csv->keep_meta_info		= bool_opt ("keep_meta_info");
-	csv->alwasy_quote		= bool_opt ("always_quote");
+	csv->always_quote		= bool_opt ("always_quote");
 #if ALLOW_ALLOW
 	csv->allow_loose_quotes		= bool_opt ("allow_loose_quotes");
 	csv->allow_loose_escapes	= bool_opt ("allow_loose_escapes");
@@ -277,7 +277,7 @@ static void SetupCsv (csv_t *csv, HV *self)
 	csv->cache[CACHE_ID_binary]			= csv->binary;
 
 	csv->cache[CACHE_ID_keep_meta_info]		= csv->keep_meta_info;
-	csv->cache[CACHE_ID_alwasy_quote]		= csv->alwasy_quote;
+	csv->cache[CACHE_ID_always_quote]		= csv->always_quote;
 
 #if ALLOW_ALLOW
 	csv->cache[CACHE_ID_allow_loose_quotes]		= csv->allow_loose_quotes;
@@ -354,10 +354,10 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 	if ((svp = av_fetch (fields, i, 0)) && *svp && SvOK (*svp)) {
 	    STRLEN	 len;
 	    char	*ptr = SvPV (*svp, len);
-	    int		 quoteMe = csv->alwasy_quote;
+	    int		 quoteMe = csv->always_quote;
 
 	    /* Do we need quoting? We do quote, if the user requested
-	     * (alwasy_quote), if binary or blank characters are found
+	     * (always_quote), if binary or blank characters are found
 	     * and if the string contains quote or escape characters.
 	     */
 	    if (!quoteMe &&
