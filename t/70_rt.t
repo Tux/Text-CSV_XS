@@ -96,13 +96,13 @@ while (<DATA>) {
     print FH @{$input{34474}};
     close FH;
     ok (my $csv = Text::CSV_XS->new (),		"RT-34474: getline_hr ()");
-    is ($csv->hr_keys, undef,			"No headers yet");
+    is ($csv->column_names, undef,		"No headers yet");
     open  FH, "<_test.csv";
     my $row;
     ok ($row = $csv->getline (*FH),		"getline headers");
     is ($row->[0], "code",			"Header line");
-    $csv->hr_keys (@$row);
-    is_deeply ([ $csv->hr_keys ], [ @$row ],	"Keys set");
+    $csv->column_names (@$row);
+    is_deeply ([ $csv->column_names ], [ @$row ], "Keys set");
     while (my $hr = $csv->getline_hr (*FH)) {
 	ok (exists $hr->{code},			"Line has a code field");
 	like ($hr->{code}, qr/^[0-9]+$/,	"Code is numeric");

@@ -27,6 +27,7 @@ use strict;
 use warnings;
 
 use DynaLoader ();
+use Carp;
 
 use vars   qw( $VERSION @ISA );
 $VERSION = "0.38";
@@ -66,7 +67,6 @@ my %def_attr = (
     verbatim		=> 0,
     types		=> undef,
 
-    _hr_keys		=> undef,
 
     _EOF		=> 0,
     _STATUS		=> undef,
@@ -74,6 +74,7 @@ my %def_attr = (
     _FFLAGS		=> undef,
     _STRING		=> undef,
     _ERROR_INPUT	=> undef,
+    _COLUMN_NAMES	=> undef,
     );
 my $last_new_err = "";
 
@@ -382,20 +383,28 @@ sub parse
     $self->{_STATUS};
     } # parse
 
-sub hr_keys
+sub column_names
 {
     my ($self, @keys) = @_;
-    @keys or return defined $self->{_hr_keys} ? @{$self->{_hr_keys}} : undef;
-    $self->{_hr_keys} = [ @keys ];
+    @keys or
+	return defined $self->{_COLUMN_NAMES} ? @{$self->{_COLUMN_NAMES}} : undef;
+    if (@keys == 1 && ref $keys[0] eq "ARRAY") {
+	@keys = @{$keys[0]};
+	}
+    elsif (join "", map { defined $_ ? ref $_ : "UNDEF" } @keys) {
+	croak "column names takes a list of column names or a single listref";
+	}
+
+    $self->{_COLUMN_NAMES} = [ @keys ];
     @keys;
-    } # hrt_keys
+    } # column_names
 
 sub getline_hr
 {
     my ($self, @args, %hr) = @_;
-    $self->{_hr_keys} or return undef; # error "getline_hr () without keys" wanted
+    $self->{_COLUMN_NAMES} or croak "getline_hr () called without column_names";
     my $fr = $self->getline (@args) or return undef;
-    @hr{@{$self->{_hr_keys}}} = @$fr;
+    @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
     } # getline_hr
 
@@ -450,6 +459,8 @@ Text::CSV_XS - comma-separated values manipulation routines
  $colref = $csv->getline ($io);        # Read a line from file $io,
                                        # parse it and return an array
                                        # ref of fields
+ $csv->column_names (@names);          # Set column names for getline_hr ()
+ $ref = $csv->getline_hr ($io);        # getline (), but returns a hashref
  $eof = $csv->eof ();                  # Indicate if last parse or
                                        # getline () hit End Of File
 
@@ -881,14 +892,27 @@ methods are meaningless, again.
 
 =head2 getline_hr
 
- $csv->hr_keys (qw( code name price description ));
+The C<getline_hr ()> and C<column_names ()> methods work together to allow
+you to have rows returned as hashrefs. You must call C<column_names ()>
+first to declare your column names. 
+
+ $csv->column_names (qw( code name price description ));
  $hr = $csv->getline_hr ($io);
  print "Price for $hr->{name} is $hr->{price} EUR\n";
 
-=head2 hr_keys
+C<getline_hr ()> will croak if called before C<column_names ()>.
+
+=head2 column_names
 
 Set the keys that will be used in the C<getline_hr ()> calls. If no keys
 (column names) are passed, it'll return the current setting.
+
+C<column_names ()> accepts a list of scalars (the column names) or a
+single array_ref, so you can pass C<getline ()>
+
+  $csv->column_names ($csv->getline ($io));
+
+C<column_names ()> croaks on invalid arguments.
 
 =head2 eof
 
@@ -1153,9 +1177,10 @@ then behaves transparently (but slower), something like this:
 
 =item bind_keys ()
 
-With the new hr_keys (), it would be nice to do a DBI like bind_keys ()
-so fields are stored in the same scalar over and over again, instead of
-creating a new scalar on parsing for every field line after line again.
+With the new column_names (), it would be nice to do a DBI like
+bind_columns () so fields are stored in the same scalar over and over
+again, instead of creating a new scalar on parsing for every field line
+after line again.
 
 This *could* mean a big speed gain, but otoh it could also slow down
 regular parses. If the gain is high enough, compared to the speed loss,
