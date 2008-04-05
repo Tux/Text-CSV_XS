@@ -392,8 +392,7 @@ sub column_names
 	@keys = @{$keys[0]};
 	}
     elsif (join "", map { defined $_ ? ref $_ : "UNDEF" } @keys) {
-	$self->SetDiag (3001);
-	croak "column names takes a list of column names or a single listref";
+	croak ($self->SetDiag (3001))
 	}
 
     $self->{_COLUMN_NAMES} = [ @keys ];
@@ -403,10 +402,7 @@ sub column_names
 sub getline_hr
 {
     my ($self, @args, %hr) = @_;
-    unless ($self->{_COLUMN_NAMES}) {
-	$self->SetDiag (3002);
-	croak "getline_hr () called before column_names ()";
-	}
+    $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
     my $fr = $self->getline (@args) or return undef;
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;

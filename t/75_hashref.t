@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 27;
+ use Test::More tests => 32;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -25,12 +25,14 @@ is ($csv->column_names, undef,		"No headers yet");
 
 foreach my $args ([\1], [undef], ["foo", \1], [{ 1 => 2 }]) {
     eval { $csv->column_names (@$args) };
+    like ($@, qr/^EHR/, "croak");
     is ($csv->error_diag () + 0, 3001, "Bad args to column_names");
     }
 
 my $hr;
 eval { $hr = $csv->getline_hr (*FH) };
 is ($hr, undef,	"getline_hr before column_names");
+like ($@, qr/^EHR/, "croak");
 is ($csv->error_diag () + 0, 3002, "error code");
 
 ok ($csv->column_names ("name", "code"), "column_names (list)");
