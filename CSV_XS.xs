@@ -139,6 +139,10 @@ xs_error_t xs_errors[] =  {
     /* Combine errors */
     { 2110, "ECB - Binary character in Combine, binary off"			},
 
+    /* Non-XS errors */
+    { 3001, "EHR - Unsupported syntax for column_names ()"			},
+    { 3002, "EHR - getline_hr () called before column_names ()"			},
+
     {    0, "" },
     };
 
@@ -1020,6 +1024,20 @@ static int xsCombine (HV *hv, AV *av, SV *io, bool useIO)
 MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 
 PROTOTYPES: DISABLE
+
+void
+SetDiag (self, xse)
+    SV		*self
+    int		 xse
+
+  PPCODE:
+    HV		*hv;
+    csv_t	csv;
+
+    CSV_XS_SELF;
+    SetupCsv (&csv, hv);
+    SetDiag (hv, xse);
+    /* XS SetDiag */
 
 SV*
 Combine (self, dst, fields, useIO)

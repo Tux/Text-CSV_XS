@@ -392,6 +392,7 @@ sub column_names
 	@keys = @{$keys[0]};
 	}
     elsif (join "", map { defined $_ ? ref $_ : "UNDEF" } @keys) {
+	$self->SetDiag (3001);
 	croak "column names takes a list of column names or a single listref";
 	}
 
@@ -402,7 +403,10 @@ sub column_names
 sub getline_hr
 {
     my ($self, @args, %hr) = @_;
-    $self->{_COLUMN_NAMES} or croak "getline_hr () called before column_names ()";
+    unless ($self->{_COLUMN_NAMES}) {
+	$self->SetDiag (3002);
+	croak "getline_hr () called before column_names ()";
+	}
     my $fr = $self->getline (@args) or return undef;
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
@@ -1060,6 +1064,8 @@ the diagnostics message in string context.
 
 =item Parse (...)
 
+=item SetDiag (...)
+
 =back
 
 The arguments to these two internal functions are deliberately not
@@ -1283,7 +1289,11 @@ Parse error inside field.
 
 =item ECB
 
-Combine error
+Combine error.
+
+=item EHR
+
+HashRef parse related error.
 
 =back
 
@@ -1351,6 +1361,10 @@ got it when you get it.
 =item 2037 "EIF - Binary character in unquoted field, binary off"
 
 =item 2110 "ECB - Binary character in Combine, binary off"
+
+=item 3001 "EHR - Unsupported syntax for column_names ()"
+
+=item 3002 "EHR - getline_hr () called before column_names ()"
 
 =back
 
