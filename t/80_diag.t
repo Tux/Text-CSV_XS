@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
- use Test::More tests => 61;
+ use Test::More tests => 66;
 #use Test::More "no_plan";
 
 my %err;
@@ -21,7 +21,7 @@ BEGIN {
 
 $| = 1;
 
-my $csv = (Text::CSV_XS->new ({ escape_char => "+", eol => "\n" }));
+my $csv = Text::CSV_XS->new ();
 is (Text::CSV_XS::error_diag (), "",	"Last failure for new () - OK");
 
 sub parse_err ($$)
@@ -37,6 +37,9 @@ sub parse_err ($$)
     is ($s_diag, $s_err,	"Str diag in list context");
     } # parse_err
 
+parse_err 2023, qq{2023,",2008-04-05,"Foo, Bar",\n};
+
+$csv = Text::CSV_XS->new ({ escape_char => "+", eol => "\n" });
 is ($csv->error_diag (), undef,		"No errors yet");
 
 parse_err 2010, qq{"x"\r};

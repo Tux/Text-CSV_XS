@@ -1,9 +1,14 @@
-2008-04-04  0.38 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-04-05  0.38 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Implemented getline_hr () and column_names () RT 34474
 	  (suggestions accepted from Mark Stosberg)
 	* Corrected misspelled variable names in XS
 	* Functions are now =head2 type doc entries (Mark Stosberg)
+	* Make SetDiag() available to the perl level, so errors can
+	  be centralized and consistent
+	* Integrate the non-XS errors into XS
+	* Add t/75_hashref.t
+	* Testcase for error 2023 (Michael P Randall)
 
 2008-03-11  0.37 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
