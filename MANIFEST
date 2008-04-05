@@ -22,6 +22,7 @@ t/55_combi.t		Different CSV character combinations
 t/60_samples.t		Miscellaneous problems from the modules history.
 t/65_allow.t		Allow bad formats
 t/70_rt.t		Tests based on RT reports
+t/75_hashref.t		getline_hr related tests
 t/80_diag.t		Error diagnostics
 t/util.pl		Extra test utilities
 examples/csv2xls	Script to onvert CSV files to M$Excel

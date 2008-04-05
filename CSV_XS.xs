@@ -157,10 +157,10 @@ static int  io_handle_loaded = 0;
 	io_handle_loaded = 1;					\
 	}
 
-static void SetDiag (csv_t *csv, int xse)
+static SV *SetDiag (csv_t *csv, int xse)
 {
     int   i = 0;
-    SV   *err;
+    SV   *err = NULL;
 
     while (xs_errors[i].xs_errno && xs_errors[i].xs_errno != xse) i++;
     if ((err = newSVpv (xs_errors[i].xs_errstr, 0))) {
@@ -169,6 +169,7 @@ static void SetDiag (csv_t *csv, int xse)
 	SvIOK_on (err);
 	hv_store (csv->self, "_ERROR_DIAG", 11, err, 0);
 	}
+    return (err);
     } /* SetDiag */
 
 static void SetupCsv (csv_t *csv, HV *self)
@@ -346,7 +347,7 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
     int		i;
 
     if (csv->sep_char == csv->quote_char || csv->sep_char == csv->escape_char) {
-	SetDiag (csv, 1001);
+	(void)SetDiag (csv, 1001);
 	return FALSE;
 	}
 
@@ -392,7 +393,7 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 		    SvREFCNT_inc (*svp);
 		    unless (hv_store (csv->self, "_ERROR_INPUT", 12, *svp, 0))
 			SvREFCNT_dec (*svp);
-		    SetDiag (csv, 2110);
+		    (void)SetDiag (csv, 2110);
 		    return FALSE;
 		    }
 		if (csv->quote_char  && c == csv->quote_char)
@@ -434,7 +435,7 @@ static void ParseError (csv_t *csv, int xse)
 	if (hv_store (csv->self, "_ERROR_INPUT", 12, csv->tmp, 0))
 	    SvREFCNT_inc (csv->tmp);
 	}
-    SetDiag (csv, xse);
+    (void)SetDiag (csv, xse);
     } /* ParseError */
 
 static int CsvGet (csv_t *csv, SV *src)
@@ -558,7 +559,7 @@ static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
 #endif
 
     if (csv->sep_char == csv->quote_char || csv->sep_char == csv->escape_char) {
-	SetDiag (csv, 1001);
+	(void)SetDiag (csv, 1001);
 	return FALSE;
 	}
 
@@ -937,7 +938,7 @@ restart:
 	    }
 	else {
 	    if (csv->useIO) {
-		SetDiag (csv, 2012);
+		(void)SetDiag (csv, 2012);
 		return FALSE;
 		}
 	    }
@@ -1025,7 +1026,7 @@ MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 
 PROTOTYPES: DISABLE
 
-void
+SV*
 SetDiag (self, xse)
     SV		*self
     int		 xse
@@ -1036,7 +1037,8 @@ SetDiag (self, xse)
 
     CSV_XS_SELF;
     SetupCsv (&csv, hv);
-    SetDiag (hv, xse);
+    ST (0) = SetDiag (&csv, xse);
+    XSRETURN (1);
     /* XS SetDiag */
 
 SV*
