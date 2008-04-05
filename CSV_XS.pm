@@ -402,7 +402,7 @@ sub column_names
 sub getline_hr
 {
     my ($self, @args, %hr) = @_;
-    $self->{_COLUMN_NAMES} or croak "getline_hr () called without column_names";
+    $self->{_COLUMN_NAMES} or croak "getline_hr () called before column_names ()";
     my $fr = $self->getline (@args) or return undef;
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
@@ -1184,7 +1184,7 @@ after line again.
 
 This *could* mean a big speed gain, but otoh it could also slow down
 regular parses. If the gain is high enough, compared to the speed loss,
-this could then be proagated to be the `standard' way of parsing.
+this could then be propagated to be the `standard' way of parsing.
 
 =item Double double quotes
 
