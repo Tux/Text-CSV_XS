@@ -12,3 +12,4 @@ Text
 *.gcov
 *.gcda
 *.gcno
+Text-CSV_XS*
