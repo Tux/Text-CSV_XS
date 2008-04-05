@@ -3,8 +3,8 @@
 use strict;
 $^W = 1;
 
-#use Test::More "no_plan";
- use Test::More tests => 32;
+ use Test::More "no_plan";
+#use Test::More tests => 31;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -23,11 +23,13 @@ close FH;
 ok (my $csv = Text::CSV_XS->new (),	"new");
 is ($csv->column_names, undef,		"No headers yet");
 
-foreach my $args ([\1], [undef], ["foo", \1], [{ 1 => 2 }]) {
+foreach my $args ([\1], ["foo", \1], [{ 1 => 2 }]) {
     eval { $csv->column_names (@$args) };
     like ($@, qr/^EHR/, "croak");
     is ($csv->error_diag () + 0, 3001, "Bad args to column_names");
     }
+
+is ($csv->column_names (undef), undef, "reset column_names");
 
 my $hr;
 eval { $hr = $csv->getline_hr (*FH) };
@@ -46,10 +48,36 @@ ok ($csv->column_names ($row),		"column_names from array_ref");
 is_deeply ([ $csv->column_names ], [ @$row ], "Keys set");
 while (my $hr = $csv->getline_hr (*FH)) {
     ok (exists $hr->{code},			"Line has a code field");
-    like ($hr->{code}, qr/^[0-9]+$/,	"Code is numeric");
+    like ($hr->{code}, qr/^[0-9]+$/,		"Code is numeric");
     ok (exists $hr->{name},			"Line has a name field");
     like ($hr->{name}, qr/^[A-Z][a-z]+$/,	"Name");
     }
 close FH;
-unlink "_test.csv";
 
+my ($code, $name, $price, $desc);
+is ($csv->bind_columns (), undef,		"No bound columns yet");
+eval { $csv->bind_columns (\$code) };
+is ($csv->error_diag () + 0, 3003,		"Arg cound mismatch");
+eval { $csv->bind_columns ({}, {}, {}, {}) };
+is ($csv->error_diag () + 0, 3004,		"bad arg types");
+is ($csv->column_names (undef), undef,		"reset column_names");
+eval { $csv->bind_columns ((\$code) x 300) };
+is ($csv->error_diag () + 0, 3005,		"too many args");
+ok ($csv->bind_columns (\($code, $name, $price, $desc)), "Bind columns");
+
+eval { $csv->column_names ("foo") };
+is ($csv->error_diag () + 0, 3003,		"Arg cound mismatch");
+
+open  FH, "<_test.csv";
+ok ($row = $csv->getline (*FH),		"getline headers");
+ok ($csv->column_names ($row),		"column_names from array_ref");
+is_deeply ([ $csv->column_names ], [ @$row ],	"Keys set");
+while ($csv->getline (*FH)) {
+    #ok (defined $code,				"Code is defined");
+    #like ($code, qr/^[0-9]+$/,			"Code is numeric");
+    #ok (defined $name,				"Name is defined");
+    #like ($name, qr/^[A-Z][a-z]+$/,		"Name");
+    }
+close FH;
+
+unlink "_test.csv";

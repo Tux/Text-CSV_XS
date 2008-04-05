@@ -64,7 +64,7 @@ ok (1, "Allow loose escapes");
 	$csv->allow_loose_escapes (1);
 	if ($tst >= 8) {
 	    # Should always fail
-	    ok (!$csv->parse ($bad),	"$tst - parse () pass");
+	    ok (!$csv->parse ($bad),	"$tst - parse () fail");
 	    }
 	else {
 	    ok ($csv->parse ($bad),	"$tst - parse () pass");

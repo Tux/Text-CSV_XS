@@ -75,6 +75,7 @@ my %def_attr = (
     _STRING		=> undef,
     _ERROR_INPUT	=> undef,
     _COLUMN_NAMES	=> undef,
+    _BOUND_COLUMNS	=> undef,
     );
 my $last_new_err = "";
 
@@ -116,6 +117,8 @@ my %_cache_id = (	# Keep in sync with XS!
     eol_is_cr		=> 20,
     has_types		=> 21,
     verbatim		=> 22,
+
+    _is_bound		=> 23,
     );
 sub _set_attr
 {
@@ -388,15 +391,44 @@ sub column_names
     my ($self, @keys) = @_;
     @keys or
 	return defined $self->{_COLUMN_NAMES} ? @{$self->{_COLUMN_NAMES}} : undef;
+
+    @keys == 1 && ! defined $keys[0] and
+	return $self->{_COLUMN_NAMES} = undef;
+
     if (@keys == 1 && ref $keys[0] eq "ARRAY") {
 	@keys = @{$keys[0]};
 	}
     elsif (join "", map { defined $_ ? ref $_ : "UNDEF" } @keys) {
-	croak ($self->SetDiag (3001))
+	croak ($self->SetDiag (3001));
 	}
+
+    $self->{_is_bound} && @keys != $self->{_is_bound} and
+	croak ($self->SetDiag (3003));
 
     $self->{_COLUMN_NAMES} = [ @keys ];
     @keys;
+    } # column_names
+
+sub bind_columns
+{
+    my ($self, @refs) = @_;
+    @refs or
+	return defined $self->{_BOUND_COLUMNS} ? @{$self->{_CBOUND_COLUMNS}} : undef;
+
+    @refs == 1 && ! defined $refs[0] and
+	return $self->{_BOUND_COLUMNS} = undef;
+
+    $self->{_COLUMN_NAMES} && @refs != @{$self->{_COLUMN_NAMES}} and
+	croak ($self->SetDiag (3003));
+
+    @refs > 255 and croak ($self->SetDiag (3005));
+
+    join "", map { ref $_ eq "SCALAR" ? "" : "*" } @refs and
+	croak ($self->SetDiag (3004));
+
+    $self->_set_attr ("_is_bound", scalar @refs);
+    $self->{_COLUMN_NAMES} = [ @refs ];
+    @refs;
     } # column_names
 
 sub getline_hr
@@ -914,6 +946,11 @@ single array_ref, so you can pass C<getline ()>
 
 C<column_names ()> croaks on invalid arguments.
 
+=head2 bind_columns
+
+Takes a list of references to scalars (max 255) to store the fields fetched
+C<by getline_hr ()> in.
+
 =head2 eof
 
  $eof = $csv->eof ();
@@ -1177,7 +1214,7 @@ then behaves transparently (but slower), something like this:
         encoding_out => "cp1252",     # Only the output
         });
 
-=item bind_keys ()
+=item bind_columns ()
 
 With the new column_names (), it would be nice to do a DBI like
 bind_columns () so fields are stored in the same scalar over and over
