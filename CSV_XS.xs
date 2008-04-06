@@ -530,29 +530,27 @@ static int CsvGet (csv_t *csv, SV *src)
 #define AV_PUSH {						\
     *SvEND (sv) = (char)0;					\
     if (!(f & CSV_FLAGS_QUO) && SvCUR (sv) == 0 && csv->blank_is_undef)	{\
-	if (csv->is_bound)					\
-	    sv_setpvn (sv, NULL, 0);				\
-	else							\
-	    av_push (fields, &PL_sv_undef);			\
+	sv_setpvn (sv, NULL, 0);				\
+	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
     else {							\
 	if (csv->allow_whitespace && ! (f & CSV_FLAGS_QUO))	\
 	    strip_trail_whitespace (sv);			\
 	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
+    sv = NULL;							\
     if (csv->keep_meta_info)					\
 	av_push (fflags, newSViv (f));				\
     waitingForField = 1;					\
-    f = 0;							\
     }
 #else
 #define AV_PUSH {					\
     *SvEND (sv) = (char)0;				\
     unless (csv->is_bound) av_push (fields, sv);	\
+    sv = NULL;						\
     if (csv->keep_meta_info)				\
 	av_push (fflags, newSViv (f));			\
     waitingForField = 1;				\
-    f = 0;						\
     }
 #endif
 
@@ -581,6 +579,20 @@ static SV *bound_field (csv_t *csv, int i)
     return (sv);
     } /* bound_field */
 
+#define NewField				\
+    unless (sv) {				\
+	if (csv->is_bound) {			\
+	    if (fnum >= csv->is_bound) {	\
+		(void)SetDiag (csv, 3006);	\
+		return FALSE;			\
+		}				\
+	    sv = bound_field (csv, fnum++);	\
+	    }					\
+	else					\
+	    sv = newSVpvs ("");			\
+	f = 0;					\
+	}
+
 static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
 {
     int		 c, f = 0;
@@ -601,6 +613,9 @@ static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
 	}
 
     while ((c = CSV_GET) != EOF) {
+
+	NewField;
+
 	seenSomething = TRUE;
 #if MAINT_DEBUG
 	if (++spl < 39) str_parsed[spl] = c;
@@ -612,28 +627,16 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	    if (waitingForField) {
-		if (csv->is_bound) {
-		    if (fnum >= csv->is_bound) {
-			(void)SetDiag (csv, 3006);
-			return FALSE;
-			}
-		    sv = bound_field (csv, fnum++);
-		    }
 #if ALLOW_ALLOW
-		if (csv->blank_is_undef) {
-		    if (csv->is_bound)
-			sv_setpvn (sv, NULL, 0);
-		    else
-			av_push (fields, &PL_sv_undef);
-		    }
-		else {
+		if (csv->blank_is_undef)
+		    sv_setpvn (sv, NULL, 0);
+		else
 #endif
-		    if (csv->is_bound)
-			sv_setpvn (sv, "", 0);
-		    else
-			av_push (fields, newSVpvs (""));
+		    sv_setpvn (sv, "", 0);
+		unless (csv->is_bound)
+		    av_push (fields, sv);
+		sv = NULL;
 #if ALLOW_ALLOW
-		    }
 		if (csv->keep_meta_info)
 		    av_push (fflags, newSViv (f));
 #endif
@@ -652,28 +655,15 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl);
 #endif
 	    if (waitingForField) {
-		if (csv->is_bound) {
-		    if (fnum >= csv->is_bound) {
-			(void)SetDiag (csv, 3006);
-			return FALSE;
-			}
-		    sv = bound_field (csv, fnum++);
-		    }
 #if ALLOW_ALLOW
-		if (csv->blank_is_undef) {
-		    if (csv->is_bound)
-			sv_setpvn (sv, NULL, 0);
-		    else
-			av_push (fields, &PL_sv_undef);
-		    }
-		else {
+		if (csv->blank_is_undef)
+		    sv_setpvn (sv, NULL, 0);
+		else
 #endif
-		    if (csv->is_bound)
-			sv_setpvn (sv, "", 0);
-		    else
-			av_push (fields, newSVpv ("", 0));
+		    sv_setpvn (sv, "", 0);
+		unless (csv->is_bound)
+		    av_push (fields, sv);
 #if ALLOW_ALLOW
-		    }
 		if (csv->keep_meta_info)
 		    av_push (fflags, newSViv (f));
 #endif
@@ -715,6 +705,8 @@ restart:
 	    if (waitingForField) {
 		int	c2;
 
+		waitingForField = 0;
+
 		if (csv->eol_is_cr) {
 		    c = CH_NL;
 		    goto restart;
@@ -723,16 +715,6 @@ restart:
 		c2 = CSV_GET;
 
 		if (c2 == EOF) {
-		    if (csv->is_bound) {
-			if (fnum >= csv->is_bound) {
-			    (void)SetDiag (csv, 3006);
-			    return FALSE;
-			    }
-			sv = bound_field (csv, fnum++);
-			}
-		    else
-			sv = newSVpv ("", 0);
-		    waitingForField = 0;
 		    c = EOF;
 		    goto restart;
 		    }
@@ -777,15 +759,6 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	    if (waitingForField) {
-		if (csv->is_bound) {
-		    if (fnum >= csv->is_bound) {
-			(void)SetDiag (csv, 3006);
-			return FALSE;
-			}
-		    sv = bound_field (csv, fnum++);
-		    }
-		else
-		    sv = newSVpv ("", 0);
 		f |= CSV_FLAGS_QUO;
 		waitingForField = 0;
 		}
@@ -911,10 +884,8 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	    /*  This means quote_char != escape_char  */
-	    if (waitingForField) {
-		sv = newSVpv ("", 0);
+	    if (waitingForField)
 		waitingForField = 0;
-		}
 	    else
 	    if (f & CSV_FLAGS_QUO) {
 		int	c2 = CSV_GET;
@@ -936,7 +907,7 @@ restart:
 		    ERROR_INSIDE_QUOTES (2025);
 		}
 	    else
-	    if (seenSomething) {
+	    if (sv) {
 		int	c2 = CSV_GET;
 
 		if (c2 == EOF)
@@ -961,16 +932,6 @@ restart:
 		    goto restart;
 		    }
 #endif
-
-		if (csv->is_bound) {
-		    if (fnum >= csv->is_bound) {
-			(void)SetDiag (csv, 3006);
-			return FALSE;
-			}
-		    sv = bound_field (csv, fnum++);
-		    }
-		else
-		    sv = newSVpv ("", 0);
 		waitingForField = 0;
 		goto restart;
 		}
@@ -1004,21 +965,16 @@ restart:
 
     if (waitingForField) {
 	if (seenSomething) {
+	    unless (sv) NewField;
 #if ALLOW_ALLOW
-	    if (csv->blank_is_undef) {
-		if (csv->is_bound)
-		    sv_setpvn (sv, NULL, 0);
-		else
-		    av_push (fields, &PL_sv_undef);
-		}
-	    else {
+	    if (csv->blank_is_undef)
+		sv_setpvn (sv, NULL, 0);
+	    else
 #endif
-		if (csv->is_bound)
-		    sv_setpvn (sv, "", 0);
-		else
-		    av_push (fields, newSVpv ("", 0));
+		sv_setpvn (sv, "", 0);
+	    unless (csv->is_bound)
+		av_push (fields, sv);
 #if ALLOW_ALLOW
-		}
 	    if (csv->keep_meta_info)
 		av_push (fflags, newSViv (f));
 #endif
@@ -1035,7 +991,7 @@ restart:
 	ERROR_INSIDE_QUOTES (2027);
 	}
     else
-    if (seenSomething)
+    if (sv)
 	AV_PUSH;
     return TRUE;
     } /* Parse */
