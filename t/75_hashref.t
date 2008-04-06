@@ -76,7 +76,10 @@ ok ($csv->column_names ($row),			"column_names from array_ref");
 is_deeply ([ $csv->column_names ], [ @$row ],	"Keys set");
 my @row = $csv->getline (*FH);
 close FH;
-use Data::Dumper; $Data::Dumper::Sortkeys = 1;
-print STDERR Dumper $csv,\@row, \$code, \$name, \$price, \$desc;
+
+# TODO tests
+# fetch with too many binds
+# fetch with not enough binds
+# fetch with references to constants and/or undefineds
 
 unlink "_test.csv";
