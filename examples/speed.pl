@@ -38,13 +38,15 @@ timethese (-$duration, {
     });
 
 sub max { $_[0] >= $_[1] ? $_[0] : $_[1] }
-my $line_count = max (1_000_000, 20_000 * $duration);
+my $line_count = max (100_000, 20_000 * $duration);
 
 open our $io, ">", $bigfile;
 $csv->print ($io, \@fields10) or die "Cannot print ()\n";
 timethese ($line_count, { "print    io" => q{ $csv->print ($io, \@fields10) }});
 close   $io;
 -s $bigfile or die "File is empty!\n";
+my @f = @fields10;
+$csv->can ("bind_columns") and $csv->bind_columns (\(@f));
 open    $io, "<", $bigfile;
 timethese ($line_count, { "getline  io" => q{ my $ref = $csv->getline ($io) }});
 close   $io;
