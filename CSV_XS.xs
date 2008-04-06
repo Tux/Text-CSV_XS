@@ -527,7 +527,7 @@ static int CsvGet (csv_t *csv, SV *src)
 	    : CsvGet (csv, src)))
 
 #if ALLOW_ALLOW
-#define AV_PUSH(sv) {						\
+#define AV_PUSH {						\
     *SvEND (sv) = (char)0;					\
     if (!(f & CSV_FLAGS_QUO) && SvCUR (sv) == 0 && csv->blank_is_undef)	{\
 	if (csv->is_bound)					\
@@ -540,17 +540,15 @@ static int CsvGet (csv_t *csv, SV *src)
 	    strip_trail_whitespace (sv);			\
 	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
-    sv = NULL;							\
     if (csv->keep_meta_info)					\
 	av_push (fflags, newSViv (f));				\
     waitingForField = 1;					\
     f = 0;							\
     }
 #else
-#define AV_PUSH(sv) {					\
+#define AV_PUSH {					\
     *SvEND (sv) = (char)0;				\
     unless (csv->is_bound) av_push (fields, sv);	\
-    sv = NULL;						\
     if (csv->keep_meta_info)				\
 	av_push (fflags, newSViv (f));			\
     waitingForField = 1;				\
@@ -569,9 +567,10 @@ static void strip_trail_whitespace (SV *sv)
     SvCUR_set (sv, len);
     } /* strip_trail_whitespace */
 
-static SV *bound_field (int i)
+static SV *bound_field (csv_t *csv, int i)
 {
-    return (NULL);
+    SV **sr = av_fetch (csv->bound, i, FALSE);
+    return (sr && *sr && SvOK (*sr) && SvROK (*sr) ? *sr : NULL);
     } /* bound_field */
 
 static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
@@ -605,10 +604,13 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	    if (waitingForField) {
-		SV* sv;
-
-		if (csv->is_bound)
-		    sv = bound_field (fnum++);
+		if (csv->is_bound) {
+		    if (fnum >= csv->is_bound) {
+			(void)SetDiag (csv, 3006);
+			return FALSE;
+			}
+		    sv = bound_field (csv, fnum++);
+		    }
 #if ALLOW_ALLOW
 		if (csv->blank_is_undef) {
 		    if (csv->is_bound)
@@ -632,7 +634,7 @@ restart:
 	    if (f & CSV_FLAGS_QUO)
 		CSV_PUT_SV (sv, c)
 	    else {
-		AV_PUSH (sv);
+		AV_PUSH;
 		}
 	    } /* SEP char */
 	else
@@ -642,13 +644,28 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl);
 #endif
 	    if (waitingForField) {
+		if (csv->is_bound) {
+		    if (fnum >= csv->is_bound) {
+			(void)SetDiag (csv, 3006);
+			return FALSE;
+			}
+		    sv = bound_field (csv, fnum++);
+		    }
 #if ALLOW_ALLOW
-		if (csv->blank_is_undef)
-		    av_push (fields, &PL_sv_undef);
-		else
+		if (csv->blank_is_undef) {
+		    if (csv->is_bound)
+			sv_setpvn (sv, NULL, 0);
+		    else
+			av_push (fields, &PL_sv_undef);
+		    }
+		else {
 #endif
-		    av_push (fields, newSVpv ("", 0));
+		    if (csv->is_bound)
+			sv_setpvn (sv, "", 0);
+		    else
+			av_push (fields, newSVpv ("", 0));
 #if ALLOW_ALLOW
+		    }
 		if (csv->keep_meta_info)
 		    av_push (fflags, newSViv (f));
 #endif
@@ -673,7 +690,7 @@ restart:
 		}
 #endif
 	    else {
-		AV_PUSH (sv);
+		AV_PUSH;
 		return TRUE;
 		}
 	    } /* CH_NL */
@@ -698,7 +715,15 @@ restart:
 		c2 = CSV_GET;
 
 		if (c2 == EOF) {
-		    sv = newSVpv ("", 0);
+		    if (csv->is_bound) {
+			if (fnum >= csv->is_bound) {
+			    (void)SetDiag (csv, 3006);
+			    return FALSE;
+			    }
+			sv = bound_field (csv, fnum++);
+			}
+		    else
+			sv = newSVpv ("", 0);
 		    waitingForField = 0;
 		    c = EOF;
 		    goto restart;
@@ -723,14 +748,14 @@ restart:
 		int	c2;
 
 		if (csv->eol_is_cr) {
-		    AV_PUSH (sv);
+		    AV_PUSH;
 		    return TRUE;
 		    }
 
 		c2 = CSV_GET;
 
 		if (c2 == CH_NL) {
-		    AV_PUSH (sv);
+		    AV_PUSH;
 		    return TRUE;
 		    }
 
@@ -744,7 +769,15 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	    if (waitingForField) {
-		sv = newSVpv ("", 0);
+		if (csv->is_bound) {
+		    if (fnum >= csv->is_bound) {
+			(void)SetDiag (csv, 3006);
+			return FALSE;
+			}
+		    sv = bound_field (csv, fnum++);
+		    }
+		else
+		    sv = newSVpv ("", 0);
 		f |= CSV_FLAGS_QUO;
 		waitingForField = 0;
 		}
@@ -754,7 +787,7 @@ restart:
 
 		if (!csv->escape_char || c != csv->escape_char) {
 		    /* Field is terminated */
-		    AV_PUSH (sv);
+		    AV_PUSH;
 		    c2 = CSV_GET;
 
 #if ALLOW_ALLOW
@@ -803,13 +836,12 @@ restart:
 #endif
 
 		if (c2 == EOF) {
-		    AV_PUSH (sv);
+		    AV_PUSH;
 		    return TRUE;
 		    }
 
 		if (c2 == csv->sep_char) {
-		    AV_PUSH (sv);
-		    waitingForField = 1;
+		    AV_PUSH;
 		    }
 		else
 		if (c2 == '0')
@@ -819,7 +851,7 @@ restart:
 		    CSV_PUT_SV (sv, c2)
 		else
 		if (c2 == CH_NL) {
-		    AV_PUSH (sv);
+		    AV_PUSH;
 		    return TRUE;
 		    }
 
@@ -828,14 +860,14 @@ restart:
 			int	c3;
 
 			if (csv->eol_is_cr) {
-			    AV_PUSH (sv);
+			    AV_PUSH;
 			    return TRUE;
 			    }
 
 			c3 = CSV_GET;
 
 			if (c3 == CH_NL) {
-			    AV_PUSH (sv);
+			    AV_PUSH;
 			    return TRUE;
 			    }
 			}
@@ -957,12 +989,20 @@ restart:
     if (waitingForField) {
 	if (seenSomething) {
 #if ALLOW_ALLOW
-	    if (csv->blank_is_undef)
-		av_push (fields, &PL_sv_undef);
-	    else
+	    if (csv->blank_is_undef) {
+		if (csv->is_bound)
+		    sv_setpvn (sv, NULL, 0);
+		else
+		    av_push (fields, &PL_sv_undef);
+		}
+	    else {
 #endif
-		av_push (fields, newSVpv ("", 0));
+		if (csv->is_bound)
+		    sv_setpvn (sv, "", 0);
+		else
+		    av_push (fields, newSVpv ("", 0));
 #if ALLOW_ALLOW
+		}
 	    if (csv->keep_meta_info)
 		av_push (fflags, newSViv (f));
 #endif
@@ -979,8 +1019,8 @@ restart:
 	ERROR_INSIDE_QUOTES (2027);
 	}
     else
-    if (sv)
-	AV_PUSH (sv);
+    if (seenSomething)
+	AV_PUSH;
     return TRUE;
     } /* Parse */
 
