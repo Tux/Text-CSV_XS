@@ -13,3 +13,5 @@ MANIFEST.SKIP
 pm_to_blib
 sandbox/
 .releaserc
+^xx
+META.yml
