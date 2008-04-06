@@ -15,3 +15,4 @@ Text
 *.gcno
 Text-CSV_XS*
 xx*
+.releaserc
