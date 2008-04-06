@@ -427,7 +427,7 @@ sub bind_columns
 	croak ($self->SetDiag (3004));
 
     $self->_set_attr ("_is_bound", scalar @refs);
-    $self->{_COLUMN_NAMES} = [ @refs ];
+    $self->{_BOUND_COLUMNS} = [ @refs ];
     @refs;
     } # column_names
 

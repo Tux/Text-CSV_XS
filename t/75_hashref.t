@@ -54,7 +54,7 @@ while (my $hr = $csv->getline_hr (*FH)) {
     }
 close FH;
 
-my ($code, $name, $price, $desc);
+my ($code, $name, $price, $desc) = (1..4);
 is ($csv->bind_columns (), undef,		"No bound columns yet");
 eval { $csv->bind_columns (\$code) };
 is ($csv->error_diag () + 0, 3003,		"Arg cound mismatch");
@@ -63,21 +63,20 @@ is ($csv->error_diag () + 0, 3004,		"bad arg types");
 is ($csv->column_names (undef), undef,		"reset column_names");
 eval { $csv->bind_columns ((\$code) x 300) };
 is ($csv->error_diag () + 0, 3005,		"too many args");
-ok ($csv->bind_columns (\($code, $name, $price, $desc)), "Bind columns");
+ok ($csv->bind_columns (\($code, $name, $price)), "Bind columns");
 
 eval { $csv->column_names ("foo") };
 is ($csv->error_diag () + 0, 3003,		"Arg cound mismatch");
+$csv->bind_columns (undef);
 
 open  FH, "<_test.csv";
-ok ($row = $csv->getline (*FH),		"getline headers");
-ok ($csv->column_names ($row),		"column_names from array_ref");
+ok ($row = $csv->getline (*FH),			"getline headers");
+ok ($csv->bind_columns (\($code, $name, $price, $desc)), "Bind columns");
+ok ($csv->column_names ($row),			"column_names from array_ref");
 is_deeply ([ $csv->column_names ], [ @$row ],	"Keys set");
-while ($csv->getline (*FH)) {
-    #ok (defined $code,				"Code is defined");
-    #like ($code, qr/^[0-9]+$/,			"Code is numeric");
-    #ok (defined $name,				"Name is defined");
-    #like ($name, qr/^[A-Z][a-z]+$/,		"Name");
-    }
+my @row = $csv->getline (*FH);
 close FH;
+use Data::Dumper; $Data::Dumper::Sortkeys = 1;
+print STDERR Dumper $csv,\@row, \$code, \$name, \$price, \$desc;
 
 unlink "_test.csv";

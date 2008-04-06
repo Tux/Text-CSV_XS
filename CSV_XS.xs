@@ -92,7 +92,7 @@ typedef struct {
     byte	 cache[CACHE_SIZE];
 
     HV*		 self;
-    AV*		 bound;
+    SV*		 bound;
 
     char	*eol;
     STRLEN	 eol_len;
@@ -315,7 +315,7 @@ static void SetupCsv (csv_t *csv, HV *self)
 
     if (csv->is_bound) {
 	if ((svp = hv_fetchs (self, "_BOUND_COLUMNS", FALSE)) && _is_arrayref (*svp))
-	    csv->bound = (AV *)(*svp);
+	    csv->bound = *svp;
 	else
 	    csv->is_bound = 0;
 	}
@@ -569,8 +569,16 @@ static void strip_trail_whitespace (SV *sv)
 
 static SV *bound_field (csv_t *csv, int i)
 {
-    SV **sr = av_fetch (csv->bound, i, FALSE);
-    return (sr && *sr && SvOK (*sr) && SvROK (*sr) ? *sr : NULL);
+    SV *sv = csv->bound;
+    AV *av;
+
+    unless (sv && SvROK (sv)) return (NULL);
+    av = (AV *)(SvRV (sv));
+    sv = *av_fetch (av, i, FALSE);
+    unless (sv && SvROK (sv)) return (NULL);
+    sv = SvRV (sv);
+    sv_setpvn (sv, "", 0);
+    return (sv);
     } /* bound_field */
 
 static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
@@ -954,7 +962,15 @@ restart:
 		    }
 #endif
 
-		sv = newSVpv ("", 0);
+		if (csv->is_bound) {
+		    if (fnum >= csv->is_bound) {
+			(void)SetDiag (csv, 3006);
+			return FALSE;
+			}
+		    sv = bound_field (csv, fnum++);
+		    }
+		else
+		    sv = newSVpv ("", 0);
 		waitingForField = 0;
 		goto restart;
 		}
