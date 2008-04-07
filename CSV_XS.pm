@@ -491,6 +491,7 @@ Text::CSV_XS - comma-separated values manipulation routines
  $colref = $csv->getline ($io);        # Read a line from file $io,
                                        # parse it and return an array
                                        # ref of fields
+ $csv->bind_columns (@refs);           # Set return fields for getline ()
  $csv->column_names (@names);          # Set column names for getline_hr ()
  $ref = $csv->getline_hr ($io);        # getline (), but returns a hashref
  $eof = $csv->eof ();                  # Indicate if last parse or
