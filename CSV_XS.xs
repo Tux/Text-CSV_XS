@@ -151,6 +151,8 @@ xs_error_t xs_errors[] =  {
     { 3004, "EHR - bind_columns () only accepts refs to scalars"		},
     { 3005, "EHR - bind_columns () takes 254 refs max"				},
     { 3006, "EHR - bind_columns () did not pass enough refs for parsed fields"	},
+    { 3007, "EHR - bind_columns needs refs to writeable scalars"		},
+    { 3008, "EHR - unexpected error in bound fields"				},
 
     {    0, "" },
     };
@@ -570,26 +572,35 @@ static SV *bound_field (csv_t *csv, int i)
     SV *sv = csv->bound;
     AV *av;
 
-    unless (sv && SvROK (sv)) return (NULL);
-    av = (AV *)(SvRV (sv));
-    sv = *av_fetch (av, i, FALSE);
-    unless (sv && SvROK (sv)) return (NULL);
-    sv = SvRV (sv);
-    sv_setpvn (sv, "", 0);
-    return (sv);
+    /* fprintf (stderr, "# New bind %d/%d\n", i, csv->is_bound);\ */
+    if (i >= csv->is_bound) {
+	(void)SetDiag (csv, 3006);
+	return (NULL);
+	}
+
+    if (sv && SvROK (sv)) {
+	av = (AV *)(SvRV (sv));
+	/* fprintf (stderr, "# Bind %d/%d/%d\n", i, csv->is_bound, av_len (av)); */
+	sv = *av_fetch (av, i, FALSE);
+	if (sv && SvROK (sv)) {
+	    sv = SvRV (sv);
+	    unless (SvREADONLY (sv)) {
+		sv_setpvn (sv, "", 0);
+		return (sv);
+		}
+	    }
+	}
+    SetDiag (csv, 3008);
+    return (NULL);
     } /* bound_field */
 
 #define NewField				\
     unless (sv) {				\
-	if (csv->is_bound) {			\
-	    if (fnum >= csv->is_bound) {	\
-		(void)SetDiag (csv, 3006);	\
-		return FALSE;			\
-		}				\
+	if (csv->is_bound)			\
 	    sv = bound_field (csv, fnum++);	\
-	    }					\
 	else					\
 	    sv = newSVpvs ("");			\
+	unless (sv) return FALSE;		\
 	f = 0;					\
 	}
 
@@ -978,12 +989,11 @@ restart:
 	    if (csv->keep_meta_info)
 		av_push (fflags, newSViv (f));
 #endif
+	    return TRUE;
 	    }
-	else {
-	    if (csv->useIO) {
-		(void)SetDiag (csv, 2012);
-		return FALSE;
-		}
+	if (csv->useIO) {
+	    (void)SetDiag (csv, 2012);
+	    return FALSE;
 	    }
 	}
     else

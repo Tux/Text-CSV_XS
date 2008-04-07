@@ -126,7 +126,7 @@ sub _set_attr
     $self->{$name} = $val;
     $self->{_CACHE} or return;
     my @cache = unpack "C*", $self->{_CACHE};
-    $cache[$_cache_id{$name}] = defined $val ? ord $val : 0;
+    $cache[$_cache_id{$name}] = defined $val ? unpack "C", $val : 0;
     $self->{_CACHE} = pack "C*", @cache;
     } # _set_attr
 
@@ -169,7 +169,7 @@ sub eol
 	    $cache[$_cache_id{eol_is_cr}] = 0;
 	    }
 	$eol .= "\0\0\0\0\0\0\0\0";
-	$cache[$_cache_id{eol} + $_] = ord substr $eol, $_, 1 for 0 .. 7;
+	$cache[$_cache_id{eol} + $_] = unpack "C", substr $eol, $_, 1 for 0 .. 7;
 	$self->{_CACHE} = pack "C*", @cache;
 	}
     $self->{eol};
@@ -402,7 +402,7 @@ sub column_names
 	croak ($self->SetDiag (3001));
 	}
 
-    $self->{_is_bound} && @keys != $self->{_is_bound} and
+    $self->{_is_bound} && @keys != unpack "C", $self->{_is_bound} and
 	croak ($self->SetDiag (3003));
 
     $self->{_COLUMN_NAMES} = [ @keys ];
@@ -413,7 +413,7 @@ sub bind_columns
 {
     my ($self, @refs) = @_;
     @refs or
-	return defined $self->{_BOUND_COLUMNS} ? @{$self->{_CBOUND_COLUMNS}} : undef;
+	return defined $self->{_BOUND_COLUMNS} ? @{$self->{_BOUND_COLUMNS}} : undef;
 
     @refs == 1 && ! defined $refs[0] and
 	return $self->{_BOUND_COLUMNS} = undef;
@@ -426,7 +426,7 @@ sub bind_columns
     join "", map { ref $_ eq "SCALAR" ? "" : "*" } @refs and
 	croak ($self->SetDiag (3004));
 
-    $self->_set_attr ("_is_bound", scalar @refs);
+    $self->_set_attr ("_is_bound", pack "C" => scalar @refs);
     $self->{_BOUND_COLUMNS} = [ @refs ];
     @refs;
     } # column_names
@@ -1398,6 +1398,18 @@ got it when you get it.
 =item 3001 "EHR - Unsupported syntax for column_names ()"
 
 =item 3002 "EHR - getline_hr () called before column_names ()"
+
+=item 3003 "EHR - bind_columns () and column_names () fields count mismatch"
+
+=item 3004 "EHR - bind_columns () only accepts refs to scalars"
+
+=item 3005 "EHR - bind_columns () takes 254 refs max"
+
+=item 3006 "EHR - bind_columns () did not pass enough refs for parsed fields"
+
+=item 3007 "EHR - bind_columns needs refs to writeable scalars"
+
+=item 3008 "EHR - unexpected error in bound fields
 
 =back
 

@@ -3,8 +3,8 @@
 use strict;
 $^W = 1;
 
- use Test::More "no_plan";
-#use Test::More tests => 31;
+#use Test::More "no_plan";
+ use Test::More tests => 62;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -17,6 +17,7 @@ code,name,price,description
 1,Dress,240.00,"Evening gown"
 2,Drinks,82.78,"Drinks"
 3,Sex,-9999.99,"Priceless"
+4,Hackathon,0,"QA Hackathon Oslo 2008"
 EOC
 close FH;
 
@@ -26,10 +27,15 @@ is ($csv->column_names, undef,		"No headers yet");
 foreach my $args ([\1], ["foo", \1], [{ 1 => 2 }]) {
     eval { $csv->column_names (@$args) };
     like ($@, qr/^EHR/, "croak");
-    is ($csv->error_diag () + 0, 3001, "Bad args to column_names");
+    is ($csv->error_diag () + 0, 3001,	"Bad args to column_names");
     }
 
-is ($csv->column_names (undef), undef, "reset column_names");
+ok ($csv->column_names ("name"),	"One single name");
+is ($csv->column_names (undef), undef,	"reset column_names");
+eval { $csv->column_names (\undef) };
+is ($csv->error_diag () + 0, 3001, "No hash please");
+eval { $csv->column_names ({ 1 => 2 }) };
+is ($csv->error_diag () + 0, 3001, "No hash please");
 
 my $hr;
 eval { $hr = $csv->getline_hr (*FH) };
@@ -68,18 +74,38 @@ ok ($csv->bind_columns (\($code, $name, $price)), "Bind columns");
 eval { $csv->column_names ("foo") };
 is ($csv->error_diag () + 0, 3003,		"Arg cound mismatch");
 $csv->bind_columns (undef);
+eval { $csv->bind_columns ([undef]) };
+is ($csv->error_diag () + 0, 3004,		"legal header defenition");
 
+my @bcr = \($code, $name, $price, $desc);
 open  FH, "<_test.csv";
 ok ($row = $csv->getline (*FH),			"getline headers");
-ok ($csv->bind_columns (\($code, $name, $price, $desc)), "Bind columns");
+ok ($csv->bind_columns (@bcr),			"Bind columns");
 ok ($csv->column_names ($row),			"column_names from array_ref");
 is_deeply ([ $csv->column_names ], [ @$row ],	"Keys set");
 my @row = $csv->getline (*FH);
-close FH;
 
-# TODO tests
-# fetch with too many binds
-# fetch with not enough binds
-# fetch with references to constants and/or undefineds
+is_deeply ([ $csv->bind_columns ], [ @bcr ],	"check refs");
+is_deeply ([ @row ], [ [] ],	"return from getline with bind_columns");
+
+is ($csv->column_names (undef), undef,		"reset column headers");
+is ($csv->bind_columns (undef), undef,		"reset bound columns");
+
+my $foo;
+ok ($csv->bind_columns (@bcr, \$foo),		"bind too many columns");
+($code, $name, $price, $desc, $foo) = (101 .. 105);
+ok ($csv->getline (*FH),			"fetch less than expected");
+is_deeply ( [ $code, $name, $price, $desc, $foo ],
+	    [ 2, "Drinks", "82.78", "Drinks", 105 ],		"unfetched not reset");
+
+ok ($csv->bind_columns (\1, \2, \3, \""),	"bind too many columns");
+is ($csv->getline (*FH), undef,			"fetch to read-only ref");
+is ($csv->error_diag () + 0, 3008,		"Read-only");
+
+ok ($csv->bind_columns (\$code),		"bind not enough columns");
+eval { $row = $csv->getline (*FH) };
+is ($csv->error_diag () + 0, 3006,		"cannot read all fields");
+
+close FH;
 
 unlink "_test.csv";
