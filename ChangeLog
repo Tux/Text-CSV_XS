@@ -11,8 +11,8 @@
 	* Testcase for error 2023 (Michael P Randall)
 	* Completely refactored the XS part of parse/getline, which
 	  is now up to 6% faster. YMMV
-	* Completed bind_columns. On straight fetches now three times
-	  as fast as normal fetches (both using getline ())
+	* Completed bind_columns. On straight fetches now up to three
+	  times as fast as normal fetches (both using getline ())
 
 2008-03-11  0.37 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

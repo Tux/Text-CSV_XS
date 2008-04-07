@@ -949,7 +949,14 @@ C<column_names ()> croaks on invalid arguments.
 =head2 bind_columns
 
 Takes a list of references to scalars (max 255) to store the fields fetched
-C<by getline_hr ()> in.
+C<by getline_hr ()> in. When you don't pass enough references to store the
+fetched fields in, C<getline ()> will fail. If you pass more than there are
+fields to return, the remaining references are left untouched.
+
+  $csv->bind_columns (\$code, \$name, \$price, \$description);
+  while ($csv->getline ()) {
+      print "The price of a $name is \x{20ac} $price\n";
+      }
 
 =head2 eof
 
@@ -1214,17 +1221,6 @@ then behaves transparently (but slower), something like this:
         encoding_out => "cp1252",     # Only the output
         });
 
-=item bind_columns ()
-
-With the new column_names (), it would be nice to do a DBI like
-bind_columns () so fields are stored in the same scalar over and over
-again, instead of creating a new scalar on parsing for every field line
-after line again.
-
-This *could* mean a big speed gain, but otoh it could also slow down
-regular parses. If the gain is high enough, compared to the speed loss,
-this could then be propagated to be the `standard' way of parsing.
-
 =item Double double quotes
 
 There seem to be applications around that write their dates like
@@ -1270,6 +1266,7 @@ No guarantees, but this is what I have in mind right now:
 
 =item next
 
+ - This might very well be 1.00
  - DIAGNOSTICS setction in pod to *describe* the errors (see below)
  - croak / carp
 
