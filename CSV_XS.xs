@@ -1,4 +1,4 @@
-/*  Copyright (c) 2007-2007 H.Merijn Brand.  All rights reserved.
+/*  Copyright (c) 2007-2008 H.Merijn Brand.  All rights reserved.
  *  Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
  *  This program is free software; you can redistribute it and/or
  *  modify it under the same terms as Perl itself.
@@ -693,7 +693,7 @@ restart:
 	    if (csv->verbatim) {
 		f |= CSV_FLAGS_BIN;
 		unless (csv->binary)
-		    ERROR_INSIDE_FIELD (2030);
+/* uncovered */	    ERROR_INSIDE_FIELD (2030);
 
 		CSV_PUT_SV (sv, c);
 		}
@@ -784,8 +784,8 @@ restart:
 
 #if ALLOW_ALLOW
 		    if (csv->allow_whitespace) {
-			while (c2 == CH_SPACE || c2 == CH_TAB) {
-			    c2 = CSV_GET;
+/* uncovered */		while (c2 == CH_SPACE || c2 == CH_TAB) {
+/* uncovered */		    c2 = CSV_GET;
 			    }
 			}
 #endif
@@ -800,11 +800,11 @@ restart:
 			int	c3;
 
 			if (csv->eol_is_cr)
-			    return TRUE;
+/* uncovered */		    return TRUE;
 
 			c3 = CSV_GET;
 			if (c3 == CH_NL)
-			    return TRUE;
+/* uncovered */		    return TRUE;
 
 			ParseError (csv, 2010);
 			return FALSE;
@@ -866,11 +866,11 @@ restart:
 #if ALLOW_ALLOW
 		    if (csv->allow_whitespace) {
 			while (c2 == CH_SPACE || c2 == CH_TAB) {
-			    c2 = CSV_GET;
+/* uncovered */		    c2 = CSV_GET;
 			    }
 			if (c2 == csv->sep_char || c2 == EOF) {
-			    c = c2;
-			    goto restart;
+/* uncovered */		    c = c2;
+/* uncovered */		    goto restart;
 			    }
 			}
 #endif
@@ -927,7 +927,7 @@ restart:
 		CSV_PUT_SV (sv, c2);
 		}
 	    else
-		ERROR_INSIDE_FIELD (2036); /* I think there's no way to get here */
+/* uncovered */	ERROR_INSIDE_FIELD (2036); /* I think there's no way to get here */
 	    } /* ESC char */
 	else {
 #if MAINT_DEBUG > 1

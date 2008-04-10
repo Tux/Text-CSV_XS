@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.40";
+$VERSION = "0.41";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -267,7 +267,7 @@ sub error_input
 sub error_diag
 {
     my $self = shift;
-    $self && ref $self eq __PACKAGE__ or return $last_new_err;
+    $self && ref $self && $self->isa (__PACKAGE__) or return $last_new_err;
     exists $self->{_ERROR_DIAG} or return;
     my $diag = $self->{_ERROR_DIAG};
     my $context = wantarray;
@@ -950,7 +950,7 @@ C<column_names ()> croaks on invalid arguments.
 =head2 bind_columns
 
 Takes a list of references to scalars (max 255) to store the fields fetched
-C<by getline_hr ()> in. When you don't pass enough references to store the
+C<getline ()> in. When you don't pass enough references to store the
 fetched fields in, C<getline ()> will fail. If you pass more than there are
 fields to return, the remaining references are left untouched.
 
