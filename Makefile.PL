@@ -2,7 +2,7 @@
 
 # Copyright PROCURA B.V. (c) 2006-2008 H.Merijn Brand
 
-require 5.005;
+require 5.005; # <- also see postamble at the bottom for META.yml
 use strict;
 
 use ExtUtils::MakeMaker;
@@ -59,7 +59,10 @@ sub postamble
 	'	find * -name \*.gcov -exec gcov2perl {} \;',
 	'	cover',
 	'',
-	'tgzdist:	$(DISTVNAME).tar.gz',
+	'fixmeta:	distmeta',
+	'	$(PERL) -pi -e"/^    Config/ and print qq{    perl:                      5.005\n}" */META.yml',
+	'',
+	'tgzdist:	fixmeta $(DISTVNAME).tar.gz',
 	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',
 	'',
 	'test_speed: pure_all',
