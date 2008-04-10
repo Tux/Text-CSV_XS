@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-our $VERSION = "1.4";
+our $VERSION = "1.5";	# 2008-04-10
 
 sub usage
 {
@@ -116,9 +116,7 @@ if ($firstline) {
     $csv->parse ($firstline) or die $csv->error_diag ();
     $row = [ $csv->fields ];
     }
-use Data::Dumper; $Data::Dumper::Sortkeys = 1;
-do {
-    $row && @$row or next;
+while ($row && @$row or $row = $csv->getline (*ARGV)) {
     my @row = @$row;
     @row > $w and push @w, ($wdt) x (($w = @row) - @w);
     foreach my $c (0 .. $#row) {
@@ -158,7 +156,7 @@ do {
 	$wks->write ($h, $c, $val);
 	}
     ++$h % 100 or printf STDERR "%6d x %6d\r", $w, $h;
-    } while ($row = $csv->getline (*ARGV));
+    } continue { $row = undef }
 printf STDERR "%6d x %6d\n", $w, $h;
 
 $wks->set_column ($_, $_, $w[$_]) for 0 .. $#w;
