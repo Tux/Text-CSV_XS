@@ -40,7 +40,7 @@ sub parse_err ($$)
 parse_err 2023, qq{2023,",2008-04-05,"Foo, Bar",\n}; # "
 
 $csv = Text::CSV_XS->new ({ escape_char => "+", eol => "\n" });
-is ($csv->error_diag (), undef,		"No errors yet");
+is ($csv->error_diag (), "",		"No errors yet");
 
 parse_err 2010, qq{"x"\r};
 parse_err 2011, qq{"x"x};
@@ -76,7 +76,7 @@ use Test::More;
 ok (1, "Subclassed");
 
 my $csvs = Text::CSV_XS::Subclass->new ();
-is ($csvs->error_diag (), undef,	"Last failure for new () - OK");
+is ($csvs->error_diag (), "",		"Last failure for new () - OK");
 
 is (Text::CSV_XS::Subclass->new ({ ecs_char => ":" }), undef, "Unsupported option");
 

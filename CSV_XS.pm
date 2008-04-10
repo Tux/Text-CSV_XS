@@ -267,15 +267,20 @@ sub error_input
 sub error_diag
 {
     my $self = shift;
-    $self && ref $self && $self->isa (__PACKAGE__) or return $last_new_err;
-    exists $self->{_ERROR_DIAG} or return;
-    my $diag = $self->{_ERROR_DIAG};
+    my @diag = (0, $last_new_err);
+
+    unless ($self && ref $self) {	# Class method or direct call
+	$last_new_err and $diag[0] = 1000;
+	}
+    elsif ($self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
+	@diag = (0 + $self->{_ERROR_DIAG}, $self->{_ERROR_DIAG});
+	}
     my $context = wantarray;
     unless (defined $context) {	# Void context
-	print STDERR "# CSV_XS ERROR: ", 0 + $diag, " - $diag\n";
+	print STDERR "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
 	return;
 	}
-    return $context ? (0 + $diag, "$diag") : $diag;
+    return $context ? @diag : $diag[1];
     } # error_diag
 
 # string
