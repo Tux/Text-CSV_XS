@@ -83,8 +83,10 @@ my %fmt = (
     );
 
 my ($h, $w, @w) = (0, 1); # data height, -width, and default column widths
-while (<>) {
-    unless ($csv) {
+my $row;
+my $firstline;
+unless ($sep) { # No sep char passed, try to auto-detect;
+    while (<>) {
 	m/\S/ or next;	# Skip empty leading blank lines
 	$sep = # If explicitely set, use it
 	       defined $sep ? $sep :
@@ -100,18 +102,27 @@ while (<>) {
 	    # Yeah I know it should be a ',' (hence Csv), but the majority
 	    # of the csv files to be shown comes from fucking Micky$hit,
 	    # that uses semiColon ';' instead.
-	$csv = Text::CSV_XS-> new ({
-	    sep_char       => $sep,
-	    quote_char     => $quo,
-	    binary         => 1,
-	    keep_meta_info => 1,
-	    });
+	$firstline = $_;
+	last;
 	}
-    $csv->parse ($_);
-    my @row = $csv->fields () or next;
+    }
+$csv = Text::CSV_XS-> new ({
+    sep_char       => $sep,
+    quote_char     => $quo,
+    binary         => 1,
+    keep_meta_info => 1,
+    });
+if ($firstline) {
+    $csv->parse ($firstline) or die $csv->error_diag ();
+    $row = [ $csv->fields ];
+    }
+use Data::Dumper; $Data::Dumper::Sortkeys = 1;
+do {
+    $row && @$row or next;
+    my @row = @$row;
     @row > $w and push @w, ($wdt) x (($w = @row) - @w);
     foreach my $c (0 .. $#row) {
-	my $val = $row[$c];
+	my $val = $row[$c] || "";
 	my $l = length $val;
 	$l > $w[$c] and $w[$c] = $l;
 
@@ -147,7 +158,7 @@ while (<>) {
 	$wks->write ($h, $c, $val);
 	}
     ++$h % 100 or printf STDERR "%6d x %6d\r", $w, $h;
-    }
+    } while ($row = $csv->getline (*ARGV));
 printf STDERR "%6d x %6d\n", $w, $h;
 
 $wks->set_column ($_, $_, $w[$_]) for 0 .. $#w;

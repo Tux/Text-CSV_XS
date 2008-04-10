@@ -1,3 +1,11 @@
+2008-04-10  0.41 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* error_diag () subclassable
+	* typo in bind_columns () docs
+	* examples/csv2xls now uses getline ()
+	* better test for getline in t/75_hashref.t (makamata)
+	* document return value of getline () with bind_columns ()
+
 2008-04-07  0.40 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Implemented getline_hr () and column_names () RT 34474

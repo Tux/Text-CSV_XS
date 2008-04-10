@@ -796,7 +796,7 @@ special when this flag is set, and be dealt with as being ordinary
 binary characters. This will ease working with data with embedded
 newlines.
 
-When C<verbatim> is used with C<getline ()>, getline
+When C<verbatim> is used with C<getline ()>, C<getline ()>
 auto-chomp's every line.
 
 Imagine a file format like
@@ -924,6 +924,9 @@ This is the counterpart to print, like parse is the counterpart to
 combine: It reads a row from the IO object $io using $io->getline ()
 and parses this row into an array ref. This array ref is returned
 by the function or undef for failure.
+
+When fields are bound with C<bind_columns ()>, the return value is a
+reference to an empty list.
 
 The I<$csv-E<gt>string ()>, I<$csv-E<gt>fields ()> and I<$csv-E<gt>status ()>
 methods are meaningless, again.

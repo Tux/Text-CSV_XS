@@ -83,10 +83,10 @@ ok ($row = $csv->getline (*FH),			"getline headers");
 ok ($csv->bind_columns (@bcr),			"Bind columns");
 ok ($csv->column_names ($row),			"column_names from array_ref");
 is_deeply ([ $csv->column_names ], [ @$row ],	"Keys set");
-my @row = $csv->getline (*FH);
 
+$row = $csv->getline (*FH);
 is_deeply ([ $csv->bind_columns ], [ @bcr ],	"check refs");
-is_deeply ([ @row ], [ [] ],	"return from getline with bind_columns");
+is_deeply ($row, [],		"return from getline with bind_columns");
 
 is ($csv->column_names (undef), undef,		"reset column headers");
 is ($csv->bind_columns (undef), undef,		"reset bound columns");
