@@ -277,7 +277,7 @@ sub error_diag
 	}
     my $context = wantarray;
     unless (defined $context) {	# Void context
-	print STDERR "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
+	$diag[0] and print STDERR "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
 	return;
 	}
     return $context ? @diag : $diag[1];
