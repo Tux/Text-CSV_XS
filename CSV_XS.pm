@@ -1084,6 +1084,7 @@ C<combine ()> or C<parse ()>, whichever was called more recently.
 
 =head2 error_diag
 
+ Text::CSV_XS->error_diag ();
  $csv->error_diag ();
  $error_code  = 0  + $csv->error_diag ();
  $error_str   = "" . $csv->error_diag ();
@@ -1101,6 +1102,9 @@ message in that order.
 If called in scalar context, it will return the diagnostics in a single
 scalar, a-la $!. It will contain the error code in numeric context, and
 the diagnostics message in string context.
+
+When called as a class method or a direct function call, the error diag
+is that of the last C<new ()> call.
 
 =head1 INTERNALS
 
