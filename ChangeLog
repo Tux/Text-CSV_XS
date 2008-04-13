@@ -1,3 +1,7 @@
+2008-04-13  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Generate META.yml myself. I won't use Build.PL
+
 2008-04-11  0.41 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* error_diag () subclassable

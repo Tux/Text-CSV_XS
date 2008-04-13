@@ -60,7 +60,7 @@ sub postamble
 	'	cover',
 	'',
 	'fixmeta:	distmeta',
-	'	$(PERL) -pi -e"/^    Config/ and print qq{    perl:                      5.005\n}" */META.yml',
+	'	perl genMETA.pl',
 	'',
 	'tgzdist:	fixmeta $(DISTVNAME).tar.gz',
 	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',

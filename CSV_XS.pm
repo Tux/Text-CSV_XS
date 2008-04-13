@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.41";
+$VERSION = "0.42";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
