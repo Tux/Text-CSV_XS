@@ -1143,7 +1143,7 @@ print (self, io, fields)
 
     CSV_XS_SELF;
     unless (_is_arrayref (fields))
-      croak ("Expected fields to be an array ref");
+	croak ("Expected fields to be an array ref");
 
     av = (AV*)SvRV (fields);
 
