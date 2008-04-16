@@ -56,8 +56,9 @@
 
 #define unless(expr)	if (!(expr))
 
-#define _is_arrayref(f) \
-    ( f && SvOK (f) && SvROK (f) && SvTYPE (SvRV (f)) == SVt_PVAV )
+#define _is_arrayref(f) ( f && \
+     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
+      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVAV )
 
 #define CSV_XS_SELF					\
     if (!self || !SvOK (self) || !SvROK (self) ||	\
