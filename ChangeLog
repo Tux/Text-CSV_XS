@@ -1,6 +1,8 @@
-2008-04-13  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-04-16  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Generate META.yml myself. I won't use Build.PL
+	* Array-refs now accept scalars with magic:
+	  $csv->print (*STDOUT, $sth->{NAME_lc});
 
 2008-04-11  0.41 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
