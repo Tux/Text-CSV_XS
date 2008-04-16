@@ -1130,8 +1130,6 @@ as the API may change in future releases.
 
 An example for creating CSV files:
 
-  use Text::CSV_XS;
-
   my $csv = Text::CSV_XS->new;
 
   open my $csv_fh, ">", "hello.csv" or die "hello.csv: $!";
@@ -1149,9 +1147,7 @@ An example for creating CSV files:
       }
   close $csv_fh;
 
-An example for parsing CSV lines:
-
-  use Text::CSV_XS;
+An example for parsing CSV strings:
 
   my $csv = Text::CSV_XS->new ({ keep_meta_info => 1, binary => 1 });
 
@@ -1169,6 +1165,27 @@ An example for parsing CSV lines:
       print STDERR "parse () failed on argument: ", $err, "\n";
       $csv->error_diag ();
       }
+
+Dumping the content of a database ($dbh) table ($tbl) to CSV:
+
+  my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
+  open my $fh, ">", "$tbl.csv" or die "$tbl.csv: $!";
+  my $sth = $dbh->prepare ("select * from $tbl");
+  $sth->execute;
+  $csv->print ($fh, $sth->{NAME_lc});
+  while (my $row = $sth->fetch) {
+      $csv->print ($fh, $row);
+      }
+  close $fh;
+
+Reading a CSV file line by line:
+
+  my $csv = Text::CSV_XS->new ({ binary => 1 });
+  open my $fh, "<", "file.csv" or die "file.csv: $!";
+  while (my $row = $csv->getline ($fh)) {
+      # do something with @$row
+      }
+  close $fh;
 
 =head1 TODO
 

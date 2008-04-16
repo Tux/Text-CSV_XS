@@ -3,6 +3,8 @@
 	* Generate META.yml myself. I won't use Build.PL
 	* Array-refs now accept scalars with magic:
 	  $csv->print (*STDOUT, $sth->{NAME_lc});
+	* More/better examples
+	* Added t/76_magic.t
 
 2008-04-11  0.41 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

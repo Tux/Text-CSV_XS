@@ -43,6 +43,7 @@ build_requires:
     Config:        0
     Test::Harness: 0
     Test::More:    0
+    Tie::Scalar:   0
 resources:
     license:       http://dev.perl.org/licenses/
 meta-spec:
