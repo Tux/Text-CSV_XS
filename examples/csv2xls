@@ -88,9 +88,7 @@ my $firstline;
 unless ($sep) { # No sep char passed, try to auto-detect;
     while (<>) {
 	m/\S/ or next;	# Skip empty leading blank lines
-	$sep = # If explicitely set, use it
-	       defined $sep ? $sep :
-	       # otherwise start auto-detect with quoted strings
+	$sep = # start auto-detect with quoted strings
 	       m/["\d];["\d;]/  ? ";"  :
 	       m/["\d],["\d,]/  ? ","  :
 	       m/["\d]\t["\d,]/ ? "\t" :
