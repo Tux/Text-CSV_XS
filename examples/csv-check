@@ -68,7 +68,9 @@ sub done
 	print "    sep = <$sep>, quo = <$quo>, bin = <$bin>\n";
 	exit 0;
 	}
-    print "$ARGV line $. - $diag[1]\n";
+    my $loc = $.;
+    $diag[2] and $loc .= "/$diag[2]";
+    print "$ARGV line $loc - $diag[1]\n";
     exit $diag[0];
     } # done
 

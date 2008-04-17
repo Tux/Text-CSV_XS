@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.42";
+$VERSION = "0.43";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -267,13 +267,14 @@ sub error_input
 sub error_diag
 {
     my $self = shift;
-    my @diag = (0, $last_new_err);
+    my @diag = (0, $last_new_err, 0);
 
     unless ($self && ref $self) {	# Class method or direct call
 	$last_new_err and $diag[0] = 1000;
 	}
     elsif ($self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	@diag = (0 + $self->{_ERROR_DIAG}, $self->{_ERROR_DIAG});
+	exists $self->{_ERROR_POS} and $diag[2] = 1 + $self->{_ERROR_POS};
 	}
     my $context = wantarray;
     unless (defined $context) {	# Void context
@@ -1089,9 +1090,9 @@ C<combine ()> or C<parse ()>, whichever was called more recently.
 
  Text::CSV_XS->error_diag ();
  $csv->error_diag ();
- $error_code  = 0  + $csv->error_diag ();
- $error_str   = "" . $csv->error_diag ();
- ($cde, $str) =      $csv->error_diag ();
+ $error_code   = 0  + $csv->error_diag ();
+ $error_str    = "" . $csv->error_diag ();
+ ($cde, $str, $pos) = $csv->error_diag ();
 
 If (and only if) an error occured, this function returns the diagnostics
 of that error.
@@ -1100,7 +1101,9 @@ If called in void context, it will print the internal error code and the
 associated error message to STDERR.
 
 If called in list context, it will return the error code and the error
-message in that order.
+message in that order. If the last error was from parsing, the third
+value returned is the best guess at the location within the line that was
+being parsed. It's value is 1-based.
 
 If called in scalar context, it will return the diagnostics in a single
 scalar, a-la $!. It will contain the error code in numeric context, and
@@ -1186,6 +1189,9 @@ Reading a CSV file line by line:
       # do something with @$row
       }
   close $fh;
+
+For more extended examples, see the C<examples/> subdirectory in the
+original distribution.
 
 =head1 TODO
 

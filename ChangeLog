@@ -1,3 +1,7 @@
+2008-04-17  0.43 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* parse errors try to remember failing position
+
 2008-04-16  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Generate META.yml myself. I won't use Build.PL

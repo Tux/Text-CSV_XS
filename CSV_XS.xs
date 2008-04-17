@@ -450,8 +450,9 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 #if MAINT_DEBUG
 static char str_parsed[40];
 #endif
-static void ParseError (csv_t *csv, int xse)
+static void ParseError (csv_t *csv, int xse, int pos)
 {
+    hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
     if (csv->tmp) {
 	if (hv_store (csv->self, "_ERROR_INPUT", 12, csv->tmp, 0))
 	    SvREFCNT_inc (csv->tmp);
@@ -507,12 +508,12 @@ static int CsvGet (csv_t *csv, SV *src)
 
 #define ERROR_INSIDE_QUOTES(diag_code) {	\
     SvREFCNT_dec (sv);				\
-    ParseError (csv, diag_code);		\
+    ParseError (csv, diag_code, spl);		\
     return FALSE;				\
     }
 #define ERROR_INSIDE_FIELD(diag_code) {		\
     SvREFCNT_dec (sv);				\
-    ParseError (csv, diag_code);		\
+    ParseError (csv, diag_code, spl);		\
     return FALSE;				\
     }
 
@@ -615,8 +616,8 @@ static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
     STRLEN	 len;
     int		 seenSomething		= FALSE;
     int		 fnum			= 0;
-#if MAINT_DEBUG
     int		 spl			= -1;
+#if MAINT_DEBUG
     memset (str_parsed, 0, 40);
 #endif
 
@@ -630,8 +631,9 @@ static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
 	NewField;
 
 	seenSomething = TRUE;
+	spl++;
 #if MAINT_DEBUG
-	if (++spl < 39) str_parsed[spl] = c;
+	if (spl < 39) str_parsed[spl] = c;
 #endif
 restart:
 	if (c == csv->sep_char) {
@@ -808,14 +810,14 @@ restart:
 			if (c3 == CH_NL)
 /* uncovered */		    return TRUE;
 
-			ParseError (csv, 2010);
+			ParseError (csv, 2010, spl);
 			return FALSE;
 			}
 
 		    if (c2 == CH_NL)
 			return TRUE;
 
-		    ParseError (csv, 2011);
+		    ParseError (csv, 2011, spl);
 		    return FALSE;
 		    }
 
