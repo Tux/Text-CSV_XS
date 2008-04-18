@@ -16,3 +16,4 @@ sandbox/
 .releaserc
 ^xx
 META.yml
+valgrind.log

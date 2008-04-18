@@ -37,6 +37,7 @@ my %wm = (
 			 CSV_XS.gcno
 			 CSV_XS.xs.gcov
 			 cover_db
+			 valgrind.log
 			 )
 		      },
     );
