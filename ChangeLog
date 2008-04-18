@@ -1,6 +1,7 @@
-2008-04-17  0.43 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-04-18  0.43 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* parse errors try to remember failing position
+	* used valgrind to test for leaks (also in Makefile.PL)
 
 2008-04-16  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
