@@ -377,11 +377,15 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 
 	if (i > 0)
 	    CSV_PUT (csv, dst, csv->sep_char);
-	if ((svp = av_fetch (fields, i, 0)) && *svp && SvOK (*svp)) {
+	if ((svp = av_fetch (fields, i, 0)) && *svp) {
 	    STRLEN	 len;
-	    char	*ptr = SvPV (*svp, len);
+	    char	*ptr;
 	    int		 quoteMe = csv->always_quote;
 
+	    unless ((SvOK (*svp) || (
+		    (SvMAGICAL (*svp) && (mg_get (*svp), 1) && SvOK (*svp)))
+		    )) continue;
+	    ptr = SvPV (*svp, len);
 	    /* Do we need quoting? We do quote, if the user requested
 	     * (always_quote), if binary or blank characters are found
 	     * and if the string contains quote or escape characters.
@@ -1107,7 +1111,7 @@ Combine (self, dst, fields, useIO)
     AV	*av;
 
     CSV_XS_SELF;
-    av = (AV*)SvRV (fields);
+    av = (AV *)SvRV (fields);
     ST (0) = xsCombine (hv, av, dst, useIO) ? &PL_sv_yes : &PL_sv_undef;
     XSRETURN (1);
     /* XS Combine */

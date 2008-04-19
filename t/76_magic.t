@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 5;
+ use Test::More tests => 7;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -15,6 +15,11 @@ my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" });
 
 my $foo;
 my @foo = ("#", 1..3);
+
+tie $foo, "Foo";
+ok ($csv->combine (@$foo),		"combine () from magic");
+untie $foo;
+is_deeply ([$csv->fields], \@foo,	"column_names ()");
 
 tie $foo, "Foo";
 open  FH, ">_test.csv";
