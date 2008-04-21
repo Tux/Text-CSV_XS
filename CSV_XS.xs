@@ -128,7 +128,7 @@ xs_error_t xs_errors[] =  {
     /*  EIQ - Error Inside Quotes */
     { 2021, "EIQ - NL char inside quotes, binary off"				},
     { 2022, "EIQ - CR char inside quotes, binary off"				},
-    { 2023, "EIQ - QUO ..."							},
+    { 2023, "EIQ - QUO character not allowed"					},
     { 2024, "EIQ - EOF cannot be escaped, not even inside quotes"		},
     { 2025, "EIQ - Loose unescaped escape"					},
     { 2026, "EIQ - Binary character inside quoted field, binary off"		},

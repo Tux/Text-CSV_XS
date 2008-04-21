@@ -1401,8 +1401,8 @@ has been selected with the constructor.
 
 =item 2023 "EIQ - QUO ..."
 
-I have not been able yet to generate this error. Please inform me how you
-got it when you get it.
+Sequences like C<"foo "bar" baz",quux> and C<2023,",2008-04-05,"Foo, Bar",\n>
+will cause this error.
 
 =item 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
 
