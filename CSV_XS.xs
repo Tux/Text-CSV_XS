@@ -182,6 +182,8 @@ static SV *SetDiag (csv_t *csv, int xse)
 	SvIOK_on (err);
 	hv_store (csv->self, "_ERROR_DIAG", 11, err, 0);
 	}
+    if (xse == 0)
+	hv_store (csv->self, "_ERROR_POS",  10, newSViv (0), 0);
     return (err);
     } /* SetDiag */
 
@@ -787,7 +789,6 @@ restart:
 
 		if (!csv->escape_char || c != csv->escape_char) {
 		    /* Field is terminated */
-		    AV_PUSH;
 		    c2 = CSV_GET;
 
 #if ALLOW_ALLOW
@@ -798,28 +799,44 @@ restart:
 			}
 #endif
 
-		    if (c2 == csv->sep_char)
+		    if (c2 == csv->sep_char) {
+			AV_PUSH;
 			continue;
+			}
 
-		    if (c2 == EOF)
+		    if (c2 == EOF) {
+			AV_PUSH;
 			return TRUE;
+			}
 
 		    if (c2 == CH_CR) {
 			int	c3;
 
-			if (csv->eol_is_cr)
+			if (csv->eol_is_cr) {
+			    AV_PUSH;
 /* uncovered */		    return TRUE;
+			    }
 
 			c3 = CSV_GET;
-			if (c3 == CH_NL)
+			if (c3 == CH_NL) {
+			    AV_PUSH;
 /* uncovered */		    return TRUE;
+			    }
 
 			ParseError (csv, 2010, spl);
 			return FALSE;
 			}
 
-		    if (c2 == CH_NL)
+		    if (c2 == CH_NL) {
+			AV_PUSH;
 			return TRUE;
+			}
+
+		    if (csv->allow_loose_quotes) {
+			CSV_PUT_SV (sv, c);
+			c = c2;
+			goto restart;
+			}
 
 		    ParseError (csv, 2011, spl);
 		    return FALSE;
@@ -871,6 +888,12 @@ restart:
 			    return TRUE;
 			    }
 			}
+
+		    if (csv->allow_loose_quotes && csv->escape_char != csv->quote_char) {
+			CSV_PUT_SV (sv, c);
+			c = c2;
+			goto restart;
+			}
 #if ALLOW_ALLOW
 		    if (csv->allow_whitespace) {
 			while (c2 == CH_SPACE || c2 == CH_TAB) {
@@ -882,6 +905,7 @@ restart:
 			    }
 			}
 #endif
+
 		    ERROR_INSIDE_QUOTES (2023);
 		    }
 		}

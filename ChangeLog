@@ -4,6 +4,7 @@
 	* used valgrind to test for leaks (devel-only)
 	* used Test::Valgrind as alternative leak check (devel-only)
 	* improve documentation for error 2023
+	* nailed the loose quotes in quoted fields
 
 2008-04-16  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 803;
+ use Test::More tests => 829;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -38,6 +38,32 @@ ok (1, "Allow unescaped quotes");
 
     #$csv = Text::CSV_XS->new ({ quote_char => '"', escape_char => "=" });
     #ok (!$csv->parse (qq{foo,d'uh"bar}),	"should fail");
+    }
+
+ok (1, "Allow loose quotes inside quoted");
+# Allow unescaped quotes inside a quoted field
+{   my @bad = (
+	# valid, line
+	[ 1, 1, qq{foo,bar,"baz",quux},					],
+	[ 2, 0, qq{rj,bs,"r"jb"s",rjbs},				],
+	[ 3, 0, qq{"some "spaced" quote data",2,3,4},			],
+	[ 4, 1, qq{and an,entirely,quoted,"field"},			],
+	[ 5, 1, qq{and then,"one with ""quoted"" quotes",okay,?},	],
+	);
+
+    for (@bad) {
+	my ($tst, $valid, $bad) = @$_;
+	$csv = Text::CSV_XS->new ();
+	ok ($csv,			"$tst - new (alq => 0)");
+	is ($csv->parse ($bad), $valid,	"$tst - parse () fail");
+
+	$csv->allow_loose_quotes (1);
+	is ($csv->parse ($bad), $valid,	"$tst - parse () fail with lq");
+
+	$csv->escape_char (undef);
+	ok ($csv->parse ($bad),		"$tst - parse () pass");
+	ok (my @f = $csv->fields,	"$tst - fields");
+	}
     }
 
 ok (1, "Allow loose escapes");

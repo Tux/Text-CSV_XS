@@ -725,6 +725,18 @@ would result in a parse error. Though it is still bad practice to
 allow this format, we cannot help there are some vendors that make
 their applications spit out lines styled like this.
 
+In case there is B<really> bad CSV data, like
+
+ 1,"foo "bar" baz",42
+
+or
+
+ 1,""foo bar baz"",42
+
+there is a way to get that parsed, and leave the quotes inside the quoted
+field as-is. This can be achieved by setting C<allow_loose_quotes> B<AND>
+making sure that the C<escape_char> is I<not> equal to C<quote_char>.
+
 =item escape_char
 
 The character used for escaping certain characters inside quoted fields.
@@ -1112,6 +1124,12 @@ the diagnostics message in string context.
 When called as a class method or a direct function call, the error diag
 is that of the last C<new ()> call.
 
+=head2 SetDiag
+
+ $csv->SetDiag (0);
+
+Use to reset the diagnosticts if you are dealing with errors.
+
 =head1 INTERNALS
 
 =over 4
@@ -1119,8 +1137,6 @@ is that of the last C<new ()> call.
 =item Combine (...)
 
 =item Parse (...)
-
-=item SetDiag (...)
 
 =back
 
