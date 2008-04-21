@@ -16,10 +16,13 @@ my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" });
 my $foo;
 my @foo = ("#", 1..3);
 
-tie $foo, "Foo";
-ok ($csv->combine (@$foo),		"combine () from magic");
-untie $foo;
-is_deeply ([$csv->fields], \@foo,	"column_names ()");
+SKIP: {
+    $] < 5.006 and skip "Need perl 5.6.0 or higher for magic here", 2;
+    tie $foo, "Foo";
+    ok ($csv->combine (@$foo),		"combine () from magic");
+    untie $foo;
+    is_deeply ([$csv->fields], \@foo,	"column_names ()");
+    }
 
 tie $foo, "Foo";
 open  FH, ">_test.csv";
