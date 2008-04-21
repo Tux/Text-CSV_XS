@@ -1,0 +1,13 @@
+#!/bin/sh
+
+PERL=$1
+HRNS=$2
+shift ; shift
+
+export PERL_DL_NONLAZY=1
+export PERL_DESTRUCT_LEVEL=2
+
+for t in $@ ; do
+    echo $PERL $t
+    $PERL -MExtUtils::Command::MM -e "$HRNS" -MTest::Valgrind $t
+    done
