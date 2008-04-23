@@ -180,10 +180,12 @@ static SV *SetDiag (csv_t *csv, int xse)
 	sv_upgrade (err, SVt_PVIV);
 	SvIV_set (err, xse);
 	SvIOK_on (err);
-	hv_store (csv->self, "_ERROR_DIAG", 11, err, 0);
+	hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
 	}
-    if (xse == 0)
-	hv_store (csv->self, "_ERROR_POS",  10, newSViv (0), 0);
+    if (xse == 0) {
+	hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
+	hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
+	}
     return (err);
     } /* SetDiag */
 
@@ -514,12 +516,12 @@ static int CsvGet (csv_t *csv, SV *src)
 
 #define ERROR_INSIDE_QUOTES(diag_code) {	\
     SvREFCNT_dec (sv);				\
-    ParseError (csv, diag_code, spl);		\
+    ParseError (csv, diag_code, csv->used - 1);	\
     return FALSE;				\
     }
 #define ERROR_INSIDE_FIELD(diag_code) {		\
     SvREFCNT_dec (sv);				\
-    ParseError (csv, diag_code, spl);		\
+    ParseError (csv, diag_code, csv->used - 1);	\
     return FALSE;				\
     }
 
@@ -745,6 +747,7 @@ restart:
 		    goto restart;
 		    }
 
+		csv->used--;
 		ERROR_INSIDE_FIELD (2031);
 		}
 
@@ -823,7 +826,7 @@ restart:
 /* uncovered */		    return TRUE;
 			    }
 
-			ParseError (csv, 2010, spl);
+			ParseError (csv, 2010, csv->used - 2);
 			return FALSE;
 			}
 
@@ -838,7 +841,7 @@ restart:
 			goto restart;
 			}
 
-		    ParseError (csv, 2011, spl);
+		    ParseError (csv, 2011, csv->used - 1);
 		    return FALSE;
 		    }
 
@@ -906,6 +909,7 @@ restart:
 			}
 #endif
 
+		    csv->used--;
 		    ERROR_INSIDE_QUOTES (2023);
 		    }
 		}
@@ -933,8 +937,10 @@ restart:
 	    if (f & CSV_FLAGS_QUO) {
 		int	c2 = CSV_GET;
 
-		if (c2 == EOF)
+		if (c2 == EOF) {
+		    csv->used--;
 		    ERROR_INSIDE_QUOTES (2024);
+		    }
 
 		if (c2 == '0')
 		    CSV_PUT_SV (sv, 0)
@@ -946,15 +952,19 @@ restart:
 #endif
 		     )
 		    CSV_PUT_SV (sv, c2)
-		else
+		else {
+		    csv->used--;
 		    ERROR_INSIDE_QUOTES (2025);
+		    }
 		}
 	    else
 	    if (sv) {
 		int	c2 = CSV_GET;
 
-		if (c2 == EOF)
+		if (c2 == EOF) {
+		    csv->used--;
 		    ERROR_INSIDE_FIELD (2035);
+		    }
 
 		CSV_PUT_SV (sv, c2);
 		}

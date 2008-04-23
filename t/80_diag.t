@@ -45,7 +45,7 @@ $csv = Text::CSV_XS->new ({ escape_char => "+", eol => "\n" });
 is ($csv->error_diag (), "",		"No errors yet");
 
 parse_err 2010,  3, qq{"x"\r};
-parse_err 2011,  3, qq{"x"x};
+parse_err 2011,  4, qq{"x"x};
 
 parse_err 2021,  2, qq{"\n"};
 parse_err 2022,  2, qq{"\r"};

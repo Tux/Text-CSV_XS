@@ -29,6 +29,11 @@ GetOptions (
 
 use Text::CSV_XS;
 
+if (@ARGV && -f $ARGV[0] && !-s $ARGV[0]) {
+    print STDERR "$ARGV[0] is empty\n";
+    exit 0;
+    }
+
 my ($bin, $rows, %cols, $firstline) = (0, 0);
 unless ($sep) { # No sep char passed, try to auto-detect;
     while (<>) {
@@ -69,8 +74,18 @@ sub done
 	exit 0;
 	}
     my $loc = $.;
-    $diag[2] and $loc .= "/$diag[2]";
-    print "$ARGV line $loc - $diag[1]\n";
+    if ($diag[2]) {
+	print "$ARGV line $loc/$diag[2] - $diag[0] - $diag[1]\n";
+	my $ep  = $diag[2] - 1; # diag[2] is 1-based
+	my $err = $csv->error_input . "         ";
+	substr $err, $ep + 1, 0, "*";
+	substr $err, $ep,     0, "*";
+	($err = substr $err, $ep - 5, 12) =~ s/ +$//;
+	print "    |$err|\n";
+	}
+    else {
+	print "$ARGV line $loc - $diag[1]\n";
+	}
     exit $diag[0];
     } # done
 

@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.43";
+$VERSION = "0.44";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -1114,8 +1114,9 @@ associated error message to STDERR.
 
 If called in list context, it will return the error code and the error
 message in that order. If the last error was from parsing, the third
-value returned is the best guess at the location within the line that was
-being parsed. It's value is 1-based.
+value returned is a best guess at the location within the line that was
+being parsed. It's value is 1-based. See C<examples/csv-check> for how
+this can be used.
 
 If called in scalar context, it will return the diagnostics in a single
 scalar, a-la $!. It will contain the error code in numeric context, and
