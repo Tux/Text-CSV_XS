@@ -17,3 +17,4 @@ Text-CSV_XS*
 xx*
 .releaserc
 valgrind.log
+tmp/*
