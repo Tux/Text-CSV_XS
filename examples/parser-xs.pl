@@ -18,7 +18,7 @@ my $csa = Text::CSV_XS->new ({ binary             => 1,
 			       escape_char        => undef,
 			       });
 
-my $file = @ARGV ? shift : "symbols.csv";
+my $file = @ARGV ? shift : "test.csv";
 open my $fh, "<", $file or die "$file: $!\n";
 
 my %err_eol = map { $_ => 1 } 2010, 2027, 2031, 2032;
