@@ -1274,15 +1274,6 @@ then behaves transparently (but slower), something like this:
         encoding_out => "cp1252",     # Only the output
         });
 
-=item Double double quotes
-
-There seem to be applications around that write their dates like
-
-   1,4,""12/11/2004"",4,1
-
-If we would support that, probably through allow_double_quoted
-Definitely belongs in t/65_allow.t
-
 =item Parse the whole file at once
 
 Implement a new methods that enables the parsing of a complete file

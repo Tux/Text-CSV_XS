@@ -2,6 +2,7 @@
 
 	* Fixed the error position returned as third arg in error_diag ()
 	* Made examples/csv-check use this even more vebose
+	* Removed double-double quote from TODO
 
 2008-04-21  0.43 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
