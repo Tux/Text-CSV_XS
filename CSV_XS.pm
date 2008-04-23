@@ -1208,7 +1208,10 @@ Reading a CSV file line by line:
   close $fh;
 
 For more extended examples, see the C<examples/> subdirectory in the
-original distribution.
+original distribution. Included is C<examples/parser-xs.pl>, that could
+be used to `fix' bad CSV
+
+  perl examples/parser-xs.pl bad.csv >good.csv
 
 =head1 TODO
 

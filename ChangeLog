@@ -3,6 +3,7 @@
 	* Fixed the error position returned as third arg in error_diag ()
 	* Made examples/csv-check use this even more vebose
 	* Removed double-double quote from TODO
+	* Added examples/parse-xs.pl (attempt to fix bad CSV)
 
 2008-04-21  0.43 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
