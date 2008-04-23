@@ -85,6 +85,7 @@ sub postamble
 	'',
 	'tgzdist:	fixmeta $(DISTVNAME).tar.gz',
 	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',
+	'	-@cpants_lint.pl $(DISTVNAME).tgz',
 	'',
 	'test_speed: pure_all',
 	'	PERL_DL_NONLAZY=1 $(FULLPERLRUN) -I"$(INST_LIB)" -I"$(INST_ARCHLIB)" examples/speed.pl',
