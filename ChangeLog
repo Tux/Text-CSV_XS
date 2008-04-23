@@ -1,3 +1,7 @@
+2008-04-23  0.45 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Forgot to pack examples/parser-xs.pl
+
 2008-04-23  0.44 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Fixed the error position returned as third arg in error_diag ()

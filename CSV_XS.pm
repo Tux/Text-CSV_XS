@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.44";
+$VERSION = "0.45";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -441,7 +441,7 @@ sub getline_hr
 {
     my ($self, @args, %hr) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
-    my $fr = $self->getline (@args) or return undef;
+    my $fr = $self->getline (@args) or return;
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
     } # getline_hr

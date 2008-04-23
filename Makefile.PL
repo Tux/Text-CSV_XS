@@ -83,7 +83,7 @@ sub postamble
 	'fixmeta:	distmeta',
 	'	perl genMETA.pl',
 	'',
-	'tgzdist:	fixmeta $(DISTVNAME).tar.gz',
+	'tgzdist:	fixmeta $(DISTVNAME).tar.gz distcheck',
 	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',
 	'	-@cpants_lint.pl $(DISTVNAME).tgz',
 	'',
