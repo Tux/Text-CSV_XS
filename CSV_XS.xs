@@ -387,7 +387,7 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 	    int		 quoteMe = csv->always_quote;
 
 	    unless ((SvOK (*svp) || (
-		    (SvMAGICAL (*svp) && (mg_get (*svp), 1) && SvOK (*svp)))
+		    (SvGMAGICAL (*svp) && (mg_get (*svp), 1) && SvOK (*svp)))
 		    )) continue;
 	    ptr = SvPV (*svp, len);
 	    /* Do we need quoting? We do quote, if the user requested
