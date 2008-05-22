@@ -5,4 +5,4 @@ $^W = 1;
 
 use Test::MinimumVersion;
 
-all_minimum_version_ok ("5.005");
+all_minimum_version_ok ("5.005", { paths => [ "t", "blib/lib/Text" ] });
