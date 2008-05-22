@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.45";
+$VERSION = "0.46";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -1165,7 +1165,7 @@ An example for creating CSV files:
       my $err = $csv->error_input;
       print "combine () failed on argument: ", $err, "\n";
       }
-  close $csv_fh;
+  close $csv_fh or die "hello.csv: $!";
 
 An example for parsing CSV strings:
 
@@ -1194,9 +1194,9 @@ Dumping the content of a database ($dbh) table ($tbl) to CSV:
   $sth->execute;
   $csv->print ($fh, $sth->{NAME_lc});
   while (my $row = $sth->fetch) {
-      $csv->print ($fh, $row);
+      $csv->print ($fh, $row) or ...;
       }
-  close $fh;
+  close $fh or die "$tbl.csv: $!";
 
 Reading a CSV file line by line:
 
@@ -1205,7 +1205,7 @@ Reading a CSV file line by line:
   while (my $row = $csv->getline ($fh)) {
       # do something with @$row
       }
-  close $fh;
+  close $fh or die "file.csv: $!";;
 
 For more extended examples, see the C<examples/> subdirectory in the
 original distribution. Included is C<examples/parser-xs.pl>, that could
