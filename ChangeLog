@@ -2,6 +2,7 @@
 
 	* In examples add die on failed close calls
 	* Use Test::MinimumVersion (not distributed)
+	* Added option -F to examples/csv2xls
 
 2008-04-23  0.45 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

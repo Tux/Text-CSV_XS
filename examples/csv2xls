@@ -1,12 +1,12 @@
-#!/usr/bin/perl
+#!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'07 [21 Sep 2007] Copyright H.M.Brand 2007-2008
+#	   (m)'08 [22 May 2008] Copyright H.M.Brand 2007-2008
 
 use strict;
 use warnings;
 
-our $VERSION = "1.5";	# 2008-04-10
+our $VERSION = "1.6";
 
 sub usage
 {
@@ -18,8 +18,10 @@ usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
        -q <quot>  use <quot>  as quotation char. Default = '"'
        -w <width> use <width> as default minimum column width (4)
        -o <xls>   write output to file named <xls>, defaults
-		  to input file name with .csv replaced with .xls
-		  if from standard input, defaults to csv2xls.xls
+                  to input file name with .csv replaced with .xls
+                  if from standard input, defaults to csv2xls.xls
+       -F         allow formula's. Otherwise fields starting with
+                  an equal sign are forced to string
        -f         force usage of <xls> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -u         CSV is UTF8
@@ -34,6 +36,7 @@ my $wdt = 4;	# Default minimal column width
 my $xls;	# Excel out file name
 my $frc = 0;	# Force use of file
 my $utf = 0;	# Data is encoded in Unicode
+my $frm = 0;	# Allow formula's
 my $dtf = "dd-mm-yyyy";	# Date format
 
 GetOptions (
@@ -45,6 +48,7 @@ GetOptions (
     "o|x=s"	=> \$xls,
     "d=s"	=> \$dtf,
     "f"		=> \$frc,
+    "F"		=> \$frm,
     "u"		=> \$utf,
     ) or usage (1);
 
@@ -151,7 +155,12 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 	    next;
 	    }
 
-	$wks->write ($h, $c, $val);
+	if (!$frm && $val =~ m/^=/) {
+	    $wks->write_string  ($h, $c, $val);
+	    }
+	else {
+	    $wks->write ($h, $c, $val);
+	    }
 	}
     ++$h % 100 or printf STDERR "%6d x %6d\r", $w, $h;
     } continue { $row = undef }
