@@ -81,7 +81,7 @@ sub postamble
 	q{	sandbox/leaktest $(FULLPERLRUN) "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)},
 	'',
 	'fixmeta:	distmeta',
-	'	perl genMETA.pl',
+	'	perl sandbox/genMETA.pl',
 	'',
 	'tgzdist:	fixmeta $(DISTVNAME).tar.gz distcheck',
 	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',
