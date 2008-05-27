@@ -67,7 +67,7 @@ sub postamble
 
     my $min_vsn = $] < 5.010 ? "" : join "\n" =>
 	'test ::',
-	'	env TEST_FILES="xt/*.t" make -e test_dynamic',
+	'	-@env TEST_FILES="xt/*.t" make -e test_dynamic',
 	'';
 
     join "\n" =>
