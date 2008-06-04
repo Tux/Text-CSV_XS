@@ -30,3 +30,4 @@ examples/csv2xls	Script to onvert CSV files to M$Excel
 examples/csv-check	Script to check a CSV file/stream
 examples/parser-xs.pl	Parse CSV stream, be forgiving on bad lines
 examples/speed.pl	Small benchmark script
+files/utf8.csv		A UTF-8 encode test file

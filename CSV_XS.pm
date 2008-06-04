@@ -547,6 +547,12 @@ or, more safely in perl 5.6 and up
  while (my $row = $csv->getline ($io)) {
      my @fields = @$row;
  
+=head2 Unicode (UTF-8)
+
+On parsing (both for C<getline ()> and C<parse ()>), if the source is
+marked being UTF-8, then parsing that source will mark all fields that
+are marked binary will also be marked UTF-8.
+
 =head1 SPECIFICATION
 
 While no formal specification for CSV exists, RFC 4180 1) describes a common
@@ -1262,9 +1268,8 @@ Using C<getline ()> and C<print ()> instead is the prefered way to go.
 
 =item Unicode
 
-Make C<parse ()> and C<combine ()> do the right thing for Unicode
-(UTF-8) if requested. See t/50_utf8.t. More complicated, but evenly
-important, also for C<getline ()> and C<print ()>.
+Make C<combine ()> and C<print ()> do the right thing for Unicode (UTF-8)
+if requested.  See t/50_utf8.t.
 
 Probably the best way to do this is to make a subclass
 Text::CSV_XS::Encoded that can be passed the required encoding and

@@ -68,43 +68,44 @@
 
 #define	byte	unsigned char
 typedef struct {
-    byte	 quote_char;
-    byte	 escape_char;
-    byte	 sep_char;
-    byte	 binary;
+    byte	quote_char;
+    byte	escape_char;
+    byte	sep_char;
+    byte	binary;
 
-    byte	 keep_meta_info;
-    byte	 always_quote;
-    byte	 useIO;		/* Also used to indicate EOF */
-    byte	 eol_is_cr;
+    byte	keep_meta_info;
+    byte	always_quote;
+    byte	useIO;		/* Also used to indicate EOF */
+    byte	eol_is_cr;
 
 #if ALLOW_ALLOW
-    byte	 allow_loose_quotes;
-    byte	 allow_loose_escapes;
-    byte	 allow_double_quoted;
-    byte	 allow_whitespace;
+    byte	allow_loose_quotes;
+    byte	allow_loose_escapes;
+    byte	allow_double_quoted;
+    byte	allow_whitespace;
 
-    byte	 blank_is_undef;
-    byte	 verbatim;
-    byte	 is_bound;
-    byte	 reserved1;
+    byte	blank_is_undef;
+    byte	verbatim;
+    byte	is_bound;
+    byte	reserved1;
 #endif
 
-    byte	 cache[CACHE_SIZE];
+    byte	cache[CACHE_SIZE];
 
-    HV*		 self;
-    SV*		 bound;
+    HV *	self;
+    SV *	bound;
 
-    char	*eol;
-    STRLEN	 eol_len;
-    char	*types;
-    STRLEN	 types_len;
+    char *	eol;
+    STRLEN	eol_len;
+    char *	types;
+    STRLEN	types_len;
 
-    char	*bptr;
-    SV		*tmp;
-    STRLEN	 size;
-    STRLEN	 used;
-    char	 buffer[BUFFER_SIZE];
+    char *	bptr;
+    SV *	tmp;
+    int		utf8;
+    STRLEN	size;
+    STRLEN	used;
+    char	buffer[BUFFER_SIZE];
     } csv_t;
 
 #define bool_opt(o) \
@@ -327,6 +328,7 @@ static void SetupCsv (csv_t *csv, HV *self)
 	else
 	    csv->is_bound = 0;
 	}
+    csv->utf8 = 0;
     csv->used = 0;
     } /* SetupCsv */
 
@@ -507,6 +509,7 @@ static int CsvGet (csv_t *csv, SV *src)
 		}
 	    }
 #endif
+	if (SvUTF8 (csv->tmp)) csv->utf8 = 1;
 	if (csv->size) 
 	    return ((byte)csv->bptr[csv->used++]);
 	}
@@ -525,7 +528,7 @@ static int CsvGet (csv_t *csv, SV *src)
     return FALSE;				\
     }
 
-#define CSV_PUT_SV(sv,c) {			\
+#define CSV_PUT_SV(c) {				\
     len = SvCUR ((sv));				\
     SvGROW ((sv), len + 2);			\
     *SvEND ((sv)) = c;				\
@@ -549,6 +552,8 @@ static int CsvGet (csv_t *csv, SV *src)
     else {							\
 	if (csv->allow_whitespace && ! (f & CSV_FLAGS_QUO))	\
 	    strip_trail_whitespace (sv);			\
+	if (f & CSV_FLAGS_BIN && csv->utf8)			\
+	    SvUTF8_on (sv);					\
 	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
     sv = NULL;							\
@@ -666,7 +671,7 @@ restart:
 		}
 	    else
 	    if (f & CSV_FLAGS_QUO)
-		CSV_PUT_SV (sv, c)
+		CSV_PUT_SV (c)
 	    else {
 		AV_PUSH;
 		}
@@ -698,7 +703,7 @@ restart:
 		unless (csv->binary)
 		    ERROR_INSIDE_QUOTES (2021);
 
-		CSV_PUT_SV (sv, c);
+		CSV_PUT_SV (c);
 		}
 #if ALLOW_ALLOW
 	    else
@@ -707,7 +712,7 @@ restart:
 		unless (csv->binary)
 /* uncovered */	    ERROR_INSIDE_FIELD (2030);
 
-		CSV_PUT_SV (sv, c);
+		CSV_PUT_SV (c);
 		}
 #endif
 	    else {
@@ -756,7 +761,7 @@ restart:
 		unless (csv->binary)
 		    ERROR_INSIDE_QUOTES (2022);
 
-		CSV_PUT_SV (sv, c);
+		CSV_PUT_SV (c);
 		}
 	    else {
 		int	c2;
@@ -836,7 +841,7 @@ restart:
 			}
 
 		    if (csv->allow_loose_quotes) {
-			CSV_PUT_SV (sv, c);
+			CSV_PUT_SV (c);
 			c = c2;
 			goto restart;
 			}
@@ -865,10 +870,10 @@ restart:
 		    }
 		else
 		if (c2 == '0')
-		    CSV_PUT_SV (sv, 0)
+		    CSV_PUT_SV (0)
 		else
 		if (c2 == csv->quote_char  ||  c2 == csv->sep_char)
-		    CSV_PUT_SV (sv, c2)
+		    CSV_PUT_SV (c2)
 		else
 		if (c2 == CH_NL) {
 		    AV_PUSH;
@@ -893,7 +898,7 @@ restart:
 			}
 
 		    if (csv->allow_loose_quotes && csv->escape_char != csv->quote_char) {
-			CSV_PUT_SV (sv, c);
+			CSV_PUT_SV (c);
 			c = c2;
 			goto restart;
 			}
@@ -918,7 +923,7 @@ restart:
 #if ALLOW_ALLOW
 	    if (csv->allow_loose_quotes) { /* 1,foo "boo" d'uh,1 */
 		f |= CSV_FLAGS_EIF;
-		CSV_PUT_SV (sv, c);
+		CSV_PUT_SV (c);
 		}
 	    else
 #endif
@@ -943,7 +948,7 @@ restart:
 		    }
 
 		if (c2 == '0')
-		    CSV_PUT_SV (sv, 0)
+		    CSV_PUT_SV (0)
 		else
 		if ( c2 == csv->quote_char  || c2 == csv->sep_char ||
 		     c2 == csv->escape_char
@@ -951,7 +956,7 @@ restart:
 		     || csv->allow_loose_escapes
 #endif
 		     )
-		    CSV_PUT_SV (sv, c2)
+		    CSV_PUT_SV (c2)
 		else {
 		    csv->used--;
 		    ERROR_INSIDE_QUOTES (2025);
@@ -966,7 +971,7 @@ restart:
 		    ERROR_INSIDE_FIELD (2035);
 		    }
 
-		CSV_PUT_SV (sv, c2);
+		CSV_PUT_SV (c2);
 		}
 	    else
 /* uncovered */	ERROR_INSIDE_FIELD (2036); /* I think there's no way to get here */
@@ -995,8 +1000,7 @@ restart:
 		    unless (csv->binary)
 			ERROR_INSIDE_QUOTES (2026);
 		    }
-
-		CSV_PUT_SV (sv, c);
+		CSV_PUT_SV (c);
 		}
 	    else {
 		if (is_csv_binary (c)) {
@@ -1004,8 +1008,7 @@ restart:
 		    unless (csv->binary)
 			ERROR_INSIDE_FIELD (2037);
 		    }
-
-		CSV_PUT_SV (sv, c);
+		CSV_PUT_SV (c);
 		}
 	    }
 
@@ -1060,6 +1063,7 @@ static int xsParse (HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 	}
     else {
 	csv.tmp  = src;
+	csv.utf8 = SvUTF8 (src);
 	csv.bptr = SvPV (src, csv.size);
 	}
     hv_delete (hv, "_ERROR_INPUT", 12, G_DISCARD);
