@@ -57,8 +57,10 @@ parse_err 2032,  2, qq{ \r};
 parse_err 2034,  4, qq{1, "bar",2};
 parse_err 2037,  1, qq{\0 };
 
-diag ("Next line should be an error message");
-$csv->error_diag ();
+unless (($ENV{AUTOMATED_TESTING} || 0) == "1") {
+    diag ("Next line should be an error message");
+    $csv->error_diag ();
+    }
 
 is (Text::CSV_XS->new ({ ecs_char => ":" }), undef, "Unsupported option");
 

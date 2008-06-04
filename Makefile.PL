@@ -65,11 +65,12 @@ sub postamble
 		    $(TEST_FILES) 3>valgrind.log
 		    );
 
-    my $min_vsn = $] < 5.010 ? "" : join "\n" =>
-	'test ::',
-	'	-@env TEST_FILES="xt/*.t" make -e test_dynamic',
-	'';
-
+    my $min_vsn = ($] >= 5.010 && -d "xt" && ($ENV{AUTOMATED_TESTING} || 0) != 1)
+	? join "\n" =>
+	    'test ::',
+	    '	-@env TEST_FILES="xt/*.t" make -e test_dynamic',
+	    ''
+	: "";
     join "\n" =>
 	'cover test_cover:',
 	'	cover -delete',

@@ -1,3 +1,12 @@
+2008-06-04  0.50 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Skip a few tests in automated testing, as they confuse
+	  reports. This is important for the automated sites that
+	  mark modules as fail if it is not an obvious full PASS
+	* 0.46 caused the last still open RT bug to be closed!
+	* Tested on 5.11.0, 5.10.0, 5.8.8, 5.6.2, and 5.005_04,
+	  Strawberry and Cygwin
+
 2008-06-04  0.46 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* In examples add die on failed close calls
