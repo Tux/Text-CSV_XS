@@ -21,7 +21,7 @@ Prerequisites:
     perl 5.005. 5.005 will not be able to build the manual pages.
 
 Build/Installation:
-    Standard build/installation supported by ExtUtils::MakeMaker(3)...
+    Standard build/installation:
 	perl Makefile.PL
 	make
 	make test
@@ -37,6 +37,6 @@ Author:
     A pure-perl version is being maintained by Makamaka Hannyaharamitu
     as Text::CSV_PP, which tries to follow Text::CSV_XS very closely.
 
-    Expect Text::CSV to be a wrapper module over Text::CSV_XS and
-    Text::CSV_PP that will select Text::CSV_XS if available, and
-    otherwise use Text::PP.
+    Text::CSV_PP is bundled in Text::CSV, which now is a wrapper module over
+    Text::CSV_XS and Text::CSV_PP that will select Text::CSV_XS if available,
+    and otherwise use Text::PP.
