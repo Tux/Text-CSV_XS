@@ -547,11 +547,14 @@ or, more safely in perl 5.6 and up
  while (my $row = $csv->getline ($io)) {
      my @fields = @$row;
  
-=head2 Unicode (UTF-8)
+=head2 Unicode (UTF8)
 
 On parsing (both for C<getline ()> and C<parse ()>), if the source is
-marked being UTF-8, then parsing that source will mark all fields that
-are marked binary will also be marked UTF-8.
+marked being UTF8, then parsing that source will mark all fields that
+are marked binary will also be marked UTF8.
+
+On combining (C<print ()> and C<combine ()>), if any of the combining
+fields was marked UTF8, the resulting string will be marked UTF8.
 
 =head1 SPECIFICATION
 
@@ -1268,10 +1271,10 @@ Using C<getline ()> and C<print ()> instead is the prefered way to go.
 
 =item Unicode
 
-Make C<combine ()> and C<print ()> do the right thing for Unicode (UTF-8)
-if requested.  See t/50_utf8.t.
+We probably need many more tests to check if all edge-cases are covered.
+See t/50_utf8.t.
 
-Probably the best way to do this is to make a subclass
+Probably the best way to do this more reliable is to make a subclass
 Text::CSV_XS::Encoded that can be passed the required encoding and
 then behaves transparently (but slower), something like this:
 

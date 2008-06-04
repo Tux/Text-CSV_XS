@@ -5,6 +5,7 @@
 	* Added option -F to examples/csv2xls
 	* More source code cleanup
 	* Nailed the UTF-8 issues for parsing
+	* Nailed the UTF-8 issues for combining
 
 2008-04-23  0.45 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

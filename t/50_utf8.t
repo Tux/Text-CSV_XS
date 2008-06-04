@@ -10,7 +10,7 @@ BEGIN {
 	plan skip_all => "UTF8 tests useless in this ancient perl version";
 	}
     else {
-	plan tests => 63;
+	plan tests => 64;
 	}
     }
 
@@ -77,4 +77,7 @@ SKIP: {
     is ($csv->is_binary (1),	0,	"Second field is not binary");
 
     ok (utf8::valid ($row->[0]),	"First field is valid utf8");
+
+    $csv->combine (@$row);
+    ok (utf8::valid ($csv->string),	"Combined string is valid utf8");
     }

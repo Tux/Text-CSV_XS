@@ -360,11 +360,13 @@ static int Print (csv_t *csv, SV *dst)
 	sv_catpvn (SvRV (dst), csv->buffer, csv->used);
 	result = TRUE;
 	}
+    if (csv->utf8 && SvROK (dst))
+	SvUTF8_on (SvRV (dst));
     csv->used = 0;
     return result;
     } /* Print */
 
-#define CSV_PUT(csv,dst,c)  {				\
+#define CSV_PUT(csv,dst,c) {				\
     if ((csv)->used == sizeof ((csv)->buffer) - 1)	\
         Print ((csv), (dst));				\
     (csv)->buffer[(csv)->used++] = (c);			\
@@ -396,6 +398,7 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 		    (SvGMAGICAL (*svp) && (mg_get (*svp), 1) && SvOK (*svp)))
 		    )) continue;
 	    ptr = SvPV (*svp, len);
+	    if (len && SvUTF8 (*svp)) csv->utf8 = 1;
 	    /* Do we need quoting? We do quote, if the user requested
 	     * (always_quote), if binary or blank characters are found
 	     * and if the string contains quote or escape characters.
