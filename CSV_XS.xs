@@ -428,11 +428,15 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 		int	e = 0;
 
 		if (!csv->binary && is_csv_binary (c)) {
-		    SvREFCNT_inc (*svp);
-		    unless (hv_store (csv->self, "_ERROR_INPUT", 12, *svp, 0))
-			SvREFCNT_dec (*svp);
-		    (void)SetDiag (csv, 2110);
-		    return FALSE;
+		    if (SvUTF8 (*svp))
+			csv->binary = 1;
+		    else {
+			SvREFCNT_inc (*svp);
+			unless (hv_store (csv->self, "_ERROR_INPUT", 12, *svp, 0))
+			    SvREFCNT_dec (*svp);
+			(void)SetDiag (csv, 2110);
+			return FALSE;
+			}
 		    }
 		if (csv->quote_char  && c == csv->quote_char)
 		    e = 1;
@@ -1004,7 +1008,7 @@ restart:
 	    if (f & CSV_FLAGS_QUO) {
 		if (is_csv_binary (c)) {
 		    f |= CSV_FLAGS_BIN;
-		    unless (csv->binary)
+		    unless (csv->binary || csv->utf8)
 			ERROR_INSIDE_QUOTES (2026);
 		    }
 		CSV_PUT_SV (c);
@@ -1012,7 +1016,7 @@ restart:
 	    else {
 		if (is_csv_binary (c)) {
 		    f |= CSV_FLAGS_BIN;
-		    unless (csv->binary)
+		    unless (csv->binary || csv->utf8)
 			ERROR_INSIDE_FIELD (2037);
 		    }
 		CSV_PUT_SV (c);

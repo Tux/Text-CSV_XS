@@ -1,3 +1,8 @@
+2008-06-05  0.51 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Allow UTF8 even without binary => 1
+	* Fixed a few pod typo's
+
 2008-06-04  0.50 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Skip a few tests in automated testing, as they confuse
@@ -13,8 +18,8 @@
 	* Use Test::MinimumVersion (not distributed)
 	* Added option -F to examples/csv2xls
 	* More source code cleanup
-	* Nailed the UTF-8 issues for parsing
-	* Nailed the UTF-8 issues for combining
+	* Nailed the UTF8 issues for parsing
+	* Nailed the UTF8 issues for combining
 
 2008-04-23  0.45 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

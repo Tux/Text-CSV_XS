@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.50";
+$VERSION = "0.51";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -783,6 +783,11 @@ If this attribute is TRUE, you may use binary characters in quoted fields,
 including line feeds, carriage returns and NULL bytes. (The latter must
 be escaped as C<"0>.) By default this feature is off.
 
+If a string is marked UTF8, binary will be turned on automatically when
+binary characters other than CR or NL are encountered. Note that a simple
+string like C<"\x{00a0}"> might still be binary, but not marked UTF8, so
+setting C<{ binary => 1 }> is still a wise option.
+
 =item types
 
 A set of column types; this attribute is immediately passed to the
@@ -1138,7 +1143,7 @@ is that of the last C<new ()> call.
 
  $csv->SetDiag (0);
 
-Use to reset the diagnosticts if you are dealing with errors.
+Use to reset the diagnostics if you are dealing with errors.
 
 =head1 INTERNALS
 
@@ -1347,7 +1352,7 @@ is never cleared on success, so using the value returned by C<error_diag ()> in
 normal cases - when no error occured - may cause unexpected results.
 
 Currently errors as described below are available. I've tried to make the error
-itself explainatory enough, but more descriptions will be added. For most of
+itself explanatory enough, but more descriptions will be added. For most of
 these errors, the first three capitals describe the error category:
 
 =over 2
@@ -1362,7 +1367,7 @@ Carriage-Return related parse error.
 
 =item EOF
 
-Enf-Of-File related parse error.
+End-Of-File related parse error.
 
 =item EIQ
 
