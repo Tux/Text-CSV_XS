@@ -33,8 +33,8 @@ my %test = (
 		},
     );
 
-print "           lines   cols  file size file\n",
-      "         ========= ==== ========== ========\n";
+print "test       lines     cols  file size file\n",
+      "=======  =========   ==== ========== ========\n";
 foreach my $nc (4, 16, 64, 512, 2048) {
     foreach my $nr (4, 16, 1024, 10240, 102400) {
 	$nr * $nc > 48_000_000 and next;
@@ -43,23 +43,25 @@ foreach my $nc (4, 16, 64, 512, 2048) {
 	my $fsz = -s $fnm or next;	# Failed to create test file
 	printf "-------  %9d x %4d %10d %s\n", $nr, $nc, $fsz, $fnm;
 	my $slowest;
-	foreach my $test ("xs_perl", "xs_gtln", "xs_bndc", "pp_perl", "pp_gtln") {
-	    my ($typ, $meth) = ($test =~ m/^(\w\w)_(.*)/);
+	foreach my $typ ("xs", "pp") {
 	    $typ eq "pp" && $fsz > 10_000_000 and next;
-	    open $fh, "<", $fnm or die "$fnm: $!";
-	    $csv = "Text::CSV_\U$typ"->new ({ binary => 1 });
-	    $csv->parse (scalar <$fh>) or die $csv->error_diag;
-	    @row = $csv->fields;
-	    my $ncol = @row;
-	    my $start = [ gettimeofday ];
-	    $n = 0;
-	    $test{$meth}->();
-	    my $used = tv_interval ($start, [ gettimeofday ]);
-	    $slowest //= $used;
-	    printf STDERR "$test: %9d x %4d parsed in %9.3f seconds - %4d\n",
-		$n, $ncol, $used, int (100 * $used / $slowest);
-	    eof   $fh or die $csv->error_diag;
-	    close $fh or die "$fnm: $!";
+	    foreach my $test ("perl", "gtln", "bndc") {
+		$typ eq "pp" && $test eq "bndc" && $nc > 250 and next; # NYI
+		open $fh, "<", $fnm or die "$fnm: $!";
+		$csv = "Text::CSV_\U$typ"->new ({ binary => 1 });
+		$csv->parse (scalar <$fh>) or die $csv->error_diag;
+		@row = $csv->fields;
+		my $ncol = @row;
+		my $start = [ gettimeofday ];
+		$n = 0;
+		$test{$test}->();
+		my $used = tv_interval ($start, [ gettimeofday ]);
+		$slowest //= $used;
+		printf STDERR "$typ $test: %9d x %4d parsed in %9.3f seconds - %4d\n",
+		    $n, $ncol, $used, int (100 * $used / $slowest);
+		eof   $fh or die $csv->error_diag;
+		close $fh or die "$fnm: $!";
+		}
 	    }
 	}
     }
