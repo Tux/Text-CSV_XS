@@ -11,10 +11,16 @@ sub usage
 
 use Getopt::Long qw(:config bundling nopermute);
 my $opt_n = 0;		# Disable newlines
+my $opt_o;		# Output
 GetOptions (
-    "help|?"	=> sub { usage (0); },
-    "n"		=> \$opt_n,
+    "help|?"		=> sub { usage (0); },
+    "n"			=> \$opt_n,
+    "o|output=s"	=> \$opt_o,
     ) or usage (1);
+
+if ($opt_o) {
+    open STDOUT, ">", $opt_o or die "$opt_o: $!\n";
+    }
 
 my ($cols, $rows) = @ARGV;
 $cols ||= 10;
@@ -31,7 +37,9 @@ my @f = grep { defined $_ && $opt_n ? !/\n/ : 1 } (
 $cols--;
 my @row;
 push @row, @f for 1 .. int ($cols / 10);
-push @row, @f[(10 - $cols % 10) .. 9];
+push @row, @f[0 .. ($cols % 10 - 1)];
 
 $csv->print (*STDOUT, [ 1..($cols + 1) ]);
 $csv->print (*STDOUT, [ $_, @row ]) for 2 .. $rows;
+
+close STDOUT;
