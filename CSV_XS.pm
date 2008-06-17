@@ -118,9 +118,10 @@ my %_cache_id = (	# Keep in sync with XS!
     has_types		=> 21,
     verbatim		=> 22,
 
-    _is_bound		=> 23,
+    _is_bound		=> 23,	# 23 .. 26
     );
-sub _set_attr
+
+sub _set_attr_C
 {
     my ($self, $name, $val) = @_;
     $self->{$name} = $val;
@@ -128,28 +129,39 @@ sub _set_attr
     my @cache = unpack "C*", $self->{_CACHE};
     $cache[$_cache_id{$name}] = defined $val ? unpack "C", $val : 0;
     $self->{_CACHE} = pack "C*", @cache;
-    } # _set_attr
+    } # _set_attr_C
+
+sub _set_attr_N
+{
+    my ($self, $name, $val) = @_;
+    $self->{$name} = $val;
+    $self->{_CACHE} or return;
+    my @cache = unpack "C*", $self->{_CACHE};
+    my $i = $_cache_id{$name};
+    $cache[$i++] = $_ for unpack "C*", pack "N", defined $val ? $val : 0;
+    $self->{_CACHE} = pack "C*", @cache;
+    } # _set_attr_N
 
 # Accessor methods.
 #   It is unwise to change them halfway through a single file!
 sub quote_char
 {
     my $self = shift;
-    @_ and $self->_set_attr ("quote_char", shift);
+    @_ and $self->_set_attr_C ("quote_char", shift);
     $self->{quote_char};
     } # quote_char
 
 sub escape_char
 {
     my $self = shift;
-    @_ and $self->_set_attr ("escape_char", shift);
+    @_ and $self->_set_attr_C ("escape_char", shift);
     $self->{escape_char};
     } # escape_char
 
 sub sep_char
 {
     my $self = shift;
-    @_ and $self->_set_attr ("sep_char", shift);
+    @_ and $self->_set_attr_C ("sep_char", shift);
     $self->{sep_char};
     } # sep_char
 
@@ -178,56 +190,56 @@ sub eol
 sub always_quote
 {
     my $self = shift;
-    @_ and $self->_set_attr ("always_quote", shift);
+    @_ and $self->_set_attr_C ("always_quote", shift);
     $self->{always_quote};
     } # always_quote
 
 sub binary
 {
     my $self = shift;
-    @_ and $self->_set_attr ("binary", shift);
+    @_ and $self->_set_attr_C ("binary", shift);
     $self->{binary};
     } # binary
 
 sub keep_meta_info
 {
     my $self = shift;
-    @_ and $self->_set_attr ("keep_meta_info", shift);
+    @_ and $self->_set_attr_C ("keep_meta_info", shift);
     $self->{keep_meta_info};
     } # keep_meta_info
 
 sub allow_loose_quotes
 {
     my $self = shift;
-    @_ and $self->_set_attr ("allow_loose_quotes", shift);
+    @_ and $self->_set_attr_C ("allow_loose_quotes", shift);
     $self->{allow_loose_quotes};
     } # allow_loose_quotes
 
 sub allow_loose_escapes
 {
     my $self = shift;
-    @_ and $self->_set_attr ("allow_loose_escapes", shift);
+    @_ and $self->_set_attr_C ("allow_loose_escapes", shift);
     $self->{allow_loose_escapes};
     } # allow_loose_escapes
 
 sub allow_whitespace
 {
     my $self = shift;
-    @_ and $self->_set_attr ("allow_whitespace", shift);
+    @_ and $self->_set_attr_C ("allow_whitespace", shift);
     $self->{allow_whitespace};
     } # allow_whitespace
 
 sub blank_is_undef
 {
     my $self = shift;
-    @_ and $self->_set_attr ("blank_is_undef", shift);
+    @_ and $self->_set_attr_C ("blank_is_undef", shift);
     $self->{blank_is_undef};
     } # blank_is_undef
 
 sub verbatim
 {
     my $self = shift;
-    @_ and $self->_set_attr ("verbatim", shift);
+    @_ and $self->_set_attr_C ("verbatim", shift);
     $self->{verbatim};
     } # verbatim
 
@@ -408,7 +420,7 @@ sub column_names
 	croak ($self->SetDiag (3001));
 	}
 
-    $self->{_is_bound} && @keys != unpack "C", $self->{_is_bound} and
+    $self->{_is_bound} && @keys != $self->{_is_bound} and
 	croak ($self->SetDiag (3003));
 
     $self->{_COLUMN_NAMES} = [ @keys ];
@@ -427,12 +439,10 @@ sub bind_columns
     $self->{_COLUMN_NAMES} && @refs != @{$self->{_COLUMN_NAMES}} and
 	croak ($self->SetDiag (3003));
 
-    @refs > 255 and croak ($self->SetDiag (3005));
-
     join "", map { ref $_ eq "SCALAR" ? "" : "*" } @refs and
 	croak ($self->SetDiag (3004));
 
-    $self->_set_attr ("_is_bound", pack "C" => scalar @refs);
+    $self->_set_attr_N ("_is_bound", scalar @refs);
     $self->{_BOUND_COLUMNS} = [ @refs ];
     @refs;
     } # column_names
@@ -984,7 +994,7 @@ C<column_names ()> croaks on invalid arguments.
 
 =head2 bind_columns
 
-Takes a list of references to scalars (max 255) to store the fields fetched
+Takes a list of references to scalars to store the fields fetched
 C<getline ()> in. When you don't pass enough references to store the
 fetched fields in, C<getline ()> will fail. If you pass more than there are
 fields to return, the remaining references are left untouched.
@@ -1459,8 +1469,6 @@ will cause this error.
 =item 3003 "EHR - bind_columns () and column_names () fields count mismatch"
 
 =item 3004 "EHR - bind_columns () only accepts refs to scalars"
-
-=item 3005 "EHR - bind_columns () takes 254 refs max"
 
 =item 3006 "EHR - bind_columns () did not pass enough refs for parsed fields"
 

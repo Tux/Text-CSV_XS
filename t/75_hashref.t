@@ -67,8 +67,6 @@ is ($csv->error_diag () + 0, 3003,		"Arg cound mismatch");
 eval { $csv->bind_columns ({}, {}, {}, {}) };
 is ($csv->error_diag () + 0, 3004,		"bad arg types");
 is ($csv->column_names (undef), undef,		"reset column_names");
-eval { $csv->bind_columns ((\$code) x 300) };
-is ($csv->error_diag () + 0, 3005,		"too many args");
 ok ($csv->bind_columns (\($code, $name, $price)), "Bind columns");
 
 eval { $csv->column_names ("foo") };
@@ -96,9 +94,12 @@ ok ($csv->bind_columns (@bcr, \$foo),		"bind too many columns");
 ($code, $name, $price, $desc, $foo) = (101 .. 105);
 ok ($csv->getline (*FH),			"fetch less than expected");
 is_deeply ( [ $code, $name, $price, $desc, $foo ],
-	    [ 2, "Drinks", "82.78", "Drinks", 105 ],		"unfetched not reset");
+	    [ 2, "Drinks", "82.78", "Drinks", 105 ],	"unfetched not reset");
 
-ok ($csv->bind_columns (\1, \2, \3, \""),	"bind too many columns");
+my @foo = (0) x 0x012345;
+ok ($csv->bind_columns (\(@foo)),		"bind a lot of columns");
+
+ok ($csv->bind_columns (\1, \2, \3, \""),	"bind too constant columns");
 is ($csv->getline (*FH), undef,			"fetch to read-only ref");
 is ($csv->error_diag () + 0, 3008,		"Read-only");
 
