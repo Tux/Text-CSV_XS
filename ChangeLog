@@ -1,4 +1,4 @@
-2008-06-05  0.51 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-06-17  0.51 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Allow UTF8 even without binary => 1
 	* Fixed a few pod typo's
