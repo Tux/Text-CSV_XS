@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.51";
+$VERSION = "0.52";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -423,7 +423,7 @@ sub column_names
     $self->{_is_bound} && @keys != $self->{_is_bound} and
 	croak ($self->SetDiag (3003));
 
-    $self->{_COLUMN_NAMES} = [ @keys ];
+    $self->{_COLUMN_NAMES} = [ map { defined $_ ? $_ : "UNDEF" } @keys ];
     @keys;
     } # column_names
 
@@ -445,7 +445,7 @@ sub bind_columns
     $self->_set_attr_N ("_is_bound", scalar @refs);
     $self->{_BOUND_COLUMNS} = [ @refs ];
     @refs;
-    } # column_names
+    } # bind_columns
 
 sub getline_hr
 {
@@ -1250,14 +1250,12 @@ internal failure, like failing to store a hash value.
 
 =item More Errors & Warnings
 
-At current, it is hard to tell where or why an error occured (if
-at all). New extensions ought to be clear and concise in reporting
-what error occurred where and why, and possibly also tell a remedy
-to the problem. error_diag is a (very) good start, but there is more
-work to be done here.
+New extensions ought to be clear and concise in reporting what error
+occurred where and why, and possibly also tell a remedy to the problem.
+error_diag is a (very) good start, but there is more work to be done here.
 
-Basic calls should croak or warn on illegal parameters. Errors
-should be documented.
+Basic calls should croak or warn on illegal parameters. Errors should be
+documented.
 
 =item eol
 
