@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 62;
+ use Test::More tests => 68;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -93,8 +93,8 @@ my $foo;
 ok ($csv->bind_columns (@bcr, \$foo),		"bind too many columns");
 ($code, $name, $price, $desc, $foo) = (101 .. 105);
 ok ($csv->getline (*FH),			"fetch less than expected");
-is_deeply ( [ $code, $name, $price, $desc, $foo ],
-	    [ 2, "Drinks", "82.78", "Drinks", 105 ],	"unfetched not reset");
+is_deeply ([ $code, $name, $price, $desc, $foo ],
+	   [ 2, "Drinks", "82.78", "Drinks", 105 ],	"unfetched not reset");
 
 my @foo = (0) x 0x012345;
 ok ($csv->bind_columns (\(@foo)),		"bind a lot of columns");
@@ -106,6 +106,19 @@ is ($csv->error_diag () + 0, 3008,		"Read-only");
 ok ($csv->bind_columns (\$code),		"bind not enough columns");
 eval { $row = $csv->getline (*FH) };
 is ($csv->error_diag () + 0, 3006,		"cannot read all fields");
+
+close FH;
+
+open  FH, "<_test.csv";
+
+is ($csv->column_names (undef), undef,		"reset column headers");
+is ($csv->bind_columns (undef), undef,		"reset bound columns");
+is_deeply ([ $csv->column_names (undef, "", "name", "name") ],
+	   [ "\cAUNDEF\cA", "", "name", "name" ],	"undefined column header");
+ok ($hr = $csv->getline_hr (*FH),		"getline_hr ()");
+is (ref $hr, "HASH",				"returned a hashref");
+is_deeply ($hr, { "\cAUNDEF\cA" => "code", "" => "name", "name" => "description" },
+    "Discarded 3rd field");
 
 close FH;
 

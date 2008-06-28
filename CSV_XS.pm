@@ -416,15 +416,15 @@ sub column_names
     if (@keys == 1 && ref $keys[0] eq "ARRAY") {
 	@keys = @{$keys[0]};
 	}
-    elsif (join "", map { defined $_ ? ref $_ : "UNDEF" } @keys) {
+    elsif (join "", map { defined $_ ? ref $_ : "" } @keys) {
 	croak ($self->SetDiag (3001));
 	}
 
-    $self->{_is_bound} && @keys != $self->{_is_bound} and
+    $self->{_BOUND_COLUMNS} && @keys != @{$self->{_BOUND_COLUMNS}} and
 	croak ($self->SetDiag (3003));
 
-    $self->{_COLUMN_NAMES} = [ map { defined $_ ? $_ : "UNDEF" } @keys ];
-    @keys;
+    $self->{_COLUMN_NAMES} = [ map { defined $_ ? $_ : "\cAUNDEF\cA" } @keys ];
+    @{$self->{_COLUMN_NAMES}};
     } # column_names
 
 sub bind_columns
@@ -989,6 +989,16 @@ C<column_names ()> accepts a list of scalars (the column names) or a
 single array_ref, so you can pass C<getline ()>
 
   $csv->column_names ($csv->getline ($io));
+
+C<column_names ()> does B<no> checking on duplicates at all, which might
+lead to unwanted results. Undefined entries will be replaced with the
+string C<"\cAUNDEF\cA">, so
+
+  $csv->column_names (undef, "", "name", "name");
+  $hr = $csv->getline_hr ($io);
+
+Will set C<$hr->{"\cAUNDEF\cA"}> to the 1st field, C<$hr->{""}> to the
+2nd field, and C<$hr->{name}> to the 4th field, discarding the 2rd field.
 
 C<column_names ()> croaks on invalid arguments.
 
