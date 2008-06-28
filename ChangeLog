@@ -1,6 +1,7 @@
 2008-06-28  0.52 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Using undef for hash keys is a bad plan
+	* Fix, tests, and documentation for column_names ()
 
 2008-06-17  0.51 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
