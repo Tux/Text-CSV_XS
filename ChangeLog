@@ -1,3 +1,7 @@
+2008-07-08  0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* SvUPGRADE is a safer choice than sv_upgrade (Lubomir Rintel)
+
 2008-06-28  0.52 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Using undef for hash keys is a bad plan

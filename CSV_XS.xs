@@ -181,14 +181,14 @@ static SV *SetDiag (csv_t *csv, int xse)
 
     while (xs_errors[i].xs_errno && xs_errors[i].xs_errno != xse) i++;
     if ((err = newSVpv (xs_errors[i].xs_errstr, 0))) {
-	sv_upgrade (err, SVt_PVIV);
-	SvIV_set (err, xse);
-	SvIOK_on (err);
-	hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
+	SvUPGRADE (err, SVt_PVIV);
+	SvIV_set  (err, xse);
+	SvIOK_on  (err);
+	hv_store  (csv->self, "_ERROR_DIAG",  11, err,           0);
 	}
     if (xse == 0) {
-	hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
-	hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
+	hv_store  (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
+	hv_store  (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
 	}
     return (err);
     } /* SetDiag */
