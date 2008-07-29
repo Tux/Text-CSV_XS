@@ -1441,7 +1441,7 @@ has been selected with the constructor.
 Sequences like C<1,"foo\rbar",2> are only allowed when the binary option
 has been selected with the constructor.
 
-=item 2023 "EIQ - QUO ..."
+=item 2023 "EIQ - QUO character not allowed
 
 Sequences like C<"foo "bar" baz",quux> and C<2023,",2008-04-05,"Foo, Bar",\n>
 will cause this error.
