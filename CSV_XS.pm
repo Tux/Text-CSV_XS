@@ -94,6 +94,7 @@ sub new
 	}
     $last_new_err = "";
     my $self  = {%def_attr, %{$attr}};
+    defined $\ and $self->{eol} = $\;
     bless $self, $class;
     defined $self->{types} and $self->types ($self->{types});
     $self;
