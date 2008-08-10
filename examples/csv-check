@@ -3,14 +3,14 @@
 use strict;
 use warnings;
 
-our $VERSION = "1.1";	# 2008-04-17
+our $VERSION = "1.2";	# 2008-08-10
 
 sub usage
 {
     my $err = shift and select STDERR;
     print <<EOU;
 usage: csv-check [-s <sep>] [-q <quot>] [file.csv]
-       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ';'
+       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
        -q <quot>  use <quot>  as quotation char. Default = '"'
 EOU
     exit $err;
@@ -38,17 +38,14 @@ my ($bin, $rows, %cols, $firstline) = (0, 0);
 unless ($sep) { # No sep char passed, try to auto-detect;
     while (<>) {
 	m/\S/ or next;	# Skip empty leading blank lines
-	$sep = m/["\d];["\d;]/  ? ";"  :
-	       m/["\d],["\d,]/  ? ","  :
-	       m/["\d]\t["\d,]/ ? "\t" :
+	$sep = m/["\d],["\d,]/ ? ","  :
+	       m/["\d];["\d;]/ ? ";"  :
+	       m/["\d]\t["\d]/ ? "\t" :
 	       # If neither, then for unquoted strings
-	       m/\w;[\w;]/      ? ";"  :
-	       m/\w,[\w,]/      ? ","  :
-	       m/\w\t[\w,]/     ? "\t" :
-				  ";"  ;
-	    # Yeah I know it should be a ',' (hence Csv), but the majority
-	    # of the csv files to be shown comes from fucking Micky$hit,
-	    # that uses semiColon ';' instead.
+	       m/\w,[\w,]/     ? ","  :
+	       m/\w;[\w;]/     ? ";"  :
+	       m/\w\t[\w]/     ? "\t" :
+				 ","  ;
 	$firstline = $_;
 	$rows++;
 	last;
