@@ -914,18 +914,18 @@ restart:
 			    }
 			}
 
+#if ALLOW_ALLOW
 		    if (csv->allow_loose_quotes && csv->escape_char != csv->quote_char) {
 			CSV_PUT_SV (c);
 			c = c2;
-			goto restart;
+/* uncovered */		goto restart;
 			}
-#if ALLOW_ALLOW
 		    if (csv->allow_whitespace) {
 			while (c2 == CH_SPACE || c2 == CH_TAB) {
 /* uncovered */		    c2 = CSV_GET;
 			    }
 			if (c2 == csv->sep_char || c2 == EOF) {
-/* uncovered */		    c = c2;
+			    c = c2;
 /* uncovered */		    goto restart;
 			    }
 			}

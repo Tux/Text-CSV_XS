@@ -73,12 +73,8 @@ sub postamble
 	: "";
     join "\n" =>
 	'cover test_cover:',
-	'	cover -delete',
-	'	make',
-	'	HARNESS_PERL_SWITCHES=-MDevel::Cover $(MAKE) test',
-	'	gcov CSV_XS.c 2>/dev/null',
-	'	find * -name \*.gcov -exec gcov2perl {} \;',
-	'	cover',
+	'	ccache -C',
+	'	cover -test',
 	'',
 	'leakcheck:',
 	"	$valgrind",

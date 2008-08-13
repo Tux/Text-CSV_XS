@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 829;
+ use Test::More tests => 831;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -312,6 +312,20 @@ foreach my $bin (0, 1) {
     is ($row->[2], "*\r\n",			"#\\r\\n $gc fld 2");
 
     close FH;
+
+    $csv = Text::CSV_XS->new ({
+	binary		=> 0,
+	verbatim	=> 1,
+	eol		=> "#\r\n",
+	});
+    open  FH, ">_test.csv";
+    print FH $str[1];
+    close FH;
+    open  FH, "<_test.csv";
+    is ($csv->getline (*FH), undef,	"#\\r\\n $gc getline 2030");
+    is (0 + $csv->error_diag (), 2030,	"Got 2030");
+    close FH;
+
     unlink "_test.csv";
     }
 
