@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 128;
+use Test::More tests => 131;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -66,6 +66,14 @@ foreach my $rs ("\n", "\r\n", "\r") {
 	}
 
     unlink "_eol.csv";
+    }
+
+{   my $csv = Text::CSV_XS->new ({ escape_char => undef });
+
+    ok ($csv->parse (qq{"x"\r\n}), "Trailing \\r\\n with no escape char");
+
+    is ($csv->eol ("\r"), "\r", "eol set to \\r");
+    ok ($csv->parse (qq{"x"\r}),   "Trailing \\r with no escape char");
     }
 
 ok (1, "Specific \\r test from tfrayner");

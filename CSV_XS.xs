@@ -839,13 +839,13 @@ restart:
 
 			if (csv->eol_is_cr) {
 			    AV_PUSH;
-/* uncovered */		    return TRUE;
+			    return TRUE;
 			    }
 
 			c3 = CSV_GET;
 			if (c3 == CH_NL) {
 			    AV_PUSH;
-/* uncovered */		    return TRUE;
+			    return TRUE;
 			    }
 
 			ParseError (csv, 2010, csv->used - 2);

@@ -1,9 +1,11 @@
-2008-08-10  0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-08-103 0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* SvUPGRADE is a safer choice than sv_upgrade (Lubomir Rintel)
 	* bring docs in sync with reality for msg 2023
 	* Default eol for print is $\
 	* examples/csv-check should default to CSV, not to ;
+	* Tests for SetDiag (0)
+	* Tests for error 2030
 
 2008-06-28  0.52 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
