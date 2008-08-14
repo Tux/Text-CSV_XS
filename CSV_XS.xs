@@ -920,15 +920,6 @@ restart:
 			c = c2;
 /* uncovered */		goto restart;
 			}
-		    if (csv->allow_whitespace) {
-			while (c2 == CH_SPACE || c2 == CH_TAB) {
-/* uncovered */		    c2 = CSV_GET;
-			    }
-			if (c2 == csv->sep_char || c2 == EOF) {
-			    c = c2;
-/* uncovered */		    goto restart;
-			    }
-			}
 #endif
 
 		    csv->used--;

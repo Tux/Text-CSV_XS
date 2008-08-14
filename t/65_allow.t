@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 831;
+ use Test::More tests => 838;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -359,4 +359,19 @@ foreach my $bin (0, 1) {
     is ($csv->is_quoted (3), 1,			"Is field 3 quoted?");
     close FH;
     unlink "_test.csv";
+    }
+
+{   my $csv = Text::CSV_XS->new ({});
+
+    my $s2023 = qq{2023,",2008-04-05,"  \tFoo, Bar",\n}; # "
+    #                                ^
+
+    is ($csv->parse ($s2023), 0,		"Parse 2023");
+    is (($csv->error_diag ())[0], 2023,		"Fail code 2023");
+    is (($csv->error_diag ())[2], 19,		"Fail position");
+
+    is ($csv->allow_whitespace (1), 1,		"Allow whitespace");
+    is ($csv->parse ($s2023), 0,		"Parse 2023");
+    is (($csv->error_diag ())[0], 2023,		"Fail code 2023");
+    is (($csv->error_diag ())[2], 22,		"Space is eaten now");
     }
