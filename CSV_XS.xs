@@ -818,8 +818,8 @@ restart:
 
 #if ALLOW_ALLOW
 		    if (csv->allow_whitespace) {
-/* uncovered */		while (c2 == CH_SPACE || c2 == CH_TAB) {
-/* uncovered */		    c2 = CSV_GET;
+			while (c2 == CH_SPACE || c2 == CH_TAB) {
+			    c2 = CSV_GET;
 			    }
 			}
 #endif
