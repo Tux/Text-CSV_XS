@@ -1449,11 +1449,26 @@ will cause this error.
 
 =item 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
 
+The escape character is not allowed as last character in an input stream.
+
 =item 2025 "EIQ - Loose unescaped escape"
+
+An escape character should escape only characters that need escaping. Allowing
+the escape for other characters is possible with the C<allow_loose_escape>
+attribute.
 
 =item 2026 "EIQ - Binary character inside quoted field, binary off"
 
+Binary characters are not allowed by default. Exceptions are fields that
+contain valid UTF-8, that will automatically be upgraded is the content is
+valid UTF-8. Pass the C<binary> attribute with a true value to accept binary
+characters.
+
 =item 2027 "EIQ - Quoted field not terminated"
+
+When parsing a field that started with a quotation character, the field is
+expected to be closed with a quotation charater. When the parsed line is
+exhausted before the quote is found, that field is not terminated.
 
 =item 2030 "EIF - NL char inside unquoted verbatim, binary off"
 
