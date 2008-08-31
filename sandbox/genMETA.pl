@@ -3,6 +3,14 @@
 use strict;
 use warnings;
 
+use Getopt::Long qw(:config bundling nopermute);
+my $check = 0;
+my $opt_v = 0;
+GetOptions (
+    "c|check"		=> \$check,
+    "v|verbose:1"	=> \$opt_v,
+    ) or die "usage: $0 [--check]\n";
+
 my $version;
 open my $pm, "<", "CSV_XS.pm" or die "Cannot read CSV_XS>PM";
 while (<$pm>) {
@@ -12,16 +20,39 @@ while (<$pm>) {
     }
 close $pm;
 
-my @my = glob <*/META.yml>;
-@my == 1 && open my $my, ">", $my[0] or die "Cannot update META.yml|n";
+my @yml;
 while (<DATA>) {
     s/VERSION/$version/o;
-    print $my $_;
+    push @yml, $_;
     }
-close $my;
+
+if ($check) {
+    use YAML::Syck;
+    use Test::YAML::Meta::Version;
+    my $h;
+    eval { $h = Load (join "", @yml) };
+    $@ and die "$@\n";
+    $opt_v and print Dump $h;
+    my $t = Test::YAML::Meta::Version->new (yaml => $h);
+    $t->parse () and die join "\n", $t->errors, "";
+
+    print "Checking if 5.006 is still OK as minimal version for examples\n";
+    use Test::MinimumVersion;
+    # All other minimum version checks done in xt
+    all_minimum_version_ok ("5.006", { paths => [ "examples" ]});
+    }
+elsif ($opt_v) {
+    print @yml;
+    }
+else {
+    my @my = glob <*/META.yml>;
+    @my == 1 && open my $my, ">", $my[0] or die "Cannot update META.yml|n";
+    print $my @yml;
+    close $my;
+    }
 
 __END__
---- #YAML:1.0
+--- #YAML:1.4
 name:              Text-CSV_XS
 version:           VERSION
 abstract:          Comma-Separated Values manipulation routines
@@ -47,5 +78,5 @@ build_requires:
 resources:
     license:       http://dev.perl.org/licenses/
 meta-spec:
-    url:           http://module-build.sourceforge.net/META-spec-v1.3.html
-    version:       1.3
+    version:       1.4
+    url:           http://module-build.sourceforge.net/META-spec-v1.4.html
