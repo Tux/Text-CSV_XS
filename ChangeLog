@@ -1,6 +1,6 @@
-2008-08-18 0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-09-01 0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
-	* SvUPGRADE is a safer choice than sv_upgrade (Lubomir Rintel)
+	* SvUPGRADE is a safer choice than sv_upgrade (Lubomir Rintel, RT#38890)
 	* bring docs in sync with reality for msg 2023
 	* Default eol for print is $\
 	* examples/csv-check should default to CSV , not to ;
