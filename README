@@ -18,7 +18,7 @@ Copying:
     git://repo.or.cz/Text-CSV_XS.git
 
 Prerequisites:
-    perl 5.005. 5.005 will not be able to build the manual pages.
+    perl 5.005_03. 5.005 will not be able to build the manual pages.
     examples require 5.006, but are probably easy to mold into 5.005
 
 Build/Installation:

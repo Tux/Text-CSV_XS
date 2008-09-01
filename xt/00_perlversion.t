@@ -15,6 +15,6 @@ open my $pm, ">", $pm_dup or die "$pm_dup";
 print $pm $mod;
 close $pm;
 
-all_minimum_version_ok ("5.005", { paths => [qw( t xt ), $pm_dup, glob "*.PL" ]});
+all_minimum_version_ok ("5.005_03", { paths => [qw( t xt ), $pm_dup, glob "*.PL" ]});
 
 unlink $pm_dup;
