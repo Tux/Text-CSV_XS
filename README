@@ -15,7 +15,7 @@ Copying:
     it under the same terms as Perl itself.
 
     Recent changes can be (re)viewed in the public GIT repository at
-    git://repo.or.cz/Text-CSV_XS.git
+    http://repo.or.cz/w/Text-CSV_XS.git
 
 Prerequisites:
     perl 5.005_03. 5.005 will not be able to build the manual pages.
@@ -27,7 +27,7 @@ Build/Installation:
 	make
 	make test
 	make install
-    (The 'make' step cannot be ommitted for perl-5.005)
+    (The 'make' step cannot be omitted for perl-5.005)
 
 Author:
     H.Merijn Brand <h.m.brand@xs4all.nl>
