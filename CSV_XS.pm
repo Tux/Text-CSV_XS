@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.54";
+$VERSION = "0.55";
 @ISA     = qw( DynaLoader );
 
 sub PV { 0 }
@@ -94,7 +94,7 @@ sub new
 	}
     $last_new_err = "";
     my $self  = {%def_attr, %{$attr}};
-    defined $\ and $self->{eol} = $\;
+    defined $\ && !exists $attr->{eol} and $self->{eol} = $\;
     bless $self, $class;
     defined $self->{types} and $self->types ($self->{types});
     $self;
@@ -666,8 +666,8 @@ Currently the following attributes are available:
 =item eol
 
 An end-of-line string to add to rows, usually C<undef> (nothing,
-default), C<"\012"> (Line Feed) or C<"\015\012"> (Carriage Return,
-Line Feed). Cannot be longer than 7 (ASCII) characters.
+default = C<$\>), C<"\012"> (Line Feed) or C<"\015\012"> (Carriage
+Return, Line Feed). Cannot be longer than 7 (ASCII) characters.
 
 If both C<$/> and C<eol> equal C<"\015">, parsing lines that end on
 only a Carriage Return without Line Feed, will be C<parse>d correct.
@@ -868,7 +868,7 @@ is equivalent to
      quote_char          => '"',
      escape_char         => '"',
      sep_char            => ',',
-     eol                 => '',
+     eol                 => $\,
      always_quote        => 0,
      binary              => 0,
      keep_meta_info      => 0,
@@ -1221,7 +1221,7 @@ An example for creating CSV files:
       }
   close $csv_fh or die "hello.csv: $!";
 
-Or using the C<print ()> method, which is fater like in
+Or using the C<print ()> method, which is faster like in
 dumping the content of a database ($dbh) table ($tbl) to CSV:
 
   my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
@@ -1268,14 +1268,6 @@ error_diag is a (very) good start, but there is more work to be done here.
 
 Basic calls should croak or warn on illegal parameters. Errors should be
 documented.
-
-=item eol
-
-Discuss an option to make the eol honor the $/ setting. Maybe
-
-  my $csv = Text::CSV_XS->new ({ eol => $/ });
-
-is already enough, and new options only make things less opaque.
 
 =item setting meta info
 
