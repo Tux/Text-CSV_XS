@@ -1,3 +1,7 @@
+2008-09-04 0.54 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* IO failure in print () was not propagated (ilmari, RT#38960)
+
 2008-09-01 0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* SvUPGRADE is a safer choice than sv_upgrade (Lubomir Rintel, RT#38890)

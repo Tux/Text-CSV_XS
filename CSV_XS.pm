@@ -1487,6 +1487,8 @@ exhausted before the quote is found, that field is not terminated.
 
 =item 2110 "ECB - Binary character in Combine, binary off"
 
+=item 2200 "EIO - print to IO failed. See errno"
+
 =item 3001 "EHR - Unsupported syntax for column_names ()"
 
 =item 3002 "EHR - getline_hr () called before column_names ()"

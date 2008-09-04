@@ -4,12 +4,15 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 69;
+ use Test::More tests => 73;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
+
+my $csv_file = "_test.csv";
+END { unlink $csv_file }
 
 my $rt_no;
 my %input;
@@ -41,11 +44,11 @@ while (<DATA>) {
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
     # 21530: getline () does not return documented value at end of filehandle
     # IO::Handle  was first released with perl 5.00307
-    open  FH, ">_test.csv";
+    open  FH, ">$csv_file";
     print FH @{$input{21530}};
     close FH;
     ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-21530: getline () return at eof");
-    open  FH, "<_test.csv";
+    open  FH, "<$csv_file";
     my $row;
     foreach my $line (1 .. 5) {
 	ok ($row = $csv->getline (*FH), "getline $line");
@@ -55,7 +58,7 @@ while (<DATA>) {
     ok (eof FH, "EOF");
     is ($row = $csv->getline (*FH), undef, "getline EOF");
     close FH;
-    unlink "_test.csv";
+    unlink $csv_file;
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
@@ -92,12 +95,12 @@ while (<DATA>) {
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=34474
     # 34474: wish: integrate row-as-hashref feature from Parse::CSV
-    open  FH, ">_test.csv";
+    open  FH, ">$csv_file";
     print FH @{$input{34474}};
     close FH;
     ok (my $csv = Text::CSV_XS->new (),		"RT-34474: getline_hr ()");
     is ($csv->column_names, undef,		"No headers yet");
-    open  FH, "<_test.csv";
+    open  FH, "<$csv_file";
     my $row;
     ok ($row = $csv->getline (*FH),		"getline headers");
     is ($row->[0], "code",			"Header line");
@@ -110,7 +113,24 @@ while (<DATA>) {
 	like ($hr->{name}, qr/^[A-Z][a-z]+$/,	"Name");
 	}
     close FH;
-    unlink "_test.csv";
+    unlink $csv_file;
+    }
+
+{   # http://rt.cpan.org/Ticket/Display.html?id=38960
+    # 38960: print () on invalid filehandle warns and returns success
+    open  FH, ">$csv_file";
+    print FH "";
+    close FH;
+    my $err = "";
+    open  FH, "<$csv_file";
+    ok (my $csv = Text::CSV_XS->new (),		"RT-38960: print () fails");
+    local $SIG{__WARN__} = sub { $err = "Warning" };
+    ok (!$csv->print (*FH, [ 1 .. 4 ]),		"print ()");
+    is ($err, "Warning",			"IO::Handle triggered a warning");
+    my @err = $csv->error_diag ();
+    is ($err[0], 2200,	"error 2200");
+    close FH;
+    unlink $csv_file;
     }
 
 __END__
