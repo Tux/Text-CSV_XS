@@ -452,10 +452,10 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
 			return FALSE;
 			}
 		    }
-		if (csv->quote_char  && c == csv->quote_char)
+		if (c == csv->quote_char  && csv->quote_char)
 		    e = 1;
 		else
-		if (csv->escape_char && c == csv->escape_char)
+		if (c == csv->escape_char && csv->escape_char)
 		    e = 1;
 		else
 		if (c == (char)0) {
@@ -807,7 +807,7 @@ restart:
 		}
 	    } /* CH_CR */
 	else
-	if (csv->quote_char && c == csv->quote_char) {
+	if (c == csv->quote_char && csv->quote_char) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%02x pos %d = QUO '%c'\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
@@ -946,7 +946,7 @@ restart:
 		ERROR_INSIDE_FIELD (2034);
 	    } /* QUO char */
 	else
-	if (csv->escape_char && c == csv->escape_char) {
+	if (c == csv->escape_char && csv->escape_char) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%02x pos %d = ESC '%c'\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
@@ -1030,7 +1030,7 @@ restart:
 
 	/* continue */
 #if ALLOW_ALLOW
-	if (csv->useIO && csv->verbatim && csv->used == csv->size)
+	if (csv->verbatim && csv->useIO && csv->used == csv->size)
 	    break;
 #endif
 	}
