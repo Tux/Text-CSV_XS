@@ -14,14 +14,18 @@ BEGIN {
 	plan skip_all => "No perlIO available";
 	}
     else {
-	plan tests => 82;
+	plan tests => 105;
 	}
     }
 
 BEGIN {
     use_ok "Text::CSV_XS";
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
+    require "t/util.pl";
     }
+
+$/ = "\n";
+$\ = undef;
 
 my $io;
 my $io_str;
@@ -113,39 +117,36 @@ is ($csv->eof, 1,					"EOF");
 
 # Edge cases
 $csv = Text::CSV_XS->new ({ escape_char => "+" });
-for ([  1, 1, "\n"		],
-     [  2, 1, "+\n"		],
-     [  3, 1, "+"		],
-     [  4, 0, qq{"+"\n}		],
-     [  5, 0, qq{"+\n}		],
-     [  6, 0, qq{""+\n}		],
-     [  7, 0, qq{"+"}		],
-     [  8, 0, qq{"+}		],
-     [  9, 0, qq{""+}		],
-     [ 10, 0, "\r"		],
-     [ 11, 0, "\r\r"		],
-     [ 12, 0, "+\r\r"		],
-     [ 13, 0, "+\r\r+"		],
-     [ 14, 0, qq{"\r"}		],
-     [ 15, 0, qq{"\r\r"	}	],
-     [ 16, 0, qq{"+\r\r"}	],
-     [ 17, 0, qq{"+\r\r+"}	],
-     [ 14, 0, qq{"\r"\r}	],
-     [ 15, 0, qq{"\r\r"\r}	],
-     [ 16, 0, qq{"+\r\r"\r}	],
-     [ 17, 0, qq{"+\r\r+"\r}	],
+for ([  1, 1,    0, "\n"		],
+     [  2, 1,    0, "+\n"		],
+     [  3, 1,    0, "+"			],
+     [  4, 0, 2021, qq{"+"\n}		],
+     [  5, 0, 2025, qq{"+\n}		],
+     [  6, 0, 2011, qq{""+\n}		],
+     [  7, 0, 2027, qq{"+"}		],
+     [  8, 0, 2024, qq{"+}		],
+     [  9, 0, 2011, qq{""+}		],
+     [ 10, 0, 2037, "\r"		],
+     [ 11, 0, 2031, "\r\r"		],
+     [ 12, 0, 2032, "+\r\r"		],
+     [ 13, 0, 2032, "+\r\r+"		],
+     [ 14, 0, 2022, qq{"\r"}		],
+     [ 15, 0, 2022, qq{"\r\r" }		],
+     [ 16, 0, 2022, qq{"\r\r"\t}	],
+     [ 17, 0, 2025, qq{"+\r\r"}		],
+     [ 18, 0, 2025, qq{"+\r\r+"}	],
+     [ 19, 0, 2022, qq{"\r"\r}		],
+     [ 20, 0, 2022, qq{"\r\r"\r}	],
+     [ 21, 0, 2025, qq{"+\r\r"\r}	],
+     [ 22, 0, 2025, qq{"+\r\r+"\r}	],
      ) {
-    my ($tst, $valid, $str) = @$_;
-    open  my $io, ">", \$io_str or die "_test.csv: $!";
-    print $io $str;
-    close $io;
-    open  $io, "<", \$io_str or die "_test.csv: $!";
+    my ($tst, $valid, $err, $str) = @$_;
+    $io_str = $str;
+    open $io, "<", \$io_str or die "_test.csv: $!";
     my $row = $csv->getline ($io);
     close $io;
-    if ($valid) {
-	ok ( $row, "$tst - getline ESC");
-	}
-    else {
-	ok (!$row, "$tst - getline ESC");
-	}
+    my @err  = $csv->error_diag;
+    my $sstr = _readable ($str);
+    ok ($valid ? $row : !$row, "$tst - getline ESC +, '$sstr'");
+    is ($err[0], $err, "Error expected $err");
     }
