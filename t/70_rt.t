@@ -127,8 +127,7 @@ while (<DATA>) {
     local $SIG{__WARN__} = sub { $err = "Warning" };
     ok (!$csv->print (*FH, [ 1 .. 4 ]),		"print ()");
     is ($err, "Warning",			"IO::Handle triggered a warning");
-    my @err = $csv->error_diag ();
-    is ($err[0], 2200,	"error 2200");
+    is (($csv->error_diag)[0], 2200,		"error 2200");
     close FH;
     unlink $csv_file;
     }

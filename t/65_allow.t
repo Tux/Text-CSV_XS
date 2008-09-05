@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 838;
+ use Test::More tests => 1018;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -18,18 +18,19 @@ ok (1, "Allow unescaped quotes");
 # Allow unescaped quotes inside an unquoted field
 {   my @bad = (
 	# valid, line
-	[ 1, 1, qq{foo,bar,"baz",quux},					],
-	[ 2, 0, qq{rj,bs,r"jb"s,rjbs},					],
-	[ 3, 0, qq{some "spaced" quote data,2,3,4},			],
-	[ 4, 1, qq{and an,entirely,quoted,"field"},			],
-	[ 5, 1, qq{and then,"one with ""quoted"" quotes",okay,?},	],
+	[ 1, 1,    0, qq{foo,bar,"baz",quux}				],
+	[ 2, 0, 2034, qq{rj,bs,r"jb"s,rjbs}				],
+	[ 3, 0, 2034, qq{some "spaced" quote data,2,3,4}		],
+	[ 4, 1,    0, qq{and an,entirely,quoted,"field"}		],
+	[ 5, 1,    0, qq{and then,"one with ""quoted"" quotes",okay,?}	],
 	);
 
     for (@bad) {
-	my ($tst, $valid, $bad) = @$_;
+	my ($tst, $valid, $err, $bad) = @$_;
 	$csv = Text::CSV_XS->new ();
 	ok ($csv,			"$tst - new (alq => 0)");
 	is ($csv->parse ($bad), $valid,	"$tst - parse () fail");
+	is (0 + $csv->error_diag, $err,		"$tst - error $err");
 
 	$csv->allow_loose_quotes (1);
 	ok ($csv->parse ($bad),		"$tst - parse () pass");
@@ -44,21 +45,23 @@ ok (1, "Allow loose quotes inside quoted");
 # Allow unescaped quotes inside a quoted field
 {   my @bad = (
 	# valid, line
-	[ 1, 1, qq{foo,bar,"baz",quux},					],
-	[ 2, 0, qq{rj,bs,"r"jb"s",rjbs},				],
-	[ 3, 0, qq{"some "spaced" quote data",2,3,4},			],
-	[ 4, 1, qq{and an,entirely,quoted,"field"},			],
-	[ 5, 1, qq{and then,"one with ""quoted"" quotes",okay,?},	],
+	[ 1, 1,    0, qq{foo,bar,"baz",quux}				],
+	[ 2, 0, 2023, qq{rj,bs,"r"jb"s",rjbs}				],
+	[ 3, 0, 2023, qq{"some "spaced" quote data",2,3,4}		],
+	[ 4, 1,    0, qq{and an,entirely,quoted,"field"}		],
+	[ 5, 1,    0, qq{and then,"one with ""quoted"" quotes",okay,?}	],
 	);
 
     for (@bad) {
-	my ($tst, $valid, $bad) = @$_;
+	my ($tst, $valid, $err, $bad) = @$_;
 	$csv = Text::CSV_XS->new ();
 	ok ($csv,			"$tst - new (alq => 0)");
 	is ($csv->parse ($bad), $valid,	"$tst - parse () fail");
+	is (0 + $csv->error_diag, $err,		"$tst - error $err");
 
 	$csv->allow_loose_quotes (1);
 	is ($csv->parse ($bad), $valid,	"$tst - parse () fail with lq");
+	is (0 + $csv->error_diag, $err,		"$tst - error $err");
 
 	$csv->escape_char (undef);
 	ok ($csv->parse ($bad),		"$tst - parse () pass");
@@ -70,27 +73,29 @@ ok (1, "Allow loose escapes");
 # Allow escapes to escape characters that should not be escaped
 {   my @bad = (
 	# valid, line
-	[ 1, 1, qq{1,foo,bar,"baz",quux},				],
-	[ 2, 1, qq{2,escaped,"quote\\"s",in,"here"},			],
-	[ 3, 1, qq{3,escaped,quote\\"s,in,"here"},			],
-	[ 4, 1, qq{4,escap\\'d chars,allowed,in,unquoted,fields},	],
-	[ 5, 0, qq{5,42,"and it\\'s dog",},				],
+	[ 1, 1,    0, qq{1,foo,bar,"baz",quux}				],
+	[ 2, 1,    0, qq{2,escaped,"quote\\"s",in,"here"}		],
+	[ 3, 1,    0, qq{3,escaped,quote\\"s,in,"here"}			],
+	[ 4, 1,    0, qq{4,escap\\'d chars,allowed,in,unquoted,fields}	],
+	[ 5, 0, 2025, qq{5,42,"and it\\'s dog",}			],
 
-	[ 6, 1, qq{\\,},						],
-	[ 7, 1, qq{\\},							],
-	[ 8, 0, qq{foo\\},						],
+	[ 6, 1,    0, qq{\\,}						],
+	[ 7, 1,    0, qq{\\}						],
+	[ 8, 0, 2035, qq{foo\\}						],
 	);
 
     for (@bad) {
-	my ($tst, $valid, $bad) = @$_;
+	my ($tst, $valid, $err, $bad) = @$_;
 	$csv = Text::CSV_XS->new ({ escape_char => "\\" });
 	ok ($csv,			"$tst - new (ale => 0)");
 	is ($csv->parse ($bad), $valid,	"$tst - parse () fail");
+	is (0 + $csv->error_diag, $err,		"$tst - error $err");
 
 	$csv->allow_loose_escapes (1);
 	if ($tst >= 8) {
 	    # Should always fail
 	    ok (!$csv->parse ($bad),	"$tst - parse () fail");
+	    is (0 + $csv->error_diag, $err,		"$tst - error $err");
 	    }
 	else {
 	    ok ($csv->parse ($bad),	"$tst - parse () pass");
@@ -103,28 +108,29 @@ ok (1, "Allow whitespace");
 # Allow whitespace to surround sep char
 {   my @bad = (
 	# valid, line
-	[  1, 1, qq{1,foo,bar,baz,quux},				],
-	[  2, 1, qq{1,foo,bar,"baz",quux},			],
-	[  3, 1, qq{1, foo,bar,"baz",quux},			],
-	[  4, 1, qq{ 1,foo,bar,"baz",quux},			],
-	[  5, 0, qq{1,foo,bar, "baz",quux},			],
-	[  6, 1, qq{1,foo ,bar,"baz",quux},			],
-	[  7, 1, qq{1,foo,bar,"baz",quux },			],
-	[  8, 1, qq{1,foo,bar,"baz","quux"},			],
-	[  9, 0, qq{1,foo,bar,"baz" ,quux},			],
-	[ 10, 0, qq{1,foo,bar,"baz","quux" },			],
-	[ 11, 0, qq{ 1 , foo , bar , "baz" , quux },		],
-	[ 12, 0, qq{  1  ,  foo  ,  bar  ,  "baz"  ,  quux  },	],
-	[ 13, 0, qq{  1  ,  foo  ,  bar  ,  "baz"\t ,  quux  },	],
+	[  1, 1,    0, qq{1,foo,bar,baz,quux}				],
+	[  2, 1,    0, qq{1,foo,bar,"baz",quux}				],
+	[  3, 1,    0, qq{1, foo,bar,"baz",quux}			],
+	[  4, 1,    0, qq{ 1,foo,bar,"baz",quux}			],
+	[  5, 0, 2034, qq{1,foo,bar, "baz",quux}			],
+	[  6, 1,    0, qq{1,foo ,bar,"baz",quux}			],
+	[  7, 1,    0, qq{1,foo,bar,"baz",quux }			],
+	[  8, 1,    0, qq{1,foo,bar,"baz","quux"}			],
+	[  9, 0, 2023, qq{1,foo,bar,"baz" ,quux}			],
+	[ 10, 0, 2023, qq{1,foo,bar,"baz","quux" }			],
+	[ 11, 0, 2034, qq{ 1 , foo , bar , "baz" , quux }		],
+	[ 12, 0, 2034, qq{  1  ,  foo  ,  bar  ,  "baz"  ,  quux  }	],
+	[ 13, 0, 2034, qq{  1  ,  foo  ,  bar  ,  "baz"\t ,  quux  }	],
 	);
 
     foreach my $eol ("", "\n", "\r", "\r\n") {
 	my $s_eol = _readable ($eol);
 	for (@bad) {
-	    my ($tst, $ok, $bad) = @$_;
+	    my ($tst, $ok, $err, $bad) = @$_;
 	    $csv = Text::CSV_XS->new ({ eol => $eol, binary => 1 });
 	    ok ($csv,				"$s_eol / $tst - new - '$bad')");
 	    is ($csv->parse ($bad), $ok,	"$s_eol / $tst - parse () fail");
+	    is (0 + $csv->error_diag, $err,			"$tst - error $err");
 
 	    $csv->allow_whitespace (1);
 	    ok ($csv->parse ("$bad$eol"),	"$s_eol / $tst - parse () pass");
@@ -141,32 +147,33 @@ ok (1, "Allow whitespace");
 # Allow whitespace to surround sep char
 {   my @bad = (
 	# test, ok, line
-	[  1, 1, qq{1,foo,bar,baz,quux},			],
-	[  2, 1, qq{1,foo,bar,"baz",quux},			],
-	[  3, 1, qq{1, foo,bar,"baz",quux},			],
-	[  4, 1, qq{ 1,foo,bar,"baz",quux},			],
-	[  5, 0, qq{1,foo,bar, "baz",quux},			],
-	[  6, 1, qq{1,foo ,bar,"baz",quux},			],
-	[  7, 1, qq{1,foo,bar,"baz",quux },			],
-	[  8, 1, qq{1,foo,bar,"baz","quux"},			],
-	[  9, 0, qq{1,foo,bar,"baz" ,quux},			],
-	[ 10, 0, qq{1,foo,bar,"baz","quux" },			],
-	[ 11, 0, qq{1,foo,bar,"baz","quux" },			],
-	[ 12, 0, qq{ 1 , foo , bar , "baz" , quux },		],
-	[ 13, 0, qq{  1  ,  foo  ,  bar  ,  "baz"  ,  quux  },	],
-	[ 14, 0, qq{  1  ,  foo  ,  bar  ,  "baz"\t ,  quux  },	],
+	[  1, 1,    0, qq{1,foo,bar,baz,quux}				],
+	[  2, 1,    0, qq{1,foo,bar,"baz",quux}				],
+	[  3, 1,    0, qq{1, foo,bar,"baz",quux}			],
+	[  4, 1,    0, qq{ 1,foo,bar,"baz",quux}			],
+	[  5, 0, 2034, qq{1,foo,bar, "baz",quux}			],
+	[  6, 1,    0, qq{1,foo ,bar,"baz",quux}			],
+	[  7, 1,    0, qq{1,foo,bar,"baz",quux }			],
+	[  8, 1,    0, qq{1,foo,bar,"baz","quux"}			],
+	[  9, 0, 2023, qq{1,foo,bar,"baz" ,quux}			],
+	[ 10, 0, 2023, qq{1,foo,bar,"baz","quux" }			],
+	[ 11, 0, 2023, qq{1,foo,bar,"baz","quux" }			],
+	[ 12, 0, 2034, qq{ 1 , foo , bar , "baz" , quux }		],
+	[ 13, 0, 2034, qq{  1  ,  foo  ,  bar  ,  "baz"  ,  quux  }	],
+	[ 14, 0, 2034, qq{  1  ,  foo  ,  bar  ,  "baz"\t ,  quux  }	],
 	);
 
     foreach my $eol ("", "\n", "\r", "\r\n") {
 	my $s_eol = _readable ($eol);
 	for (@bad) {
-	    my ($tst, $ok, $bad) = @$_;
+	    my ($tst, $ok, $err, $bad) = @$_;
 	    $csv = Text::CSV_XS->new ({
 		eol		 => $eol,
 		binary		 => 1,
 		});
 	    ok ($csv,				"$s_eol / $tst - new - '$bad')");
 	    is ($csv->parse ($bad), $ok,	"$s_eol / $tst - parse () fail");
+	    is (0 + $csv->error_diag, $err,			"$tst - error $err");
 
 	    $csv->allow_whitespace (1);
 	    ok ($csv->parse ("$bad$eol"),	"$s_eol / $tst - parse () pass");
@@ -211,21 +218,25 @@ foreach my $bin (0, 1) {
 	ok ($csv, "$s_eol - new ()");
 	my @bad = (
 	    # test, line
-	    [ 1, qq{"\r\r\n"\r},	],
-	    [ 2, qq{"\r\r\n"\r\r},	],
-	    [ 3, qq{"\r\r\n"\r\r\n},	],
-	    [ 4, qq{"\r\r\n"\t \r},	],
-	    [ 5, qq{"\r\r\n"\t \r\r},	],
-	    [ 6, qq{"\r\r\n"\t \r\r\n},	],
+	    [ 1, qq{"\r\r\n"\r}		],
+	    [ 2, qq{"\r\r\n"\r\r}	],
+	    [ 3, qq{"\r\r\n"\r\r\n}	],
+	    [ 4, qq{"\r\r\n"\t \r}	],
+	    [ 5, qq{"\r\r\n"\t \r\r}	],
+	    [ 6, qq{"\r\r\n"\t \r\r\n}	],
 	    );
+	my @pass = (    0,    0,    0, 1 );
+	my @fail = ( 2022, 2022, 2023, 0 );
 
 	foreach my $arg (@bad) {
 	    my ($tst, $bad) = @$arg;
-	    my $ok = ($bin and $eol) ? 1 : 0;
-	    is ($csv->parse ($bad), $ok,	"$tst - parse () default");
+	    my $ok = ($bin << 1) | ($eol ? 1 : 0);
+	    is ($csv->parse ($bad), $pass[$ok],	"$tst $ok - parse () default");
+	    is (0 + $csv->error_diag, $fail[$ok],		"$tst $ok - error $fail[$ok]");
 
 	    $csv->allow_whitespace (1);
-	    is ($csv->parse ($bad), $ok,	"$tst - parse () allow");
+	    is ($csv->parse ($bad), $pass[$ok],	"$tst $ok - parse () allow");
+	    is (0 + $csv->error_diag, $fail[$ok],		"$tst $ok - error $fail[$ok]");
 	    }
 	}
     }
@@ -323,7 +334,7 @@ foreach my $bin (0, 1) {
     close FH;
     open  FH, "<_test.csv";
     is ($csv->getline (*FH), undef,	"#\\r\\n $gc getline 2030");
-    is (0 + $csv->error_diag (), 2030,	"Got 2030");
+    is (0 + $csv->error_diag, 2030,	"Got 2030");
     close FH;
 
     unlink "_test.csv";
@@ -366,12 +377,12 @@ foreach my $bin (0, 1) {
     my $s2023 = qq{2023,",2008-04-05,"  \tFoo, Bar",\n}; # "
     #                                ^
 
-    is ($csv->parse ($s2023), 0,		"Parse 2023");
-    is (($csv->error_diag ())[0], 2023,		"Fail code 2023");
-    is (($csv->error_diag ())[2], 19,		"Fail position");
+    is ( $csv->parse ($s2023), 0,		"Parse 2023");
+    is (($csv->error_diag)[0], 2023,		"Fail code 2023");
+    is (($csv->error_diag)[2], 19,		"Fail position");
 
-    is ($csv->allow_whitespace (1), 1,		"Allow whitespace");
-    is ($csv->parse ($s2023), 0,		"Parse 2023");
-    is (($csv->error_diag ())[0], 2023,		"Fail code 2023");
-    is (($csv->error_diag ())[2], 22,		"Space is eaten now");
+    is ( $csv->allow_whitespace (1), 1,		"Allow whitespace");
+    is ( $csv->parse ($s2023), 0,		"Parse 2023");
+    is (($csv->error_diag)[0], 2023,		"Fail code 2023");
+    is (($csv->error_diag)[2], 22,		"Space is eaten now");
     }

@@ -32,6 +32,7 @@ use Carp;
 use vars   qw( $VERSION @ISA );
 $VERSION = "0.55";
 @ISA     = qw( DynaLoader );
+bootstrap Text::CSV_XS $VERSION;
 
 sub PV { 0 }
 sub IV { 1 }
@@ -77,7 +78,7 @@ my %def_attr = (
     _COLUMN_NAMES	=> undef,
     _BOUND_COLUMNS	=> undef,
     );
-my $last_new_err = "";
+my $last_new_err = Text::CSV_XS->SetDiag (0);
 
 sub new
 {
@@ -92,7 +93,7 @@ sub new
 	$last_new_err = "Unknown attribute '$_'";
 	return;
 	}
-    $last_new_err = "";
+    $last_new_err = SetDiag (undef, 0);
     my $self  = {%def_attr, %{$attr}};
     defined $\ && !exists $attr->{eol} and $self->{eol} = $\;
     bless $self, $class;
