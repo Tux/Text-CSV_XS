@@ -177,22 +177,31 @@ static int  io_handle_loaded = 0;
 	io_handle_loaded = 1;					\
 	}
 
-static SV *SetDiag (csv_t *csv, int xse)
+static SV *SvDiag (int xse)
 {
     int   i = 0;
-    SV   *err = NULL;
+    SV   *err;
 
     while (xs_errors[i].xs_errno && xs_errors[i].xs_errno != xse) i++;
     if ((err = newSVpv (xs_errors[i].xs_errstr, 0))) {
 	SvUPGRADE (err, SVt_PVIV);
 	SvIV_set  (err, xse);
 	SvIOK_on  (err);
-	if (csv)
-	    hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
 	}
-    if (xse == 0 && csv) {
-	hv_store     (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
-	hv_store     (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
+    return (err);
+    } /* SvDiag */
+
+static SV *SetDiag (csv_t *csv, int xse)
+{
+    int   i = 0;
+    SV   *err = SvDiag (xse);
+
+    if (err) {
+	hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
+	}
+    if (xse == 0) {
+	hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
+	hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
 	}
     return (err);
     } /* SetDiag */
@@ -1153,8 +1162,8 @@ SetDiag (self, xse)
 	SetupCsv (&csv, hv);
 	ST (0) = SetDiag (&csv, xse);
 	}
-    else /* Class method or function call */
-	ST (0) = SetDiag (NULL, xse);
+    else
+	ST (0) = SvDiag (xse);
     XSRETURN (1);
     /* XS SetDiag */
 
