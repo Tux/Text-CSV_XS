@@ -38,7 +38,6 @@ my %wm = (
 			 CSV_XS.xs.gcov
 			 cover_db
 			 valgrind.log
-			 Debian_CPANTS.txt
 			 )
 		      },
     );
@@ -93,6 +92,7 @@ sub postamble
 	'tgzdist:	checkmeta fixmeta $(DISTVNAME).tar.gz distcheck',
 	'	-@mv -f $(DISTVNAME).tar.gz $(DISTVNAME).tgz',
 	'	-@cpants_lint.pl $(DISTVNAME).tgz',
+	'	-@rm -f Debian_CPANTS.txt',
 	'',
 	'test_speed: pure_all',
 	'	PERL_DL_NONLAZY=1 $(FULLPERLRUN) -I"$(INST_LIB)" -I"$(INST_ARCHLIB)" examples/speed.pl',
