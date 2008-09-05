@@ -38,6 +38,7 @@ my %wm = (
 			 CSV_XS.xs.gcov
 			 cover_db
 			 valgrind.log
+			 Debian_CPANTS.txt
 			 )
 		      },
     );
