@@ -49,6 +49,7 @@ else {
     @my == 1 && open my $my, ">", $my[0] or die "Cannot update META.yml|n";
     print $my @yml;
     close $my;
+    chmod 0644, glob <*/META.yml>;
     }
 
 __END__
