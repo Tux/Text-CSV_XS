@@ -16,7 +16,7 @@ package Text::CSV_XS;
 # Based on Text::CSV by:
 #    Alan Citterman <alan@mfgrtl.com>
 #
-# Extended by:
+# Extended and Remodelled by:
 #    H.Merijn Brand (h.m.brand@xs4all.nl)
 #
 ############################################################################
@@ -684,6 +684,8 @@ Limited to a single-byte character, usually in the range from 0x20
 The separation character can not be equal to the quote character.
 The separation character can not be equal to the escape character.
 
+See also CAVEATS
+
 =item allow_whitespace
 
 When this option is set to true, whitespace (TAB's and SPACE's)
@@ -1250,6 +1252,23 @@ be used to `fix' bad CSV
 
   perl examples/parser-xs.pl bad.csv >good.csv
 
+=head1 CAVEATS
+
+C<Text::CSV_XS> is not designed to detect the characters used for field
+separation and quoting. The parsing is done using predefined settings. In
+the examples subdirectory, you can find scripts that demonstrate how you
+can try to detect these characters yourself.
+
+=head2 Microsoft Excel
+
+The import/export from Microsoft Excel is a I<risky task>, according to the
+documentation in C<Text::CSV::Separator>. Microsoft uses the system's default
+list separator defined in the regional settings, which happens to be a
+semicolon for Dutch, German and Spanish (and probably some others as well).
+For the English locale, the default is a comma. In Windows however, the user
+is free to choose a predefined locale, and then change every individual
+setting in it, so checking the locale is no solution.
+
 =head1 TODO
 
 =over 2
@@ -1461,7 +1480,7 @@ characters.
 =item 2027 "EIQ - Quoted field not terminated"
 
 When parsing a field that started with a quotation character, the field is
-expected to be closed with a quotation charater. When the parsed line is
+expected to be closed with a quotation character. When the parsed line is
 exhausted before the quote is found, that field is not terminated.
 
 =item 2030 "EIF - NL char inside unquoted verbatim, binary off"
@@ -1500,8 +1519,9 @@ exhausted before the quote is found, that field is not terminated.
 
 =head1 SEE ALSO
 
-L<perl(1)>, L<IO::File(3)>, L{IO::Handle(3)>, L<IO::Wrap(3)>,
-L<Text::CSV(3)>, L<Text::CSV_PP(3)>.  and L<Spreadsheet::Read(3)>.
+L<perl(1)>, L<IO::File(3)>, L<IO::Handle(3)>, L<IO::Wrap(3)>,
+L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::SEparator>,
+and L<Spreadsheet::Read(3)>.
 
 =head1 AUTHORS and MAINTAINERS
 
