@@ -1520,7 +1520,7 @@ exhausted before the quote is found, that field is not terminated.
 =head1 SEE ALSO
 
 L<perl(1)>, L<IO::File(3)>, L<IO::Handle(3)>, L<IO::Wrap(3)>,
-L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::SEparator>,
+L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::Separator(3)>,
 and L<Spreadsheet::Read(3)>.
 
 =head1 AUTHORS and MAINTAINERS
