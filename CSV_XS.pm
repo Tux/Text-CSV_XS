@@ -568,6 +568,16 @@ are marked binary will also be marked UTF8.
 On combining (C<print ()> and C<combine ()>), if any of the combining
 fields was marked UTF8, the resulting string will be marked UTF8.
 
+For complete control over encoding, please use Text::CSV::Encoded:
+
+    use Text::CSV::Encoded;
+    my $csv = Text::CSV::Encoded->new ({
+        encoding_csv_in  => "iso-8859-1", # the encoding comes into   Perl
+        encoding_csv_out => "cp1252",     # the encoding comes out of Perl
+        });
+
+    $csv = Text::CSV::Encoded->new ({ encoding  => "utf8" });
+
 =head1 SPECIFICATION
 
 While no formal specification for CSV exists, RFC 4180 1) describes a common
@@ -1312,17 +1322,6 @@ Using C<getline ()> and C<print ()> instead is the prefered way to go.
 We probably need many more tests to check if all edge-cases are covered.
 See t/50_utf8.t.
 
-Probably the best way to do this more reliable is to make a subclass
-Text::CSV_XS::Encoded that can be passed the required encoding and
-then behaves transparently (but slower), something like this:
-
-    use Text::CSV::Encoded;
-    my $csv = Text::CSV::Encoded->new ({
-        encoding     => "utf-8",      # Both in and out
-        encoding_in  => "iso-8859-1", # Only the input
-        encoding_out => "cp1252",     # Only the output
-        });
-
 =item Parse the whole file at once
 
 Implement a new methods that enables the parsing of a complete file
@@ -1364,11 +1363,6 @@ No guarantees, but this is what I have in mind right now:
  - croak / carp
 
 =item next + 1
-
- - allow_double_quoted
- - Text::CSV_XS::Encoded (maybe)
-
-=item next + 2
 
  - csv2csv - a script to regenerate a CSV file to follow standards
  - EBCDIC support
@@ -1521,8 +1515,8 @@ exhausted before the quote is found, that field is not terminated.
 =head1 SEE ALSO
 
 L<perl(1)>, L<IO::File(3)>, L<IO::Handle(3)>, L<IO::Wrap(3)>,
-L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::Separator(3)>,
-and L<Spreadsheet::Read(3)>.
+L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::Encoded>,
+L<Text::CSV::Separator(3)>, and L<Spreadsheet::Read(3)>.
 
 =head1 AUTHORS and MAINTAINERS
 
