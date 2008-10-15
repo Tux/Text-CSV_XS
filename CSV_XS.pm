@@ -1244,11 +1244,12 @@ Reading a CSV file line by line:
   while (my $row = $csv->getline ($fh)) {
       # do something with @$row
       }
-  close $fh or die "file.csv: $!";;
+  $csv->eof or $csv->error_diag;
+  close $fh or die "file.csv: $!";
 
 For more extended examples, see the C<examples/> subdirectory in the
 original distribution. Included is C<examples/parser-xs.pl>, that could
-be used to `fix' bad CSV
+be used to `fix' bad CSV and parse beyond errors.
 
   perl examples/parser-xs.pl bad.csv >good.csv
 

@@ -1,10 +1,11 @@
-2008-09-29 0.55 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-10-15 0.55 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Improve documentation on eol
 	* Unicode on perl-5.8.[0-2] sucks. Don't use it!
 	* Test error codes in expected IO failures
 	* Allow SetDiag to be used as class method
 	* Document the MS/Excel separation character
+	* Hint that eof is not an error per se (RT#40047)
 
 2008-09-04 0.54 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
