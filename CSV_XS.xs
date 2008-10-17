@@ -1138,10 +1138,16 @@ static int xsParse (HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 static int xsCombine (HV *hv, AV *av, SV *io, bool useIO)
 {
     csv_t	csv;
+    int		result;
+    SV		*ors = PL_ors_sv;
 
     SetupCsv (&csv, hv);
     csv.useIO = useIO;
-    return Combine (&csv, io, av);
+    if (*csv.eol)
+	PL_ors_sv = &PL_sv_undef;
+    result = Combine (&csv, io, av);
+    PL_ors_sv = ors;
+    return result;
     } /* xsCombine */
 
 MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS

@@ -126,10 +126,11 @@ my %_cache_id = (	# Keep in sync with XS!
 sub _set_attr_C
 {
     my ($self, $name, $val) = @_;
+    defined $val or $val = 0;
     $self->{$name} = $val;
     $self->{_CACHE} or return;
     my @cache = unpack "C*", $self->{_CACHE};
-    $cache[$_cache_id{$name}] = defined $val ? unpack "C", $val : 0;
+    $cache[$_cache_id{$name}] = unpack "C", $val;
     $self->{_CACHE} = pack "C*", @cache;
     } # _set_attr_C
 
@@ -137,10 +138,10 @@ sub _set_attr_N
 {
     my ($self, $name, $val) = @_;
     $self->{$name} = $val;
-    $self->{_CACHE} or return;
+    $self->{_CACHE} or return;	# still uncovered branch
     my @cache = unpack "C*", $self->{_CACHE};
     my $i = $_cache_id{$name};
-    $cache[$i++] = $_ for unpack "C*", pack "N", defined $val ? $val : 0;
+    $cache[$i++] = $_ for unpack "C*", pack "N", $val;
     $self->{_CACHE} = pack "C*", @cache;
     } # _set_attr_N
 
@@ -172,6 +173,7 @@ sub eol
     my $self = shift;
     if (@_) {
 	my $eol = shift;
+	defined $eol or $eol = "";
 	my $eol_len = length $eol;
 	$self->{eol} = $eol;
 	$self->{_CACHE} or return;
@@ -676,9 +678,10 @@ Currently the following attributes are available:
 
 =item eol
 
-An end-of-line string to add to rows, usually C<undef> (nothing,
-default = C<$\>), C<"\012"> (Line Feed) or C<"\015\012"> (Carriage
-Return, Line Feed). Cannot be longer than 7 (ASCII) characters.
+An end-of-line string to add to rows. C<undef> is replaced with an
+empty string. The default is C<$\>. Common values for C<eol> are
+C<"\012"> (Line Feed) or C<"\015\012"> (Carriage Return, Line Feed).
+Cannot be longer than 7 (ASCII) characters.
 
 If both C<$/> and C<eol> equal C<"\015">, parsing lines that end on
 only a Carriage Return without Line Feed, will be C<parse>d correct.

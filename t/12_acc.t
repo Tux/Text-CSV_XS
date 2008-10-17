@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 44;
+use Test::More tests => 47;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -34,8 +34,11 @@ is ($csv->string,
 
 is ($csv->sep_char (";"),		';',		"sep_char (;)");
 is ($csv->quote_char ("="),		'=',		"quote_char (=)");
+is ($csv->eol (undef),			"",		"eol (undef)");
+is ($csv->eol (""),			"",		"eol ('')");
 is ($csv->eol ("\r"),			"\r",		"eol (\\r)");
 is ($csv->keep_meta_info (1),		1,		"keep_meta_info (1)");
+is ($csv->always_quote (undef),		0,		"always_quote (undef)");
 is ($csv->always_quote (1),		1,		"always_quote (1)");
 is ($csv->allow_loose_quotes (1),	1,		"allow_loose_quotes (1)");
 is ($csv->allow_loose_escapes (1),	1,		"allow_loose_escapes (1)");

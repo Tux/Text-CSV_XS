@@ -1,7 +1,12 @@
-2008-10-15 0.56 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-10-17 0.56 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Update to ppport.h 3.14_01
 	* Updated docs (Unicode, TODO, Release Plan)
+	* As Text::CSV::Encoded is about to be released, refer to it
+	  in the documentation
+	* Default for eol is "", undef now treated as ""
+	* Don't print $\ twice (eol prevails over $\ in ->print ())
+	* Undef treated as 0 for boolean attributes
 
 2008-10-15 0.55 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
