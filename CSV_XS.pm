@@ -530,7 +530,7 @@ perhaps better called ASV (anything separated values) rather than just CSV.
 =head2 Embedded newlines
 
 B<Important Note>: The default behavior is to only accept ascii characters.
-This means that fields can not contain newlines. If your data contains 
+This means that fields can not contain newlines. If your data contains
 newlines embedded in fields, or characters above 0x7e (tilde), or binary data,
 you *must* set C<< binary => 1 >> in the call to C<new ()>.  To cover the widest
 range of parsing options, you will always want to set binary.
@@ -558,7 +558,7 @@ or, more safely in perl 5.6 and up
  open my $io, "<", $file or die "$file: $!";
  while (my $row = $csv->getline ($io)) {
      my @fields = @$row;
- 
+
 =head2 Unicode (UTF8)
 
 On parsing (both for C<getline ()> and C<parse ()>), if the source is
@@ -572,11 +572,17 @@ For complete control over encoding, please use Text::CSV::Encoded:
 
     use Text::CSV::Encoded;
     my $csv = Text::CSV::Encoded->new ({
-        encoding_csv_in  => "iso-8859-1", # the encoding comes into   Perl
-        encoding_csv_out => "cp1252",     # the encoding comes out of Perl
+        encoding_in  => "iso-8859-1", # the encoding comes into   Perl
+        encoding_out => "cp1252",     # the encoding comes out of Perl
         });
 
     $csv = Text::CSV::Encoded->new ({ encoding  => "utf8" });
+    # combine () and print () accept *literally* utf8 encoded data
+    # parse () and getline () return *literally* utf8 encoded data
+
+    $csv = Text::CSV::Encoded->new ({ encoding  => undef }); # default
+    # combine () and print () accept UTF8 marked data
+    # parse () and getline () return UTF8 marked data
 
 =head1 SPECIFICATION
 
@@ -784,7 +790,7 @@ doubling the quote mark in a field escapes it:
   "foo","bar","Escape ""quote mark"" with two ""quote marks""","baz"
 
 If you change the default quote_char without changing the default
-escape_char, the escape_char will still be the quote mark.  If instead 
+escape_char, the escape_char will still be the quote mark.  If instead
 you want to escape the quote_char by doubling it, you will need to change
 the escape_char to be the same as what you changed the quote_char to.
 
@@ -987,7 +993,7 @@ methods are meaningless, again.
 
 The C<getline_hr ()> and C<column_names ()> methods work together to allow
 you to have rows returned as hashrefs. You must call C<column_names ()>
-first to declare your column names. 
+first to declare your column names.
 
  $csv->column_names (qw( code name price description ));
  $hr = $csv->getline_hr ($io);
