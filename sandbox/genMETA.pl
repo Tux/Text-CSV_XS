@@ -53,7 +53,7 @@ else {
     }
 
 __END__
---- #YAML:1.4
+--- #YAML:1.1
 name:              Text-CSV_XS
 version:           VERSION
 abstract:          Comma-Separated Values manipulation routines
