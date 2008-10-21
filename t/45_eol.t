@@ -81,27 +81,30 @@ foreach my $rs ("\n", "\r\n", "\r") {
     ok ($csv->parse (qq{"x" \r}),  "Trailing \\r with no escape char");
     }
 
-{   local $\ = "#\r\n";
-    my $csv = Text::CSV_XS->new ();
-    open  FH, ">_eol.csv";
-    $csv->print (*FH, [ "a", 1 ]);
-    close FH;
-    open  FH, "<_eol.csv";
-    local $/;
-    is (<FH>, "a,1#\r\n", "Strange \$\\");
-    close FH;
-    unlink "_eol.csv";
-    }
-{   local $\ = "#\r\n";
-    my $csv = Text::CSV_XS->new ({ eol => $\ });
-    open  FH, ">_eol.csv";
-    $csv->print (*FH, [ "a", 1 ]);
-    close FH;
-    open  FH, "<_eol.csv";
-    local $/;
-    is (<FH>, "a,1#\r\n", "Strange \$\\ + eol");
-    close FH;
-    unlink "_eol.csv";
+SKIP: {
+    $] < 5.008 and skip "\$\\ tests don't work in perl 5.6.x and older", 2;
+    {   local $\ = "#\r\n";
+	my $csv = Text::CSV_XS->new ();
+	open  FH, ">_eol.csv";
+	$csv->print (*FH, [ "a", 1 ]);
+	close FH;
+	open  FH, "<_eol.csv";
+	local $/;
+	is (<FH>, "a,1#\r\n", "Strange \$\\");
+	close FH;
+	unlink "_eol.csv";
+	}
+    {   local $\ = "#\r\n";
+	my $csv = Text::CSV_XS->new ({ eol => $\ });
+	open  FH, ">_eol.csv";
+	$csv->print (*FH, [ "a", 1 ]);
+	close FH;
+	open  FH, "<_eol.csv";
+	local $/;
+	is (<FH>, "a,1#\r\n", "Strange \$\\ + eol");
+	close FH;
+	unlink "_eol.csv";
+	}
     }
 
 ok (1, "Specific \\r test from tfrayner");

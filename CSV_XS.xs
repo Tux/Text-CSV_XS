@@ -1139,14 +1139,20 @@ static int xsCombine (HV *hv, AV *av, SV *io, bool useIO)
 {
     csv_t	csv;
     int		result;
+#if (PERL_BCDVERSION >= 0x5008000)
     SV		*ors = PL_ors_sv;
+#endif
 
     SetupCsv (&csv, hv);
     csv.useIO = useIO;
+#if (PERL_BCDVERSION >= 0x5008000)
     if (*csv.eol)
 	PL_ors_sv = &PL_sv_undef;
+#endif
     result = Combine (&csv, io, av);
+#if (PERL_BCDVERSION >= 0x5008000)
     PL_ors_sv = ors;
+#endif
     return result;
     } /* xsCombine */
 
