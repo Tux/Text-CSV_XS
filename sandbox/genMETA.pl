@@ -30,11 +30,16 @@ if ($check) {
     use YAML::Syck;
     use Test::YAML::Meta::Version;
     my $h;
-    eval { $h = Load (join "", @yml) };
+    my $yml = join "", @yml;
+    eval { $h = Load ($yml) };
     $@ and die "$@\n";
     $opt_v and print Dump $h;
     my $t = Test::YAML::Meta::Version->new (yaml => $h);
     $t->parse () and die join "\n", $t->errors, "";
+
+    use Parse::CPAN::Meta;
+    eval { Parse::CPAN::Meta::Load ($yml) };
+    $@ and die "$@\n";
 
     print "Checking if 5.006 is still OK as minimal version for examples\n";
     use Test::MinimumVersion;
