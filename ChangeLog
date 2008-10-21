@@ -1,3 +1,7 @@
+2008-10-21 0.57 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Don't bootstrap twice. Don't know how/when it came in there
+
 2008-10-21 0.56 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Update to ppport.h 3.14_01

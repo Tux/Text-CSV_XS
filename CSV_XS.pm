@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.56";
+$VERSION = "0.57";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -457,8 +457,6 @@ sub getline_hr
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
     } # getline_hr
-
-bootstrap Text::CSV_XS $VERSION;
 
 sub types
 {
