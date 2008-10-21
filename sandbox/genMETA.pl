@@ -72,11 +72,11 @@ provides:
         file:      CSV_XS.pm
         version:   VERSION
 requires:     
-    perl:          5.006
+    perl:          5.005
     DynaLoader:    0
     IO::Handle:    0
 build_requires:
-    perl:          5.006
+    perl:          5.005
     Config:        0
     Test::Harness: 0
     Test::More:    0

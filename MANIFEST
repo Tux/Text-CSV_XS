@@ -1,6 +1,7 @@
 ChangeLog		Change history
 README			Docs
 MANIFEST		This file
+CSV_XS.PL		Modify CSV_XS.pm for older perl versions
 CSV_XS.pm		Perl part of the module
 CSV_XS.xs		C part of the module
 Makefile.PL		Makefile generator
