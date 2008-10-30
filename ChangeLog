@@ -1,6 +1,7 @@
-2008-10-27 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Small typo in test message (RT#40410, JPL)
+	* Parse error test on "\0 (RT#40507)
 
 2008-10-21 0.57 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

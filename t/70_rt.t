@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 73;
+ use Test::More tests => 79;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -14,14 +14,16 @@ BEGIN {
 my $csv_file = "_test.csv";
 END { unlink $csv_file }
 
-my $rt_no;
-my %input;
+my ($rt, %input, %desc);
 while (<DATA>) {
-    if (m/^«(\d+)»/) {
-	$rt_no = $1;
+    if (s/^«(\d+)»\s*-?\s*//) {
+	chomp;
+	$rt = $1;
+	$desc{$rt} = $_;
 	next;
 	}
-    push @{$input{$rt_no}}, $_;
+    s/\\([0-7]{1,3})/chr oct $1/ge;
+    push @{$input{$rt}}, $_;
     }
 
 # Regression Tests based on RT reports
@@ -29,9 +31,10 @@ while (<DATA>) {
 {   # http://rt.cpan.org/Ticket/Display.html?id=24386
     # #24386: \t doesn't work in _XS, works in _PP
 
-    my @lines = @{$input{24386}};
+    $rt = 24386;
+    my @lines = @{$input{$rt}};
 
-    ok (my $csv = Text::CSV_XS->new ({ sep_char => "\t" }), "RT-24386: \\t doesn't work");
+    ok (my $csv = Text::CSV_XS->new ({ sep_char => "\t" }), "RT-$rt: $desc{$rt}");
     is ($csv->sep_char, "\t", "sep_char = TAB");
     foreach my $line (0 .. $#lines) {
 	ok ($csv->parse ($lines[$line]), "parse line $line");
@@ -44,10 +47,11 @@ while (<DATA>) {
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
     # 21530: getline () does not return documented value at end of filehandle
     # IO::Handle  was first released with perl 5.00307
+    $rt = 21530;
     open  FH, ">$csv_file";
-    print FH @{$input{21530}};
+    print FH @{$input{$rt}};
     close FH;
-    ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-21530: getline () return at eof");
+    ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
     open  FH, "<$csv_file";
     my $row;
     foreach my $line (1 .. 5) {
@@ -63,28 +67,30 @@ while (<DATA>) {
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
     # 18703: Fails to use quote_char of '~'
+    $rt = 18703;
     my ($csv, @fld);
-    ok ($csv = Text::CSV_XS->new ({ quote_char => "~" }), "RT-18703: Fails to use quote_char of '~'");
+    ok ($csv = Text::CSV_XS->new ({ quote_char => "~" }), "RT-$rt: $desc{$rt}");
     is ($csv->quote_char, "~", "quote_char is '~'");
 
-    ok ($csv->parse ($input{18703}[0]), "Line 1");
+    ok ($csv->parse ($input{$rt}[0]), "Line 1");
     ok (@fld = $csv->fields, "Fields");
     is (scalar @fld, 1, "Line 1 has only one field");
     is ($fld[0], "Style Name", "Content line 1");
 
     # The line has invalid escape. the escape should only be
     # used for the special characters
-    ok (!$csv->parse ($input{18703}[1]), "Line 2");
+    ok (!$csv->parse ($input{$rt}[1]), "Line 2");
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=15076
     # 15076: escape_char before characters that do not need to be escaped.
+    $rt = 15076;
     my ($csv, @fld);
     ok ($csv = Text::CSV_XS->new ({
 	sep_char		=> ";",
 	escape_char		=> "\\",
 	allow_loose_escapes	=> 1,
-	}), "RT-15076: escape chars ....");
+	}), "RT-$rt: $desc{$rt}");
 
     ok ($csv->parse ($input{15076}[0]), "Line 1");
     ok (@fld = $csv->fields, "Fields");
@@ -95,10 +101,11 @@ while (<DATA>) {
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=34474
     # 34474: wish: integrate row-as-hashref feature from Parse::CSV
+    $rt = 34474;
     open  FH, ">$csv_file";
-    print FH @{$input{34474}};
+    print FH @{$input{$rt}};
     close FH;
-    ok (my $csv = Text::CSV_XS->new (),		"RT-34474: getline_hr ()");
+    ok (my $csv = Text::CSV_XS->new (),		"RT-$rt: $desc{$rt}");
     is ($csv->column_names, undef,		"No headers yet");
     open  FH, "<$csv_file";
     my $row;
@@ -118,18 +125,36 @@ while (<DATA>) {
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=38960
     # 38960: print () on invalid filehandle warns and returns success
+    $rt = 38960;
     open  FH, ">$csv_file";
     print FH "";
     close FH;
     my $err = "";
     open  FH, "<$csv_file";
-    ok (my $csv = Text::CSV_XS->new (),		"RT-38960: print () fails");
+    ok (my $csv = Text::CSV_XS->new (),		"RT-$rt: $desc{$rt}");
     local $SIG{__WARN__} = sub { $err = "Warning" };
     ok (!$csv->print (*FH, [ 1 .. 4 ]),		"print ()");
     is ($err, "Warning",			"IO::Handle triggered a warning");
     is (($csv->error_diag)[0], 2200,		"error 2200");
     close FH;
     unlink $csv_file;
+    }
+
+{   # http://rt.cpan.org/Ticket/Display.html?id=40507
+    # 40507: Parsing fails on escaped null byte
+    $rt = 40507;
+    ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
+    my $str = $input{40507}[0];
+    ok ($csv->parse ($str),		"parse () correctly escaped NULL");
+    is_deeply ([ $csv->fields ],
+	[ qq{Audit active: "TRUE \0},
+	  qq{Desired:},
+	  qq{Audit active: "TRUE \0} ], "fields ()");
+    $str = $input{40507}[1];
+    is ($csv->parse ($str), 0,		"parse () badly escaped NULL");
+    my @diag = $csv->error_diag;
+    is ($diag[0], 2023,			"Error 2023");
+    is ($diag[2],   23,			"Position 23");
     }
 
 __END__
@@ -157,3 +182,7 @@ code,name,price,description
 1,Dress,240.00,"Evening gown"
 2,Drinks,82.78,"Drinks"
 3,Sex,-9999.99,"Priceless"
+«38960» - print () on invalid filehandle warns and returns success
+«40507» - Parsing fails on escaped null byte
+"Audit active: ""TRUE "0","Desired:","Audit active: ""TRUE "0"
+"Audit active: ""TRUE "\0","Desired:","Audit active: ""TRUE "\0"
