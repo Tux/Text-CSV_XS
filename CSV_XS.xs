@@ -933,10 +933,10 @@ restart:
 			}
 
 #if ALLOW_ALLOW
-		    if (csv->allow_loose_quotes && csv->escape_char != csv->quote_char) {
+		    if (csv->allow_loose_escapes && csv->escape_char == csv->quote_char) {
 			CSV_PUT_SV (c);
 			c = c2;
-/* uncovered */		goto restart;
+			goto restart;
 			}
 #endif
 

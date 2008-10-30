@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 79;
+ use Test::More tests => 80;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -155,6 +155,8 @@ while (<DATA>) {
     my @diag = $csv->error_diag;
     is ($diag[0], 2023,			"Error 2023");
     is ($diag[2],   23,			"Position 23");
+    $csv->allow_loose_escapes (1);
+    ok ($csv->parse ($str),		"parse () badly escaped NULL");
     }
 
 __END__
