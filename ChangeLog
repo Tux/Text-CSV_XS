@@ -1,3 +1,7 @@
+2008-11-17 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Wrong e-mail in META.yml
+
 2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Small typo in test message (RT#40410, JPL)
