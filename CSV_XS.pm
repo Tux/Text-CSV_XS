@@ -1029,7 +1029,7 @@ fetched fields in, C<getline ()> will fail. If you pass more than there are
 fields to return, the remaining references are left untouched.
 
   $csv->bind_columns (\$code, \$name, \$price, \$description);
-  while ($csv->getline ()) {
+  while ($csv->getline ($io)) {
       print "The price of a $name is \x{20ac} $price\n";
       }
 

@@ -1,6 +1,7 @@
-2008-11-17 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2008-12-17 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Wrong e-mail in META.yml
+	* Missing $IO argument in bind_columns example (docs only)
 
 2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
