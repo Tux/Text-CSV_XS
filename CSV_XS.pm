@@ -1087,7 +1087,11 @@ Set field type to string.
  @columns = $csv->fields ();
 
 This object function returns the input to C<combine ()> or the resultant
-decomposed fields of C<parse ()>, whichever was called more recently.
+decomposed fields of C successfull <parse ()>, whichever was called more
+recently.
+
+Note that the return value is undefined after using C<getline ()>, which
+does not fill the data structures returned by C<parse ()>.
 
 =head2 meta_info
 

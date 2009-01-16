@@ -3,6 +3,7 @@
 	* Wrong e-mail in META.yml
 	* Missing $IO argument in bind_columns example (docs only)
 	* Upped Copyright notices to 2009
+	* Added warning for parse () (RT#42261)
 
 2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
