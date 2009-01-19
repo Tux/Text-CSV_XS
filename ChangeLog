@@ -1,9 +1,10 @@
-2009-01-02 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-01-19 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Wrong e-mail in META.yml
 	* Missing $IO argument in bind_columns example (docs only)
 	* Upped Copyright notices to 2009
 	* Added warning for parse () (RT#42261)
+	* Small optimisations (Goro Fuji, RT#42517)
 
 2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

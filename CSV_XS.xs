@@ -168,13 +168,13 @@ xs_error_t xs_errors[] =  {
 
 static int  io_handle_loaded = 0;
 
-#define require_IO_Handle					\
-    unless (io_handle_loaded) {					\
-	ENTER;							\
-	load_module (PERL_LOADMOD_NOIMPORT,			\
-	    newSVpv ("IO::Handle", 0), NULL, NULL, NULL);	\
-	LEAVE;							\
-	io_handle_loaded = 1;					\
+#define require_IO_Handle				\
+    unless (io_handle_loaded) {				\
+	ENTER;						\
+	load_module (PERL_LOADMOD_NOIMPORT,		\
+	    newSVpvs ("IO::Handle"), NULL, NULL, NULL);	\
+	LEAVE;						\
+	io_handle_loaded = 1;				\
 	}
 
 static SV *SvDiag (int xse)
@@ -193,7 +193,6 @@ static SV *SvDiag (int xse)
 
 static SV *SetDiag (csv_t *csv, int xse)
 {
-    int   i = 0;
     SV   *err = SvDiag (xse);
 
     if (err) {
@@ -1160,7 +1159,7 @@ MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 
 PROTOTYPES: DISABLE
 
-SV*
+void
 SetDiag (self, xse)
     SV		*self
     int		 xse
@@ -1179,7 +1178,7 @@ SetDiag (self, xse)
     XSRETURN (1);
     /* XS SetDiag */
 
-SV*
+void
 Combine (self, dst, fields, useIO)
     SV		*self
     SV		*dst
@@ -1196,7 +1195,7 @@ Combine (self, dst, fields, useIO)
     XSRETURN (1);
     /* XS Combine */
 
-SV*
+void
 Parse (self, src, fields, fflags)
     SV		*self
     SV		*src
