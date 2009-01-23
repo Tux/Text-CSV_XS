@@ -9,6 +9,7 @@
 	* Added git clone command to README
 	* ppport.h updated to 3.16-pre
 	* Optimize getline/print method calls (Goro Fuji, RT#42517)
+	* Decode *_char attributes for perl 5.8.3 and up
 
 2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

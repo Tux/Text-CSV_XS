@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 80;
+ use Test::More tests => 86;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -92,7 +92,7 @@ while (<DATA>) {
 	allow_loose_escapes	=> 1,
 	}), "RT-$rt: $desc{$rt}");
 
-    ok ($csv->parse ($input{15076}[0]), "Line 1");
+    ok ($csv->parse ($input{$rt}[0]), "Line 1");
     ok (@fld = $csv->fields, "Fields");
     is (scalar @fld, 2, "Line 1 has two fields");
     is ($fld[0], "Example", "Content field 1");
@@ -144,19 +144,43 @@ while (<DATA>) {
     # 40507: Parsing fails on escaped null byte
     $rt = 40507;
     ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
-    my $str = $input{40507}[0];
+    my $str = $input{$rt}[0];
     ok ($csv->parse ($str),		"parse () correctly escaped NULL");
     is_deeply ([ $csv->fields ],
 	[ qq{Audit active: "TRUE \0},
 	  qq{Desired:},
 	  qq{Audit active: "TRUE \0} ], "fields ()");
-    $str = $input{40507}[1];
+    $str = $input{$rt}[1];
     is ($csv->parse ($str), 0,		"parse () badly escaped NULL");
     my @diag = $csv->error_diag;
     is ($diag[0], 2023,			"Error 2023");
     is ($diag[2],   23,			"Position 23");
     $csv->allow_loose_escapes (1);
     ok ($csv->parse ($str),		"parse () badly escaped NULL");
+    }
+
+{   # http://rt.cpan.org/Ticket/Display.html?id=42642
+    # 42642: failure on unusual quote/sep values
+    $rt = 42642;
+    SKIP: {
+	$] < 5.008003 and skip "UTF8 unreliable in perl $]", 6;
+
+	open  FH, ">$csv_file";
+	print FH @{$input{$rt}};
+	close FH;
+	my ($sep, $quo) = ("\x14", "\xfe");
+	chop ($_ = "$_\x{20ac}") for $sep, $quo;
+	ok (my $csv = Text::CSV_XS->new ({ binary => 1, sep_char => $sep }), "RT-$rt: $desc{$rt}");
+	ok ($csv->quote_char ($quo), "Set quote_char");
+	open  FH, "<$csv_file";
+	ok (my $row = $csv->getline (*FH),	"getline () with decode sep/quo");
+	$csv->error_diag ();
+	close FH;
+	unlink $csv_file;
+	is_deeply ($row, [qw( DOG CAT WOMBAT BANDERSNATCH )], "fields ()");
+	ok ($csv->parse ($input{$rt}[1]),	"parse () with decoded sep/quo");
+	is_deeply ([ $csv->fields ], [ 0..3 ],	"fields ()");
+	}
     }
 
 __END__
@@ -188,3 +212,6 @@ code,name,price,description
 «40507» - Parsing fails on escaped null byte
 "Audit active: ""TRUE "0","Desired:","Audit active: ""TRUE "0"
 "Audit active: ""TRUE "\0","Desired:","Audit active: ""TRUE "\0"
+«42642» - failure on unusual quote/sep values
+þDOGþþCATþþWOMBATþþBANDERSNATCHþ
+þ0þþ1þþ2þþ3þ

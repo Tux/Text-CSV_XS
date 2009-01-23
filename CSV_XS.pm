@@ -87,7 +87,10 @@ sub new
     my $attr  = shift || {};
     my $class = ref ($proto) || $proto	or return;
     for (keys %{$attr}) {
-	m/^[a-z]/ && exists $def_attr{$_} and next;
+	if (m/^[a-z]/ && exists $def_attr{$_}) {
+	    $] >= 5.008003 && m/_char$/ and utf8::decode $attr->{$_};
+	    next;
+	    }
 #	croak?
 	$last_new_err = "Unknown attribute '$_'";
 	return;
@@ -126,6 +129,7 @@ sub _set_attr_C
 {
     my ($self, $name, $val) = @_;
     defined $val or $val = 0;
+    $] >= 5.008003 and utf8::decode $val;
     $self->{$name} = $val;
     $self->{_CACHE} or return;
     my @cache = unpack "C*", $self->{_CACHE};
@@ -649,6 +653,10 @@ COMMA), U+FF0C (FULLWIDTH COMMA), U+241B (SYMBOL FOR ESCAPE), U+2424 (SYMBOL
 FOR NEWLINE), U+FF02 (FULLWIDTH QUOTATION MARK), and U+201C (LEFT DOUBLE
 QUOTATION MARK) (to give some examples of what might look promising) are
 therefor not allowed.
+
+If you use perl-5.8.3 or higher, these three attributes are utf8-decoded, to
+increase the likelyhood of success. This way U+00FE will be allowed as a
+quote character.
 
 =item *
 
