@@ -9,6 +9,12 @@ use File::Copy;
 # Check to see if ppport needs updating
 my $ph = "ppport.h";
 
+my ($cv) = (qx{perl $ph --version} =~ m{\b([0-9]\.\w+)});
+if ($Devel::PPPort::VERSION lt $cv) {
+    print STDERR "Your $ph is newer than Devel::PPPort. Update skipped\n";
+    exit 0;	# I have a newer already
+    }
+
 my $old = do { local (@ARGV, $/) = ($ph); <> };
 move $ph, "$ph.bkp";
 
