@@ -7,6 +7,8 @@
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
+#define NEED_PL_parser
+#define NEED_sv_2pv_flags
 #define NEED_load_module
 #define NEED_newRV_noinc
 #define NEED_vload_module
@@ -167,6 +169,7 @@ xs_error_t xs_errors[] =  {
     };
 
 static int  io_handle_loaded = 0;
+static SV  *m_getline, *m_print;
 
 #define require_IO_Handle				\
     unless (io_handle_loaded) {				\
@@ -367,7 +370,7 @@ static int Print (csv_t *csv, SV *dst)
 	PUSHs ((dst));
 	PUSHs (tmp);
 	PUTBACK;
-	result = call_method ("print", G_SCALAR);
+	result = call_sv (m_print, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	if (result) {
 	    result = POPi;
@@ -519,7 +522,7 @@ static int CsvGet (csv_t *csv, SV *src)
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-	result = call_method ("getline", G_SCALAR);
+	result = call_sv (m_getline, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	csv->tmp = result ? POPs : NULL;
 	PUTBACK;
@@ -1158,6 +1161,10 @@ static int xsCombine (HV *hv, AV *av, SV *io, bool useIO)
 MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 
 PROTOTYPES: DISABLE
+
+BOOT:
+    m_getline = newSVpvs ("getline");
+    m_print   = newSVpvs ("print");
 
 void
 SetDiag (self, xse)
