@@ -163,7 +163,7 @@ while (<DATA>) {
     # 42642: failure on unusual quote/sep values
     $rt = 42642;
     SKIP: {
-	$] < 5.008003 and skip "UTF8 unreliable in perl $]", 6;
+	$] < 5.008002 and skip "UTF8 unreliable in perl $]", 6;
 
 	open  FH, ">$csv_file";
 	print FH @{$input{$rt}};
