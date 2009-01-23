@@ -1,0 +1,13 @@
+#!/pro/bin/perl
+
+use strict;
+use warnings;
+
+open my $rc, "<", ".releaserc" or exit 0;
+while (<$rc>) {
+    m/^perls\s+(.*)/ or next;
+    foreach my $p (split m/:/, $1) {
+	qx{$p -v} =~ m{This is perl, (?:version |v)(\S+) .*?built for (\S+)} and
+	    printf "%-21s %8s  %s\n", $p, $1, $2;
+	}
+    }
