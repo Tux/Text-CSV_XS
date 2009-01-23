@@ -1,4 +1,4 @@
-2009-01-19 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-01-23 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Wrong e-mail in META.yml
 	* Missing $IO argument in bind_columns example (docs only)
@@ -6,6 +6,9 @@
 	* Added warning for parse () (RT#42261)
 	* Small optimisations (Goro Fuji, RT#42517)
 	* ppport.h updated to 3.15
+	* Added git clone command to README
+	* ppport.h updated to 3.16-pre
+	* Optimize getline/print method calls (Goro Fuji, RT#42517)
 
 2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
