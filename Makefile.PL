@@ -74,6 +74,7 @@ sub postamble
     join "\n" =>
 	'cover test_cover:',
 	'	ccache -C',
+	'	-@rm -f *.gc??',
 	'	cover -test',
 	'',
 	'leakcheck:',
