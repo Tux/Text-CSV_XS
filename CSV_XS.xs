@@ -747,7 +747,7 @@ restart:
 	    if (csv->verbatim) {
 		f |= CSV_FLAGS_BIN;
 		unless (csv->binary)
-/* uncovered */	    ERROR_INSIDE_FIELD (2030);
+		    ERROR_INSIDE_FIELD (2030);
 
 		CSV_PUT_SV (c);
 		}
