@@ -3,7 +3,7 @@
  *  This program is free software; you can redistribute it and/or
  *  modify it under the same terms as Perl itself.
  */
-
+#define PERL_NO_GET_CONTEXT
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
@@ -180,7 +180,8 @@ static SV  *m_getline, *m_print;
 	io_handle_loaded = 1;				\
 	}
 
-static SV *SvDiag (int xse)
+#define SvDiag(xse)		cx_SvDiag (aTHX_ xse)
+static SV *cx_SvDiag (pTHX_ int xse)
 {
     int   i = 0;
     SV   *err;
@@ -194,7 +195,8 @@ static SV *SvDiag (int xse)
     return (err);
     } /* SvDiag */
 
-static SV *SetDiag (csv_t *csv, int xse)
+#define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
+static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 {
     SV   *err = SvDiag (xse);
 
@@ -208,7 +210,8 @@ static SV *SetDiag (csv_t *csv, int xse)
     return (err);
     } /* SetDiag */
 
-static void SetupCsv (csv_t *csv, HV *self)
+#define SetupCsv(csv,self)	cx_SetupCsv (aTHX_ csv, self)
+static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 {
     SV	       **svp;
     STRLEN	 len;
@@ -357,7 +360,8 @@ static void SetupCsv (csv_t *csv, HV *self)
     csv->used = 0;
     } /* SetupCsv */
 
-static int Print (csv_t *csv, SV *dst)
+#define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
+static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 {
     int result;
 
@@ -401,7 +405,8 @@ static int Print (csv_t *csv, SV *dst)
 /* Should be extended for EBCDIC ? */
 #define is_csv_binary(ch) ((ch < CH_SPACE || ch >= CH_DEL) && ch != CH_TAB)
 
-static int Combine (csv_t *csv, SV *dst, AV *fields)
+#define Combine(csv,dst,fields)	cx_Combine (aTHX_ csv, dst, fields)
+static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 {
     int		i;
 
@@ -494,10 +499,8 @@ static int Combine (csv_t *csv, SV *dst, AV *fields)
     return TRUE;
     } /* Combine */
 
-#if MAINT_DEBUG
-static char str_parsed[40];
-#endif
-static void ParseError (csv_t *csv, int xse, int pos)
+#define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos)
+static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos)
 {
     hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
     if (csv->tmp) {
@@ -507,7 +510,8 @@ static void ParseError (csv_t *csv, int xse, int pos)
     (void)SetDiag (csv, xse);
     } /* ParseError */
 
-static int CsvGet (csv_t *csv, SV *src)
+#define CsvGet(csv,src)		cx_CsvGet (aTHX_ csv, src)
+static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 {
     unless (csv->useIO)
 	return EOF;
@@ -609,7 +613,8 @@ static int CsvGet (csv_t *csv, SV *src)
     }
 #endif
 
-static void strip_trail_whitespace (SV *sv)
+#define strip_trail_whitespace(sv)	cx_strip_trail_whitespace (aTHX_ sv)
+static void cx_strip_trail_whitespace (pTHX_ SV *sv)
 {
     STRLEN len;
     char   *s = SvPV (sv, len);
@@ -620,7 +625,8 @@ static void strip_trail_whitespace (SV *sv)
     SvCUR_set (sv, len);
     } /* strip_trail_whitespace */
 
-static SV *bound_field (csv_t *csv, int i)
+#define bound_field(csv,i)	cx_bound_field (aTHX_ csv, i)
+static SV *cx_bound_field (pTHX_ csv_t *csv, int i)
 {
     SV *sv = csv->bound;
     AV *av;
@@ -657,7 +663,12 @@ static SV *bound_field (csv_t *csv, int i)
 	f = 0;					\
 	}
 
-static int Parse (csv_t *csv, SV *src, AV *fields, AV *fflags)
+#if MAINT_DEBUG
+static char str_parsed[40];
+#endif
+
+#define Parse(csv,src,fields,fflags)	cx_Parse (aTHX_ csv, src, fields, fflags)
+static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 {
     int		 c, f = 0;
     int		 c_ungetc		= EOF;
@@ -1079,7 +1090,8 @@ restart:
     return TRUE;
     } /* Parse */
 
-static int xsParse (HV *hv, AV *av, AV *avf, SV *src, bool useIO)
+#define xsParse(hv,av,avf,src,useIO)	cx_xsParse (aTHX_ hv, av, avf, src, useIO)
+static int cx_xsParse (pTHX_ HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     csv_t	csv;
     int		result;
@@ -1137,7 +1149,8 @@ static int xsParse (HV *hv, AV *av, AV *avf, SV *src, bool useIO)
     return result;
     } /* xsParse */
 
-static int xsCombine (HV *hv, AV *av, SV *io, bool useIO)
+#define xsCombine(hv,av,io,useIO)	cx_xsCombine (aTHX_ hv, av, io, useIO)
+static int cx_xsCombine (pTHX_ HV *hv, AV *av, SV *io, bool useIO)
 {
     csv_t	csv;
     int		result;
