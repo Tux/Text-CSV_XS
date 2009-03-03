@@ -1,6 +1,7 @@
-2009-02-10 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-03-03 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* valgrind found a possible uninitialized value
+	* restriction in print () was only for really old perls
 
 2009-01-27 0.60 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
