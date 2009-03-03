@@ -1,3 +1,7 @@
+2009-02-10 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* valgrind found a possible uninitialized value
+
 2009-01-27 0.60 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Optimize for threaded perls. (Goro Fuji, RT#42517)

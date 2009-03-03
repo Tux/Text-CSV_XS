@@ -9,5 +9,6 @@ export PERL_DESTRUCT_LEVEL=2
 
 for t in $@ ; do
     echo $PERL $t
-    $PERL -MExtUtils::Command::MM -e "$HRNS" -MTest::Valgrind $t
+    #$PERL -MExtUtils::Command::MM -e "$HRNS" -MTest::Valgrind $t
+    $PERL -MTest::Valgrind=diag,1 -Iblib/lib -Iblib/arch $t
     done

@@ -249,7 +249,6 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	    if ((svp = hv_fetchs (self, "eol",     FALSE)) && *svp && SvOK (*svp)) {
 		csv->eol = SvPV (*svp, len);
 		csv->eol_len = len;
-		csv->eol_is_cr = 0;
 		}
 	    }
 	csv->is_bound			=
@@ -341,6 +340,10 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
 	    strcpy ((char *)&csv->cache[CACHE_ID_eol], csv->eol);
 	csv->cache[CACHE_ID_has_types]			= csv->types ? 1 : 0;
+
+	csv->is_bound = 0;
+	if ((svp = hv_fetchs (self, "_BOUND_COLUMNS", FALSE)) && _is_arrayref (*svp))
+	    csv->is_bound = 1 + av_len ((AV *)(SvRV (*svp)));
 	csv->cache[CACHE_ID__is_bound    ] = (csv->is_bound & 0xFF000000) >> 24;
 	csv->cache[CACHE_ID__is_bound + 1] = (csv->is_bound & 0x00FF0000) >> 16;
 	csv->cache[CACHE_ID__is_bound + 2] = (csv->is_bound & 0x0000FF00) >>  8;
@@ -1161,7 +1164,7 @@ static int cx_xsCombine (pTHX_ HV *hv, AV *av, SV *io, bool useIO)
     SetupCsv (&csv, hv);
     csv.useIO = useIO;
 #if (PERL_BCDVERSION >= 0x5008000)
-    if (*csv.eol)
+    if (csv.eol && *csv.eol)
 	PL_ors_sv = &PL_sv_undef;
 #endif
     result = Combine (&csv, io, av);
