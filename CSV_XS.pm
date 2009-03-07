@@ -141,6 +141,7 @@ sub _set_attr_N
 {
     my ($self, $name, $val) = @_;
     $self->{$name} = $val;
+    $self->{_CACHE} or return;
     my @cache = unpack "C*", $self->{_CACHE};
     my $i = $_cache_id{$name};
     $cache[$i++] = $_ for unpack "C*", pack "N", $val;

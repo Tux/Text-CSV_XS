@@ -307,6 +307,11 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	    csv->types_len = len;
 	    }
 
+	csv->is_bound = 0;
+	if ((svp = hv_fetchs (self, "_is_bound", FALSE)) && *svp && SvOK(*svp)) {
+	    csv->is_bound = SvIV(*svp);
+	    }
+
 	csv->binary			= bool_opt ("binary");
 	csv->keep_meta_info		= bool_opt ("keep_meta_info");
 	csv->always_quote		= bool_opt ("always_quote");
