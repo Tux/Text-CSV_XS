@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 86;
+ use Test::More tests => 91;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -183,6 +183,26 @@ while (<DATA>) {
 	}
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=43927
+    # 43927: Is bind_columns broken or am I using it wrong?
+    $rt = 43927;
+    SKIP: {
+	open  FH, ">$csv_file";
+	print FH @{$input{$rt}};
+	close FH;
+	my ($c1, $c2);
+	ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
+	ok ($csv->bind_columns (\$c1, \$c2), "bind columns");
+	open  FH, "<$csv_file";
+	ok (my $row = $csv->getline (*FH), "getline () with bound columns");
+	$csv->error_diag ();
+	close FH;
+	unlink $csv_file;
+	is_deeply ($row, [], "should return empty ref");
+	is_deeply ([ $c1, $c2], [ 1, 2 ], "fields ()");
+	}
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -215,3 +235,5 @@ code,name,price,description
 «42642» - failure on unusual quote/sep values
 þDOGþþCATþþWOMBATþþBANDERSNATCHþ
 þ0þþ1þþ2þþ3þ
+«43927» - Is bind_columns broken or am I using it wrong?
+1,2
