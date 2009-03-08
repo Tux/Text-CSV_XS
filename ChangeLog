@@ -1,8 +1,8 @@
-2009-03-06 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-03-08 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* valgrind found a possible uninitialized value
-	* restriction in print () was only for really old perls
-	* fix for bind_columns () initialisation (vincent, RT#43927)
+	* Restriction in print () was only for really old perls
+	* Fix for bind_columns () initialisation (vincent, RT#43927)
 
 2009-01-27 0.60 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
