@@ -129,7 +129,7 @@ sub _set_attr_C
 {
     my ($self, $name, $val) = @_;
     defined $val or $val = 0;
-    $] >= 5.008002 and utf8::decode $val;
+    $] >= 5.008002 and utf8::decode ($val);
     $self->{$name} = $val;
     $self->{_CACHE} or return;
     my @cache = unpack "C*", $self->{_CACHE};
