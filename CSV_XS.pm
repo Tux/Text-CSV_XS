@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.61";
+$VERSION = "0.62";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -88,7 +88,7 @@ sub new
     my $class = ref ($proto) || $proto	or return;
     for (keys %{$attr}) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
-	    $] >= 5.008002 && m/_char$/ and utf8::decode $attr->{$_};
+	    $] >= 5.008002 && m/_char$/ and utf8::decode ($attr->{$_});
 	    next;
 	    }
 #	croak?
