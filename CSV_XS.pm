@@ -1329,11 +1329,6 @@ C<string ()> in a single call will B<not> be honored. Likewise for
 C<parse ()> and C<fields ()>. Given the trouble with embedded newlines,
 Using C<getline ()> and C<print ()> instead is the prefered way to go.
 
-=item Unicode
-
-We probably need many more tests to check if all edge-cases are covered.
-See t/50_utf8.t.
-
 =item Parse the whole file at once
 
 Implement a new methods that enables the parsing of a complete file
