@@ -1303,13 +1303,6 @@ setting in it, so checking the locale is no solution.
 
 =over 2
 
-=item More tests
-
-For all possible errors, there should be a test.
-
-All XS code should be covered in the test cases, except for perl
-internal failure, like failing to store a hash value.
-
 =item More Errors & Warnings
 
 New extensions ought to be clear and concise in reporting what error

@@ -1,6 +1,7 @@
-2009-03-12 0.62 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-03-13 0.62 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Prevent warnings in older perls (without utf8)
+	* All known errors are covered and/or documented. TODO dropped
 
 2009-03-08 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
