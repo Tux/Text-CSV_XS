@@ -1277,10 +1277,33 @@ Reading a CSV file line by line:
   close $fh or die "file.csv: $!";
 
 For more extended examples, see the C<examples/> subdirectory in the
-original distribution. Included is C<examples/parser-xs.pl>, that could
-be used to `fix' bad CSV and parse beyond errors.
+original distribution. The following files can be found there:
 
-  perl examples/parser-xs.pl bad.csv >good.csv
+=over 2
+
+=item parser-xs.pl
+
+This can be used as a boilerplate to `fix' bad CSV and parse beyond errors.
+
+  $ perl examples/parser-xs.pl bad.csv >good.csv
+
+=item csv-check
+
+This is a command-line tool that uses parser-xs.pl techniques to check the
+CSV file and report on its content.
+
+  $ csv-check files/utf8.csv
+  Checked with examples/csv-check 1.2 using Text::CSV_XS 0.61
+  OK: rows: 1, columns: 2
+      sep = <,>, quo = <">, bin = <1>
+
+=item csv2xls
+
+A script to convert CSV to Microsoft Excel. This requires M<Date::Calc(3)>
+and L<Spreadsheet::WriteExcel(3)>. The converter acceps various options and
+can produce UTF-8 Excel files.
+
+=back
 
 =head1 CAVEATS
 
@@ -1384,6 +1407,9 @@ If an error occured, C<$csv->error_diag ()> can be used to get more information
 on the cause of the failure. Note that for speed reasons, the internal value
 is never cleared on success, so using the value returned by C<error_diag ()> in
 normal cases - when no error occured - may cause unexpected results.
+
+If the constructor failed, the cause can be found using C<error_diag ()> as a
+class method, like C<Text::CSV_XS->error_diag ()>.
 
 Currently errors as described below are available. I've tried to make the error
 itself explanatory enough, but more descriptions will be added. For most of
@@ -1522,7 +1548,7 @@ exhausted before the quote is found, that field is not terminated.
 =head1 SEE ALSO
 
 L<perl(1)>, L<IO::File(3)>, L<IO::Handle(3)>, L<IO::Wrap(3)>,
-L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::Encoded>,
+L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::Encoded(3)>,
 L<Text::CSV::Separator(3)>, and L<Spreadsheet::Read(3)>.
 
 =head1 AUTHORS and MAINTAINERS
@@ -1540,8 +1566,8 @@ and the print and getline methods. See ChangeLog releases 0.10 through
 
 H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>> cleaned up the code,
 added the field flags methods, wrote the major part of the test suite,
-completed the documentation, fixed some RT bugs. See ChangeLog releases
-0.25 and on.
+completed the documentation, fixed some RT bugs and added all the allow
+flags. See ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 

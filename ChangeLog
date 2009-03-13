@@ -3,6 +3,7 @@
 	* Prevent warnings in older perls (without utf8)
 	* All known errors are covered and/or documented. TODO dropped
 	* Unicode TODO dropped. All covered, or use Text::CSV::Encoded
+	* Documented the examples
 
 2009-03-08 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
