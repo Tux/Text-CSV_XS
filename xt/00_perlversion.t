@@ -3,7 +3,11 @@
 use strict;
 $^W = 1;
 
-use Test::MinimumVersion;
+eval "use Test::MinimumVersion";
+if ($@) {
+    print "1..0 # Test::Minimumversion required for compatability tests\n";
+    exit 0;
+    }
 
 my $pm_dup = "tmp/CSV_XS.pm";
 
