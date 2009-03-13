@@ -1299,7 +1299,7 @@ CSV file and report on its content.
 
 =item csv2xls
 
-A script to convert CSV to Microsoft Excel. This requires M<Date::Calc(3)>
+A script to convert CSV to Microsoft Excel. This requires L<Date::Calc(3)>
 and L<Spreadsheet::WriteExcel(3)>. The converter acceps various options and
 can produce UTF-8 Excel files.
 
