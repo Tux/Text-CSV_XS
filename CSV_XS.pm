@@ -713,12 +713,16 @@ See also CAVEATS
 =item allow_whitespace
 
 When this option is set to true, whitespace (TAB's and SPACE's)
-surrounding the separation character is removed when parsing. So
-lines like:
+surrounding the separation character is removed when parsing. If
+either TAB or SPACE is one of the three major characters C<sep_char>,
+C<quote_char>, or C<escape_char> it will not be considered whitespace.
+
+So lines like:
 
   1 , "foo" , bar , 3 , zapp
 
 are now correctly parsed, even though it violates the CSV specs.
+
 Note that B<all> whitespace is stripped from start and end of each
 field. That would make is more a I<feature> than a way to be able
 to parse bad CSV lines, as

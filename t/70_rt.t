@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 91;
+ use Test::More tests => 365;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -203,6 +203,52 @@ while (<DATA>) {
 	}
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=44402
+    # 44402 - Unexpected results parsing tab-separated spaces
+    $rt = 44402;
+    SKIP: {
+	open  FH, ">$csv_file";
+	my @ws = ("", " ", "  ");
+	foreach my $f1 (@ws) {
+	    foreach my $f2 (@ws) {
+		foreach my $f3 (@ws) {
+		    print FH "$f1\t$f2\t$f3\r\n";
+		    }
+		}
+	    }
+	close FH;
+
+	my $csv;
+	ok ($csv = Text::CSV_XS->new ({
+	    sep_char => "\t",
+	    }), "RT-$rt: $desc{$rt}");
+	open  FH, "<$csv_file";
+	while (my $row = $csv->getline (*FH)) {
+	    ok ($row, "getline $.");
+	    my @row = @$row;
+	    is ($#row, 2, "Got 3 fields");
+	    like ($row[$_], qr{^ *$}, "field $_ with only spaces") for 0..2;
+	    }
+	ok ($csv->eof, "read complete file");
+	close FH;
+
+	ok ($csv = Text::CSV_XS->new ({
+	    sep_char         => "\t",
+	    allow_whitespace => 1,
+	    }), "RT-$rt: $desc{$rt}");
+	open  FH, "<$csv_file";
+	while (my $row = $csv->getline (*FH)) {
+	    ok ($row, "getline $.");
+	    my @row = @$row;
+	    is ($#row, 2, "Got 3 fields");
+	    is ($row[$_], "", "field $_ empty") for 0..2;
+	    }
+	ok ($csv->eof, "read complete file");
+	close FH;
+	unlink $csv_file;
+	}
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -237,3 +283,4 @@ code,name,price,description
 þ0þþ1þþ2þþ3þ
 «43927» - Is bind_columns broken or am I using it wrong?
 1,2
+«44402» - Unexpected results parsing tab-separated spaces

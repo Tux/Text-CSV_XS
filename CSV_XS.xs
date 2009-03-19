@@ -180,6 +180,15 @@ static SV  *m_getline, *m_print;
 	io_handle_loaded = 1;				\
 	}
 
+#define is_whitespace(ch) \
+    ( (ch) != csv->sep_char    && \
+      (ch) != csv->quote_char  && \
+      (ch) != csv->escape_char && \
+    ( (ch) == CH_SPACE || \
+      (ch) == CH_TAB \
+      ) \
+    )
+
 #define SvDiag(xse)		cx_SvDiag (aTHX_ xse)
 static SV *cx_SvDiag (pTHX_ int xse)
 {
@@ -853,9 +862,8 @@ restart:
 
 #if ALLOW_ALLOW
 		    if (csv->allow_whitespace) {
-			while (c2 == CH_SPACE || c2 == CH_TAB) {
+			while (is_whitespace (c2))
 			    c2 = CSV_GET;
-			    }
 			}
 #endif
 
@@ -906,9 +914,8 @@ restart:
 
 #if ALLOW_ALLOW
 		if (csv->allow_whitespace) {
-		    while (c2 == CH_SPACE || c2 == CH_TAB) {
+		    while (is_whitespace (c2))
 			c2 = CSV_GET;
-			}
 		    }
 #endif
 
@@ -1026,10 +1033,10 @@ restart:
 #endif
 	    if (waitingForField) {
 #if ALLOW_ALLOW
-		if (csv->allow_whitespace && (c == CH_SPACE || c == CH_TAB)) {
+		if (csv->allow_whitespace && is_whitespace (c)) {
 		    do {
 			c = CSV_GET;
-			} while (c == CH_SPACE || c == CH_TAB);
+			} while (is_whitespace (c));
 		    goto restart;
 		    }
 #endif
