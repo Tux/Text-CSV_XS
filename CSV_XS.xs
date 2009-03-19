@@ -1037,6 +1037,8 @@ restart:
 		    do {
 			c = CSV_GET;
 			} while (is_whitespace (c));
+		    if (c == EOF)
+			break;
 		    goto restart;
 		    }
 #endif

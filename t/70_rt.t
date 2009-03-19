@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 365;
+ use Test::More tests => 367;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -246,6 +246,9 @@ while (<DATA>) {
 	ok ($csv->eof, "read complete file");
 	close FH;
 	unlink $csv_file;
+
+	ok ($csv->parse ("  \t  \t  "), "parse ()");
+	is_deeply ([$csv->fields],["","",""],"3 empty fields");
 	}
     }
 
