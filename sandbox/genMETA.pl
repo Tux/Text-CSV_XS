@@ -83,6 +83,7 @@ build_requires:
     Tie::Scalar:   0
 resources:
     license:       http://dev.perl.org/licenses/
+    repository:    http://repo.or.cz/w/Text-CSV_XS.git
 meta-spec:
     version:       1.4
     url:           http://module-build.sourceforge.net/META-spec-v1.4.html
