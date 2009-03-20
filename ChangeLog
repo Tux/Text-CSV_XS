@@ -1,4 +1,4 @@
-2009-03-19 0.63 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-03-20 0.63 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Fixed allow_whitespace with sep_char = TAB (RT#44402)
 
