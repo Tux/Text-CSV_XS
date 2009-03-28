@@ -2,6 +2,7 @@
 
 	* Skip perlio tests for perl older than 5.8, as perlio
 	  was experimental in 5.6
+	* Up Devel::PPPort to 3.17
 
 2009-03-20 0.63 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
