@@ -1,3 +1,8 @@
+2009-03-28 0.64 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+	* Skip perlio tests for perl older than 5.8, as perlio
+	  was experimental in 5.6
+
 2009-03-20 0.63 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Fixed allow_whitespace with sep_char = TAB (RT#44402)
