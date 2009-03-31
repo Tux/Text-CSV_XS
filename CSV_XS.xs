@@ -254,8 +254,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	    csv->eol = (char *)&csv->cache[CACHE_ID_eol];
 	else {
 	    /* Was too long to cache. must re-fetch */
-	    csv->eol = NULL;
+	    csv->eol       = NULL;
 	    csv->eol_is_cr = 0;
+	    csv->eol_len   = 0;
 	    if ((svp = hv_fetchs (self, "eol",     FALSE)) && *svp && SvOK (*svp)) {
 		csv->eol = SvPV (*svp, len);
 		csv->eol_len = len;
@@ -302,8 +303,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 		csv->sep_char = *ptr;
 	    }
 
-	csv->eol = NULL;
+	csv->eol       = "";
 	csv->eol_is_cr = 0;
+	csv->eol_len   = 0;
 	if ((svp = hv_fetchs (self, "eol",         FALSE)) && *svp && SvOK (*svp)) {
 	    csv->eol = SvPV (*svp, len);
 	    csv->eol_len = len;
