@@ -16,9 +16,14 @@ Copying:
 
     Recent changes can be (re)viewed in the public GIT repository at
     http://repo.or.cz/w/Text-CSV_XS.git
-    Feel free to clone your own copy
+    Feel free to clone your own copy:
 
-        $ git clone http://repo.or.cz/r/Text-CSV_XS.git Text-CSV-XS
+     $ git clone http://repo.or.cz/r/Text-CSV_XS.git Text-CSV-XS
+
+    or get it as a tgz:
+
+     $ wget --output-document=Text-CSV_XS-git.tgz \
+	       'http://repo.or.cz/w/Text-CSV_XS.git?a=snapshot;sf=tgz'
 
 Prerequisites:
     perl 5.005_03. 5.005 will not be able to build the manual pages.
