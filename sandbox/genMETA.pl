@@ -59,31 +59,33 @@ else {
 
 __END__
 --- #YAML:1.1
-name:              Text-CSV_XS
-version:           VERSION
-abstract:          Comma-Separated Values manipulation routines
-license:           perl
+name:                    Text-CSV_XS
+version:                 VERSION
+abstract:                Comma-Separated Values manipulation routines
+license:                 perl
 author:              
     - H.Merijn Brand <h.m.brand@xs4all.nl>
-generated_by:      Author
-distribution_type: module
+generated_by:            Author
+distribution_type:       module
 provides:
     Text::CSV_XS:
-        file:      CSV_XS.pm
-        version:   VERSION
+        file:            CSV_XS.pm
+        version:         VERSION
 requires:     
-    perl:          5.005
-    DynaLoader:    0
-    IO::Handle:    0
+    perl:                5.005
+    DynaLoader:          0
+    IO::Handle:          0
+configure_requires:
+    ExtUtils::MakeMaker: 0
 build_requires:
-    perl:          5.005
-    Config:        0
-    Test::Harness: 0
-    Test::More:    0
-    Tie::Scalar:   0
+    perl:                5.005
+    Config:              0
+    Test::Harness:       0
+    Test::More:          0
+    Tie::Scalar:         0
 resources:
-    license:       http://dev.perl.org/licenses/
-    repository:    http://repo.or.cz/w/Text-CSV_XS.git
+    license:             http://dev.perl.org/licenses/
+    repository:          http://repo.or.cz/w/Text-CSV_XS.git
 meta-spec:
-    version:       1.4
-    url:           http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:             1.4
+    url:                 http://module-build.sourceforge.net/META-spec-v1.4.html
