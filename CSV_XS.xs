@@ -210,9 +210,8 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 {
     SV   *err = SvDiag (xse);
 
-    if (err) {
+    if (err)
 	hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
-	}
     if (xse == 0) {
 	hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
 	hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
