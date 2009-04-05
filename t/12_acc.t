@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 65;
+use Test::More tests => 66;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -88,7 +88,8 @@ eval { $csv = Text::CSV_XS->new ({
     quote_char       => " ",
     allow_whitespace => 1,
     }) };
-like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo");
+like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo - error message");
+is   ((Text::CSV_XS::error_diag)[0], 1002, "Wrong combo - numeric error");
 
 # And test erroneous calls
 

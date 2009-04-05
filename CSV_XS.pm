@@ -314,7 +314,11 @@ sub error_diag
     my @diag = (0, $last_new_err, 0);
 
     unless ($self && ref $self) {	# Class method or direct call
-	$last_new_err and $diag[0] = 1000;
+	if ($last_new_err) {
+	    $diag[0] = 1000;
+	    $last_new_err =~ m/^[A-Z]{3} - \w/ and
+		$diag[0] = (0 + $last_new_err) || 1000;
+	    }
 	}
     elsif ($self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	@diag = (0 + $self->{_ERROR_DIAG}, $self->{_ERROR_DIAG});
