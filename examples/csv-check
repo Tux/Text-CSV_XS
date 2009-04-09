@@ -69,7 +69,9 @@ my $csv = Text::CSV_XS-> new ({
 
 sub done
 {
-    print "Checked with $0 $VERSION using Text::CSV_XS $Text::CSV_XS::VERSION\n";
+    (my $file = $ARGV // "") =~ s{(\S)$}{$1 };
+    (my $prog = $0) =~ s{.*/}{};
+    print "Checked $file with $prog $VERSION using Text::CSV_XS $Text::CSV_XS::VERSION\n";
     my @diag = $csv->error_diag;
     if ($diag[0] == 2012 && $csv->eof) {
 	my @coll = sort { $a <=> $b } keys %cols;

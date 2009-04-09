@@ -1,7 +1,8 @@
-2009-04-05 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-04-09 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
 	* Initial know errors can now be checked on number (1002)
 	* More tests for illegal combinations
+	* Added -u option to examples/csv-check to validate utf-8 encoding
 
 2009-04-03 0.64 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
