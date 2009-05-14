@@ -51,7 +51,7 @@ elsif ($opt_v) {
     }
 else {
     my @my = glob <*/META.yml>;
-    @my == 1 && open my $my, ">", $my[0] or die "Cannot update META.yml|n";
+    @my == 1 && open my $my, ">", $my[0] or die "Cannot update META.yml\n";
     print $my @yml;
     close $my;
     chmod 0644, glob <*/META.yml>;
