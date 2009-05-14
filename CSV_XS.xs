@@ -1202,12 +1202,6 @@ SetDiag (self, xse, ...)
   PPCODE:
     HV		*hv;
     csv_t	csv;
-    SV		*msg = NULL;
-
-    if (items > 1 && SvPOK (ST (2))) {
-	STRLEN len;
-	msg = sv_2mortal (newSVpv (SvPVX (ST (2)), SvCUR (ST (2))));
-	}
 
     if (SvOK (self) && SvROK (self)) {
 	CSV_XS_SELF;
@@ -1217,8 +1211,9 @@ SetDiag (self, xse, ...)
     else
 	ST (0) = SvDiag (xse);
 
-    if (xse && msg) {
-	sv_setpvn (ST (0), SvPVX (msg), SvCUR (msg));
+    if (xse && items > 1 && SvPOK (ST (2))) {
+	STRLEN len;
+	sv_setpvn (ST (0),  SvPVX (ST (2)), SvCUR (ST (2)));
 	SvIOK_on  (ST (0));
 	}
 
