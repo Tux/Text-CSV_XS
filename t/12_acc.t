@@ -97,8 +97,8 @@ is (Text::CSV_XS::new (0),		   undef,	"new () as function");
 is (Text::CSV_XS::error_diag (), "usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);",
 							"Generic usage () message");
 is (Text::CSV_XS->new ({ oel     => "" }), undef,	"typo in attr");
-is (Text::CSV_XS::error_diag (), "Unknown attribute 'oel'",	"Unsupported attr");
+is (Text::CSV_XS::error_diag (), "INI - Unknown attribute 'oel'",	"Unsupported attr");
 is (Text::CSV_XS->new ({ _STATUS => "" }), undef,	"private attr");
-is (Text::CSV_XS::error_diag (), "Unknown attribute '_STATUS'",	"Unsupported private attr");
+is (Text::CSV_XS::error_diag (), "INI - Unknown attribute '_STATUS'",	"Unsupported private attr");
 
 1;

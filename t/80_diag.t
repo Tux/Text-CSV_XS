@@ -64,11 +64,11 @@ unless (($ENV{AUTOMATED_TESTING} || 0) == "1") {
 
 is (Text::CSV_XS->new ({ ecs_char => ":" }), undef, "Unsupported option");
 
-is (Text::CSV_XS::error_diag (), "Unknown attribute 'ecs_char'",
+is (Text::CSV_XS::error_diag (), "INI - Unknown attribute 'ecs_char'",
 					"Last failure for new () - FAIL");
-is (Text::CSV_XS->error_diag (), "Unknown attribute 'ecs_char'",
+is (Text::CSV_XS->error_diag (), "INI - Unknown attribute 'ecs_char'",
 					"Last failure for new () - FAIL");
-is (Text::CSV_XS::error_diag (bless {}, "Foo"), "Unknown attribute 'ecs_char'",
+is (Text::CSV_XS::error_diag (bless {}, "Foo"), "INI - Unknown attribute 'ecs_char'",
 					"Last failure for new () - FAIL");
 $csv->SetDiag (0);
 is (0 + $csv->error_diag (), 0,  "Reset error NUM");
@@ -88,6 +88,6 @@ is ($csvs->error_diag (), "",		"Last failure for new () - OK");
 is (Text::CSV_XS::Subclass->new ({ ecs_char => ":" }), undef, "Unsupported option");
 
 is (Text::CSV_XS::Subclass->error_diag (),
-    "Unknown attribute 'ecs_char'",	"Last failure for new () - FAIL");
+    "INI - Unknown attribute 'ecs_char'",	"Last failure for new () - FAIL");
 
 1;

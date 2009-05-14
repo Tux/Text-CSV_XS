@@ -30,7 +30,7 @@ ok (1, "Allow unescaped quotes");
 	$csv = Text::CSV_XS->new ();
 	ok ($csv,			"$tst - new (alq => 0)");
 	is ($csv->parse ($bad), $valid,	"$tst - parse () fail");
-	is (0 + $csv->error_diag, $err,		"$tst - error $err");
+	is (0 + $csv->error_diag, $err,	"$tst - error $err");
 
 	$csv->allow_loose_quotes (1);
 	ok ($csv->parse ($bad),		"$tst - parse () pass");

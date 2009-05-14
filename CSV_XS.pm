@@ -81,8 +81,9 @@ my $last_new_err = Text::CSV_XS->SetDiag (0);
 
 sub new
 {
-    $last_new_err =
-	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);";
+    $last_new_err = SetDiag (undef, 1000,
+	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);");
+
     my $proto = shift;
     my $attr  = shift || {};
     my $class = ref ($proto) || $proto	or return;
@@ -92,7 +93,7 @@ sub new
 	    next;
 	    }
 #	croak?
-	$last_new_err = "Unknown attribute '$_'";
+	$last_new_err = SetDiag (undef, 1000, "INI - Unknown attribute '$_'");
 	return;
 	}
 
@@ -311,19 +312,14 @@ sub error_input
 sub error_diag
 {
     my $self = shift;
-    my @diag = (0, $last_new_err, 0);
+    my @diag = (0 + $last_new_err, $last_new_err, 0);
 
-    unless ($self && ref $self) {	# Class method or direct call
-	if ($last_new_err) {
-	    $diag[0] = 1000;
-	    $last_new_err =~ m/^[A-Z]{3} - \w/ and
-		$diag[0] = (0 + $last_new_err) || 1000;
-	    }
-	}
-    elsif ($self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
+    if ($self && ref $self && # Not a class method or direct call
+	 $self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	@diag = (0 + $self->{_ERROR_DIAG}, $self->{_ERROR_DIAG});
 	exists $self->{_ERROR_POS} and $diag[2] = 1 + $self->{_ERROR_POS};
 	}
+
     my $context = wantarray;
     unless (defined $context) {	# Void context
 	$diag[0] and print STDERR "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
@@ -954,11 +950,11 @@ If the C<new ()> constructor call fails, it returns C<undef>, and makes
 the fail reason available through the C<error_diag ()> method.
 
  $csv = Text::CSV_XS->new ({ ecs_char => 1 }) or
-     die Text::CSV_XS->error_diag ();
+     die "".Text::CSV_XS->error_diag ();
 
 C<error_diag ()> will return a string like
 
- "Unknown attribute 'ecs_char'"
+ "INI - Unknown attribute 'ecs_char'"
 
 =head2 combine
 
