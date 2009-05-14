@@ -982,8 +982,8 @@ in perl 5.005_xx and older:
 
 as in perl 5.005 and older, the glob C<\*FILE> is not an object, thus it
 doesn't have a print method. The solution is to use an IO::File object or
-to hide the glob behind an IO::Wrap object. See L<IO::File(3)> and
-L<IO::Wrap(3)> for details.
+to hide the glob behind an IO::Wrap object. See L<IO::File> and L<IO::Wrap>
+for details.
 
 For performance reasons the print method doesn't create a result string.
 In particular the I<$csv-E<gt>string ()>, I<$csv-E<gt>status ()>,
@@ -1328,8 +1328,8 @@ CSV file and report on its content.
 
 =item csv2xls
 
-A script to convert CSV to Microsoft Excel. This requires L<Date::Calc(3)>
-and L<Spreadsheet::WriteExcel(3)>. The converter acceps various options and
+A script to convert CSV to Microsoft Excel. This requires L<Date::Calc>
+and L<Spreadsheet::WriteExcel>. The converter acceps various options and
 can produce UTF-8 Excel files.
 
 =back
@@ -1581,9 +1581,9 @@ exhausted before the quote is found, that field is not terminated.
 
 =head1 SEE ALSO
 
-L<perl(1)>, L<IO::File(3)>, L<IO::Handle(3)>, L<IO::Wrap(3)>,
-L<Text::CSV(3)>, L<Text::CSV_PP(3)>, L<Text::CSV::Encoded(3)>,
-L<Text::CSV::Separator(3)>, and L<Spreadsheet::Read(3)>.
+L<perl>, L<IO::File>, L<IO::Handle>, L<IO::Wrap>, L<Text::CSV>,
+L<Text::CSV_PP>, L<Text::CSV::Encoded>, L<Text::CSV::Separator>,
+and L<Spreadsheet::Read>.
 
 =head1 AUTHORS and MAINTAINERS
 
