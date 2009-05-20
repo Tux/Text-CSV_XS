@@ -1,10 +1,14 @@
+2009-05-20 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+    * Reordered examples in doc to show best method first
+
 2009-05-14 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Initial known errors can now be checked on number (1002)
     * More tests for illegal combinations
     * Added -u option to examples/csv-check to validate utf-8 encoding
     * Correct documentation for error_diag () return value in case of
-      contructor failure (Slaven, RT#46076)
+      constructor failure (Slaven, RT#46076)
     * All error_diag () returns should now be dual-var (both numeric
       and string context valid)
     * Remove (3) from L<..> links (Slaven, RT#46078)

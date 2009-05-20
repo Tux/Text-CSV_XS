@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.65";
+$VERSION = "0.66";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1244,7 +1244,17 @@ as the API may change in future releases.
 
 =head1 EXAMPLES
 
-An example for parsing CSV strings:
+Reading a CSV file line by line:
+
+  my $csv = Text::CSV_XS->new ({ binary => 1 });
+  open my $fh, "<", "file.csv" or die "file.csv: $!";
+  while (my $row = $csv->getline ($fh)) {
+      # do something with @$row
+      }
+  $csv->eof or $csv->error_diag;
+  close $fh or die "file.csv: $!";
+
+Parsing CSV strings:
 
   my $csv = Text::CSV_XS->new ({ keep_meta_info => 1, binary => 1 });
 
@@ -1258,12 +1268,25 @@ An example for parsing CSV strings:
           }
       }
   else {
-      my $err = $csv->error_input;
-      print STDERR "parse () failed on argument: ", $err, "\n";
+      print STDERR "parse () failed on argument: ",
+	  $csv->error_input, "\n";
       $csv->error_diag ();
       }
 
-An example for creating CSV files:
+An example for creating CSV files using the C<print ()> method, like in
+dumping the content of a database ($dbh) table ($tbl) to CSV:
+
+  my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
+  open my $fh, ">", "$tbl.csv" or die "$tbl.csv: $!";
+  my $sth = $dbh->prepare ("select * from $tbl");
+  $sth->execute;
+  $csv->print ($fh, $sth->{NAME_lc});
+  while (my $row = $sth->fetch) {
+      $csv->print ($fh, $row) or $csv->error_diag;
+      }
+  close $fh or die "$tbl.csv: $!";
+
+or using the slower C<combine ()> and C<string ()> methods:
 
   my $csv = Text::CSV_XS->new;
 
@@ -1273,37 +1296,13 @@ An example for creating CSV files:
       'You said, "Hello!"',   5.67,
       '"Surely"',   '',   '3.14159');
   if ($csv->combine (@sample_input_fields)) {
-      my $string = $csv->string;
-      print $csv_fh "$string\n";
+      print $csv_fh $csv->string, "\n";
       }
   else {
-      my $err = $csv->error_input;
-      print "combine () failed on argument: ", $err, "\n";
+      print "combine () failed on argument: ",
+	  $csv->error_input, "\n";
       }
   close $csv_fh or die "hello.csv: $!";
-
-Or using the C<print ()> method, which is faster like in
-dumping the content of a database ($dbh) table ($tbl) to CSV:
-
-  my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
-  open my $fh, ">", "$tbl.csv" or die "$tbl.csv: $!";
-  my $sth = $dbh->prepare ("select * from $tbl");
-  $sth->execute;
-  $csv->print ($fh, $sth->{NAME_lc});
-  while (my $row = $sth->fetch) {
-      $csv->print ($fh, $row) or ...;
-      }
-  close $fh or die "$tbl.csv: $!";
-
-Reading a CSV file line by line:
-
-  my $csv = Text::CSV_XS->new ({ binary => 1 });
-  open my $fh, "<", "file.csv" or die "file.csv: $!";
-  while (my $row = $csv->getline ($fh)) {
-      # do something with @$row
-      }
-  $csv->eof or $csv->error_diag;
-  close $fh or die "file.csv: $!";
 
 For more extended examples, see the C<examples/> subdirectory in the
 original distribution. The following files can be found there:
