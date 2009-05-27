@@ -590,8 +590,8 @@ or, more safely in perl 5.6 and up
 =head2 Unicode (UTF8)
 
 On parsing (both for C<getline ()> and C<parse ()>), if the source is
-marked being UTF8, then parsing that source will mark all fields that
-are marked binary will also be marked UTF8.
+marked being UTF8, then all fields that are marked binary will also be
+be marked UTF8.
 
 On combining (C<print ()> and C<combine ()>), if any of the combining
 fields was marked UTF8, the resulting string will be marked UTF8.

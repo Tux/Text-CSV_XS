@@ -1,6 +1,7 @@
-2009-05-20 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-05-27 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Reordered examples in doc to show best method first
+    * Documentation grammatical fix (John P. Linderman, RT#46411)
 
 2009-05-14 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
@@ -18,7 +19,7 @@
     * Skip perlio tests for perl older than 5.8, as perlio
       was experimental in 5.6
     * Up Devel::PPPort to 3.17
-    * Fix initialisation of eol => undef (could cause core dump)
+    * Fix initialization of eol => undef (could cause core dump)
     * Added configure_require to META.yml
 
 2009-03-20 0.63 - H.Merijn Brand   <h.m.brand@xs4all.nl>
@@ -36,7 +37,7 @@
 
     * valgrind found a possible uninitialized value
     * Restriction in print () was only for really old perls
-    * Fix for bind_columns () initialisation (vincent, RT#43927)
+    * Fix for bind_columns () initialization (vincent, RT#43927)
 
 2009-01-27 0.60 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
@@ -49,7 +50,7 @@
     * Missing $IO argument in bind_columns example (docs only)
     * Upped Copyright notices to 2009
     * Added warning for parse () (RT#42261)
-    * Small optimisations (Goro Fuji, RT#42517)
+    * Small optimizations (Goro Fuji, RT#42517)
     * ppport.h updated to 3.15
     * Added git clone command to README
     * ppport.h updated to 3.16-pre
@@ -170,11 +171,11 @@
 
 2008-04-07  0.40 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
-    * Implemented getline_hr () and column_names () RT 34474
+    * Implemented getline_hr () and column_names () (RT#34474)
       (suggestions accepted from Mark Stosberg)
     * Corrected misspelled variable names in XS
     * Functions are now =head2 type doc entries (Mark Stosberg)
-    * Make SetDiag() available to the perl level, so errors can
+    * Make SetDiag () available to the perl level, so errors can
       be centralized and consistent
     * Integrate the non-XS errors into XS
     * Add t/75_hashref.t
@@ -257,7 +258,7 @@
 2007-06-08  0.29 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Removed an unused 'use Data::Dumper'
-    * Added $csv->eof () RT 27424
+    * Added $csv->eof () (RT#27424)
     * Two typo's in the doc's (Amsterdam.pm)
     * Modified examples/speed.pl to better show the diffs between versions
     * Cache attribute settings and regain speed of 0.23! and beyond
@@ -297,7 +298,7 @@
       continuing with false assumptions.
     * Added allow_loose_quotes  (see doc)
     * Added t/65_allow.t
-    * Added allow_loose_escapes (see doc) RT 15076
+    * Added allow_loose_escapes (see doc) (RT#15076)
     * More code cleanup in XS
     * Added allow_whitespace    (see doc)
 
@@ -322,10 +323,10 @@
       the difference between empty string and undef
     * Spell-checked the pod and fixed some typo's
     * Added t/70_rt.t
-      - Regression         for RT 24386: \t doesn't work (WFM)
-      - Regression and fix for RT 21530: getline () return at eof
+      - Regression         for RT#24386: \t doesn't work (WFM)
+      - Regression and fix for RT#21530: getline () return at eof
 	This one still passes under perl 5.00504
-      - Regression         for RT 18703: Fails to use quote_char of '~'
+      - Regression         for RT#18703: Fails to use quote_char of '~'
     * Added t/55_combi.t for most combinations of always_quote,
       sep_char, quote_char, and escape_char
     * Added docs about sep_char not allowed to be either quote_char
@@ -423,7 +424,7 @@
 
 1998-08-21  Jochen Wiedmann  <joe@ispsoft.de> (0.15)
 
-    * CSV_XS.pm: Moved print() and getline() to XS.
+    * CSV_XS.pm: Moved print () and getline () to XS.
 
 1998-08-13  Jochen Wiedmann  <joe@ispsoft.de> (0.14)
 
@@ -450,7 +451,7 @@
 1998-05-05  Jochen Wiedmann  <joe@ispsoft.de> (0.10)
 
     * Moved encoding and decoding to XS; added binary mode; added
-      print() and getline() methods.
+      print () and getline () methods.
 
 1998-06-05  Alan Citterman  <alan@mfgrtl.com>
 
