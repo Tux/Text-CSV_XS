@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 66;
+use Test::More tests => 82;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -100,5 +100,10 @@ is (Text::CSV_XS->new ({ oel     => "" }), undef,	"typo in attr");
 is (Text::CSV_XS::error_diag (), "INI - Unknown attribute 'oel'",	"Unsupported attr");
 is (Text::CSV_XS->new ({ _STATUS => "" }), undef,	"private attr");
 is (Text::CSV_XS::error_diag (), "INI - Unknown attribute '_STATUS'",	"Unsupported private attr");
+
+foreach my $arg (undef, 0, "", " ", 1, [], [ 0 ], *STDOUT) {
+    is  (Text::CSV_XS->new ($arg),         undef,	"Illegal type for first arg");
+    is ((Text::CSV_XS::error_diag)[0], 1000, "Should be a hashref - numeric error");
+    }
 
 1;
