@@ -692,7 +692,7 @@ QUOTATION MARK) (to give some examples of what might look promising) are
 therefor not allowed.
 
 If you use perl-5.8.2 or higher, these three attributes are utf8-decoded, to
-increase the likelyhood of success. This way U+00FE will be allowed as a
+increase the likelihood of success. This way U+00FE will be allowed as a
 quote character.
 
 =item *
@@ -1152,7 +1152,7 @@ Set field type to string.
  @columns = $csv->fields ();
 
 This object function returns the input to C<combine ()> or the resultant
-decomposed fields of C successfull <parse ()>, whichever was called more
+decomposed fields of C successful <parse ()>, whichever was called more
 recently.
 
 Note that the return value is undefined after using C<getline ()>, which
@@ -1354,7 +1354,7 @@ CSV file and report on its content.
 =item csv2xls
 
 A script to convert CSV to Microsoft Excel. This requires L<Date::Calc>
-and L<Spreadsheet::WriteExcel>. The converter acceps various options and
+and L<Spreadsheet::WriteExcel>. The converter accepts various options and
 can produce UTF-8 Excel files.
 
 =back
