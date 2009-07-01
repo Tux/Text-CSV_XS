@@ -46,7 +46,8 @@
 #define CACHE_ID_eol_is_cr		20
 #define CACHE_ID_has_types		21
 #define CACHE_ID_verbatim		22
-#define CACHE_ID__is_bound		23
+#define CACHE_ID_empty_is_undef		23
+#define CACHE_ID__is_bound		24
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -91,6 +92,7 @@ typedef struct {
     byte	allow_whitespace;
 
     byte	blank_is_undef;
+    byte	empty_is_undef;
     byte	verbatim;
     long	is_bound;
     byte	reserved1;
@@ -245,6 +247,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	csv->allow_double_quoted	= csv->cache[CACHE_ID_allow_double_quoted];
 	csv->allow_whitespace		= csv->cache[CACHE_ID_allow_whitespace	];
 	csv->blank_is_undef		= csv->cache[CACHE_ID_blank_is_undef	];
+	csv->empty_is_undef		= csv->cache[CACHE_ID_empty_is_undef	];
 	csv->verbatim			= csv->cache[CACHE_ID_verbatim		];
 #endif
 	csv->eol_is_cr			= csv->cache[CACHE_ID_eol_is_cr		];
@@ -332,6 +335,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	csv->allow_double_quoted	= bool_opt ("allow_double_quoted");
 	csv->allow_whitespace		= bool_opt ("allow_whitespace");
 	csv->blank_is_undef		= bool_opt ("blank_is_undef");
+	csv->empty_is_undef		= bool_opt ("empty_is_undef");
 	csv->verbatim			= bool_opt ("verbatim");
 #endif
 
@@ -349,6 +353,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	csv->cache[CACHE_ID_allow_double_quoted]	= csv->allow_double_quoted;
 	csv->cache[CACHE_ID_allow_whitespace]		= csv->allow_whitespace;
 	csv->cache[CACHE_ID_blank_is_undef]		= csv->blank_is_undef;
+	csv->cache[CACHE_ID_empty_is_undef]		= csv->empty_is_undef;
 	csv->cache[CACHE_ID_verbatim]			= csv->verbatim;
 #endif
 	csv->cache[CACHE_ID_eol_is_cr]			= csv->eol_is_cr;
@@ -601,7 +606,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 #if ALLOW_ALLOW
 #define AV_PUSH {						\
     *SvEND (sv) = (char)0;					\
-    if (!(f & CSV_FLAGS_QUO) && SvCUR (sv) == 0 && csv->blank_is_undef)	{\
+    if (SvCUR (sv) == 0 && (csv->empty_is_undef || (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef))) {\
 	sv_setpvn (sv, NULL, 0);				\
 	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
@@ -719,7 +724,7 @@ restart:
 #endif
 	    if (waitingForField) {
 #if ALLOW_ALLOW
-		if (csv->blank_is_undef)
+		if (csv->blank_is_undef || csv->empty_is_undef)
 		    sv_setpvn (sv, NULL, 0);
 		else
 #endif
@@ -747,7 +752,7 @@ restart:
 #endif
 	    if (waitingForField) {
 #if ALLOW_ALLOW
-		if (csv->blank_is_undef)
+		if (csv->blank_is_undef || csv->empty_is_undef)
 		    sv_setpvn (sv, NULL, 0);
 		else
 #endif
@@ -1077,7 +1082,7 @@ restart:
 	if (seenSomething) {
 	    unless (sv) NewField;
 #if ALLOW_ALLOW
-	    if (csv->blank_is_undef)
+	    if (csv->blank_is_undef || csv->empty_is_undef)
 		sv_setpvn (sv, NULL, 0);
 	    else
 #endif

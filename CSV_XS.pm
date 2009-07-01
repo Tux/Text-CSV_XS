@@ -65,6 +65,7 @@ my %def_attr = (
     allow_loose_escapes	=> 0,
     allow_whitespace	=> 0,
     blank_is_undef	=> 0,
+    empty_is_undef	=> 0,
     verbatim		=> 0,
     types		=> undef,
 
@@ -132,8 +133,9 @@ my %_cache_id = (	# Keep in sync with XS!
     eol_is_cr		=> 20,
     has_types		=> 21,
     verbatim		=> 22,
+    blank_is_undef	=> 23,
 
-    _is_bound		=> 23,	# 23 .. 26
+    _is_bound		=> 24,	# 24 .. 27
     );
 
 sub _set_attr_C
@@ -270,6 +272,13 @@ sub blank_is_undef
     @_ and $self->_set_attr_C ("blank_is_undef", shift);
     $self->{blank_is_undef};
     } # blank_is_undef
+
+sub empty_is_undef
+{
+    my $self = shift;
+    @_ and $self->_set_attr_C ("empty_is_undef", shift);
+    $self->{empty_is_undef};
+    } # empty_is_undef
 
 sub verbatim
 {
@@ -782,6 +791,20 @@ be parsed as
 
  ("1", "", undef, " ", "2")
 
+=item empty_is_undef
+
+Going one step further than C<blank_is_undef>, this attribute converts
+all empty fields to undef, so
+
+ 1,"",," ",2
+
+is read as
+
+ (1, undef, undef, " ", 2)
+
+Note that this only effects fields that are I<realy> empty, not fields
+that are empty after stripping allowed whitespace. YMMV.
+
 =item quote_char
 
 The char used for quoting fields containing blanks, by default the
@@ -934,6 +957,7 @@ is equivalent to
      allow_loose_escapes => 0,
      allow_whitespace    => 0,
      blank_is_undef      => 0,
+     empty_is_undef      => 0,
      verbatim            => 0,
      });
 
