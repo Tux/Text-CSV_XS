@@ -1,9 +1,10 @@
-2009-07-01 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-07-06 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Reordered examples in doc to show best method first
     * Documentation grammatical fix (John P. Linderman, RT#46411)
     * Fail if first arg to new () is not a hash ref
     * Implement empty_is_undef on request of Evan Carroll
+    * Typo in documentation (Herwin Weststrate, RT#47613)
 
 2009-05-14 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

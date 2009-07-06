@@ -1082,7 +1082,7 @@ string C<"\cAUNDEF\cA">, so
   $hr = $csv->getline_hr ($io);
 
 Will set C<$hr->{"\cAUNDEF\cA"}> to the 1st field, C<$hr->{""}> to the
-2nd field, and C<$hr->{name}> to the 4th field, discarding the 2rd field.
+2nd field, and C<$hr->{name}> to the 4th field, discarding the 3rd field.
 
 C<column_names ()> croaks on invalid arguments.
 
