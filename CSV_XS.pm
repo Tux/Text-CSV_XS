@@ -1486,6 +1486,10 @@ normal cases - when no error occured - may cause unexpected results.
 If the constructor failed, the cause can be found using C<error_diag ()> as a
 class method, like C<Text::CSV_XS->error_diag ()>.
 
+C<$csv->error_diag ()> is automatically called upon error when the contractor
+was called with C<auto_diag> set to 1 or 2. When set to 1, this will cause a
+C<warn ()> with the error message, when set to 2, it will C<die ()>.
+
 Currently errors as described below are available. I've tried to make the error
 itself explanatory enough, but more descriptions will be added. For most of
 these errors, the first three capitals describe the error category:
