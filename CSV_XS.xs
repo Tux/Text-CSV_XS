@@ -47,7 +47,8 @@
 #define CACHE_ID_has_types		21
 #define CACHE_ID_verbatim		22
 #define CACHE_ID_empty_is_undef		23
-#define CACHE_ID__is_bound		24
+#define CACHE_ID_auto_diag		24
+#define CACHE_ID__is_bound		25
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -94,12 +95,13 @@ typedef struct {
     byte	blank_is_undef;
     byte	empty_is_undef;
     byte	verbatim;
-    long	is_bound;
-    byte	reserved1;
 #endif
+    byte	auto_diag;
+    long	is_bound;
 
     byte	cache[CACHE_SIZE];
 
+    SV *	pself;
     HV *	self;
     SV *	bound;
 
@@ -210,6 +212,7 @@ static SV *cx_SvDiag (pTHX_ int xse)
 #define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
 static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 {
+    dSP;
     SV   *err = SvDiag (xse);
 
     if (err)
@@ -218,17 +221,28 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 	hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
 	hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
 	}
+    if (err && csv->pself && csv->auto_diag) {
+	ENTER;
+	SAVETMPS;
+	PUSHMARK (SP);
+	XPUSHs (csv->pself);
+	PUTBACK;
+	call_pv ("Text::CSV_XS::error_diag", G_VOID | G_DISCARD);
+	FREETMPS;
+	LEAVE;
+	}
     return (err);
     } /* SetDiag */
 
-#define SetupCsv(csv,self)	cx_SetupCsv (aTHX_ csv, self)
-static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
+#define SetupCsv(csv,self,pself)	cx_SetupCsv (aTHX_ csv, self, pself)
+static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 {
     SV	       **svp;
     STRLEN	 len;
     char	*ptr;
 
     csv->self  = self;
+    csv->pself = pself;
 
     if ((svp = hv_fetchs (self, "_CACHE", FALSE)) && *svp) {
 	memcpy (csv->cache, SvPV (*svp, len), CACHE_SIZE);
@@ -240,6 +254,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 
 	csv->keep_meta_info		= csv->cache[CACHE_ID_keep_meta_info	];
 	csv->always_quote		= csv->cache[CACHE_ID_always_quote	];
+	csv->auto_diag			= csv->cache[CACHE_ID_auto_diag	];
 
 #if ALLOW_ALLOW
 	csv->allow_loose_quotes		= csv->cache[CACHE_ID_allow_loose_quotes];
@@ -338,6 +353,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	csv->empty_is_undef		= bool_opt ("empty_is_undef");
 	csv->verbatim			= bool_opt ("verbatim");
 #endif
+	csv->auto_diag			= bool_opt ("auto_diag");
 
 	csv->cache[CACHE_ID_quote_char]			= csv->quote_char;
 	csv->cache[CACHE_ID_escape_char]		= csv->escape_char;
@@ -356,6 +372,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self)
 	csv->cache[CACHE_ID_empty_is_undef]		= csv->empty_is_undef;
 	csv->cache[CACHE_ID_verbatim]			= csv->verbatim;
 #endif
+	csv->cache[CACHE_ID_auto_diag]			= csv->auto_diag;
 	csv->cache[CACHE_ID_eol_is_cr]			= csv->eol_is_cr;
 	csv->cache[CACHE_ID_eol_len]			= csv->eol_len;
 	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
@@ -1110,13 +1127,13 @@ restart:
     return TRUE;
     } /* Parse */
 
-#define xsParse(hv,av,avf,src,useIO)	cx_xsParse (aTHX_ hv, av, avf, src, useIO)
-static int cx_xsParse (pTHX_ HV *hv, AV *av, AV *avf, SV *src, bool useIO)
+#define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
+static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     csv_t	csv;
     int		result;
 
-    SetupCsv (&csv, hv);
+    SetupCsv (&csv, hv, self);
     if ((csv.useIO = useIO)) {
 	csv.tmp  = NULL;
 	csv.size = 0;
@@ -1169,8 +1186,8 @@ static int cx_xsParse (pTHX_ HV *hv, AV *av, AV *avf, SV *src, bool useIO)
     return result;
     } /* xsParse */
 
-#define xsCombine(hv,av,io,useIO)	cx_xsCombine (aTHX_ hv, av, io, useIO)
-static int cx_xsCombine (pTHX_ HV *hv, AV *av, SV *io, bool useIO)
+#define xsCombine(self,hv,av,io,useIO)	cx_xsCombine (aTHX_ self, hv, av, io, useIO)
+static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
 {
     csv_t	csv;
     int		result;
@@ -1178,7 +1195,7 @@ static int cx_xsCombine (pTHX_ HV *hv, AV *av, SV *io, bool useIO)
     SV		*ors = PL_ors_sv;
 #endif
 
-    SetupCsv (&csv, hv);
+    SetupCsv (&csv, hv, self);
     csv.useIO = useIO;
 #if (PERL_BCDVERSION >= 0x5008000)
     if (csv.eol && *csv.eol)
@@ -1210,7 +1227,7 @@ SetDiag (self, xse, ...)
 
     if (SvOK (self) && SvROK (self)) {
 	CSV_XS_SELF;
-	SetupCsv (&csv, hv);
+	SetupCsv (&csv, hv, self);
 	ST (0) = SetDiag (&csv, xse);
 	}
     else
@@ -1238,7 +1255,7 @@ Combine (self, dst, fields, useIO)
 
     CSV_XS_SELF;
     av = (AV *)SvRV (fields);
-    ST (0) = xsCombine (hv, av, dst, useIO) ? &PL_sv_yes : &PL_sv_undef;
+    ST (0) = xsCombine (self, hv, av, dst, useIO) ? &PL_sv_yes : &PL_sv_undef;
     XSRETURN (1);
     /* XS Combine */
 
@@ -1260,7 +1277,7 @@ Parse (self, src, fields, fflags)
     avf = (AV*)SvRV (fflags);
 #endif
 
-    ST (0) = xsParse (hv, av, avf, src, 0) ? &PL_sv_yes : &PL_sv_no;
+    ST (0) = xsParse (self, hv, av, avf, src, 0) ? &PL_sv_yes : &PL_sv_no;
     XSRETURN (1);
     /* XS Parse */
 
@@ -1280,7 +1297,7 @@ print (self, io, fields)
 
     av = (AV*)SvRV (fields);
 
-    ST (0) = xsCombine (hv, av, io, 1) ? &PL_sv_yes : &PL_sv_no;
+    ST (0) = xsCombine (self, hv, av, io, 1) ? &PL_sv_yes : &PL_sv_no;
     XSRETURN (1);
     /* XS print */
 
@@ -1297,7 +1314,7 @@ getline (self, io)
     CSV_XS_SELF;
     av  = newAV ();
     avf = newAV ();
-    ST (0) = xsParse (hv, av, avf, io, 1)
+    ST (0) = xsParse (self, hv, av, avf, io, 1)
 	?  sv_2mortal (newRV_noinc ((SV *)av))
 	: &PL_sv_undef;
     XSRETURN (1);

@@ -67,6 +67,7 @@ my %def_attr = (
     blank_is_undef	=> 0,
     empty_is_undef	=> 0,
     verbatim		=> 0,
+    auto_diag		=> 0,
     types		=> undef,
 
     _EOF		=> 0,
@@ -134,8 +135,9 @@ my %_cache_id = (	# Keep in sync with XS!
     has_types		=> 21,
     verbatim		=> 22,
     blank_is_undef	=> 23,
+    auto_diag		=> 24,
 
-    _is_bound		=> 24,	# 24 .. 27
+    _is_bound		=> 25,	# 25 .. 28
     );
 
 sub _set_attr_C
@@ -287,6 +289,13 @@ sub verbatim
     $self->{verbatim};
     } # verbatim
 
+sub auto_diag
+{
+    my $self = shift;
+    @_ and $self->_set_attr_C ("auto_diag", shift);
+    $self->{auto_diag};
+    } # auto_diag
+
 # status
 #
 #   object method returning the success or failure of the most recent
@@ -333,7 +342,10 @@ sub error_diag
 
     my $context = wantarray;
     unless (defined $context) {	# Void context
-	$diag[0] and print STDERR "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
+	if ($diag[0]) {
+	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
+	    $self && ref $self && $self->{auto_diag} > 1 ? die $msg : warn $msg;
+	    }
 	return;
 	}
     return $context ? @diag : $diag[1];
@@ -937,6 +949,14 @@ as if \n is just nothing more than a binary character.
 For parse () this means that the parser has no idea about line ending
 anymore, and getline () chomps line endings on reading.
 
+=item auto_diag
+
+Set to true will cause C<error_diag ()> to be automatically be called
+in void context upon errors.
+
+If set to a value greater than 1, it will die on errors instead of
+warn.
+
 =back
 
 To sum it up,
@@ -959,6 +979,7 @@ is equivalent to
      blank_is_undef      => 0,
      empty_is_undef      => 0,
      verbatim            => 0,
+     auto_diag           => 0,
      });
 
 For all of the above mentioned flags, there is an accessor method

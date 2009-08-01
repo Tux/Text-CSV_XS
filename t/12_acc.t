@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 82;
+use Test::More tests => 83;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -25,6 +25,7 @@ is ($csv->allow_loose_escapes,		0,		"allow_loose_escapes");
 is ($csv->allow_whitespace,		0,		"allow_whitespace");
 is ($csv->blank_is_undef,		0,		"blank_is_undef");
 is ($csv->verbatim,			0,		"verbatim");
+is ($csv->auto_diag,			0,		"auto_diag");
 
 is ($csv->binary (1),			1,		"binary (1)");
 my @fld = ( 'txt =, "Hi!"', "Yes", "", 2, undef, "1.09", "\r", undef );

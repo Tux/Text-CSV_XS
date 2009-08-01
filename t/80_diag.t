@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
- use Test::More tests => 86;
+ use Test::More tests => 94;
 #use Test::More "no_plan";
 
 my %err;
@@ -58,8 +58,11 @@ parse_err 2034,  4, qq{1, "bar",2};
 parse_err 2037,  1, qq{\0 };
 
 unless (($ENV{AUTOMATED_TESTING} || 0) == "1") {
-    diag ("Next line should be an error message");
+    my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
     $csv->error_diag ();
+    ok (@warn == 1, "Got error message");
+    like ($warn[0], qr{^# CSV_XS ERROR: 2037 - EIF}, "error content");
     }
 
 is (Text::CSV_XS->new ({ ecs_char => ":" }), undef, "Unsupported option");
@@ -73,6 +76,20 @@ is (Text::CSV_XS::error_diag (bless {}, "Foo"), "INI - Unknown attribute 'ecs_ch
 $csv->SetDiag (0);
 is (0 + $csv->error_diag (), 0,  "Reset error NUM");
 is (    $csv->error_diag (), "", "Reset error NUM");
+
+ok (1, "Test auto_diag");
+$csv = Text::CSV_XS->new ({ auto_diag => 1 });
+{   my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    is ($csv->parse ('"","'), 0, "1 - bad parse");
+    ok (@warn == 1, "1 - One error");
+    like ($warn[0], qr '^# CSV_XS ERROR: 2027 -', "1 - error message");
+    }
+{   my @warn;
+    ok ($csv->{auto_diag} = 2, "auto_diag = 2 to die");
+    eval { $csv->parse ('"","') };
+    like ($@, qr '^# CSV_XS ERROR: 2027 -', "2 - error message");
+    }
 
 package Text::CSV_XS::Subclass;
 
