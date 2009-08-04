@@ -1,4 +1,4 @@
-2009-08-01 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-08-04 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Reordered examples in doc to show best method first
     * Documentation grammatical fix (John P. Linderman, RT#46411)
@@ -7,6 +7,7 @@
     * Typo in documentation (Herwin Weststrate, RT#47613)
     * error_diag () uses warn () in void context instead of STDERR
     * Add auto_diag attribute
+    * FIX: reset attributes (after they have been set) with accessor
 
 2009-05-14 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

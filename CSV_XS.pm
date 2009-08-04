@@ -140,6 +140,7 @@ my %_cache_id = (	# Keep in sync with XS!
     _is_bound		=> 25,	# 25 .. 28
     );
 
+# A `character'
 sub _set_attr_C
 {
     my ($self, $name, $val) = @_;
@@ -152,6 +153,19 @@ sub _set_attr_C
     $self->{_CACHE} = pack "C*", @cache;
     } # _set_attr_C
 
+# A flag
+sub _set_attr_X
+{
+    my ($self, $name, $val) = @_;
+    defined $val or $val = 0;
+    $self->{$name} = $val;
+    $self->{_CACHE} or return;
+    my @cache = unpack "C*", $self->{_CACHE};
+    $cache[$_cache_id{$name}] = 0 + $val;
+    $self->{_CACHE} = pack "C*", @cache;
+    } # _set_attr_C
+
+# A number
 sub _set_attr_N
 {
     my ($self, $name, $val) = @_;
@@ -222,35 +236,35 @@ sub eol
 sub always_quote
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("always_quote", shift);
+    @_ and $self->_set_attr_X ("always_quote", shift);
     $self->{always_quote};
     } # always_quote
 
 sub binary
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("binary", shift);
+    @_ and $self->_set_attr_X ("binary", shift);
     $self->{binary};
     } # binary
 
 sub keep_meta_info
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("keep_meta_info", shift);
+    @_ and $self->_set_attr_X ("keep_meta_info", shift);
     $self->{keep_meta_info};
     } # keep_meta_info
 
 sub allow_loose_quotes
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("allow_loose_quotes", shift);
+    @_ and $self->_set_attr_X ("allow_loose_quotes", shift);
     $self->{allow_loose_quotes};
     } # allow_loose_quotes
 
 sub allow_loose_escapes
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("allow_loose_escapes", shift);
+    @_ and $self->_set_attr_X ("allow_loose_escapes", shift);
     $self->{allow_loose_escapes};
     } # allow_loose_escapes
 
@@ -263,7 +277,7 @@ sub allow_whitespace
 	  (defined $self->{quote_char}  && $self->{quote_char}  =~ m/^[ \t]$/) ||
 	  (defined $self->{escape_char} && $self->{escape_char} =~ m/^[ \t]$/) and
 	    croak ($self->SetDiag (1002));
-	$self->_set_attr_C ("allow_whitespace", $aw);
+	$self->_set_attr_X ("allow_whitespace", $aw);
 	}
     $self->{allow_whitespace};
     } # allow_whitespace
@@ -271,14 +285,14 @@ sub allow_whitespace
 sub blank_is_undef
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("blank_is_undef", shift);
+    @_ and $self->_set_attr_X ("blank_is_undef", shift);
     $self->{blank_is_undef};
     } # blank_is_undef
 
 sub empty_is_undef
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("empty_is_undef", shift);
+    @_ and $self->_set_attr_X ("empty_is_undef", shift);
     $self->{empty_is_undef};
     } # empty_is_undef
 
@@ -292,7 +306,7 @@ sub verbatim
 sub auto_diag
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("auto_diag", shift);
+    @_ and $self->_set_attr_X ("auto_diag", shift);
     $self->{auto_diag};
     } # auto_diag
 

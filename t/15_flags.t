@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 173;
+use Test::More tests => 185;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -208,4 +208,19 @@ sub crnlsp
     ok (!$csv->parse (qq{"+\n"}),	"Quo ESC NL");
     ok (!$csv->parse (qq{"+\r"}),	"Quo ESC CR");
     ok (!$csv->parse (qq{"+\r\n"}),	"Quo ESC CR NL");
+    }
+
+{   my $csv = Text::CSV_XS->new ({ always_quote => 0 });
+    ok ($csv->combine (1..3),		"Combine");
+    is ($csv->string, q{1,2,3},		"String");
+    is ($csv->always_quote, 0,		"Attr 0");
+    ok ($csv->combine (1..3),		"Combine");
+    ok ($csv->always_quote (1),		"Attr 1");
+    ok ($csv->combine (1..3),		"Combine");
+    is ($csv->string, q{"1","2","3"},	"String");
+    is ($csv->always_quote, 1,		"Attr 1");
+    is ($csv->always_quote (0), 0,	"Attr 0");
+    ok ($csv->combine (1..3),		"Combine");
+    is ($csv->string, q{1,2,3},		"String");
+    is ($csv->always_quote, 0,		"Attr 0");
     }
