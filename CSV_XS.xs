@@ -8,6 +8,7 @@
 #include <perl.h>
 #include <XSUB.h>
 #define NEED_PL_parser
+#define DPPP_PL_parser_NO_DUMMY
 #define NEED_sv_2pv_flags
 #define NEED_load_module
 #define NEED_newRV_noinc
