@@ -213,10 +213,10 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     SV   *err = SvDiag (xse);
 
     if (err)
-	hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
+	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
     if (xse == 0) {
-	hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
-	hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
+	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
+	(void)hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
 	}
     if (err && csv->pself && csv->auto_diag) {
 	ENTER;
@@ -375,7 +375,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->cache[CACHE_ID__is_bound + 3] = (csv->is_bound & 0x000000FF);
 
 	if ((csv->tmp = newSVpvn ((char *)csv->cache, CACHE_SIZE)))
-	    hv_store (self, "_CACHE", 6, csv->tmp, 0);
+	    (void)hv_store (self, "_CACHE", 6, csv->tmp, 0);
 	}
 
     if (csv->is_bound) {
@@ -530,7 +530,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 #define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos)
 static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos)
 {
-    hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
+    (void)hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
     if (csv->tmp) {
 	if (hv_store (csv->self, "_ERROR_INPUT", 12, csv->tmp, 0))
 	    SvREFCNT_inc (csv->tmp);
@@ -1087,16 +1087,16 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
 	csv.utf8 = SvUTF8 (src);
 	csv.bptr = SvPV (src, csv.size);
 	}
-    hv_delete (hv, "_ERROR_INPUT", 12, G_DISCARD);
+    (void)hv_delete (hv, "_ERROR_INPUT", 12, G_DISCARD);
     result = Parse (&csv, src, av, avf);
     if (csv.useIO & useIO_EOF)
-	hv_store (hv, "_EOF", 4, &PL_sv_yes, 0);
+	(void)hv_store (hv, "_EOF", 4, &PL_sv_yes, 0);
     else
-	hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
+	(void)hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
     if (csv.useIO) {
 	if (csv.keep_meta_info) {
-	    hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
-	    hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
+	    (void)hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
+	    (void)hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
 	    }
 	else {
 	    av_undef (avf);
@@ -1176,7 +1176,6 @@ SetDiag (self, xse, ...)
 	ST (0) = SvDiag (xse);
 
     if (xse && items > 1 && SvPOK (ST (2))) {
-	STRLEN len;
 	sv_setpvn (ST (0),  SvPVX (ST (2)), SvCUR (ST (2)));
 	SvIOK_on  (ST (0));
 	}
