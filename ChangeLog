@@ -1,4 +1,4 @@
-2009-08-04 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-08-07 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Reordered examples in doc to show best method first
     * Documentation grammatical fix (John P. Linderman, RT#46411)
@@ -6,7 +6,7 @@
     * Implement empty_is_undef on request of Evan Carroll
     * Typo in documentation (Herwin Weststrate, RT#47613)
     * error_diag () uses warn () in void context instead of STDERR
-    * Add auto_diag attribute
+    * Add auto_diag attribute (still under construction)
     * FIX: reset attributes (after they have been set) with accessor
 
 2009-05-14 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>

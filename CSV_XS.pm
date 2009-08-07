@@ -971,6 +971,10 @@ in void context upon errors.
 If set to a value greater than 1, it will die on errors instead of
 warn.
 
+Future extensions to this feature will include auto-detection of the
+C<autodie> module being enabled, which will raise the value of C<auto_diag>
+with C<1> on the moment the error is detected.
+
 =back
 
 To sum it up,
@@ -1501,8 +1505,9 @@ If the constructor failed, the cause can be found using C<error_diag ()> as a
 class method, like C<Text::CSV_XS->error_diag ()>.
 
 C<$csv->error_diag ()> is automatically called upon error when the contractor
-was called with C<auto_diag> set to 1 or 2. When set to 1, this will cause a
-C<warn ()> with the error message, when set to 2, it will C<die ()>.
+was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect
+(NYI).  When set to 1, this will cause a C<warn ()> with the error message,
+when set to 2, it will C<die ()>.
 
 Currently errors as described below are available. I've tried to make the error
 itself explanatory enough, but more descriptions will be added. For most of
