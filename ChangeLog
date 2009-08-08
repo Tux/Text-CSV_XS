@@ -1,6 +1,7 @@
 2009-08-08 0.67 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Fix empty_diag typo for attribute handler
+    * Fix AUTOMATED_TESTING erroneous skip
 
 2009-08-07 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

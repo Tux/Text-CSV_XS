@@ -26,6 +26,7 @@ t/70_rt.t		Tests based on RT reports
 t/75_hashref.t		getline_hr related tests
 t/76_magic.t		array_ref from magig
 t/80_diag.t		Error diagnostics
+t/81_subclass.t		Subclassed
 t/util.pl		Extra test utilities
 examples/csv2xls	Script to onvert CSV files to M$Excel
 examples/csv-check	Script to check a CSV file/stream
