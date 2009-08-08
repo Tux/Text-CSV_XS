@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 83;
+use Test::More tests => 86;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -24,8 +24,9 @@ is ($csv->allow_loose_quotes,		0,		"allow_loose_quotes");
 is ($csv->allow_loose_escapes,		0,		"allow_loose_escapes");
 is ($csv->allow_whitespace,		0,		"allow_whitespace");
 is ($csv->blank_is_undef,		0,		"blank_is_undef");
-is ($csv->verbatim,			0,		"verbatim");
+is ($csv->empty_is_undef,		0,		"empty_is_undef");
 is ($csv->auto_diag,			0,		"auto_diag");
+is ($csv->verbatim,			0,		"verbatim");
 
 is ($csv->binary (1),			1,		"binary (1)");
 my @fld = ( 'txt =, "Hi!"', "Yes", "", 2, undef, "1.09", "\r", undef );
@@ -45,6 +46,8 @@ is ($csv->allow_loose_quotes (1),	1,		"allow_loose_quotes (1)");
 is ($csv->allow_loose_escapes (1),	1,		"allow_loose_escapes (1)");
 is ($csv->allow_whitespace (1),		1,		"allow_whitespace (1)");
 is ($csv->blank_is_undef (1),		1,		"blank_is_undef (1)");
+is ($csv->empty_is_undef (1),		1,		"empty_is_undef (1)");
+is ($csv->auto_diag (1),		1,		"auto_diag (1)");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
 is ($csv->escape_char ("\\"),		"\\",		"escape_char (\\)");
 ok ($csv->combine (@fld),				"combine");

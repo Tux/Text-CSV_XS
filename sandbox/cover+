@@ -8,12 +8,22 @@ ccache -C
 rm -f *.gc*
 cover -test
 
-mv cover_db cover_db_
-make distclean
-
 # 5.10.0 64bitint debug
 perl Makefile.PL
 mv cover_db_ cover_db
 ccache -C
 rm -f *.gc*
 cover -test --nodelete
+
+mv cover_db cover_db_
+make distclean
+
+# 5.10.0 thread
+/usr/bin/perl Makefile.PL
+mv cover_db_ cover_db
+ccache -C
+rm -f *.gc*
+cover -test --nodelete
+
+rm cover_db/ppport-h.html
+perl -ni -e'/ppport-h.html/ or print' cover_db/coverage.html

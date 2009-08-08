@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.66";
+$VERSION = "0.67";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -134,7 +134,7 @@ my %_cache_id = (	# Keep in sync with XS!
     eol_is_cr		=> 20,
     has_types		=> 21,
     verbatim		=> 22,
-    blank_is_undef	=> 23,
+    empty_is_undef	=> 23,
     auto_diag		=> 24,
 
     _is_bound		=> 25,	# 25 .. 28
