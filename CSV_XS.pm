@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.67";
+$VERSION = "0.68";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -356,9 +356,21 @@ sub error_diag
 
     my $context = wantarray;
     unless (defined $context) {	# Void context
-	if ($diag[0]) {
+	if ($diag[0] && $self && ref $self) {
 	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
-	    $self && ref $self && $self->{auto_diag} > 1 ? die $msg : warn $msg;
+
+	    my $lvl = $self->{auto_diag};
+	    if ($lvl < 2) {
+		my @c = caller (2);
+		if (@c >= 11 && $c[10] && ref $c[10] eq "HASH") {
+		    my $hints = $c[10];
+		    (exists $hints->{autodie} && $hints->{autodie} or
+		     exists $hints->{"guard Fatal"} &&
+		    !exists $hints->{"no Fatal"}) and
+			$lvl++;
+		    }
+		}
+	    $lvl > 1 ? die $msg : warn $msg;
 	    }
 	return;
 	}

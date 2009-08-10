@@ -211,7 +211,7 @@ static SV *cx_SvDiag (pTHX_ int xse)
 static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 {
     dSP;
-    SV   *err = SvDiag (xse);
+    SV *err = SvDiag (xse);
 
     if (err)
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
