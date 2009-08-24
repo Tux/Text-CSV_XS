@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-our $VERSION = "1.6";
+our $VERSION = "1.61";
 
 sub usage
 {
@@ -53,7 +53,7 @@ GetOptions (
     ) or usage (1);
 
 my $title = @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xls";
-($xls ||= $title) =~ s/\.csv$/.xls/;
+($xls ||= $title) =~ s/(?:\.csv)?$/.xls/i;
 
 -s $xls && $frc and unlink $xls;
 if (-s $xls) {
