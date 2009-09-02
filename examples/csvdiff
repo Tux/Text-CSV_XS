@@ -1,0 +1,64 @@
+#!/pro/bin/perl
+
+use strict;
+use warnings;
+
+sub usage
+{
+    my $err = shift and select STDERR;
+    print "usage: csvdiff [--no-color] file.csv file.csv\n",
+	"  provides colorized diff on sorted CSV files\n",
+	"  assuming first line is header and first field is the key\n";
+    exit $err;
+    } # usage
+
+use Getopt::Long qw(:config bundling nopermute );
+my $opt_c = 1;
+GetOptions (
+    "help|?"		=> sub { usage (0); },
+
+    "c|color|colour!"	=> \$opt_c,
+    ) or usage (1);
+
+@ARGV == 2 or usage (1);
+
+use Term::ANSIColor qw(:constants);
+use Text::CSV_XS;
+my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 0 });
+
+unless ($opt_c) { $::{$_} = sub { "" } for qw( RED GREEN RESET ) };
+
+my @f;
+foreach my $x (0, 1) {
+    open my $fh, "<", $ARGV[$x] or die "$ARGV[$x]: $!\n";
+    while (1) { $_ = $csv->getline ($fh) or last; push @{$f[$x]}, $_ }
+    }
+my @n   = map { $#{$f[$_]} } 0, 1;
+my @i   = (1, 1);
+my $hdr = "# csvdiff   < $ARGV[0]    > $ARGV[1]\n";
+
+sub show
+{
+    my ($pfx, $x) = @_;
+    print $hdr, $pfx, " ", $pfx eq "-" ? RED : $pfx eq "+" ? GREEN : "";
+    $csv->print (*STDOUT, $f[$x][$i[$x]++]);
+    print RESET, "\n";
+    $hdr = "";
+    } # show
+
+while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
+    $f[0][$i[0]][0] lt $f[1][$i[1]][0] and show ("-", 0), next;
+    $f[0][$i[0]][0] gt $f[1][$i[1]][0] and show ("+", 1), next;
+
+    "@{[@{$f[0][$i[0]]}]}" eq "@{[@{$f[1][$i[1]]}]}" and
+	$i[0]++, $i[1]++, next;
+
+    foreach my $c (1 .. $#{$f[0][0]}) {
+	$f[0][$i[0]][$c] eq $f[1][$i[1]][$c] and next;
+	$f[0][$i[0]][$c] = RED   . $f[0][$i[0]][$c] . RESET;
+	$f[1][$i[1]][$c] = GREEN . $f[1][$i[1]][$c] . RESET;
+	}
+
+    show ("<", 0);
+    show (">", 1);
+    }
