@@ -568,31 +568,21 @@ Text::CSV_XS - comma-separated values manipulation routines
 
  use Text::CSV_XS;
 
- $csv = Text::CSV_XS->new ();          # create a new object
- $csv = Text::CSV_XS->new (\%attr);    # create a new object
+ my @rows;
+ my $csv = Text::CSV_XS->new ({ binary => 1 }) or
+     die "Cannot use CSV: ".Text::CSV->error_diag ();
+ open my $fh, "<:encoding(utf8)", "test.csv" or die "test.csv: $!";
+ while (my $row = $csv->getline ($fh)) {
+     $row->[2] =~ m/pattern/ or next; # 3rd field should match
+     push @rows, $row;
+     }
+ $csv->eof or $csv->error_diag ();
+ close $fh;
 
- $status  = $csv->combine (@columns);  # combine columns into a string
- $line    = $csv->string ();           # get the combined string
-
- $status  = $csv->parse ($line);       # parse a CSV string into fields
- @columns = $csv->fields ();           # get the parsed fields
-
- $status       = $csv->status ();      # get the most recent status
- $bad_argument = $csv->error_input (); # get the most recent bad argument
- $diag         = $csv->error_diag ();  # if an error occured, explains WHY
-
- $status = $csv->print ($io, $colref); # Write an array of fields
-                                       # immediately to a file $io
- $colref = $csv->getline ($io);        # Read a line from file $io,
-                                       # parse it and return an array
-                                       # ref of fields
- $csv->bind_columns (@refs);           # Set return fields for getline ()
- $csv->column_names (@names);          # Set column names for getline_hr ()
- $ref = $csv->getline_hr ($io);        # getline (), but returns a hashref
- $eof = $csv->eof ();                  # Indicate if last parse or
-                                       # getline () hit End Of File
-
- $csv->types (\@t_array);              # Set column types
+ $csv->eol ("\r\n");
+ open $fh, ">:encoding(utf8)", "new.csv" or die "new.csv: $!";
+ $csv->print ($fh, $_) for @rows;
+ close $fh or die "new.csv: $!";
 
 =head1 DESCRIPTION
 
@@ -1033,26 +1023,15 @@ C<error_diag ()> will return a string like
 
  "INI - Unknown attribute 'ecs_char'"
 
-=head2 combine
-
- $status = $csv->combine (@columns);
-
-This object function constructs a CSV string from the arguments, returning
-success or failure.  Failure can result from lack of arguments or an argument
-containing an invalid character.  Upon success, C<string ()> can be called to
-retrieve the resultant CSV string.  Upon failure, the value returned by
-C<string ()> is undefined and C<error_input ()> can be called to retrieve an
-invalid argument.
-
 =head2 print
 
  $status = $csv->print ($io, $colref);
 
-Similar to combine, but it expects an array ref as input (not an array!)
-and the resulting string is not really created, but immediately written
-to the I<$io> object, typically an IO handle or any other object that
-offers a I<print> method. Note, this implies that the following is wrong
-in perl 5.005_xx and older:
+Similar to C<combine () + string () + print>, but more efficient. It
+expects an array ref as input (not an array!) and the resulting string is
+not really created, but immediately written to the I<$io> object, typically
+an IO handle or any other object that offers a I<print> method. Note, this
+implies that the following is wrong in perl 5.005_xx and older:
 
  open FILE, ">", "whatever";
  $status = $csv->print (\*FILE, $colref);
@@ -1067,26 +1046,23 @@ In particular the I<$csv-E<gt>string ()>, I<$csv-E<gt>status ()>,
 I<$csv->fields ()> and I<$csv-E<gt>error_input ()> methods are meaningless
 after executing this method.
 
+=head2 combine
+
+ $status = $csv->combine (@columns);
+
+This object function constructs a CSV string from the arguments, returning
+success or failure.  Failure can result from lack of arguments or an argument
+containing an invalid character.  Upon success, C<string ()> can be called to
+retrieve the resultant CSV string.  Upon failure, the value returned by
+C<string ()> is undefined and C<error_input ()> can be called to retrieve an
+invalid argument.
+
 =head2 string
 
  $line = $csv->string ();
 
 This object function returns the input to C<parse ()> or the resultant CSV
 string of C<combine ()>, whichever was called more recently.
-
-=head2 parse
-
- $status = $csv->parse ($line);
-
-This object function decomposes a CSV string into fields, returning
-success or failure.  Failure can result from a lack of argument or the
-given CSV string is improperly formatted.  Upon success, C<fields ()> can
-be called to retrieve the decomposed fields .  Upon failure, the value
-returned by C<fields ()> is undefined and C<error_input ()> can be called
-to retrieve the invalid argument.
-
-You may use the I<types ()> method for setting column types. See the
-description below.
 
 =head2 getline
 
@@ -1102,6 +1078,20 @@ reference to an empty list.
 
 The I<$csv-E<gt>string ()>, I<$csv-E<gt>fields ()> and I<$csv-E<gt>status ()>
 methods are meaningless, again.
+
+=head2 parse
+
+ $status = $csv->parse ($line);
+
+This object function decomposes a CSV string into fields, returning
+success or failure.  Failure can result from a lack of argument or the
+given CSV string is improperly formatted.  Upon success, C<fields ()> can
+be called to retrieve the decomposed fields .  Upon failure, the value
+returned by C<fields ()> is undefined and C<error_input ()> can be called
+to retrieve the invalid argument.
+
+You may use the I<types ()> method for setting column types. See the
+description below.
 
 =head2 getline_hr
 

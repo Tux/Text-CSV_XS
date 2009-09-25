@@ -1,8 +1,10 @@
-2009-09-02 0.68 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-09-25 0.68 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Attribute auto_diag now localizes to +1 if autodie is active
     * Output name generation in csv2xls (RT#48954)
     * Added csvdiff to examples/
+    * Reordered docs. Rewrote SYNOPSIS to be more like a real-world
+      code example
 
 2009-08-08 0.67 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
