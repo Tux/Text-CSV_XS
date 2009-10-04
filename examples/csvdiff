@@ -6,7 +6,7 @@ use warnings;
 sub usage
 {
     my $err = shift and select STDERR;
-    print "usage: csvdiff [--no-color] file.csv file.csv\n",
+    print "usage: csvdiff [--no-color] [--html] file.csv file.csv\n",
 	"  provides colorized diff on sorted CSV files\n",
 	"  assuming first line is header and first field is the key\n";
     exit $err;
@@ -14,34 +14,97 @@ sub usage
 
 use Getopt::Long qw(:config bundling nopermute );
 my $opt_c = 1;
+my $opt_h = 0;
+my $opt_o = "";
 GetOptions (
     "help|?"		=> sub { usage (0); },
 
     "c|color|colour!"	=> \$opt_c,
+    "h|html"		=> \$opt_h,
+
+    "o|output=s"	=> \$opt_o,
     ) or usage (1);
 
 @ARGV == 2 or usage (1);
 
+if ($opt_o) {
+    open STDOUT, ">", $opt_o or die "$opt_o: $!\n";
+    }
+
+use HTML::Entities;
 use Term::ANSIColor qw(:constants);
 use Text::CSV_XS;
 my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 0 });
 
-unless ($opt_c) { $::{$_} = sub { "" } for qw( RED GREEN RESET ) };
+if ($opt_h) {
+    binmode STDOUT, ":utf8";
+    print <<EOH;
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>CFI School updates</title>
+  <meta name="Generator"     content="perl $]" />
+  <meta name="Author"        content="@{[scalar getpwuid $<]}" />
+  <meta name="Description"   content="CSV diff @ARGV" />
+  <style type="text/css">
+    .rd { background:	#ffe0e0;	}
+    .gr { background:	#e0ffe0;	}
+    .b0 { background:	#e0e0e0;	}
+    .b1 { background:	#f0f0f0;	}
+    .r  { color:	red;		}
+    .g  { color:	green;		}
+    </style>
+  </head>
+<body>
+
+<h1>CSV diff @ARGV</h1>
+
+<table>
+EOH
+    $::{RED}	= sub { "\cA\rr";	};
+    $::{GREEN}	= sub { "\cA\rg";	};
+    $::{RESET}	= sub { "";		};
+    }
+elsif (!$opt_c) {
+    $::{$_} = sub { "" } for qw( RED GREEN RESET );
+    }
 
 my @f;
 foreach my $x (0, 1) {
     open my $fh, "<", $ARGV[$x] or die "$ARGV[$x]: $!\n";
-    while (1) { $_ = $csv->getline ($fh) or last; push @{$f[$x]}, $_ }
+    while (1) { $_ = $csv->getline ($fh) or last; @$_ and push @{$f[$x]}, $_ }
     }
 my @n   = map { $#{$f[$_]} } 0, 1;
 my @i   = (1, 1);
 my $hdr = "# csvdiff   < $ARGV[0]    > $ARGV[1]\n";
 
+$f[$_][1+$n[$_]][0] = "\xff\xff\xff\xff" for 0, 1;
+
+my %cls;
+   %cls = (
+    "b" => 0,
+    "-"	=> sub { "rd" },
+    "+"	=> sub { "gr" },
+    "<"	=> sub { $cls{b} ^= 1; "b$cls{b}" },
+    ">"	=> sub { "b$cls{b}" },
+    );
+
 sub show
 {
     my ($pfx, $x) = @_;
+    my $row = $f[$x][$i[$x]++];
+
+    if ($opt_h) {
+	my $bg = $cls{$pfx}->();
+	print qq{  <tr class="$bg">},
+	    (map{"<td".(s/^\cA\r([gr])//?qq{ class="$1"}:"").">$_</td>"}@$row),
+	    "</tr>\n";
+	return;
+	}
+
     print $hdr, $pfx, " ", $pfx eq "-" ? RED : $pfx eq "+" ? GREEN : "";
-    $csv->print (*STDOUT, $f[$x][$i[$x]++]);
+    $csv->print (*STDOUT, $row);
     print RESET, "\n";
     $hdr = "";
     } # show
@@ -62,3 +125,7 @@ while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
     show ("<", 0);
     show (">", 1);
     }
+
+$opt_h and print "  </table>\n</body>\n</html>\n";
+
+close STDOUT;
