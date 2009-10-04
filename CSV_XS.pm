@@ -1377,7 +1377,9 @@ or using the slower C<combine ()> and C<string ()> methods:
   close $csv_fh or die "hello.csv: $!";
 
 For more extended examples, see the C<examples/> subdirectory in the
-original distribution. The following files can be found there:
+original distribution or the git repository at
+http://repo.or.cz/w/Text-CSV_XS.git?a=tree;f=examples. The following files
+can be found there:
 
 =over 2
 
@@ -1402,6 +1404,14 @@ CSV file and report on its content.
 A script to convert CSV to Microsoft Excel. This requires L<Date::Calc>
 and L<Spreadsheet::WriteExcel>. The converter accepts various options and
 can produce UTF-8 Excel files.
+
+=item csvdiff
+
+A script that provides colorized diff on sorted CSV files, assuming first
+line is header and first field is the key. Output options include colorized
+ANSI escape codes or HTML.
+
+  $ csvdiff --html --output=diff.html file1.csv file2.csv
 
 =back
 

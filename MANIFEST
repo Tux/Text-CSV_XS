@@ -5,7 +5,7 @@ CSV_XS.PL		Modify CSV_XS.pm for older perl versions
 CSV_XS.pm		Perl part of the module
 CSV_XS.xs		C part of the module
 Makefile.PL		Makefile generator
-ppport.h
+ppport.h		Perl/Pollution/Portability script/include file
 t/00_pod.t		Check if pod is valid
 t/01_pod.t		Check if pod covers all
 t/10_base.t		Base tests (combine and parse only)
@@ -30,6 +30,7 @@ t/81_subclass.t		Subclassed
 t/util.pl		Extra test utilities
 examples/csv2xls	Script to onvert CSV files to M$Excel
 examples/csv-check	Script to check a CSV file/stream
+examples/csvdiff	Script to shoff diff between sorted CSV files
 examples/parser-xs.pl	Parse CSV stream, be forgiving on bad lines
 examples/speed.pl	Small benchmark script
 files/utf8.csv		A UTF-8 encode test file
