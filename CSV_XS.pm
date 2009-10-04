@@ -368,6 +368,9 @@ sub error_diag
 		     exists $hints->{"guard Fatal"} &&
 		    !exists $hints->{"no Fatal"}) and
 			$lvl++;
+		    # Future releases of autodie will probably set $^H{autodie}
+		    #  to "autodie @args", like "autodie :all" or "autodie open"
+		    #  so we can/should check for "open" or "new"
 		    }
 		}
 	    $lvl > 1 ? die $msg : warn $msg;
