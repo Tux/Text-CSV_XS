@@ -65,6 +65,7 @@ my $csv = Text::CSV_XS-> new ({
     quote_char     => $quo,
     binary         => 1,
     keep_meta_info => 1,
+    auto_diag      => 1,
     });
 
 sub done

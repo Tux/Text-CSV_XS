@@ -355,8 +355,8 @@ sub error_diag
 	}
 
     my $context = wantarray;
-    unless (defined $context) {	# Void context
-	if ($diag[0] && $self && ref $self) {
+    unless (defined $context) {	# Void context, auto-diag
+	if ($diag[0] && $diag[0] != 2012 && $self && ref $self) {
 	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1]\n";
 
 	    my $lvl = $self->{auto_diag};
@@ -970,12 +970,14 @@ anymore, and getline () chomps line endings on reading.
 Set to true will cause C<error_diag ()> to be automatically be called
 in void context upon errors.
 
+In case of error C<2012 - EOF>), this call will be void.
+
 If set to a value greater than 1, it will die on errors instead of
 warn.
 
-Future extensions to this feature will include auto-detection of the
-C<autodie> module being enabled, which will raise the value of C<auto_diag>
-with C<1> on the moment the error is detected.
+Future extensions to this feature will include more reliable auto-detection
+of the C<autodie> module being enabled, which will raise the value of
+C<auto_diag> with C<1> on the moment the error is detected.
 
 =back
 
@@ -1507,9 +1509,9 @@ If the constructor failed, the cause can be found using C<error_diag ()> as a
 class method, like C<Text::CSV_XS->error_diag ()>.
 
 C<$csv->error_diag ()> is automatically called upon error when the contractor
-was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect
-(NYI).  When set to 1, this will cause a C<warn ()> with the error message,
-when set to 2, it will C<die ()>.
+was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect.
+When set to 1, this will cause a C<warn ()> with the error message, when set
+to 2, it will C<die ()>. C<2012 - EOF> is excluded from C<auto_diag> reports.
 
 Currently errors as described below are available. I've tried to make the error
 itself explanatory enough, but more descriptions will be added. For most of
