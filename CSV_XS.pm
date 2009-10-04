@@ -791,7 +791,7 @@ So lines like:
 are now correctly parsed, even though it violates the CSV specs.
 
 Note that B<all> whitespace is stripped from start and end of each
-field. That would make is more a I<feature> than a way to be able
+field. That would make it more a I<feature> than a way to be able
 to parse bad CSV lines, as
 
  1,   2.0,  3,   ape  , monkey
