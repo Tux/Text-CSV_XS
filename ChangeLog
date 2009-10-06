@@ -1,6 +1,7 @@
 2009-10-06 0.69 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Missing end quotes in error code docs
+    * examples/csv-check toont nu ook gedetecteerde eol
 
 2009-10-04 0.68 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
