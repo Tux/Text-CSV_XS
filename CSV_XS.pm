@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.68";
+$VERSION = "0.69";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1603,7 +1603,7 @@ has been selected with the constructor.
 Sequences like C<1,"foo\rbar",2> are only allowed when the binary option
 has been selected with the constructor.
 
-=item 2023 "EIQ - QUO character not allowed
+=item 2023 "EIQ - QUO character not allowed"
 
 Sequences like C<"foo "bar" baz",quux> and C<2023,",2008-04-05,"Foo, Bar",\n>
 will cause this error.
@@ -1661,7 +1661,7 @@ exhausted before the quote is found, that field is not terminated.
 
 =item 3007 "EHR - bind_columns needs refs to writeable scalars"
 
-=item 3008 "EHR - unexpected error in bound fields
+=item 3008 "EHR - unexpected error in bound fields"
 
 =back
 
