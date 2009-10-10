@@ -78,6 +78,7 @@ my %def_attr = (
     _ERROR_INPUT	=> undef,
     _COLUMN_NAMES	=> undef,
     _BOUND_COLUMNS	=> undef,
+    _AHEAD		=> undef,
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 

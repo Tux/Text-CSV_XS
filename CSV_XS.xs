@@ -49,6 +49,7 @@
 #define CACHE_ID_empty_is_undef		23
 #define CACHE_ID_auto_diag		24
 #define CACHE_ID__is_bound		25
+#define CACHE_ID__has_ahead		29
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -112,6 +113,7 @@ typedef struct {
     char *	bptr;
     SV *	tmp;
     int		utf8;
+    byte	has_ahead;
     STRLEN	size;
     STRLEN	used;
     char	buffer[BUFFER_SIZE];
@@ -233,6 +235,16 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     return (err);
     } /* SetDiag */
 
+static void set_eol_is_cr (csv_t *csv)
+{
+    csv->eol       = "\r";
+    csv->eol_is_cr = csv->cache[CACHE_ID_eol_is_cr] = 1;
+    csv->eol_len   = csv->cache[CACHE_ID_eol_len]   = 1;
+    csv->cache[CACHE_ID_eol    ] = *csv->eol;
+    csv->cache[CACHE_ID_eol + 1] = 0;
+    (void)hv_store (csv->self, "eol",  3, newSVpvn (csv->eol, 1), 0);
+    } /* set_eol_is_cr */
+
 #define SetupCsv(csv,self,pself)	cx_SetupCsv (aTHX_ csv, self, pself)
 static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 {
@@ -262,6 +274,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->blank_is_undef		= csv->cache[CACHE_ID_blank_is_undef	];
 	csv->empty_is_undef		= csv->cache[CACHE_ID_empty_is_undef	];
 	csv->verbatim			= csv->cache[CACHE_ID_verbatim		];
+	csv->has_ahead			= csv->cache[CACHE_ID__has_ahead	];
 	csv->eol_is_cr			= csv->cache[CACHE_ID_eol_is_cr		];
 	csv->eol_len			= csv->cache[CACHE_ID_eol_len		];
 	if (csv->eol_len < 8)
@@ -377,6 +390,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
 	    strcpy ((char *)&csv->cache[CACHE_ID_eol], csv->eol);
 	csv->cache[CACHE_ID_has_types]			= csv->types ? 1 : 0;
+	csv->cache[CACHE_ID__has_ahead]			= csv->has_ahead = 0;
 	csv->cache[CACHE_ID__is_bound    ] = (csv->is_bound & 0xFF000000) >> 24;
 	csv->cache[CACHE_ID__is_bound + 1] = (csv->is_bound & 0x00FF0000) >> 16;
 	csv->cache[CACHE_ID__is_bound + 2] = (csv->is_bound & 0x0000FF00) >>  8;
@@ -807,6 +821,16 @@ restart:
 		    goto restart;
 		    }
 
+		/* Auto-set eol to \r */
+		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
+		    fprintf (stderr, "# Prevented 2031\n");
+		    set_eol_is_cr (csv);
+		    c = CH_NL;
+		    csv->used--;
+		    csv->has_ahead++;
+		    goto restart;
+		    }
+
 		csv->used--;
 		ERROR_INSIDE_FIELD (2031);
 		}
@@ -829,6 +853,16 @@ restart:
 		c2 = CSV_GET;
 
 		if (c2 == CH_NL) {
+		    AV_PUSH;
+		    return TRUE;
+		    }
+
+		/* Auto-set eol to \r */
+		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
+		    fprintf (stderr, "# Prevented 2032\n");
+		    set_eol_is_cr (csv);
+		    csv->used--;
+		    csv->has_ahead++;
 		    AV_PUSH;
 		    return TRUE;
 		    }
@@ -942,6 +976,16 @@ restart:
 
 			if (c3 == CH_NL) {
 			    AV_PUSH;
+			    return TRUE;
+			    }
+
+			/* Auto-set eol to \r */
+			if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c3)) {
+			    fprintf (stderr, "# Prevented 2023\n");
+			    set_eol_is_cr (csv);
+			    AV_PUSH;
+			    csv->used--;
+			    csv->has_ahead++;
 			    return TRUE;
 			    }
 			}
@@ -1171,6 +1215,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_byte ("auto_diag",		CACHE_ID_auto_diag);
     _cache_show_byte ("blank_is_undef",		CACHE_ID_blank_is_undef);
     _cache_show_byte ("empty_is_undef",		CACHE_ID_empty_is_undef);
+    _cache_show_byte ("has_ahead",		CACHE_ID__has_ahead);
     _cache_show_byte ("has_types",		CACHE_ID_has_types);
     _cache_show_byte ("keep_meta_info",		CACHE_ID_keep_meta_info);
     _cache_show_byte ("verbatim",		CACHE_ID_verbatim);
@@ -1199,11 +1244,19 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     csv_t	csv;
+    int		result, ahead = 0;
 
+    /* xs_cache_diag (hv); */
     SetupCsv (&csv, hv, self);
     if ((csv.useIO = useIO)) {
 	csv.tmp  = NULL;
-	csv.size = 0;
+	if ((ahead = csv.has_ahead)) {
+	    SV **svp;
+	    if ((svp = hv_fetchs (hv, "_AHEAD", FALSE)) && *svp) {
+		csv.bptr = SvPV (csv.tmp = *svp, csv.size);
+		csv.used = 0;
+		}
+	    }
 	}
     else {
 	csv.tmp  = src;
@@ -1211,12 +1264,23 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
 	csv.bptr = SvPV (src, csv.size);
 	}
     (void)hv_delete (hv, "_ERROR_INPUT", 12, G_DISCARD);
+
     result = Parse (&csv, src, av, avf);
-    if (csv.useIO & useIO_EOF)
-	(void)hv_store (hv, "_EOF", 4, &PL_sv_yes, 0);
-    else
-	(void)hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
+
+    (void)hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
     if (csv.useIO) {
+	if (csv.tmp && csv.used < csv.size && csv.has_ahead) {
+	    SV *sv = newSVpvn (csv.bptr + csv.used, csv.size - csv.used);
+	    (void)hv_delete (hv, "_AHEAD", 6, G_DISCARD);
+	    (void)hv_store  (hv, "_AHEAD", 6, sv, 0);
+	    }
+	else {
+	    csv.has_ahead = 0;
+	    if (csv.useIO & useIO_EOF)
+		(void)hv_store (hv, "_EOF", 4, &PL_sv_yes, 0);
+	    }
+	csv.cache[CACHE_ID__has_ahead] = csv.has_ahead;
+
 	if (csv.keep_meta_info) {
 	    (void)hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
 	    (void)hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
