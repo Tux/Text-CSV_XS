@@ -604,11 +604,9 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     }
 
 #define CSV_GET					\
-    ((c_ungetc != EOF)				\
-	? c_ungetc				\
-	: ((csv->used < csv->size)		\
-	    ? ((byte)csv->bptr[(csv)->used++])	\
-	    : CsvGet (csv, src)))
+    ((csv->used < csv->size)			\
+	? ((byte)csv->bptr[(csv)->used++])	\
+	: CsvGet (csv, src))
 
 #define AV_PUSH {						\
     *SvEND (sv) = (char)0;					\
@@ -687,7 +685,6 @@ static char str_parsed[40];
 static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 {
     int		 c, f = 0;
-    int		 c_ungetc		= EOF;
     int		 waitingForField	= 1;
     SV		*sv			= NULL;
     STRLEN	 len;
@@ -1005,8 +1002,8 @@ restart:
 	    } /* ESC char */
 	else {
 #if MAINT_DEBUG > 1
-	    fprintf (stderr, "# %d/%d/%02x pos %d = === '%c' '%c'\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c, c_ungetc);
+	    fprintf (stderr, "# %d/%d/%02x pos %d = === '%c'\n",
+		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	    if (waitingForField) {
 		if (csv->allow_whitespace && is_whitespace (c)) {
