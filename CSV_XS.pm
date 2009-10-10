@@ -116,7 +116,8 @@ sub new
     $self;
     } # new
 
-my %_cache_id = (	# Keep in sync with XS!
+# Keep in sync with XS!
+my %_cache_id = ( # Only expose what is accessed from within PM
     quote_char		=>  0,
     escape_char		=>  1,
     sep_char		=>  2,
@@ -128,15 +129,10 @@ my %_cache_id = (	# Keep in sync with XS!
     allow_double_quoted	=>  8,
     allow_whitespace	=>  9,
     blank_is_undef	=> 10,
-
     eol			=> 11,	# 11 .. 18
-    eol_len		=> 19,
-    eol_is_cr		=> 20,
-    has_types		=> 21,
     verbatim		=> 22,
     empty_is_undef	=> 23,
     auto_diag		=> 24,
-
     _is_bound		=> 25,	# 25 .. 28
     );
 
@@ -147,10 +143,7 @@ sub _set_attr_C
     defined $val or $val = 0;
     $] >= 5.008002 and utf8::decode ($val);
     $self->{$name} = $val;
-    $self->{_CACHE} or return;
-    my @cache = unpack "C*", $self->{_CACHE};
-    $cache[$_cache_id{$name}] = unpack "C", $val;
-    $self->{_CACHE} = pack "C*", @cache;
+    $self->_cache_set ($_cache_id{$name}, $val);
     } # _set_attr_C
 
 # A flag
@@ -159,22 +152,15 @@ sub _set_attr_X
     my ($self, $name, $val) = @_;
     defined $val or $val = 0;
     $self->{$name} = $val;
-    $self->{_CACHE} or return;
-    my @cache = unpack "C*", $self->{_CACHE};
-    $cache[$_cache_id{$name}] = 0 + $val;
-    $self->{_CACHE} = pack "C*", @cache;
-    } # _set_attr_C
+    $self->_cache_set ($_cache_id{$name}, 0 + $val);
+    } # _set_attr_X
 
 # A number
 sub _set_attr_N
 {
     my ($self, $name, $val) = @_;
     $self->{$name} = $val;
-    $self->{_CACHE} or return;
-    my @cache = unpack "C*", $self->{_CACHE};
-    my $i = $_cache_id{$name};
-    $cache[$i++] = $_ for unpack "C*", pack "N", $val;
-    $self->{_CACHE} = pack "C*", @cache;
+    $self->_cache_set ($_cache_id{$name}, 0 + $val);
     } # _set_attr_N
 
 # Accessor methods.
@@ -216,19 +202,8 @@ sub eol
     if (@_) {
 	my $eol = shift;
 	defined $eol or $eol = "";
-	my $eol_len = length $eol;
 	$self->{eol} = $eol;
-	$self->{_CACHE} or return;
-	my @cache = unpack "C*", $self->{_CACHE};
-	if (($cache[$_cache_id{eol_len}] = $eol_len) < 8) {
-	    $cache[$_cache_id{eol_is_cr}] = $eol eq "\r" ? 1 : 0;
-	    }
-	else {
-	    $cache[$_cache_id{eol_is_cr}] = 0;
-	    }
-	$eol .= "\0\0\0\0\0\0\0\0";
-	$cache[$_cache_id{eol} + $_] = unpack "C", substr $eol, $_, 1 for 0 .. 7;
-	$self->{_CACHE} = pack "C*", @cache;
+	$self->_cache_set ($_cache_id{eol}, $eol);
 	}
     $self->{eol};
     } # eol
@@ -299,7 +274,7 @@ sub empty_is_undef
 sub verbatim
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("verbatim", shift);
+    @_ and $self->_set_attr_X ("verbatim", shift);
     $self->{verbatim};
     } # verbatim
 

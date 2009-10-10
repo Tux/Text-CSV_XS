@@ -1,7 +1,8 @@
-2009-10-06 0.69 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-10-10 0.69 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Missing end quotes in error code docs
-    * examples/csv-check toont nu ook gedetecteerde eol
+    * examples/csv-check now shows detected eol
+    * Optimized caching. All cache changes now in XS
 
 2009-10-04 0.68 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
