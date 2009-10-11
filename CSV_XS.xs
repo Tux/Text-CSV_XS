@@ -9,9 +9,12 @@
 #include <XSUB.h>
 #define NEED_PL_parser
 #define DPPP_PL_parser_NO_DUMMY
-#define NEED_sv_2pv_flags
 #define NEED_load_module
+#define NEED_my_snprintf
 #define NEED_newRV_noinc
+#define NEED_pv_escape
+#define	NEED_pv_pretty
+#define NEED_sv_2pv_flags
 #define NEED_vload_module
 #include "ppport.h"
 #if (PERL_BCDVERSION <= 0x5005005)
