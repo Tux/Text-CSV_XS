@@ -105,7 +105,7 @@ typedef struct {
     HV *	self;
     SV *	bound;
 
-    char *	eol;
+    byte *	eol;
     STRLEN	eol_len;
     char *	types;
     STRLEN	types_len;
@@ -239,12 +239,12 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 {
     SV **svp;
-    byte *cp, c;
+    byte *cp;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp)
 	return;
 
-    cp = SvPV_nolen (*svp);
+    cp = (byte *)SvPV_nolen (*svp);
 
     /* single char/byte */
     if ( idx == CACHE_ID_quote_char	||
@@ -293,10 +293,11 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	}
     } /* cache_set */
 
-static char *_pretty_str (char *s, STRLEN l)
+#define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
+static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
 {
     SV *dsv = newSVpvs ("");
-    return (pv_pretty (dsv, s, l, 0, NULL, NULL,
+    return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
 	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
     } /* _pretty_str */
 
@@ -319,7 +320,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 	return;
 	}
 
-    cp = SvPV_nolen (*svp);
+    cp = (byte *)SvPV_nolen (*svp);
     (void)fprintf (stderr, "CACHE:\n");
     _cache_show_char ("quote",			CACHE_ID_quote_char);
     _cache_show_char ("escape",			CACHE_ID_escape_char);
@@ -345,11 +346,11 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 	_cache_show_cstr ("eol", c,		CACHE_ID_eol);
     else if ((svp = hv_fetchs (hv, "eol", FALSE)) && *svp && SvOK (*svp)) {
 	STRLEN len;
-	char *eol = SvPV (*svp, len);
+	byte *eol = (byte *)SvPV (*svp, len);
 	_cache_show_str  ("eol", len,		eol);
 	}
     else
-	_cache_show_str  ("eol", 8,		"<broken>");
+	_cache_show_str  ("eol", 8,		(byte *)"<broken>");
 
     /* csv->is_bound			=
 	    (csv->cache[CACHE_ID__is_bound    ] << 24) |
@@ -359,14 +360,15 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     */
     } /* xs_cache_diag */
 
-static void set_eol_is_cr (csv_t *csv)
+#define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
+static void cx_set_eol_is_cr (pTHX_ csv_t *csv)
 {
 		      csv->cache[CACHE_ID_eol    ]   = CH_CR;
 		      csv->cache[CACHE_ID_eol + 1]   = 0;
     csv->eol_is_cr =  csv->cache[CACHE_ID_eol_is_cr] = 1;
     csv->eol_len   =  csv->cache[CACHE_ID_eol_len]   = 1;
     csv->eol       = &csv->cache[CACHE_ID_eol];
-    (void)hv_store (csv->self, "eol",  3, newSVpvn (csv->eol, 1), 0);
+    (void)hv_store (csv->self, "eol",  3, newSVpvn ((char *)csv->eol, 1), 0);
     } /* set_eol_is_cr */
 
 #define SetupCsv(csv,self,pself)	cx_SetupCsv (aTHX_ csv, self, pself)
@@ -380,7 +382,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     csv->pself = pself;
 
     if ((svp = hv_fetchs (self, "_CACHE", FALSE)) && *svp) {
-	csv->cache = SvPVX (*svp);
+	csv->cache = (byte *)SvPVX (*svp);
 
 	csv->quote_char			= csv->cache[CACHE_ID_quote_char	];
 	csv->escape_char		= csv->cache[CACHE_ID_escape_char	];
@@ -402,14 +404,14 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->eol_is_cr			= csv->cache[CACHE_ID_eol_is_cr		];
 	csv->eol_len			= csv->cache[CACHE_ID_eol_len		];
 	if (csv->eol_len < 8)
-	    csv->eol = (char *)&csv->cache[CACHE_ID_eol];
+	    csv->eol = &csv->cache[CACHE_ID_eol];
 	else {
 	    /* Was too long to cache. must re-fetch */
 	    csv->eol       = NULL;
 	    csv->eol_is_cr = 0;
 	    csv->eol_len   = 0;
 	    if ((svp = hv_fetchs (self, "eol",     FALSE)) && *svp && SvOK (*svp)) {
-		csv->eol = SvPV (*svp, len);
+		csv->eol = (byte *)SvPV (*svp, len);
 		csv->eol_len = len;
 		}
 	    }
@@ -456,11 +458,11 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		csv->sep_char = *ptr;
 	    }
 
-	csv->eol       = "";
+	csv->eol       = (byte *)"";
 	csv->eol_is_cr = 0;
 	csv->eol_len   = 0;
 	if ((svp = hv_fetchs (self, "eol",         FALSE)) && *svp && SvOK (*svp)) {
-	    csv->eol = SvPV (*svp, len);
+	    csv->eol = (byte *)SvPV (*svp, len);
 	    csv->eol_len = len;
 	    if (len == 1 && *csv->eol == CH_CR)
 		csv->eol_is_cr = 1;
@@ -489,7 +491,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->auto_diag			= bool_opt ("auto_diag");
 
 	sv_cache = newSVpvn ("", CACHE_SIZE);
-	csv->cache = SvPVX (sv_cache);
+	csv->cache = (byte *)SvPVX (sv_cache);
 	memset (csv->cache, 0, CACHE_SIZE);
 	SvREADONLY_on (sv_cache);
 
@@ -664,7 +666,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 	}
     if (csv->eol_len) {
 	STRLEN	len = csv->eol_len;
-	char   *ptr = csv->eol;
+	byte   *ptr = csv->eol;
 
 	while (len--)
 	    CSV_PUT (csv, dst, *ptr++);

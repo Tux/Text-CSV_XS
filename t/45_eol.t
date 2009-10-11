@@ -113,12 +113,11 @@ $/ = $def_rs;
 
 ok (1, "Auto-detecting \\r");
 {   my @row = qw( a b c ); local $" = ",";
-    foreach my $eol ("\n", "\r\n", "\r") {
+    for (["\n", "\\n"], ["\r\n", "\\r\\n"], ["\r", "\\r"]) {
+	my ($eol, $s_eol) = @$_;
 	open  FH, ">_eol.csv";
 	print FH qq{@row$eol@row$eol@row$eol\x91};
 	close FH;
-	use Data::Peek;
-	my $s_eol = DDisplay $eol;
 	open  FH, "<_eol.csv";
 	my $c = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 	is ($c->eol (),			"",		"default EOL");
