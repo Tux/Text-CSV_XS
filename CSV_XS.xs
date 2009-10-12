@@ -269,13 +269,13 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	 idx == CACHE_ID_empty_is_undef		||
 	 idx == CACHE_ID_verbatim		||
 	 idx == CACHE_ID_auto_diag) {
-	cp[idx] = SvIOK (val) ? SvIV (val) : SvPOK (val) ? *(SvPVX (val)) : 0;
+	cp[idx] = SvIV (val);
 	return;
 	}
 
     /* a 4-byte IV */
     if (idx == CACHE_ID__is_bound) {
-	long v = SvIOK (val) ? SvIV (val) : 0;
+	long v = SvIV (val);
 
 	cp[idx    ] = (v & 0xFF000000) >> 24;
 	cp[idx + 1] = (v & 0x00FF0000) >> 16;
