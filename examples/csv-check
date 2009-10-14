@@ -3,6 +3,8 @@
 # csv-check: Check validity of CSV file and report
 #	   (m)'09 [12 Oct 2009] Copyright H.M.Brand 2007-2009
 
+# This code requires the defined-or feature and PerlIO
+
 use strict;
 use warnings;
 
@@ -15,7 +17,7 @@ sub usage
 {
     my $err = shift and select STDERR;
     print <<EOU;
-usage: csv-check [-s <sep>] [-q <quot>] [-u] file.csv
+usage: csv-check [-s <sep>] [-q <quot>] [-u] [file.csv]
        -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
        -q <quot>  use <quot>  as quotation char. Default = '"'
        -u         check if all fields are valid unicode
@@ -37,26 +39,19 @@ GetOptions (
 
 use Text::CSV_XS;
 
-my $fn = shift or usage (1);
--f $fn && -s $fn or
-    die "Cannot use $ARGV[0]: empty or nonexistant\n";
+my $fn = $ARGV[0] // "-";
+my $data = do { local $/; <> } or die "No data to analyze\n";
 
 my ($bin, $rows, $eol, %cols) = (0, 0, undef);
 unless ($sep) { # No sep char passed, try to auto-detect;
-    open my $fh, "<", $fn or die "$fn: $!\n";
-    while (<$fh>) {
-	m/\S/ or next;	# Skip empty leading blank lines
-	$sep = m/["\d],["\d,]/ ? ","  :
-	       m/["\d];["\d;]/ ? ";"  :
-	       m/["\d]\t["\d]/ ? "\t" :
-	       # If neither, then for unquoted strings
-	       m/\w,[\w,]/     ? ","  :
-	       m/\w;[\w;]/     ? ";"  :
-	       m/\w\t[\w]/     ? "\t" :
-				 ","  ;
-	m/([\r\n]+)\Z/ and $eol = DDisplay "$1";
-	last;
-	}
+    $sep = $data =~ m/["\d],["\d,]/ ? ","  :
+	   $data =~ m/["\d];["\d;]/ ? ";"  :
+	   $data =~ m/["\d]\t["\d]/ ? "\t" :
+	   # If neither, then for unquoted strings
+	   $data =~ m/\w,[\w,]/     ? ","  :
+	   $data =~ m/\w;[\w;]/     ? ";"  :
+	   $data =~ m/\w\t[\w]/     ? "\t" : ",";
+    $data =~ m/([\r\n]+)\Z/ and $eol = DDisplay "$1";
     }
 
 my $csv = Text::CSV_XS-> new ({
@@ -116,7 +111,7 @@ sub stats
 	}
     } # stats
 
-open my $fh, "<", $fn or die "$fn: $!\n";
+open my $fh, "<", \$data or die "$fn: $!\n";
 while (my $row = $csv->getline ($fh)) {
     $rows++;
     stats $row;

@@ -28,6 +28,9 @@ Copying:
 Prerequisites:
     perl 5.005_03. 5.005 will not be able to build the manual pages.
     examples require 5.006, but are probably easy to mold into 5.005
+    examples/csv-check requires perl with defined-or and PerlIO, and
+    making that work on other versions is left as an exercise to the
+    reader.
 
 Build/Installation:
     Standard build/installation:
