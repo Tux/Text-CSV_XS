@@ -51,8 +51,9 @@
 #define CACHE_ID_verbatim		22
 #define CACHE_ID_empty_is_undef		23
 #define CACHE_ID_auto_diag		24
-#define CACHE_ID__is_bound		25
-#define CACHE_ID__has_ahead		29
+#define CACHE_ID_quote_space		25
+#define CACHE_ID__is_bound		26
+#define CACHE_ID__has_ahead		30
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -100,6 +101,9 @@ typedef struct {
     byte	verbatim;
     byte	auto_diag;
 
+    byte	quote_space;
+    byte	first_safe_char;
+
     long	is_bound;
 
     byte *	cache;
@@ -122,8 +126,9 @@ typedef struct {
     char	buffer[BUFFER_SIZE];
     } csv_t;
 
-#define bool_opt(o) \
-    (((svp = hv_fetchs (self, o, FALSE)) && *svp) ? SvTRUE (*svp) : 0)
+#define bool_opt_def(o,d) \
+    (((svp = hv_fetchs (self, o, FALSE)) && *svp) ? SvTRUE (*svp) : d)
+#define bool_opt(o) bool_opt_def (o, 0)
 
 typedef struct {
     int   xs_errno;
@@ -261,6 +266,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
     if ( idx == CACHE_ID_binary			||
          idx == CACHE_ID_keep_meta_info		||
          idx == CACHE_ID_always_quote		||
+         idx == CACHE_ID_quote_space		||
          idx == CACHE_ID_allow_loose_quotes	||
          idx == CACHE_ID_allow_loose_escapes	||
          idx == CACHE_ID_allow_double_quoted	||
@@ -335,6 +341,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_byte ("allow_loose_quotes",	CACHE_ID_allow_loose_quotes);
     _cache_show_byte ("allow_whitespace",	CACHE_ID_allow_whitespace);
     _cache_show_byte ("always_quote",		CACHE_ID_always_quote);
+    _cache_show_byte ("quote_space",		CACHE_ID_quote_space);
     _cache_show_byte ("auto_diag",		CACHE_ID_auto_diag);
     _cache_show_byte ("blank_is_undef",		CACHE_ID_blank_is_undef);
     _cache_show_byte ("empty_is_undef",		CACHE_ID_empty_is_undef);
@@ -395,6 +402,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->keep_meta_info		= csv->cache[CACHE_ID_keep_meta_info	];
 	csv->always_quote		= csv->cache[CACHE_ID_always_quote	];
 	csv->auto_diag			= csv->cache[CACHE_ID_auto_diag	];
+	csv->quote_space		= csv->cache[CACHE_ID_quote_space	];
 
 	csv->allow_loose_quotes		= csv->cache[CACHE_ID_allow_loose_quotes];
 	csv->allow_loose_escapes	= csv->cache[CACHE_ID_allow_loose_escapes];
@@ -484,6 +492,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->binary			= bool_opt ("binary");
 	csv->keep_meta_info		= bool_opt ("keep_meta_info");
 	csv->always_quote		= bool_opt ("always_quote");
+	csv->quote_space		= bool_opt_def ("quote_space", 1);
 	csv->allow_loose_quotes		= bool_opt ("allow_loose_quotes");
 	csv->allow_loose_escapes	= bool_opt ("allow_loose_escapes");
 	csv->allow_double_quoted	= bool_opt ("allow_double_quoted");
@@ -505,6 +514,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->cache[CACHE_ID_keep_meta_info]		= csv->keep_meta_info;
 	csv->cache[CACHE_ID_always_quote]		= csv->always_quote;
+	csv->cache[CACHE_ID_quote_space]		= csv->quote_space;
 
 	csv->cache[CACHE_ID_allow_loose_quotes]		= csv->allow_loose_quotes;
 	csv->cache[CACHE_ID_allow_loose_escapes]	= csv->allow_loose_escapes;
@@ -531,6 +541,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     csv->utf8 = 0;
     csv->size = 0;
     csv->used = 0;
+
+    csv->first_safe_char = csv->quote_space ? 0x21 : 0x20;
 
     if (csv->is_bound) {
 	if ((svp = hv_fetchs (self, "_BOUND_COLUMNS", FALSE)) && _is_arrayref (*svp))
@@ -622,7 +634,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		for (ptr2 = ptr, l = len; l; ++ptr2, --l) {
 		    byte	c = *ptr2;
 
-		    if (c <= 0x20 || (c >= 0x7f && c <= 0xa0)  ||
+		    if (c < csv->first_safe_char || (c >= 0x7f && c <= 0xa0)  ||
 		       (csv->quote_char  && c == csv->quote_char) ||
 		       (csv->sep_char    && c == csv->sep_char)   ||
 		       (csv->escape_char && c == csv->escape_char)) {
@@ -1462,7 +1474,7 @@ _cache_set (self, idx, val)
     CSV_XS_SELF;
     xs_cache_set (hv, idx, val);
     XSRETURN (1);
-    /* XS _cache_diag */
+    /* XS _cache_set */
 
 void
 _cache_diag (self)

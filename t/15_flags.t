@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 185;
+use Test::More tests => 197;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -210,11 +210,11 @@ sub crnlsp
     ok (!$csv->parse (qq{"+\r\n"}),	"Quo ESC CR NL");
     }
 
+ok (1, "Testing always_quote");
 {   my $csv = Text::CSV_XS->new ({ always_quote => 0 });
     ok ($csv->combine (1..3),		"Combine");
     is ($csv->string, q{1,2,3},		"String");
     is ($csv->always_quote, 0,		"Attr 0");
-    ok ($csv->combine (1..3),		"Combine");
     ok ($csv->always_quote (1),		"Attr 1");
     ok ($csv->combine (1..3),		"Combine");
     is ($csv->string, q{"1","2","3"},	"String");
@@ -223,4 +223,19 @@ sub crnlsp
     ok ($csv->combine (1..3),		"Combine");
     is ($csv->string, q{1,2,3},		"String");
     is ($csv->always_quote, 0,		"Attr 0");
+    }
+
+ok (1, "Testing quote_space");
+{   my $csv = Text::CSV_XS->new ({ quote_space => 1 });
+    ok ($csv->combine (1, " ", 3),	"Combine");
+    is ($csv->string, q{1," ",3},	"String");
+    is ($csv->quote_space, 1,		"Attr 1");
+    is ($csv->quote_space (0), 0,	"Attr 0");
+    ok ($csv->combine (1, " ", 3),	"Combine");
+    is ($csv->string, q{1, ,3},		"String");
+    is ($csv->quote_space, 0,		"Attr 0");
+    is ($csv->quote_space (1), 1,	"Attr 1");
+    ok ($csv->combine (1, " ", 3),	"Combine");
+    is ($csv->string, q{1," ",3},	"String");
+    is ($csv->quote_space, 1,		"Attr 1");
     }

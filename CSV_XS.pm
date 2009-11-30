@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.69";
+$VERSION = "0.70";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -59,6 +59,7 @@ my %def_attr = (
     sep_char		=> ',',
     eol			=> '',
     always_quote	=> 0,
+    quote_space		=> 1,
     binary		=> 0,
     keep_meta_info	=> 0,
     allow_loose_quotes	=> 0,
@@ -134,7 +135,8 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     verbatim		=> 22,
     empty_is_undef	=> 23,
     auto_diag		=> 24,
-    _is_bound		=> 25,	# 25 .. 28
+    quote_space		=> 25,
+    _is_bound		=> 26,	# 26 .. 29
     );
 
 # A `character'
@@ -215,6 +217,13 @@ sub always_quote
     @_ and $self->_set_attr_X ("always_quote", shift);
     $self->{always_quote};
     } # always_quote
+
+sub quote_space
+{
+    my $self = shift;
+    @_ and $self->_set_attr_X ("quote_space", shift);
+    $self->{quote_space};
+    } # quote_space
 
 sub binary
 {
@@ -902,6 +911,13 @@ a TRUE value, then all fields will be quoted. This is typically easier
 to handle in external applications. (Poor creatures who aren't using
 Text::CSV_XS. :-)
 
+=item quote_space
+
+By default, a space in a field would trigger quotation. As no rule
+exists this to be forced in CSV, nor any for the opposite, the default
+is true for safety. You can exclude the space from this trigger by
+setting this option to 0.
+
 =item keep_meta_info
 
 By default, the parsing of input lines is as simple and fast as
@@ -972,6 +988,7 @@ is equivalent to
      sep_char            => ',',
      eol                 => $\,
      always_quote        => 0,
+     quote_space         => 1,
      binary              => 0,
      keep_meta_info      => 0,
      allow_loose_quotes  => 0,
