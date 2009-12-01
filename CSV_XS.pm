@@ -83,6 +83,20 @@ my %def_attr = (
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
+sub _check_sanity
+{
+    my $attr = shift;
+    for (qw( sep_char quote_char escape_char )) {
+	exists $attr->{$_} && defined $attr->{$_} && $attr->{$_} =~ m/[\r\n]/ and
+	    return 1003;
+	}
+    $attr->{allow_whitespace} and
+      (defined $attr->{quote_char}  && $attr->{quote_char}  =~ m/^[ \t]$/) ||
+      (defined $attr->{escape_char} && $attr->{escape_char} =~ m/^[ \t]$/) and
+	return 1002;
+    return 0;
+    } # _check_sanity
+
 sub new
 {
     $last_new_err = SetDiag (undef, 1000,
@@ -104,10 +118,8 @@ sub new
 	}
 
     my $self  = {%def_attr, %{$attr}};
-    if ($self->{allow_whitespace} and
-	    (defined $self->{quote_char}  && $self->{quote_char}  =~ m/^[ \t]$/) ||
-	    (defined $self->{escape_char} && $self->{escape_char} =~ m/^[ \t]$/)) {
-	$last_new_err = SetDiag (undef, 1002);
+    if (my $ec = _check_sanity ($self)) {
+	$last_new_err = SetDiag (undef, $ec);
 	return;
 	}
 
@@ -142,10 +154,12 @@ my %_cache_id = ( # Only expose what is accessed from within PM
 # A `character'
 sub _set_attr_C
 {
-    my ($self, $name, $val) = @_;
+    my ($self, $name, $val, $ec) = @_;
     defined $val or $val = 0;
     $] >= 5.008002 and utf8::decode ($val);
     $self->{$name} = $val;
+    $ec = _check_sanity ($self) and
+	croak ($self->SetDiag ($ec));
     $self->_cache_set ($_cache_id{$name}, $val);
     } # _set_attr_C
 
@@ -173,8 +187,6 @@ sub quote_char
     my $self = shift;
     if (@_) {
 	my $qc = shift;
-	defined $qc && $qc =~ m/^[ \t]$/ && $self->{allow_whitespace} and
-	    croak ($self->SetDiag (1002));
 	$self->_set_attr_C ("quote_char", $qc);
 	}
     $self->{quote_char};
@@ -185,8 +197,6 @@ sub escape_char
     my $self = shift;
     if (@_) {
 	my $ec = shift;
-	defined $ec && $ec =~ m/^[ \t]$/ && $self->{allow_whitespace} and
-	    croak ($self->SetDiag (1002));
 	$self->_set_attr_C ("escape_char", $ec);
 	}
     $self->{escape_char};
@@ -1566,6 +1576,11 @@ or the escape character, as that will invalidate all parsing rules.
 
 Using C<allow_whitespace> when either C<escape_char> or C<quote_char> is
 equal to SPACE or TAB is too ambiguous to allow.
+
+=item 1003 "INI - \r or \n in main attr not allowed"
+
+Using default C<eol> characters in either C<sep_char>, C<quote_char>, or
+C<escape_char> is not allowed.
 
 =item 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 

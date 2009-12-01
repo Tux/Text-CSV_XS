@@ -1,6 +1,7 @@
-2009-11-30 0.70 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2009-12-02 0.70 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Add quote_space attribute
+    * Forbid \r and \n in sep_char, quote_char, and escape_char
 
 2009-10-10 0.69 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

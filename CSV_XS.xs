@@ -140,6 +140,7 @@ xs_error_t xs_errors[] =  {
     { 1000, "INI - constructor failed"						},
     { 1001, "INI - sep_char is equal to quote_char or escape_char"		},
     { 1002, "INI - allow_whitespace with escape_char or quote_char SP or TAB"	},
+    { 1003, "INI - \r or \n in main attr not allowed"				},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},

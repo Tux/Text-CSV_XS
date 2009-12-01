@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 86;
+use Test::More tests => 107;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -95,8 +95,21 @@ eval { $csv = Text::CSV_XS->new ({
 like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo - error message");
 is   ((Text::CSV_XS::error_diag)[0], 1002, "Wrong combo - numeric error");
 
-# And test erroneous calls
+# Test 1003 in constructor
+foreach my $x ("\r", "\n", "\r\n", "x\n", "\rx") {
+    foreach my $attr (qw( sep_char quote_char escape_char )) {
+	eval { $csv = Text::CSV_XS->new ({ $attr => $x }) };
+	is ((Text::CSV_XS::error_diag)[0], 1003, "eol in $attr");
+	}
+    }
+# Test 1003 in methods
+foreach my $attr (qw( sep_char quote_char escape_char )) {
+    ok ($csv = Text::CSV_XS->new, "New");
+    eval { ok ($csv->$attr ("\n"), "$attr => \\n") };
+    is (($csv->error_diag)[0], 1003, "not allowed");
+    }
 
+# And test erroneous calls
 is (Text::CSV_XS::new (0),		   undef,	"new () as function");
 is (Text::CSV_XS::error_diag (), "usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);",
 							"Generic usage () message");
