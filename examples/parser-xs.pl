@@ -3,7 +3,7 @@
 # This script can be used as a base to parse unreliable CSV streams
 # Modify to your own needs
 #
-#	   (m)'08 [23 Apr 2008] Copyright H.M.Brand 2008-2009
+#	   (m)'08 [23 Apr 2008] Copyright H.M.Brand 2008-2010
 
 use strict;
 use warnings;

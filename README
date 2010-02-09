@@ -7,7 +7,7 @@ Description:
     fields into a CSV string and parse a CSV string into fields.
 
 Copying:
-    Copyright (c) 2007-2009 H.Merijn Brand.  All rights reserved.
+    Copyright (c) 2007-2010 H.Merijn Brand.  All rights reserved.
     Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
     Portions Copyright (c) 1997 Alan Citterman. All rights reserved.
 
