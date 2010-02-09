@@ -20,6 +20,7 @@ t/40_misc.t		Binary mode tests
 t/41_null.t		NULL test in combination with line endings
 t/45_eol.t		Embedded EOL
 t/50_utf8.t		Unicode stress tests
+t/51_utf8.t		Unicode IO encoding tests
 t/55_combi.t		Different CSV character combinations
 t/60_samples.t		Miscellaneous problems from the modules history.
 t/65_allow.t		Allow bad formats

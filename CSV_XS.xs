@@ -21,6 +21,9 @@
 #  define SvUTF8_on(sv)	/* no-op */
 #  define SvUTF8(sv)	0
 #  endif
+#ifndef PERLIO_F_UTF8
+#  define PERLIO_F_UTF8	0x00008000
+#  endif
 
 #define MAINT_DEBUG	0
 
@@ -54,6 +57,7 @@
 #define CACHE_ID_quote_space		25
 #define CACHE_ID__is_bound		26
 #define CACHE_ID__has_ahead		30
+#define CACHE_ID__io_has_encoding	31
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -103,6 +107,7 @@ typedef struct {
 
     byte	quote_space;
     byte	first_safe_char;
+    byte	io_has_encoding;
 
     long	is_bound;
 
@@ -353,6 +358,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 
     _cache_show_byte ("eol_is_cr",		CACHE_ID_eol_is_cr);
     _cache_show_byte ("eol_len",		CACHE_ID_eol_len);
+    _cache_show_byte ("io_has_encoding",	CACHE_ID__io_has_encoding);
     if (c < 8)
 	_cache_show_cstr ("eol", c,		CACHE_ID_eol);
     else if ((svp = hv_fetchs (hv, "eol", FALSE)) && *svp && SvOK (*svp)) {
@@ -413,6 +419,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->empty_is_undef		= csv->cache[CACHE_ID_empty_is_undef	];
 	csv->verbatim			= csv->cache[CACHE_ID_verbatim		];
 	csv->has_ahead			= csv->cache[CACHE_ID__has_ahead	];
+	csv->io_has_encoding		= csv->cache[CACHE_ID__io_has_encoding	];
 	csv->eol_is_cr			= csv->cache[CACHE_ID_eol_is_cr		];
 	csv->eol_len			= csv->cache[CACHE_ID_eol_len		];
 	if (csv->eol_len < 8)
@@ -503,6 +510,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->verbatim			= bool_opt ("verbatim");
 	csv->auto_diag			= bool_opt ("auto_diag");
 
+	csv->io_has_encoding = 0;
+
 	sv_cache = newSVpvn ("", CACHE_SIZE);
 	csv->cache = (byte *)SvPVX (sv_cache);
 	memset (csv->cache, 0, CACHE_SIZE);
@@ -525,6 +534,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->cache[CACHE_ID_empty_is_undef]		= csv->empty_is_undef;
 	csv->cache[CACHE_ID_verbatim]			= csv->verbatim;
 	csv->cache[CACHE_ID_auto_diag]			= csv->auto_diag;
+	csv->cache[CACHE_ID__io_has_encoding]		= csv->io_has_encoding;
 	csv->cache[CACHE_ID_eol_is_cr]			= csv->eol_is_cr;
 	csv->cache[CACHE_ID_eol_len]			= csv->eol_len;
 	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
@@ -567,6 +577,43 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	PUSHs ((dst));
 	PUSHs (tmp);
 	PUTBACK;
+#ifdef USE_PERLIO
+	if (csv->io_has_encoding == 0) {
+	    GV *gv = NULL;
+	    IO *io;
+
+	    csv->io_has_encoding = -1; /* Check only once! */
+
+	    /* code stolen from universal.c */
+	    if (isGV (dst))
+		gv = (GV *)dst;
+	    else if (SvROK (dst) && isGV (SvRV (dst)))
+		gv = (GV *)SvRV (dst);
+#if PERL_VERSION >= 10
+	    else if (SvPOKp (dst))
+		gv = gv_fetchsv (dst, 0, SVt_PVIO);
+#endif
+
+	    if (gv && (io = GvIO (gv))) {
+		AV *av = PerlIO_get_layers (aTHX_ IoOFP (io));
+		I32 i;
+		I32 last = av_len (av);
+		for (i = last; i >= 0; i -= 3) {
+		    SV **namep = av_fetch (av, i - 2, FALSE);
+		    SV **flgsp = av_fetch (av, i,     FALSE);
+		    if (( SvIOK (*flgsp) &&
+			    SvIVX (*flgsp) & PERLIO_F_UTF8 ) ||
+			( SvPOK (*namep) && (
+			    memEQ (SvPV_nolen (*namep), "utf8",     4) ||
+			    memEQ (SvPV_nolen (*namep), "encoding", 8))
+			    ))
+			csv->io_has_encoding = 1;
+		    }
+		}
+	    }
+	if (csv->utf8 && csv->io_has_encoding == 1)
+	    SvUTF8_on (tmp);
+#endif
 	result = call_sv (m_print, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	if (result) {

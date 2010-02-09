@@ -1,6 +1,7 @@
 2010-02-09 0.71 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Upped copyright to 2010
+    * Prevent double encoding by detecting IO layer(s)
 
 2009-12-02 0.70 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
