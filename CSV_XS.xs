@@ -606,8 +606,10 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 			( SvPOK (*namep) && (
 			    memEQ (SvPV_nolen (*namep), "utf8",     4) ||
 			    memEQ (SvPV_nolen (*namep), "encoding", 8))
-			    ))
+			    )) {
 			csv->io_has_encoding = 1;
+			break;
+			}
 		    }
 		}
 	    }
