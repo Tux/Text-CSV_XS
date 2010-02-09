@@ -31,7 +31,7 @@ my $csv = Text::CSV_XS->new ({
 # 0D = \r  3B = ;
 foreach my $test (
   # Space-like characters
-  [ "\x{0000A0}", "U+0000A0 NO-BRAK SPACE"				],
+  [ "\x{0000A0}", "U+0000A0 NO-BREAK SPACE"				],
   [ "\x{00200B}", "U+00200B ZERO WIDTH SPACE"				],
   # Some characters with possible problems in the code point
   [ "\x{000122}", "U+000122 LATIN CAPITAL LETTER G WITH CEDILLA"	],
