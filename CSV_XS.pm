@@ -633,14 +633,6 @@ be marked UTF8.
 On combining (C<print ()> and C<combine ()>), if any of the combining
 fields was marked UTF8, the resulting string will be marked UTF8.
 
-Additionally, C<print ()> will try to prevent double encoding when the
-stream is layered with C<:encoding(...)> or with C<:utf8>. This detection
-is done only B<once> in every C<Text::CSV_XS> object, so using the same
-C<$csv> for multiple (different) file handles can be dangerous if the
-filehandles do not all have an encoding layer.  This detection mechanism
-also does not trigger when using C<binmode ()> on a file handle I<after>
-a C<print ()> call on that handle.
-
 For complete control over encoding, please use Text::CSV::Encoded:
 
     use Text::CSV::Encoded;
