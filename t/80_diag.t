@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
- use Test::More tests => 90;
+ use Test::More tests => 94;
 #use Test::More "no_plan";
 
 my %err;
@@ -65,6 +65,19 @@ parse_err 2037,  1, qq{\0 };
     }
 
 is (Text::CSV_XS->new ({ ecs_char => ":" }), undef, "Unsupported option");
+
+{   my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    Text::CSV_XS::error_diag ();
+    ok (@warn == 1, "Error_diag in void context ::");
+    like ($warn[0], qr{^# CSV_XS ERROR: 1000 - INI}, "error content");
+    }
+{   my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    Text::CSV_XS->error_diag ();
+    ok (@warn == 1, "Error_diag in void context ->");
+    like ($warn[0], qr{^# CSV_XS ERROR: 1000 - INI}, "error content");
+    }
 
 is (Text::CSV_XS::error_diag (), "INI - Unknown attribute 'ecs_char'",
 					"Last failure for new () - FAIL");
