@@ -1,0 +1,14 @@
+Brain-dump for possible option respect_BOM
+
+# BOM = \x{feff}
+# UTF-8       \357\273\277	\xef\xbb\xbf
+# UTF-16BE    \376\377		\xfe\xff
+# UTF-16LE    \377\376		\xff\xfe
+# UTF-32BE    \0\0\376\377	\x00\x00\xfe\xff
+# UTF-32LE    \377\376\0\0	\xff\xfe\x00\x00
+# UCS-2       \376\377		\xfe\xff
+# iso-10646-1 \376\377		\xfe\xff
+# utf8        \357\273\277	\xef\xbb\xbf
+
+if first call to m_getline () for object, and line starts with BOM
+skip it and set binmode for src
