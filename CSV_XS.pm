@@ -114,12 +114,14 @@ sub new
 	    }
 #	croak?
 	$last_new_err = SetDiag (undef, 1000, "INI - Unknown attribute '$_'");
+	$attr->{auto_diag} and error_diag ();
 	return;
 	}
 
     my $self  = {%def_attr, %{$attr}};
     if (my $ec = _check_sanity ($self)) {
 	$last_new_err = SetDiag (undef, $ec);
+	$attr->{auto_diag} and error_diag ();
 	return;
 	}
 
