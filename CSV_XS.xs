@@ -361,7 +361,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     else if ((svp = hv_fetchs (hv, "eol", FALSE)) && *svp && SvOK (*svp)) {
 	STRLEN len;
 	byte *eol = (byte *)SvPV (*svp, len);
-	_cache_show_str  ("eol", len,		eol);
+	_cache_show_str  ("eol", (int)len,	eol);
 	}
     else
 	_cache_show_str  ("eol", 8,		(byte *)"<broken>");
