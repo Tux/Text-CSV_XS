@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 62;
+use Test::More tests => 128;
 use Text::CSV_XS;
 
 my @pat = (
@@ -38,6 +38,7 @@ my %exp = map {
     $x =~ s/\n/\\n/g;
     ($_ => $x);
     } @pat;
+my $line = ["", undef, "0\n", "", "\0\0\n0"];
 
 my $csv = Text::CSV_XS->new ({
     eol			=> "\n",
@@ -45,6 +46,9 @@ my $csv = Text::CSV_XS->new ({
     auto_diag		=> 1,
     blank_is_undef	=> 1,
     });
+
+ok ($csv->combine (@$line), "combine [ ... ]");
+is ($csv->string, qq{,,"0\n",,""0"0\n0"\n}, "string");
 
 open FH, ">__test.csv" or die $!;
 binmode FH;
@@ -55,7 +59,6 @@ for (@pat) {
 
 $csv->always_quote (1);
 
-my $line = ["", undef, "0\n", "", "\0\n0"];
 ok ($csv->print (*FH, $line), "print [ ... ]");
 
 close FH;
@@ -68,9 +71,45 @@ foreach my $pat (@pat) {
     is ($row->[0], $pat, "data $exp{$pat}");
     }
 
-my $row = $csv->getline (*FH);
+is_deeply ($csv->getline (*FH), $line, "read [ ... ]");
 
-is_deeply ($row, $line, "read [ ... ]");
+close FH;
+
+unlink "__test.csv";
+
+$csv = Text::CSV_XS->new ({
+    eol			=> "\n",
+    binary		=> 1,
+    auto_diag		=> 1,
+    blank_is_undef	=> 1,
+    quote_null		=> 0,
+    });
+
+ok ($csv->combine (@$line), "combine [ ... ]");
+is ($csv->string, qq{,,"0\n",,"\0\0\n0"\n}, "string");
+
+open FH, ">__test.csv" or die $!;
+binmode FH;
+
+for (@pat) {
+    ok ($csv->print (*FH, [ $_ ]), "print $exp{$_}");
+    }
+
+$csv->always_quote (1);
+
+ok ($csv->print (*FH, $line), "print [ ... ]");
+
+close FH;
+
+open FH, "<__test.csv" or die $!;
+binmode FH;
+
+foreach my $pat (@pat) {
+    ok (my $row = $csv->getline (*FH), "getline $exp{$pat}");
+    is ($row->[0], $pat, "data $exp{$pat}");
+    }
+
+is_deeply ($csv->getline (*FH), $line, "read [ ... ]");
 
 close FH;
 

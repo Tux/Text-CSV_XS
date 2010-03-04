@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.71";
+$VERSION = "0.72";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -60,6 +60,7 @@ my %def_attr = (
     eol			=> '',
     always_quote	=> 0,
     quote_space		=> 1,
+    quote_null		=> 1,
     binary		=> 0,
     keep_meta_info	=> 0,
     allow_loose_quotes	=> 0,
@@ -150,6 +151,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     empty_is_undef	=> 23,
     auto_diag		=> 24,
     quote_space		=> 25,
+    quote_null		=> 31,
     _is_bound		=> 26,	# 26 .. 29
     );
 
@@ -236,6 +238,13 @@ sub quote_space
     @_ and $self->_set_attr_X ("quote_space", shift);
     $self->{quote_space};
     } # quote_space
+
+sub quote_null
+{
+    my $self = shift;
+    @_ and $self->_set_attr_X ("quote_null", shift);
+    $self->{quote_null};
+    } # quote_null
 
 sub binary
 {
@@ -933,7 +942,14 @@ Text::CSV_XS. :-)
 By default, a space in a field would trigger quotation. As no rule
 exists this to be forced in CSV, nor any for the opposite, the default
 is true for safety. You can exclude the space from this trigger by
-setting this option to 0.
+setting this attribute to 0.
+
+=item quote_null
+
+By default, a NULL byte in a field would be escaped. This attribute
+enables you to treat the NULL byte as a simple binary character in
+binary mode (the C<{ binary => 1 }> is set). The default is true.
+You can prevent NULL escapes by setting this attribute to 0.
 
 =item keep_meta_info
 
@@ -1006,6 +1022,7 @@ is equivalent to
      eol                 => $\,
      always_quote        => 0,
      quote_space         => 1,
+     quote_null	         => 1,
      binary              => 0,
      keep_meta_info      => 0,
      allow_loose_quotes  => 0,

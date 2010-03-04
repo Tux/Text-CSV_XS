@@ -57,6 +57,7 @@
 #define CACHE_ID_quote_space		25
 #define CACHE_ID__is_bound		26
 #define CACHE_ID__has_ahead		30
+#define CACHE_ID_quote_null		31
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -105,6 +106,7 @@ typedef struct {
     byte	auto_diag;
 
     byte	quote_space;
+    byte	quote_null;
     byte	first_safe_char;
 
     long	is_bound;
@@ -271,6 +273,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
          idx == CACHE_ID_keep_meta_info		||
          idx == CACHE_ID_always_quote		||
          idx == CACHE_ID_quote_space		||
+         idx == CACHE_ID_quote_null		||
          idx == CACHE_ID_allow_loose_quotes	||
          idx == CACHE_ID_allow_loose_escapes	||
          idx == CACHE_ID_allow_double_quoted	||
@@ -279,7 +282,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	 idx == CACHE_ID_empty_is_undef		||
 	 idx == CACHE_ID_verbatim		||
 	 idx == CACHE_ID_auto_diag) {
-	cp[idx] = SvIV (val);
+	cp[idx] = (byte)SvIV (val);
 	return;
 	}
 
@@ -346,6 +349,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_byte ("allow_whitespace",	CACHE_ID_allow_whitespace);
     _cache_show_byte ("always_quote",		CACHE_ID_always_quote);
     _cache_show_byte ("quote_space",		CACHE_ID_quote_space);
+    _cache_show_byte ("quote_null",		CACHE_ID_quote_null);
     _cache_show_byte ("auto_diag",		CACHE_ID_auto_diag);
     _cache_show_byte ("blank_is_undef",		CACHE_ID_blank_is_undef);
     _cache_show_byte ("empty_is_undef",		CACHE_ID_empty_is_undef);
@@ -407,6 +411,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->always_quote		= csv->cache[CACHE_ID_always_quote	];
 	csv->auto_diag			= csv->cache[CACHE_ID_auto_diag	];
 	csv->quote_space		= csv->cache[CACHE_ID_quote_space	];
+	csv->quote_null			= csv->cache[CACHE_ID_quote_null	];
 
 	csv->allow_loose_quotes		= csv->cache[CACHE_ID_allow_loose_quotes];
 	csv->allow_loose_escapes	= csv->cache[CACHE_ID_allow_loose_escapes];
@@ -497,6 +502,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->keep_meta_info		= bool_opt ("keep_meta_info");
 	csv->always_quote		= bool_opt ("always_quote");
 	csv->quote_space		= bool_opt_def ("quote_space", 1);
+	csv->quote_null			= bool_opt_def ("quote_null", 1);
 	csv->allow_loose_quotes		= bool_opt ("allow_loose_quotes");
 	csv->allow_loose_escapes	= bool_opt ("allow_loose_escapes");
 	csv->allow_double_quoted	= bool_opt ("allow_double_quoted");
@@ -519,6 +525,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->cache[CACHE_ID_keep_meta_info]		= csv->keep_meta_info;
 	csv->cache[CACHE_ID_always_quote]		= csv->always_quote;
 	csv->cache[CACHE_ID_quote_space]		= csv->quote_space;
+	csv->cache[CACHE_ID_quote_null]			= csv->quote_null;
 
 	csv->cache[CACHE_ID_allow_loose_quotes]		= csv->allow_loose_quotes;
 	csv->cache[CACHE_ID_allow_loose_escapes]	= csv->allow_loose_escapes;
@@ -673,7 +680,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		if (c == csv->escape_char && csv->escape_char)
 		    e = 1;
 		else
-		if (c == (char)0) {
+		if (c == (char)0          && csv->quote_null) {
 		    e = 1;
 		    c = '0';
 		    }
