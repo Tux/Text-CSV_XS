@@ -1,6 +1,8 @@
-2010-03-04 0.72 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2010-03-10 0.72 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Introduce quote_null attribute (RT#55200)
+    * examples/csv-check can be used for Text::CSV_PP
+    * examples/csv-check more options for sep_, escape_ and quote_char
 
 2010-02-15 0.71 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

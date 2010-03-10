@@ -17,12 +17,16 @@ sub usage
 {
     my $err = shift and select STDERR;
     print <<EOU;
-usage: csv-check [-s <sep>] [-q <quot>] [-u] [file.csv]
+usage: csv-check [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
        -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
                   The string "tab" is allowed.
+       -e <esc>   use <sep>   as seperator char. Auto-detect, default = ','
+                  The string "undef" is allowed.
        -q <quot>  use <quot>  as quotation char. Default = '"'
                   The string "undef" will disable quotation.
        -u         check if all fields are valid unicode
+
+       --pp       use Text::CSV_PP instead (cross-check)
 EOU
     exit $err;
     } # usage
@@ -30,16 +34,29 @@ EOU
 use Getopt::Long qw(:config bundling nopermute passthrough);
 my $sep;	# Set after reading first line in a flurry attempt to auto-detect
 my $quo = '"';
+my $esc = '"';
 my $opt_u = 0;
+my $opt_p = 0;
 GetOptions (
     "help|?"	=> sub { usage (0); },
 
     "c|s=s"	=> \$sep,
     "q=s"	=> \$quo,
+    "e=s"	=> \$esc,
     "u"		=> \$opt_u,
+
+    "pp!"	=> \$opt_p,
     ) or usage (1);
 
-use Text::CSV_XS;
+my  $csvmod = "Text::CSV_XS";
+if ($opt_p) {
+    require Text::CSV_PP;
+    $csvmod = "Text::CSV_PP";
+    }
+else {
+    require Text::CSV_XS;
+    }
+$csvmod->import ();
 
 my $fn = $ARGV[0] // "-";
 my $data = do { local $/; <> } or die "No data to analyze\n";
@@ -56,9 +73,10 @@ unless ($sep) { # No sep char passed, try to auto-detect;
     $data =~ m/([\r\n]+)\Z/ and $eol = DDisplay "$1";
     }
 
-my $csv = Text::CSV_XS-> new ({
+my $csv = $csvmod->new ({
     sep_char       => $sep eq "tab"   ? "\t"  : $sep,
     quote_char     => $quo eq "undef" ? undef : $quo,
+    escape_char    => $esc eq "undef" ? undef : $esc,
     binary         => 1,
     keep_meta_info => 1,
     auto_diag      => 1,
@@ -68,7 +86,7 @@ sub done
 {
     (my $file = $ARGV // "") =~ s{(\S)$}{$1 };
     (my $prog = $0) =~ s{.*/}{};
-    print "Checked $file with $prog $VERSION using Text::CSV_XS $Text::CSV_XS::VERSION\n";
+    print "Checked $file with $prog $VERSION using $csvmod @{[$csvmod->VERSION]}\n";
     my @diag = $csv->error_diag;
     if ($diag[0] == 2012 && $csv->eof) {
 	my @coll = sort { $a <=> $b } keys %cols;
