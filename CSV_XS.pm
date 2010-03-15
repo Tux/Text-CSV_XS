@@ -998,7 +998,7 @@ anymore, and getline () chomps line endings on reading.
 Set to true will cause C<error_diag ()> to be automatically be called
 in void context upon errors.
 
-In case of error C<2012 - EOF>), this call will be void.
+In case of error C<2012 - EOF>, this call will be void.
 
 If set to a value greater than 1, it will die on errors instead of
 warn.
