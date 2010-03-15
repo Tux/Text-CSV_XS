@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'08 [22 May 2008] Copyright H.M.Brand 2007-2010
+#	   (m)'10 [15 Mar 2008] Copyright H.M.Brand 2007-2010
 
 use strict;
 use warnings;
 
-our $VERSION = "1.61";
+our $VERSION = "1.62";
 
 sub usage
 {
@@ -113,6 +113,7 @@ $csv = Text::CSV_XS-> new ({
     quote_char     => $quo,
     binary         => 1,
     keep_meta_info => 1,
+    suto_diag      => 1,
     });
 if ($firstline) {
     $csv->parse ($firstline) or die $csv->error_diag ();
