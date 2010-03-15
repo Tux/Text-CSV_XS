@@ -14,8 +14,12 @@ sub usage
     print <<EOU;
 usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                [-o <xls>] [file.csv]
-       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ';'
+       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
+                  The string "tab" is allowed.
+       -e <esc>   use <sep>   as seperator char. Auto-detect, default = ','
+                  The string "undef" is allowed.
        -q <quot>  use <quot>  as quotation char. Default = '"'
+                  The string "undef" will disable quotation.
        -w <width> use <width> as default minimum column width (4)
        -o <xls>   write output to file named <xls>, defaults
                   to input file name with .csv replaced with .xls
@@ -25,6 +29,7 @@ usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
        -f         force usage of <xls> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -u         CSV is UTF8
+       -v [<lvl>] verbosity (default = 1)
 EOU
     exit $err;
     } # usage
@@ -32,24 +37,28 @@ EOU
 use Getopt::Long qw(:config bundling nopermute passthrough);
 my $sep;	# Set after reading first line in a flurry attempt to auto-detect
 my $quo = '"';
+my $esc = '"';
 my $wdt = 4;	# Default minimal column width
 my $xls;	# Excel out file name
 my $frc = 0;	# Force use of file
 my $utf = 0;	# Data is encoded in Unicode
 my $frm = 0;	# Allow formula's
 my $dtf = "dd-mm-yyyy";	# Date format
+my $opt_v = 1;
 
 GetOptions (
     "help|?"	=> sub { usage (0); },
 
     "c|s=s"	=> \$sep,
     "q=s"	=> \$quo,
+    "e=s"	=> \$esc,
     "w=i"	=> \$wdt,
     "o|x=s"	=> \$xls,
     "d=s"	=> \$dtf,
     "f"		=> \$frc,
     "F"		=> \$frm,
     "u"		=> \$utf,
+    "v:1"	=> \$opt_v,
     ) or usage (1);
 
 my $title = @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xls";
@@ -109,15 +118,27 @@ unless ($sep) { # No sep char passed, try to auto-detect;
 	}
     }
 $csv = Text::CSV_XS-> new ({
-    sep_char       => $sep,
-    quote_char     => $quo,
+    sep_char       => $sep eq "tab"   ? "\t"  : $sep,
+    quote_char     => $quo eq "undef" ? undef : $quo,
+    escape_char    => $esc eq "undef" ? undef : $esc,
     binary         => 1,
     keep_meta_info => 1,
-    suto_diag      => 1,
+    auto_diag      => 1,
     });
 if ($firstline) {
     $csv->parse ($firstline) or die $csv->error_diag ();
     $row = [ $csv->fields ];
+    }
+if ($opt_v > 3) {
+    foreach my $k (qw( sep_char quote_char escape_char )) {
+	my $c = $csv->$k () || "undef";
+	$c =~ s/\t/\\t/g;
+	$c =~ s/\r/\\r/g;
+	$c =~ s/\n/\\n/g;
+	$c =~ s/\0/\\0/g;
+	$c =~ s/([\x00-\x1f\x7f-\xff])/sprintf"\\x{%02x}",ord$1/ge;
+	printf STDERR "%-11s = %s\n", $k, $c;
+	}
     }
 while ($row && @$row or $row = $csv->getline (*ARGV)) {
     my @row = @$row;
@@ -163,9 +184,9 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 	    $wks->write ($h, $c, $val);
 	    }
 	}
-    ++$h % 100 or printf STDERR "%6d x %6d\r", $w, $h;
+    ++$h % 100 or $opt_v && printf STDERR "%6d x %6d\r", $w, $h;
     } continue { $row = undef }
-printf STDERR "%6d x %6d\n", $w, $h;
+$opt_v && printf STDERR "%6d x %6d\n", $w, $h;
 
 $wks->set_column ($_, $_, $w[$_]) for 0 .. $#w;
 $wbk->close ();
