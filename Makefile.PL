@@ -79,7 +79,7 @@ sub postamble
 	'',
 	'leakcheck:',
 	"	$valgrind",
-	'	-@tail -5 valgrind.log',
+	'	-@tail -14 valgrind.log',
 	'',
 	'leaktest:',
 	q{	sandbox/leaktest  $(FULLPERLRUN) "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)},
