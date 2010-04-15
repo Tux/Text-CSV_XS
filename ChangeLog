@@ -1,3 +1,8 @@
+2010-04-15 0.73 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+
+    * Improve date conversion in examples/csv2xls
+      new option -D allows column selection for date conversions
+
 2010-03-16 0.72 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Introduce quote_null attribute (RT#55200)

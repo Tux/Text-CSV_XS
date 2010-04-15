@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'10 [15 Mar 2008] Copyright H.M.Brand 2007-2010
+#	   (m)'10 [15 Apr 2010] Copyright H.M.Brand 2007-2010
 
 use strict;
 use warnings;
 
-our $VERSION = "1.62";
+our $VERSION = "1.70";
 
 sub usage
 {
@@ -28,6 +28,7 @@ usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                   an equal sign are forced to string
        -f         force usage of <xls> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
+       -D cols    only convert dates in columns <cols>. Default is everywhere.
        -u         CSV is UTF8
        -v [<lvl>] verbosity (default = 1)
 EOU
@@ -45,6 +46,7 @@ my $utf = 0;	# Data is encoded in Unicode
 my $frm = 0;	# Allow formula's
 my $dtf = "dd-mm-yyyy";	# Date format
 my $opt_v = 1;
+my $dtc;
 
 GetOptions (
     "help|?"	=> sub { usage (0); },
@@ -55,6 +57,7 @@ GetOptions (
     "w=i"	=> \$wdt,
     "o|x=s"	=> \$xls,
     "d=s"	=> \$dtf,
+    "D=s"	=> \$dtc,
     "f"		=> \$frc,
     "F"		=> \$frm,
     "u"		=> \$utf,
@@ -140,6 +143,13 @@ if ($opt_v > 3) {
 	printf STDERR "%-11s = %s\n", $k, $c;
 	}
     }
+
+if (my $rows = $dtc) {
+    $rows =~ s/-$/-999/;			# 3,6-
+    $rows =~ s/-/../g;
+    eval "\$dtc = { map { \$_ => 1 } $rows }";
+    }
+
 while ($row && @$row or $row = $csv->getline (*ARGV)) {
     my @row = @$row;
     @row > $w and push @w, ($wdt) x (($w = @row) - @w);
@@ -165,16 +175,20 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 	    next;
 	    }
 
-	my @d = (0, 0, 0);	# Y, M, D
-	$val =~ m/^(\d{4})(\d{2})(\d{2})$/   and @d = ($1, $2, $3);
-	$val =~ m/^(\d{2})-(\d{2})-(\d{4})$/ and @d = ($3, $2, $1);
-	if ($d[1] >= 1 && $d[1] <= 12 && $d[0] >= 1900) {
-	    my $dm = Days_in_Month (@d[0,1]);
-	    $d[2] <   1 and $d[2] = 1;
-	    $d[2] > $dm and $d[2] = $dm;
-	    my $dt = 2 + Delta_Days (1900, 1, 1, @d);
-	    $wks->write ($h, $c, $dt, $fmt{date});
-	    next;
+	if (!$dtc or $dtc->{$c + 1}) {
+	    my @d = (0, 0, 0);	# Y, M, D
+	    $val =~ m/^(\d{4})(\d{2})(\d{2})$/   and @d = ($1, $2, $3);
+	    $val =~ m/^(\d{2})-(\d{2})-(\d{4})$/ and @d = ($3, $2, $1);
+	    if ( $d[2] >=    1 && $d[2] <=   31 &&
+		 $d[1] >=    1 && $d[1] <=   12 &&
+		 $d[0] >= 1900 && $d[0] <= 2199) {
+		my $dm = Days_in_Month (@d[0,1]);
+		$d[2] <   1 and $d[2] = 1;
+		$d[2] > $dm and $d[2] = $dm;
+		my $dt = 2 + Delta_Days (1900, 1, 1, @d);
+		$wks->write ($h, $c, $dt, $fmt{date});
+		next;
+		}
 	    }
 
 	if (!$frm && $val =~ m/^=/) {
