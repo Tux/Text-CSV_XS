@@ -1515,6 +1515,11 @@ The hard-coding of characters and character ranges makes this module
 unusable on EBCDIC system. Using some #ifdef structure could enable
 these again without loosing speed. Testing would be the hard part.
 
+Opening EBCDIC encode files on ASCII+ systems is likely to succeed
+using Encode's cp37, cp1047, or posix-bc:
+
+  open my $fh, "<:encoding(cp1047)", "ebcdic_file.csv" or die "...";
+
 =back
 
 =head1 Release plan

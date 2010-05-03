@@ -3,6 +3,7 @@
     * Improve date conversion in examples/csv2xls
       new option -D allows column selection for date conversions
     * Tested under perl-5.12.0 (and 21 other versions of perl)
+    * Added a note about EBCDIC data files
 
 2010-03-16 0.72 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
