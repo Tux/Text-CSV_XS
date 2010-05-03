@@ -11,7 +11,7 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
-open  FH, ">_test.csv";
+open  FH, ">_75test.csv";
 print FH <<EOC;
 code,name,price,description
 1,Dress,240.00,"Evening gown"
@@ -46,7 +46,7 @@ is ($csv->error_diag () + 0, 3002, "error code");
 ok ($csv->column_names ("name", "code"), "column_names (list)");
 is_deeply ([ $csv->column_names ], [ "name", "code" ], "well set");
 
-open  FH, "<_test.csv";
+open  FH, "<_75test.csv";
 my $row;
 ok ($row = $csv->getline (*FH),		"getline headers");
 is ($row->[0], "code",			"Header line");
@@ -76,7 +76,7 @@ eval { $csv->bind_columns ([undef]) };
 is ($csv->error_diag () + 0, 3004,		"legal header defenition");
 
 my @bcr = \($code, $name, $price, $desc);
-open  FH, "<_test.csv";
+open  FH, "<_75test.csv";
 ok ($row = $csv->getline (*FH),			"getline headers");
 ok ($csv->bind_columns (@bcr),			"Bind columns");
 ok ($csv->column_names ($row),			"column_names from array_ref");
@@ -109,7 +109,7 @@ is ($csv->error_diag () + 0, 3006,		"cannot read all fields");
 
 close FH;
 
-open  FH, "<_test.csv";
+open  FH, "<_75test.csv";
 
 is ($csv->column_names (undef), undef,		"reset column headers");
 is ($csv->bind_columns (undef), undef,		"reset bound columns");
@@ -122,4 +122,4 @@ is_deeply ($hr, { "\cAUNDEF\cA" => "code", "" => "name", "name" => "description"
 
 close FH;
 
-unlink "_test.csv";
+unlink "_75test.csv";

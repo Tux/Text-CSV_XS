@@ -50,7 +50,7 @@ my $csv = Text::CSV_XS->new ({
 ok ($csv->combine (@$line), "combine [ ... ]");
 is ($csv->string, qq{,,"0\n",,""0"0\n0"\n}, "string");
 
-open FH, ">__test.csv" or die $!;
+open FH, ">__41test.csv" or die $!;
 binmode FH;
 
 for (@pat) {
@@ -63,7 +63,7 @@ ok ($csv->print (*FH, $line), "print [ ... ]");
 
 close FH;
 
-open FH, "<__test.csv" or die $!;
+open FH, "<__41test.csv" or die $!;
 binmode FH;
 
 foreach my $pat (@pat) {
@@ -75,7 +75,7 @@ is_deeply ($csv->getline (*FH), $line, "read [ ... ]");
 
 close FH;
 
-unlink "__test.csv";
+unlink "__41test.csv";
 
 $csv = Text::CSV_XS->new ({
     eol			=> "\n",
@@ -88,7 +88,7 @@ $csv = Text::CSV_XS->new ({
 ok ($csv->combine (@$line), "combine [ ... ]");
 is ($csv->string, qq{,,"0\n",,"\0\0\n0"\n}, "string");
 
-open FH, ">__test.csv" or die $!;
+open FH, ">__41test.csv" or die $!;
 binmode FH;
 
 for (@pat) {
@@ -101,7 +101,7 @@ ok ($csv->print (*FH, $line), "print [ ... ]");
 
 close FH;
 
-open FH, "<__test.csv" or die $!;
+open FH, "<__41test.csv" or die $!;
 binmode FH;
 
 foreach my $pat (@pat) {
@@ -113,4 +113,4 @@ is_deeply ($csv->getline (*FH), $line, "read [ ... ]");
 
 close FH;
 
-unlink "__test.csv";
+unlink "__41test.csv";
