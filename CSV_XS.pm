@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.73";
+$VERSION = "0.74";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1487,7 +1487,7 @@ combine ()/string () combination.
 Requests for adding means (methods) that combine C<combine ()> and
 C<string ()> in a single call will B<not> be honored. Likewise for
 C<parse ()> and C<fields ()>. Given the trouble with embedded newlines,
-Using C<getline ()> and C<print ()> instead is the prefered way to go.
+Using C<getline ()> and C<print ()> instead is the preferred way to go.
 
 =item Parse the whole file at once
 

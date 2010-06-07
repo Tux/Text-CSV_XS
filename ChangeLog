@@ -1,3 +1,6 @@
+2010-06-07 0.74 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Typo fix in doc
+
 2010-05-03 0.73 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Improve date conversion in examples/csv2xls
