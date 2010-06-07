@@ -182,7 +182,7 @@ xs_error_t xs_errors[] =  {
     { 3003, "EHR - bind_columns () and column_names () fields count mismatch"	},
     { 3004, "EHR - bind_columns () only accepts refs to scalars"		},
     { 3006, "EHR - bind_columns () did not pass enough refs for parsed fields"	},
-    { 3007, "EHR - bind_columns needs refs to writeable scalars"		},
+    { 3007, "EHR - bind_columns needs refs to writable scalars"			},
     { 3008, "EHR - unexpected error in bound fields"				},
 
     {    0, "" },

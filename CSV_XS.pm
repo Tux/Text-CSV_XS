@@ -346,7 +346,7 @@ sub error_input
 
 # erro_diag
 #
-#   If (and only if) an error occured, this function returns a code that
+#   If (and only if) an error occurred, this function returns a code that
 #   indicates the reason of failure
 
 sub error_diag
@@ -610,7 +610,7 @@ perhaps better called ASV (anything separated values) rather than just CSV.
 
 =head2 Embedded newlines
 
-B<Important Note>: The default behavior is to only accept ascii characters.
+B<Important Note>: The default behavior is to only accept ASCII characters.
 This means that fields can not contain newlines. If your data contains
 newlines embedded in fields, or characters above 0x7e (tilde), or binary data,
 you *must* set C<< binary => 1 >> in the call to C<new ()>.  To cover the widest
@@ -625,7 +625,7 @@ usage:
      $csv->parse ($_);
      my @fields = $csv->fields ();
 
-will break, as the while might read broken lines, as that doesn't care
+will break, as the while might read broken lines, as that does not care
 about the quoting. If you need to support embedded newlines, the way to go
 is either
 
@@ -844,7 +844,7 @@ is read as
 
  (1, undef, undef, " ", 2)
 
-Note that this only effects fields that are I<realy> empty, not fields
+Note that this only effects fields that are I<really> empty, not fields
 that are empty after stripping allowed whitespace. YMMV.
 
 =item quote_char
@@ -934,7 +934,7 @@ of the I<types> method below.
 By default the generated fields are quoted only, if they need to, for
 example, if they contain the separator. If you set this attribute to
 a TRUE value, then all fields will be quoted. This is typically easier
-to handle in external applications. (Poor creatures who aren't using
+to handle in external applications. (Poor creatures who are not using
 Text::CSV_XS. :-)
 
 =item quote_space
@@ -981,7 +981,7 @@ Imagine a file format like
 where, the line ending is a very specific "#\r\n", and the sep_char
 is a ^ (caret). None of the fields is quoted, but embedded binary
 data is likely to be present. With the specific line ending, that
-shouldn't be too hard to detect.
+should not be too hard to detect.
 
 By default, Text::CSV_XS' parse function however is instructed to only
 know about "\n" and "\r" to be legal line endings, and so has to deal
@@ -1069,11 +1069,11 @@ implies that the following is wrong in perl 5.005_xx and older:
  $status = $csv->print (\*FILE, $colref);
 
 as in perl 5.005 and older, the glob C<\*FILE> is not an object, thus it
-doesn't have a print method. The solution is to use an IO::File object or
+does not have a print method. The solution is to use an IO::File object or
 to hide the glob behind an IO::Wrap object. See L<IO::File> and L<IO::Wrap>
 for details.
 
-For performance reasons the print method doesn't create a result string.
+For performance reasons the print method does not create a result string.
 In particular the I<$csv-E<gt>string ()>, I<$csv-E<gt>status ()>,
 I<$csv->fields ()> and I<$csv-E<gt>error_input ()> methods are meaningless
 after executing this method.
@@ -1241,7 +1241,7 @@ was called more recently.
 
 For each field, a meta_info field will hold flags that tell something about
 the field returned by the C<fields ()> method or passed to the C<combine ()>
-method. The flags are bitwise-or'd like:
+method. The flags are bit-wise-or'd like:
 
 =over 4
 
@@ -1301,7 +1301,7 @@ C<combine ()> or C<parse ()>, whichever was called more recently.
  $error_str    = "" . $csv->error_diag ();
  ($cde, $str, $pos) = $csv->error_diag ();
 
-If (and only if) an error occured, this function returns the diagnostics
+If (and only if) an error occurred, this function returns the diagnostics
 of that error.
 
 If called in void context, it will print the internal error code and the
@@ -1317,8 +1317,8 @@ If called in scalar context, it will return the diagnostics in a single
 scalar, a-la $!. It will contain the error code in numeric context, and
 the diagnostics message in string context.
 
-When called as a class method or a direct function call, the error diag
-is that of the last C<new ()> call.
+When called as a class method or a direct function call, the error
+diagnostics is that of the last C<new ()> call.
 
 =head2 SetDiag
 
@@ -1403,7 +1403,7 @@ or using the slower C<combine ()> and C<string ()> methods:
       }
   close $csv_fh or die "hello.csv: $!";
 
-For more extended examples, see the C<examples/> subdirectory in the
+For more extended examples, see the C<examples/> sub-directory in the
 original distribution or the git repository at
 http://repo.or.cz/w/Text-CSV_XS.git?a=tree;f=examples. The following files
 can be found there:
@@ -1446,7 +1446,7 @@ ANSI escape codes or HTML.
 
 C<Text::CSV_XS> is not designed to detect the characters used for field
 separation and quoting. The parsing is done using predefined settings. In
-the examples subdirectory, you can find scripts that demonstrate how you
+the examples sub-directory, you can find scripts that demonstrate how you
 can try to detect these characters yourself.
 
 =head2 Microsoft Excel
@@ -1492,7 +1492,7 @@ Using C<getline ()> and C<print ()> instead is the preferred way to go.
 =item Parse the whole file at once
 
 Implement a new methods that enables the parsing of a complete file
-at once, returning a lis of hashes. Possible extension to this could
+at once, returning a list of hashes. Possible extension to this could
 be to enable a column selection on the call:
 
    my @AoH = $csv->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
@@ -1545,10 +1545,10 @@ No guarantees, but this is what I have in mind right now:
 
 Still under construction ...
 
-If an error occured, C<$csv->error_diag ()> can be used to get more information
+If an error occurred, C<$csv->error_diag ()> can be used to get more information
 on the cause of the failure. Note that for speed reasons, the internal value
 is never cleared on success, so using the value returned by C<error_diag ()> in
-normal cases - when no error occured - may cause unexpected results.
+normal cases - when no error occurred - may cause unexpected results.
 
 If the constructor failed, the cause can be found using C<error_diag ()> as a
 class method, like C<Text::CSV_XS->error_diag ()>.
@@ -1558,9 +1558,9 @@ was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect.
 When set to 1, this will cause a C<warn ()> with the error message, when set
 to 2, it will C<die ()>. C<2012 - EOF> is excluded from C<auto_diag> reports.
 
-Currently errors as described below are available. I've tried to make the error
-itself explanatory enough, but more descriptions will be added. For most of
-these errors, the first three capitals describe the error category:
+Currently errors as described below are available. I have tried to make the
+error itself explanatory enough, but more descriptions will be added. For most
+of these errors, the first three capitals describe the error category:
 
 =over 2
 
@@ -1696,7 +1696,7 @@ exhausted before the quote is found, that field is not terminated.
 
 =item 3006 "EHR - bind_columns () did not pass enough refs for parsed fields"
 
-=item 3007 "EHR - bind_columns needs refs to writeable scalars"
+=item 3007 "EHR - bind_columns needs refs to writable scalars"
 
 =item 3008 "EHR - unexpected error in bound fields"
 
