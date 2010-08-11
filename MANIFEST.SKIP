@@ -19,3 +19,4 @@ xt/00_perlversion.t
 ^xx
 META.yml
 valgrind.log
+\.aspell\.local\.pws
