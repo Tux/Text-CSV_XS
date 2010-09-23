@@ -2,6 +2,7 @@
 
     * Spelling fixes
     * Real eol support for parsing streams (beyond \n, \r and \r\n)
+    * Clarify doc for always_quote to not quote undef fields
 
 2010-05-03 0.73 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 

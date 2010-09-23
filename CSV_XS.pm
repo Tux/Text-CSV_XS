@@ -933,9 +933,9 @@ of the I<types> method below.
 
 By default the generated fields are quoted only, if they need to, for
 example, if they contain the separator. If you set this attribute to
-a TRUE value, then all fields will be quoted. This is typically easier
-to handle in external applications. (Poor creatures who are not using
-Text::CSV_XS. :-)
+a TRUE value, then all defined fields will be quoted. This is typically
+easier to handle in external applications. (Poor creatures who are not
+using Text::CSV_XS. :-)
 
 =item quote_space
 
