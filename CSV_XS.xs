@@ -68,6 +68,7 @@
 #define CH_CR		'\015'
 #define CH_SPACE	'\040'
 #define CH_DEL		'\177'
+#define CH_EOLX		1215
 
 #define useIO_EOF	0x10
 
@@ -126,6 +127,8 @@ typedef struct {
     SV *	tmp;
     int		utf8;
     byte	has_ahead;
+    byte	eolx;
+    int		eol_pos;
     STRLEN	size;
     STRLEN	used;
     char	buffer[BUFFER_SIZE];
@@ -561,6 +564,18 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	else
 	    csv->is_bound = 0;
 	}
+
+    csv->eolx = 0;
+    if (csv->eol_len) {
+	if (csv->verbatim)
+	    csv->eolx = 1;
+	else
+	for (len = 0; len < csv->eol_len; len++) {
+	    if (csv->eol[len] == CH_NL || csv->eol[len] == CH_CR) continue;
+	    csv->eolx = 1;
+	    break;
+	    }
+	}
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
@@ -721,12 +736,21 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     unless (csv->useIO)
 	return EOF;
 
-    {   int	result;
+    if (csv->tmp && csv->eol_pos >= 0) {
+	csv->eol_pos = -1;
+	return CH_EOLX;
+	}
+
+    {	int	result;
 
 	dSP;
 
 	require_IO_Handle;
 
+	if (csv->eolx) {
+	    /* local $/ = csv->eol */
+	    }
+	csv->eol_pos = -1;
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
@@ -739,7 +763,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     if (csv->tmp && SvOK (csv->tmp)) {
 	csv->bptr = SvPV (csv->tmp, csv->size);
 	csv->used = 0;
-	if (csv->verbatim && csv->eol_len && csv->size >= csv->eol_len) {
+	if (csv->eolx && csv->size >= csv->eol_len) {
 	    int i, match = 1;
 	    for (i = 1; i <= (int)csv->eol_len; i++) {
 		unless (csv->bptr[csv->size - i] == csv->eol[csv->eol_len - i]) {
@@ -749,6 +773,8 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 		}
 	    if (match) {
 		csv->size -= csv->eol_len;
+		unless (csv->verbatim)
+		    csv->eol_pos = csv->size;
 		csv->bptr[csv->size] = (char)0;
 		SvCUR_set (csv->tmp, csv->size);
 		}
@@ -905,12 +931,11 @@ restart:
 	    else
 	    if (f & CSV_FLAGS_QUO)
 		CSV_PUT_SV (c)
-	    else {
+	    else
 		AV_PUSH;
-		}
 	    } /* SEP char */
 	else
-	if (c == CH_NL) {
+	if (c == CH_NL || c == CH_EOLX) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%02x pos %d = NL\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl);
@@ -932,7 +957,13 @@ restart:
 		unless (csv->binary)
 		    ERROR_INSIDE_QUOTES (2021);
 
-		CSV_PUT_SV (c);
+		if (c == CH_EOLX) {
+		    int e;
+		    for (e = 0; e < csv->eol_len; e++)
+			CSV_PUT_SV (csv->eol[e]);
+		    }
+		else
+		    CSV_PUT_SV (c);
 		}
 	    else
 	    if (csv->verbatim) {
@@ -940,7 +971,13 @@ restart:
 		unless (csv->binary)
 		    ERROR_INSIDE_FIELD (2030);
 
-		CSV_PUT_SV (c);
+		if (c == CH_EOLX) {
+		    int e;
+		    for (e = 0; e < csv->eol_len; e++)
+			CSV_PUT_SV (csv->eol[e]);
+		    }
+		else
+		    CSV_PUT_SV (c);
 		}
 	    else {
 		AV_PUSH;

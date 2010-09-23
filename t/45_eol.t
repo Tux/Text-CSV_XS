@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 278;
+use Test::More tests => 318;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -42,7 +42,7 @@ foreach my $rs ("\n", "\r\n", "\r") {
 		    "\"$eol\"", " \" $eol \"\n ", "EOL");
 
 		if ($pass == 0) {
-		    ok ($csv->combine (@f),			"combine |$s_eol|");
+		    ok ($csv->combine (@f),		"combine |$s_eol|");
 		    ok (my $str = $csv->string,		"string  |$s_eol|");
 		    my $state = $csv->parse ($str);
 		    ok ($state,				"parse   |$s_eol|");
@@ -153,7 +153,7 @@ $/ = $def_rs;
 
 ok (1, "EOL undef");
 {   $/ = "\r";
-    ok (my $csv = Text::CSV_XS->new ({eol => undef }), "new csv with eol => undef");
+    ok (my $csv = Text::CSV_XS->new ({ eol => undef }), "new csv with eol => undef");
     open  FH, ">_eol.csv";
     ok ($csv->print (*FH, [1, 2, 3]), "print");
     ok ($csv->print (*FH, [4, 5, 6]), "print");
@@ -163,6 +163,30 @@ ok (1, "EOL undef");
     ok (my $row = $csv->getline (*FH),	"getline 1");
     is (scalar @$row, 5,		"# fields");
     is_deeply ($row, [ 1, 2, 34, 5, 6],	"fields 1");
+    close FH;
+    unlink "_eol.csv";
+    }
+$/ = $def_rs;
+
+foreach my $eol ("!", "!!", "!\n", "!\n!") {
+    my $s_eol = $eol;
+       $s_eol =~ s/\r/\\r/g;
+       $s_eol =~ s/\n/\\n/g;
+    ok (1, "EOL $s_eol");
+    ok (my $csv = Text::CSV_XS->new ({ eol => $eol }), "new csv with eol => $s_eol");
+    open  FH, ">_eol.csv";
+    ok ($csv->print (*FH, [1, 2, 3]), "print");
+    ok ($csv->print (*FH, [4, 5, 6]), "print");
+    close FH;
+
+    local $/ = $eol;
+    open  FH, "<_eol.csv";
+    ok (my $row = $csv->getline (*FH),	"getline 1");
+    is (scalar @$row, 3,		"# fields");
+    is_deeply ($row, [ 1, 2, 3],	"fields 1");
+    ok (   $row = $csv->getline (*FH),	"getline 2");
+    is (scalar @$row, 3,		"# fields");
+    is_deeply ($row, [ 4, 5, 6],	"fields 2");
     close FH;
     unlink "_eol.csv";
     }
