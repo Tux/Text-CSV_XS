@@ -741,16 +741,18 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	return CH_EOLX;
 	}
 
-    {	int	result;
+    {	int		result, rslen;
+	const char	*rs;
 
 	dSP;
 
 	require_IO_Handle;
 
-	if (csv->eolx) {
-	    /* local $/ = csv->eol */
-	    }
 	csv->eol_pos = -1;
+	if (csv->eolx) {
+	    rs = SvPV_const (PL_rs, rslen);
+	    sv_setpvn (PL_rs, csv->eol, csv->eol_len);
+	    }
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
@@ -758,6 +760,8 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	result = call_sv (m_getline, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	csv->tmp = result ? POPs : NULL;
+	if (csv->eolx)
+	    sv_setpvn (PL_rs, rs, rslen);
 	PUTBACK;
 	}
     if (csv->tmp && SvOK (csv->tmp)) {
