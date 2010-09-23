@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 518;
+use Test::More tests => 546;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -177,9 +177,9 @@ foreach my $eol ("!", "!!", "!\n", "!\n!") {
     ok ($csv->print (*FH, [4, 5, 6]), "print");
     close FH;
 
-    foreach my $rs ("", "\n", $eol, "!", "!\n", "\n!", "!\n!", "\n!\n") {
+    foreach my $rs (undef, "", "\n", $eol, "!", "!\n", "\n!", "!\n!", "\n!\n") {
 	local $/ = $rs;
-	(my $s_rs = $rs) =~ s/\n/\\n/g;
+	(my $s_rs = defined $rs ? $rs : "-- undef --") =~ s/\n/\\n/g;
 	ok (1, "with RS $s_rs");
 	open FH, "<_eol.csv";
 	ok (my $row = $csv->getline (*FH),	"getline 1");
