@@ -25,7 +25,7 @@ print $pm $mod;
 close $pm;
 
 my %f555 = map { $_ => 1 } glob ("t/*"), glob ("xt/*"), $pm_dup, glob ("*.PL");
-my @f560 = ( "t/22_scalario.t", "xt/00_perlversion.t");
+my @f560 = ( "t/22_scalario.t", "t/46_eol_si.t", "xt/00_perlversion.t");
 my @f580 = ( "t/50_utf8.t",     "t/51_utf8.t");
 delete @f555{@f560, @f580};
 subtest (p553 => sub {
