@@ -1015,8 +1015,8 @@ restart:
 		    goto restart;
 		    }
 
-		if (c2 == CH_NL) {
-		    c = CH_NL;
+		if (c2 == CH_NL || c2 == CH_EOLX) {
+		    c = c2;
 		    goto restart;
 		    }
 
@@ -1049,7 +1049,7 @@ restart:
 
 		c2 = CSV_GET;
 
-		if (c2 == CH_NL) {
+		if (c2 == CH_NL || c2 == CH_EOLX) {
 		    AV_PUSH;
 		    return TRUE;
 		    }
@@ -1107,7 +1107,7 @@ restart:
 			    }
 
 			c3 = CSV_GET;
-			if (c3 == CH_NL) {
+			if (c3 == CH_NL || c3 == CH_EOLX) {
 			    AV_PUSH;
 			    return TRUE;
 			    }
@@ -1153,7 +1153,7 @@ restart:
 		if (c2 == csv->quote_char  ||  c2 == csv->sep_char)
 		    CSV_PUT_SV (c2)
 		else
-		if (c2 == CH_NL) {
+		if (c2 == CH_NL || c2 == CH_EOLX) {
 		    AV_PUSH;
 		    return TRUE;
 		    }
@@ -1169,7 +1169,7 @@ restart:
 
 			c3 = CSV_GET;
 
-			if (c3 == CH_NL) {
+			if (c3 == CH_NL || c3 == CH_EOLX) {
 			    AV_PUSH;
 			    return TRUE;
 			    }
@@ -1213,7 +1213,7 @@ restart:
 		waitingForField = 0;
 	    else
 	    if (f & CSV_FLAGS_QUO) {
-		int	c2 = CSV_GET;
+		int c2 = CSV_GET;
 
 		if (c2 == EOF) {
 		    csv->used--;
@@ -1233,7 +1233,7 @@ restart:
 		}
 	    else
 	    if (sv) {
-		int	c2 = CSV_GET;
+		int c2 = CSV_GET;
 
 		if (c2 == EOF) {
 		    csv->used--;

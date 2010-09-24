@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 383;
+ use Test::More tests => 389;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -286,6 +286,30 @@ while (<DATA>) {
     is ($csv->string, q{a a,"b,b","c ,c"}, "string ()");
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=61525
+    $rt = "61525";
+    foreach my $eol ("\n", "!") {
+	ok (my $csv = Text::CSV_XS->new ({
+	    binary      => 1,
+	    sep_char    => ":",
+	    quote_char  => '"',
+	    escape_char => '"',
+	    eol         => $eol,
+	    auto_diag   => 1,
+	    }), "RT-$rt: $desc{$rt}");
+
+	open  FH, ">$csv_file";
+	print FH join $eol => qw( "a":"b" "c":"d" );
+	close FH;
+
+	open  FH, "<$csv_file";
+	is_deeply ($csv->getline (*FH), [ "a", "b" ], "Pair 1");
+	is_deeply ($csv->getline (*FH), [ "c", "d" ], "Pair 2");
+	close FH;
+	unlink $csv_file;
+	}
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -329,3 +353,4 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 
 --------------090302050909040309030109--
 «58356» - Incorrect CSV generated if "quote_space => 0"
+«61525» - eol not working for values other than "\n"?
