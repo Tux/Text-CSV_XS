@@ -679,8 +679,10 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		int	e = 0;
 
 		if (!csv->binary && is_csv_binary (c)) {
-		    if (SvUTF8 (*svp))
+		    if (SvUTF8 (*svp)) {
 			csv->binary = 1;
+			csv->utf8   = 1;
+			}
 		    else {
 			SvREFCNT_inc (*svp);
 			unless (hv_store (csv->self, "_ERROR_INPUT", 12, *svp, 0))
@@ -1448,6 +1450,8 @@ static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
 #if (PERL_BCDVERSION >= 0x5008000)
     PL_ors_sv = ors;
 #endif
+    if (result && !useIO && csv.utf8)
+	sv_utf8_upgrade (io);
     return result;
     } /* xsCombine */
 
