@@ -18,8 +18,9 @@
 #define NEED_vload_module
 #include "ppport.h"
 #if (PERL_BCDVERSION <= 0x5005005)
-#  define SvUTF8_on(sv)	/* no-op */
-#  define SvUTF8(sv)	0
+#  define sv_utf8_upgrade(sv)	/* no-op */
+#  define SvUTF8_on(sv)		/* no-op */
+#  define SvUTF8(sv)		0
 #  endif
 #ifndef PERLIO_F_UTF8
 #  define PERLIO_F_UTF8	0x00008000
