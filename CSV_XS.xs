@@ -737,7 +737,10 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	return EOF;
 
     if (csv->tmp && csv->eol_pos >= 0) {
-	csv->eol_pos = -1;
+	csv->eol_pos = -2;
+	sv_setpvn (csv->tmp, csv->eol, csv->eol_len);
+	csv->bptr = SvPV (csv->tmp, csv->size);
+	csv->used = 0;
 	return CH_EOLX;
 	}
 
@@ -767,10 +770,15 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 		SvPOK_off (PL_rs);
 	    }
 	PUTBACK;
+#if MAINT_DEBUG > 4
+	sv_dump (csv->tmp);
+#endif
 	}
     if (csv->tmp && SvOK (csv->tmp)) {
-	csv->bptr = SvPV (csv->tmp, csv->size);
+	STRLEN tmp_len;
+	csv->bptr = SvPV (csv->tmp, tmp_len);
 	csv->used = 0;
+	csv->size = tmp_len;
 	if (csv->eolx && csv->size >= csv->eol_len) {
 	    int i, match = 1;
 	    for (i = 1; i <= (int)csv->eol_len; i++) {
@@ -780,15 +788,20 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 		    }
 		}
 	    if (match) {
+#if MAINT_DEBUG > 4
+		fprintf (stderr, "# EOLX match, size: %d\n", csv->size);
+#endif
 		csv->size -= csv->eol_len;
 		unless (csv->verbatim)
 		    csv->eol_pos = csv->size;
 		csv->bptr[csv->size] = (char)0;
 		SvCUR_set (csv->tmp, csv->size);
+		unless (csv->verbatim || csv->size)
+		    return CH_EOLX;
 		}
 	    }
 	if (SvUTF8 (csv->tmp)) csv->utf8 = 1;
-	if (csv->size) 
+	if (tmp_len)
 	    return ((byte)csv->bptr[csv->used++]);
 	}
     csv->useIO |= useIO_EOF;
@@ -806,19 +819,57 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     return FALSE;				\
     }
 
-#define CSV_PUT_SV(c) {				\
+#if MAINT_DEBUG > 4
+#define PUT_RPT       fprintf (stderr, "# CSV_PUT  @ %4d: 0x%02x '%c'\n", __LINE__, c, isprint (c) ? c : '?')
+#define PUT_EOLX_RPT1 fprintf (stderr, "# PUT EOLX @ %4d\n", __LINE__)
+#define PUT_EOLX_RPT2 fprintf (stderr, "# Done putting EOLX\n")
+#define PUSH_RPT      fprintf (stderr, "# AV_PUSHd @ %4d\n", __LINE__); sv_dump (sv)
+#else
+#define PUT_RPT
+#define PUT_EOLX_RPT1
+#define PUT_EOLX_RPT2
+#define PUSH_RPT
+#endif
+#define CSV_PUT_SV1(c) {			\
     len = SvCUR ((sv));				\
     SvGROW ((sv), len + 2);			\
     *SvEND ((sv)) = c;				\
+    PUT_RPT;					\
     SvCUR_set ((sv), len + 1);			\
     }
+#define CSV_PUT_SV(c) {				\
+    if (c == CH_EOLX) {				\
+	int x; PUT_EOLX_RPT1;			\
+	if (csv->eol_pos == -2)			\
+	    csv->size = 0;			\
+	for (x = 0; x < csv->eol_len; x++)	\
+	    CSV_PUT_SV1 (csv->eol[x]);		\
+	csv->eol_pos = -1;			\
+	PUT_EOLX_RPT2;				\
+	}					\
+    else					\
+	CSV_PUT_SV1 (c);			\
+    }
 
-#define CSV_GET					\
+#define CSV_GET1				\
     ((csv->used < csv->size)			\
 	? ((byte)csv->bptr[csv->used++])	\
 	: CsvGet (csv, src))
+#if MAINT_DEBUG > 3
+int CSV_GET_ (csv_t *csv, SV *src, int l)
+{
+    int c;
+    fprintf (stderr, "# 1-CSV_GET @ %4d: (used: %d, size: %d, eol_pos: %d)\n", l, csv->used, csv->size, csv->eol_pos);
+    c = CSV_GET1;
+    fprintf (stderr, "# 2-CSV_GET @ %4d: 0x%02x '%c'\n", l, c, isprint (c) ? c : '?');
+    return (c);
+    } /* CSV_GET_ */
+#define CSV_GET CSV_GET_ (csv, src, __LINE__)
+#else
+#define CSV_GET CSV_GET1
+#endif
 
-#define AV_PUSH {						\
+#define AV_PUSH { \
     *SvEND (sv) = (char)0;					\
     if (SvCUR (sv) == 0 && (csv->empty_is_undef || (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef))) {\
 	sv_setpvn (sv, NULL, 0);				\
@@ -831,6 +882,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	    SvUTF8_on (sv);					\
 	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
+    PUSH_RPT;							\
     sv = NULL;							\
     if (csv->keep_meta_info)					\
 	av_push (fflags, newSViv (f));				\
@@ -965,13 +1017,7 @@ restart:
 		unless (csv->binary)
 		    ERROR_INSIDE_QUOTES (2021);
 
-		if (c == CH_EOLX) {
-		    int e;
-		    for (e = 0; e < csv->eol_len; e++)
-			CSV_PUT_SV (csv->eol[e]);
-		    }
-		else
-		    CSV_PUT_SV (c);
+		CSV_PUT_SV (c);
 		}
 	    else
 	    if (csv->verbatim) {
@@ -979,13 +1025,7 @@ restart:
 		unless (csv->binary)
 		    ERROR_INSIDE_FIELD (2030);
 
-		if (c == CH_EOLX) {
-		    int e;
-		    for (e = 0; e < csv->eol_len; e++)
-			CSV_PUT_SV (csv->eol[e]);
-		    }
-		else
-		    CSV_PUT_SV (c);
+		CSV_PUT_SV (c);
 		}
 	    else {
 		AV_PUSH;
