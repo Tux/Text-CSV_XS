@@ -1015,7 +1015,7 @@ restart:
 		    goto restart;
 		    }
 
-		if (c2 == CH_NL || c2 == CH_EOLX) {
+		if (c2 == CH_NL) {
 		    c = c2;
 		    goto restart;
 		    }
