@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 389;
+ use Test::More tests => 397;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -299,12 +299,16 @@ while (<DATA>) {
 	    }), "RT-$rt: $desc{$rt}");
 
 	open  FH, ">$csv_file";
-	print FH join $eol => qw( "a":"b" "c":"d" );
+	print FH join $eol => qw( "a":"b" "c":"d" "e":"x!y" "!!":"z" );
 	close FH;
 
 	open  FH, "<$csv_file";
-	is_deeply ($csv->getline (*FH), [ "a", "b" ], "Pair 1");
-	is_deeply ($csv->getline (*FH), [ "c", "d" ], "Pair 2");
+	is_deeply ($csv->getline (*FH), [ "a",  "b"   ], "Pair 1");
+	is_deeply ($csv->getline (*FH), [ "c",  "d"   ], "Pair 2");
+	is_deeply ($csv->getline (*FH), [ "e",  "x!y" ], "Pair 3");
+	is_deeply ($csv->getline (*FH), [ "!!", "z"   ], "Pair 4");
+	is ($csv->getline (*FH), undef, "no more pairs");
+	ok ($csv->eof, "EOF");
 	close FH;
 	unlink $csv_file;
 	}
