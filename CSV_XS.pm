@@ -646,9 +646,6 @@ On parsing (both for C<getline ()> and C<parse ()>), if the source is
 marked being UTF8, then all fields that are marked binary will also be
 be marked UTF8.
 
-On combining (C<print ()> and C<combine ()>), if any of the combining
-fields was marked UTF8, the resulting string will be marked UTF8.
-
 For complete control over encoding, please use Text::CSV::Encoded:
 
     use Text::CSV::Encoded;
@@ -664,6 +661,16 @@ For complete control over encoding, please use Text::CSV::Encoded:
     $csv = Text::CSV::Encoded->new ({ encoding  => undef }); # default
     # combine () and print () accept UTF8 marked data
     # parse () and getline () return UTF8 marked data
+
+On combining (C<print ()> and C<combine ()>), if any of the combining
+fields was marked UTF8, the resulting string will be marked UTF8. Note
+however that all fields C<before> the first field that was marked UTF8
+and contained 8-bit characters that were not upgraded to UTF8, these
+will be bytes in the resulting string too, causing errors. If you pass
+data of different encoding, or you don't know if there is different
+encoding, force it to be upgraded before you pass them on:
+
+    $csv->print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);
 
 =head1 SPECIFICATION
 

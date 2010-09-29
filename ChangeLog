@@ -1,8 +1,9 @@
-2010-09-23 0.74 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2010-09-29 0.74 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Spelling fixes
     * Real eol support for parsing streams (beyond \n, \r and \r\n)
     * Clarify doc for always_quote to not quote undef fields
+    * Clarify UTF8 process for print () and combine ()
 
 2010-05-03 0.73 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
