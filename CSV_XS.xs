@@ -1445,7 +1445,7 @@ static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
     csv.useIO = useIO;
 #if (PERL_BCDVERSION >= 0x5008000)
     if (csv.eol && *csv.eol)
-	PL_ors_sv = &PL_sv_undef;
+	PL_ors_sv = NULL;
 #endif
     result = Combine (&csv, io, av);
 #if (PERL_BCDVERSION >= 0x5008000)

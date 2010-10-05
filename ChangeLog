@@ -1,3 +1,6 @@
+2010-10-05 0.75 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Fixed undefinedness of $\ in print (RT#61880)
+
 2010-09-29 0.74 - H.Merijn Brand   <h.m.brand@xs4all.nl>
 
     * Spelling fixes
