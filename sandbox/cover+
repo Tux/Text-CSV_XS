@@ -1,30 +1,38 @@
-#!/bin/sh
+#!/pro/bin/perl
 
-make distclean
-rm -rf cover_db ../cover_db_
+use strict;
+use warnings;
 
-# 5.6.2 threaded 64bitint nodebug
-perl5.6.2 Makefile.PL
-ccache -C
-rm -f *.gc*
-cover -test
+my @perls = (
+#   "perl5.005_04",	# Not supported by Devel::Cover
+    "perl5.6.2",	# 5.6.2  threaded 64bitint
+    "perl5.8.8",	# 5.8.8  64bitint defined-or
+    "perl5.10.0",	# 5.10.0 64bitint debug
+    "/usr/bin/perl",	# 5.12.1 thread
+    "perl",		# 5.12.2 64bitint longdouble
+    );
 
-mv cover_db ../cover_db_
-make distclean
+-f "Makefile" and qx{make -i distclean};
+qx{rm -rf cover_db sandbox/cover_db*};
+mkdir "sandbox/cover_db", 0777;
 
-# 5.10.0 64bitint debug
-perl Makefile.PL
-mv ../cover_db_ cover_db
-ccache -C
-rm -f *.gc*
-cover -test --nodelete
+my $n = 0;
+foreach my $p (@perls) {
+    print STDERR "Running cover for $p ...\n";
+    unlink "cover_db";
+    qx{$p Makefile.PL};
+    qx{ccache -C};
+    unlink glob "*.gc*";
+    qx{make};
+    my $cdb = $p eq "perl" ? "cover_db" : "sandbox/cover_db_".++$n;
+    mkdir $cdb, 0777;
+    symlink $cdb, "cover_db";
+    qx{$p /pro/bin/cover -test};
 
-mv cover_db ../cover_db_
-make distclean
+    unless ($p eq "perl") {
+	unlink "cover_db";
+	qx{make distclean 2>/dev/null};
+	}
+    }
 
-# 5.10.0 thread
-/usr/bin/perl Makefile.PL
-mv ../cover_db_ cover_db
-ccache -C
-rm -f *.gc*
-cover -test --nodelete
+system qq{cover cover_db sandbox/cover_db_*};
