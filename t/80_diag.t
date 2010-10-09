@@ -116,7 +116,10 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
     like ($@, qr '^# CSV_XS ERROR: 2027 -', "2 - error message");
     }
 
-{   my $diag_file = "_$$.out";
+SKIP: {
+    $^O =~ m/MSWin/i and skip "Windows does not support STDERR redirection as used in these tests", 23;
+
+    my $diag_file = "_$$.out";
     open  EH,     ">&STDERR";
     open  STDERR, ">$diag_file";
     ok ($csv->_cache_diag,	"Cache debugging output");

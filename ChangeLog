@@ -1,3 +1,6 @@
+2010-10-09 0.76 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Windows doesn't support STDERR redirection as used in t/80_diag
+
 2010-10-05 0.75 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Fixed undefinedness of $\ in print (RT#61880)
 
