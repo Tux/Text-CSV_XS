@@ -26,17 +26,19 @@ my %test = (
 		},
     bndc => sub {
 		$csv->bind_columns (\(@row));
-		while (my $row = $csv->getline ($fh)) {
+		while ($csv->getline ($fh)) {
 		    $n++;
 		    $row[2] eq "Text::CSV_XS" or die "Parse error";
 		    }
 		},
     );
 
+my %res;
 print "test       lines     cols  file size file\n",
       "=======  =========   ==== ========== ========\n";
-foreach my $nc (4, 16, 64, 512, 2048) {
-    foreach my $nr (4, 16, 1024, 10240, 102400) {
+foreach my $nc (4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048) {
+    #foreach my $nr (4, 16, 1024, 10240, 102400) {
+    foreach my $nr (1024) {
 	$nr * $nc > 48_000_000 and next;
 	my $fnm = "test.csv";	END { unlink $fnm }
 	system "gencsv.pl", "-n", "-o", $fnm, $nc, $nr + 1;
@@ -44,9 +46,9 @@ foreach my $nc (4, 16, 64, 512, 2048) {
 	printf "-------  %9d x %4d %10d %s\n", $nr, $nc, $fsz, $fnm;
 	my $slowest;
 	foreach my $typ ("xs", "pp") {
-	    $typ eq "pp" && $fsz > 10_000_000 and next;
+	    #$typ eq "pp" && $fsz > 10_000_000 and next;
 	    foreach my $test ("perl", "gtln", "bndc") {
-		$typ eq "pp" && $test eq "bndc" && $nc > 250 and next; # NYI
+		#$typ eq "pp" && $test eq "bndc" && $nc > 250 and next; # NYI
 		open $fh, "<", $fnm or die "$fnm: $!";
 		$csv = "Text::CSV_\U$typ"->new ({ binary => 1 });
 		$csv->parse (scalar <$fh>) or die $csv->error_diag;
@@ -57,11 +59,20 @@ foreach my $nc (4, 16, 64, 512, 2048) {
 		$test{$test}->();
 		my $used = tv_interval ($start, [ gettimeofday ]);
 		$slowest //= $used;
-		printf STDERR "$typ $test: %9d x %4d parsed in %9.3f seconds - %4d\n",
-		    $n, $ncol, $used, int (100 * $used / $slowest);
+		my $speed = int (100 * $used / $slowest);
+		printf "$typ $test: %9d x %4d parsed in %9.3f seconds - %4d\n",
+		    $n, $ncol, $used, $speed;
 		eof   $fh or die $csv->error_diag;
 		close $fh or die "$fnm: $!";
+		$nr == 1024 and $res{$nc}{"$typ $test"} = $speed;
 		}
 	    }
 	}
+    }
+
+binmode STDOUT, ":utf8";
+$csv = Text::CSV_XS->new ({ eol => "\r\n" });
+foreach my $nc (sort { $a <=> $b } keys %res) {
+    $csv->print (*STDOUT, [ $nc, @{$res{$nc}}{
+	  "xs perl", "xs gtln", "xs bndc", "pp perl", "pp gtln", "pp bndc"} ]);
     }

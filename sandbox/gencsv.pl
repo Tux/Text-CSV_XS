@@ -19,7 +19,7 @@ GetOptions (
     ) or usage (1);
 
 if ($opt_o) {
-    open STDOUT, ">", $opt_o or die "$opt_o: $!\n";
+    open STDOUT, ">:encoding(utf8)", $opt_o or die "$opt_o: $!\n";
     }
 
 my ($cols, $rows) = @ARGV;
@@ -39,6 +39,7 @@ my @row;
 push @row, @f for 1 .. int ($cols / 10);
 push @row, @f[0 .. ($cols % 10 - 1)];
 
+binmode STDOUT, ":utf8";
 $csv->print (*STDOUT, [ 1..($cols + 1) ]);
 $csv->print (*STDOUT, [ $_, @row ]) for 2 .. $rows;
 
