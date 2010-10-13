@@ -20,3 +20,4 @@ valgrind.log
 pod2htm*
 nytprof*
 tmp/*
+sandbox/parse-*.png

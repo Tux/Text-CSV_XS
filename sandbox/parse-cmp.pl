@@ -34,7 +34,10 @@ my %test = (
     );
 
 my %res;
-print "test       lines     cols  file size file\n",
+print "Text::CSV_XS-$Text::CSV_XS::VERSION\n",
+      "Text::CSV_PP-$Text::CSV_PP::VERSION\n",
+      "\n",
+      "test       lines     cols  file size file\n",
       "=======  =========   ==== ========== ========\n";
 foreach my $nc (4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048) {
     #foreach my $nr (4, 16, 1024, 10240, 102400) {
