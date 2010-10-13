@@ -30,5 +30,6 @@ foreach my $p (@perls) {
     }
 
 # The last should be first
-system "mv sandbox/cover_db_$n sandbox/cover_db_0";
+system qq{cover -nogcov sandbox/cover_db_?};
+system "cpdir sandbox/cover_db_$n sandbox/cover_db_0";
 system qq{cover -nogcov sandbox/cover_db_?};

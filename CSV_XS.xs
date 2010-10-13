@@ -336,8 +336,8 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     byte *cp, c;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp) {
-	(void)fprintf (stderr, "CACHE: invalid\n");
-	return;
+	(void)fprintf (stderr, "CACHE: invalid\n");	/* uncovered */
+	return;						/* uncovered */
 	}
 
     cp = (byte *)SvPV_nolen (*svp);
@@ -687,7 +687,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    else {
 			SvREFCNT_inc (*svp);
 			unless (hv_store (csv->self, "_ERROR_INPUT", 12, *svp, 0))
-			    SvREFCNT_dec (*svp);
+/* uncovered */		    SvREFCNT_dec (*svp);
 			(void)SetDiag (csv, 2110);
 			return FALSE;
 			}
@@ -1063,14 +1063,6 @@ restart:
 		    goto restart;
 		    }
 
-		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
-		    set_eol_is_cr (csv);
-		    c = CH_NL;
-		    csv->used--;
-		    csv->has_ahead++;
-		    goto restart;
-		    }
-
 		csv->used--;
 		ERROR_INSIDE_FIELD (2031);
 		}
@@ -1214,14 +1206,6 @@ restart:
 
 			if (c3 == CH_NL || c3 == CH_EOLX) {
 			    AV_PUSH;
-			    return TRUE;
-			    }
-
-			if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c3)) {
-			    set_eol_is_cr (csv);
-			    AV_PUSH;
-			    csv->used--;
-			    csv->has_ahead++;
 			    return TRUE;
 			    }
 			}
