@@ -14,7 +14,6 @@ my @perls = (
 
 -f "Makefile" and qx{make -i distclean};
 qx{rm -rf cover_db sandbox/cover_db*};
-mkdir "sandbox/cover_db", 0777;
 
 my $n = 0;
 foreach my $p (@perls) {
@@ -24,15 +23,12 @@ foreach my $p (@perls) {
     qx{ccache -C};
     unlink glob "*.gc*";
     qx{make};
-    my $cdb = $p eq "perl" ? "cover_db" : "sandbox/cover_db_".++$n;
-    mkdir $cdb, 0777;
-    symlink $cdb, "cover_db";
     qx{$p /pro/bin/cover -test};
 
-    unless ($p eq "perl") {
-	unlink "cover_db";
-	qx{make distclean 2>/dev/null};
-	}
+    system "mv cover_db sandbox/cover_db_".++$n;
+    $p eq "perl" or qx{make distclean 2>/dev/null};
     }
 
-system qq{cover cover_db sandbox/cover_db_*};
+# The last should be first
+system "mv sandbox/cover_db_$n sandbox/cover_db_0";
+system qq{cover -nogcov sandbox/cover_db_?};

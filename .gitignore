@@ -20,4 +20,6 @@ valgrind.log
 pod2htm*
 nytprof*
 tmp/*
+sandbox/cover_db*
+sandbox/i-ttt*
 sandbox/parse-*.png
