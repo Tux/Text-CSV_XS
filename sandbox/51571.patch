@@ -1,0 +1,66 @@
+new file mode 100644
+index 0000000..1b0cfcf
+--- /dev/null
++++ b/t/25_fh_encoding.t
+@@ -0,0 +1,60 @@
++#!/usr/bin/perl
++
++use strict;
++use warnings;
++
++use Test::More tests => 6;
++
++BEGIN {
++    use_ok "Text::CSV_XS", ();
++    plan skip_all => "Cannot load Text::CSV_XS" if $@;
++
++    $] >= 5.008001
++      or plan skip_all => "Test requires perl 5.8.1 or newer";
++
++    binmode (Test::More->builder->$_, ':utf8') for qw/output failure_output todo_output/;
++}
++
++
++use File::Temp qw/tempfile/;
++
++my $csv = Text::CSV_XS->new ({
++    eol => "\n",
++    binary => 1,
++});
++
++my @row = ("\x{2122}", "\x{A9}", '&' );
++
++ok( $csv->combine (@row) );
++my $line = $csv->string;
++
++is (
++  $line,
++  qq|"\x{2122}",\x{A9},&\n|,
++  'combine/string result as expected'
++);
++
++my $fh = tempfile( CLEANUP => 1 );
++binmode ($fh, 'encoding(windows-1252)');
++
++my @w;
++{
++  local $SIG{__WARN__} = sub { push @w, @_ };
++  ok( $csv->print ($fh, \@row) );
++}
++
++# doesn't work - the warning doesn't seem trappable >.<
++is_deeply(
++  \@w,
++  [],
++  'No warnings on $csv->print'
++);
++
++seek ($fh,0,0);
++
++my $written_line = <$fh>;
++is (
++  $written_line,
++  qq|"\x{2122}",\x{A9},&\n|,
++  'print result as expected'
++);
+
