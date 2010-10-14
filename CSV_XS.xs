@@ -322,11 +322,11 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
     } /* _pretty_str */
 
 #define _cache_show_byte(trim,idx) \
-    c = cp[idx]; (void)fprintf (stderr, "  %-20s %02x:%3d\n", trim, c, c)
+    c = cp[idx]; warn ("  %-20s %02x:%3d\n", trim, c, c)
 #define _cache_show_char(trim,idx) \
-    c = cp[idx]; (void)fprintf (stderr, "  %-20s %02x:%s\n",  trim, c, _pretty_str (&c, 1))
+    c = cp[idx]; warn ("  %-20s %02x:%s\n",  trim, c, _pretty_str (&c, 1))
 #define _cache_show_str(trim,l,s) \
-    (void)fprintf (stderr, "  %-20s %02d:%s\n",  trim, l, _pretty_str (s, l))
+    warn ("  %-20s %02d:%s\n",  trim, l, _pretty_str (s, l))
 #define _cache_show_cstr(trim,l,idx) _cache_show_str (trim, l, cp + idx)
 
 #define xs_cache_diag(hv)	cx_xs_cache_diag (aTHX_ hv)
@@ -336,12 +336,12 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     byte *cp, c;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp) {
-	(void)fprintf (stderr, "CACHE: invalid\n");	/* uncovered */
+	warn ("CACHE: invalid\n");	/* uncovered */
 	return;						/* uncovered */
 	}
 
     cp = (byte *)SvPV_nolen (*svp);
-    (void)fprintf (stderr, "CACHE:\n");
+    warn ("CACHE:\n");
     _cache_show_char ("quote",			CACHE_ID_quote_char);
     _cache_show_char ("escape",			CACHE_ID_escape_char);
     _cache_show_char ("sep",			CACHE_ID_sep_char);
