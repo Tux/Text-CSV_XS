@@ -13,10 +13,10 @@ for my $eol ("\n", "\r", "!") {
     my $csv = Text::CSV_XS->new ({
 	binary    => 1,
 	sep_char  => ":",
-	#eol      => $eol,
+	eol       => $eol,
 	auto_diag => 1,
 	});
-    $eol eq "!" and $csv->eol ($eol);
+    #$eol eq "!" and $csv->eol ($eol);
 
     my $file = join $eol => qw( "a":"b" "c":"d" );
     open my $fh, "<", \$file or die;

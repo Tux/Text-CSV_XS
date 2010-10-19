@@ -755,7 +755,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	require_IO_Handle;
 
 	csv->eol_pos = -1;
-	if (csv->eolx) {
+	if (csv->eolx || csv->eol_is_cr) {
 	    rs = SvPOK (PL_rs) || SvPOKp (PL_rs) ? SvPV_const (PL_rs, rslen) : NULL;
 	    sv_setpvn (PL_rs, csv->eol, csv->eol_len);
 	    }
@@ -766,7 +766,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	result = call_sv (m_getline, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	csv->tmp = result ? POPs : NULL;
-	if (csv->eolx) {
+	if (csv->eolx || csv->eol_is_cr) {
 	    if (rs)
 		sv_setpvn (PL_rs, rs, rslen);
 	    else
