@@ -316,7 +316,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 #define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
 static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
 {
-    SV *dsv = newSVpvs ("");
+    SV *dsv = sv_2mortal (newSVpvs (""));
     return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
 	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
     } /* _pretty_str */
