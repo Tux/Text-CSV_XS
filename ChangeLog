@@ -1,7 +1,8 @@
-2010-10-19 0.77 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2010-10-23 0.77 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Internals now use warn () instead of (void)fprintf (stderr, ...)
       Now the test in t/80_diag also passes on Windows
     * Better parsing for eol = \r and set as such (RT#61525)
+    * Workaround for AIX cpp bug (RT#62388, Jan Dubois)
 
 2010-10-09 0.76 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Windows doesn't support STDERR redirection as used in t/80_diag

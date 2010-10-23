@@ -325,8 +325,8 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
     c = cp[idx]; warn ("  %-20s %02x:%3d\n", trim, c, c)
 #define _cache_show_char(trim,idx) \
     c = cp[idx]; warn ("  %-20s %02x:%s\n",  trim, c, _pretty_str (&c, 1))
-#define _cache_show_str(trim,l,s) \
-    warn ("  %-20s %02d:%s\n",  trim, l, _pretty_str (s, l))
+#define _cache_show_str(trim,l,str) \
+    warn ("  %-20s %02d:%s\n",  trim, l, _pretty_str (str, l))
 #define _cache_show_cstr(trim,l,idx) _cache_show_str (trim, l, cp + idx)
 
 #define xs_cache_diag(hv)	cx_xs_cache_diag (aTHX_ hv)
