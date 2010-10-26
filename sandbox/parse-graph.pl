@@ -116,7 +116,7 @@ foreach my $r (0 .. $#id) {
 	-text	=> $key,
 	-fill	=> $color,
 	-anchor	=> "w",
-	-font	=> "{DejaVu Sans} 14",
+	-font	=> "{DejaVu Sans Mono} 12",
 	);
     my @line;
     foreach my $rs (0 .. $#rs) {
@@ -132,7 +132,7 @@ $c->createText ($cx - 72, $cy - 300,
     -text	=> (join "\n" => reverse sort keys %vsn),
     -fill	=> "Blue4",
     -anchor	=> "w",
-    -font	=> "{DejaVu Sans} 15",
+    -font	=> "{DejaVu Sans Mono} 11",
     );
 $c->createText ($cx - 72, 50,
     -text	=> "slow",
