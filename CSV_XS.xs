@@ -566,17 +566,13 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    csv->is_bound = 0;
 	}
 
-    csv->eolx = 0;
-    if (csv->eol_len) {
-	if (csv->verbatim)
-	    csv->eolx = 1;
-	else
-	for (len = 0; len < csv->eol_len; len++) {
-	    if (csv->eol[len] == CH_NL || csv->eol[len] == CH_CR) continue;
-	    csv->eolx = 1;
-	    break;
-	    }
-	}
+    csv->eolx = csv->eol_len 
+	? csv->verbatim || csv->eol_len >= 2
+	    ? 1
+	    : csv->eol[0] == CH_CR || csv->eol[0] == CH_NL
+		? 0
+		: 1
+	: 0;
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
