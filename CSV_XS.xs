@@ -737,7 +737,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 
     if (csv->tmp && csv->eol_pos >= 0) {
 	csv->eol_pos = -2;
-	sv_setpvn (csv->tmp, csv->eol, csv->eol_len);
+	sv_setpvn (csv->tmp, (char *)csv->eol, csv->eol_len);
 	csv->bptr = SvPV (csv->tmp, csv->size);
 	csv->used = 0;
 	return CH_EOLX;
@@ -753,7 +753,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	csv->eol_pos = -1;
 	if (csv->eolx || csv->eol_is_cr) {
 	    rs = SvPOK (PL_rs) || SvPOKp (PL_rs) ? SvPV_const (PL_rs, rslen) : NULL;
-	    sv_setpvn (PL_rs, csv->eol, csv->eol_len);
+	    sv_setpvn (PL_rs, (char *)csv->eol, csv->eol_len);
 	    }
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
