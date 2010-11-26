@@ -36,4 +36,5 @@ examples/csv-check	Script to check a CSV file/stream
 examples/csvdiff	Script to shoff diff between sorted CSV files
 examples/parser-xs.pl	Parse CSV stream, be forgiving on bad lines
 examples/speed.pl	Small benchmark script
+files/macosx.csv	A CSV files exported on MacOSX
 files/utf8.csv		A UTF-8 encode test file
