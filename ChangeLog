@@ -1,3 +1,6 @@
+2010-11-26 0.78 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Version 0.77 broke MacOS exported CSV files with only \r
+
 2010-10-23 0.77 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Internals now use warn () instead of (void)fprintf (stderr, ...)
       Now the test in t/80_diag also passes on Windows

@@ -1059,6 +1059,14 @@ restart:
 		    goto restart;
 		    }
 
+		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
+		    set_eol_is_cr (csv);
+		    csv->used--;
+		    csv->has_ahead++;
+		    AV_PUSH;
+		    return TRUE;
+		    }
+
 		csv->used--;
 		ERROR_INSIDE_FIELD (2031);
 		}
