@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 1015;
+use Test::More tests => 1067;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -197,5 +197,61 @@ foreach my $eol ("!", "!!", "!\n", "!\n!", "!!!!!!!!", "!!!!!!!!!!",
     unlink "_eol.csv";
     }
 $/ = $def_rs;
+
+{   open FH, "<files/macosx.csv" or die "Ouch $!";
+    ok (1, "MacOSX exported file");
+    ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, binary => 1 }), "new csv");
+    diag ();
+    ok (my $row = $csv->getline (*FH),	"getline 1");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[7], "",			"field 8");
+    ok (   $row = $csv->getline (*FH),	"getline 2");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[6], "Category",		"field 7");
+    ok (   $row = $csv->getline (*FH),	"getline 3");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[5], "Notes",		"field 6");
+    ok (   $row = $csv->getline (*FH),	"getline 4");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[7], "Points",		"field 8");
+    ok (   $row = $csv->getline (*FH),	"getline 5");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[7], 11,			"field 8");
+    ok (   $row = $csv->getline (*FH),	"getline 6");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[8], 34,			"field 9");
+    ok (   $row = $csv->getline (*FH),	"getline 7");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[7], 12,			"field 8");
+    ok (   $row = $csv->getline (*FH),	"getline 8");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[8], 2,			"field 9");
+    ok (   $row = $csv->getline (*FH),	"getline 9");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[3], "devs",		"field 4");
+    ok (   $row = $csv->getline (*FH),	"getline 10");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[3], "",			"field 4");
+    ok (   $row = $csv->getline (*FH),	"getline 11");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[6], "Mean",		"field 7");
+    ok (   $row = $csv->getline (*FH),	"getline 12");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[6], "Median",		"field 7");
+    ok (   $row = $csv->getline (*FH),	"getline 13");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[6], "Mode",		"field 7");
+    ok (   $row = $csv->getline (*FH),	"getline 14");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[6], "Min",		"field 7");
+    ok (   $row = $csv->getline (*FH),	"getline 15");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[6], "Max",		"field 7");
+    ok (   $row = $csv->getline (*FH),	"getline 16");
+    is (scalar @$row, 15,		"field count");
+    is ($row->[0], "",			"field 1");
+    is ($csv->getline (*FH), undef,	"EOF");
+    ok ($csv->eof,			"Status");
+    }
 
 1;
