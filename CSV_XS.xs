@@ -743,7 +743,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	return CH_EOLX;
 	}
 
-    {	int		result, rslen;
+    {	STRLEN		result, rslen;
 	const char	*rs;
 
 	dSP;

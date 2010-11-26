@@ -1,3 +1,6 @@
+2010-11-26 0.79 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Use correct type for STRLEN (HP-UX/PA-RISC/32)
+
 2010-11-26 0.78 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Version 0.77 broke MacOS exported CSV files with only \r
 

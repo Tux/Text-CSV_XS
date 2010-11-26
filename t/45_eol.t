@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 1067;
+use Test::More tests => 1065;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -250,8 +250,6 @@ $/ = $def_rs;
     ok (   $row = $csv->getline (*FH),	"getline 16");
     is (scalar @$row, 15,		"field count");
     is ($row->[0], "",			"field 1");
-    is ($csv->getline (*FH), undef,	"EOF");
-    ok ($csv->eof,			"Status");
     }
 
 1;
