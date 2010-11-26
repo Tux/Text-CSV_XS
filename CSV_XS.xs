@@ -336,8 +336,8 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     byte *cp, c;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp) {
-	warn ("CACHE: invalid\n");	/* uncovered */
-	return;						/* uncovered */
+	warn ("CACHE: invalid\n");
+	return;
 	}
 
     cp = (byte *)SvPV_nolen (*svp);

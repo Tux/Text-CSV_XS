@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
- use Test::More tests => 122;
+ use Test::More tests => 124;
 #use Test::More "no_plan";
 
 my %err;
@@ -114,6 +114,13 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
 {   ok ($csv->{auto_diag} = 2, "auto_diag = 2 to die");
     eval { $csv->parse ('"","') };
     like ($@, qr '^# CSV_XS ERROR: 2027 -', "2 - error message");
+    }
+
+{   my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    Text::CSV_XS->new ()->_cache_diag ();
+    ok (@warn == 1, "Got warn");
+    is ($warn[0], "CACHE: invalid\n", "Uninitialized cache");
     }
 
 my $diag_file = "_$$.out";
