@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.79";
+$VERSION = "0.80";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
