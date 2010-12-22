@@ -1345,7 +1345,8 @@ restart:
     return TRUE;
     } /* Parse */
 
-static int x_xsParse (csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
+#define x_xsParse(csv,hv,av,avf,src,useIO)	cx_x_xsParse (aTHX_ csv, hv, av, avf, src, useIO)
+static int cx_x_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     int		result, ahead = 0;
 
