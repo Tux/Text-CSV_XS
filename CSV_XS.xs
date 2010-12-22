@@ -883,7 +883,7 @@ int CSV_GET_ (csv_t *csv, SV *src, int l)
 	}							\
     PUSH_RPT;							\
     sv = NULL;							\
-    if (csv->keep_meta_info)					\
+    if (csv->keep_meta_info && fflags)				\
 	av_push (fflags, newSViv (f));				\
     waitingForField = 1;					\
     }
@@ -984,7 +984,7 @@ restart:
 		unless (csv->is_bound)
 		    av_push (fields, sv);
 		sv = NULL;
-		if (csv->keep_meta_info)
+		if (csv->keep_meta_info && fflags)
 		    av_push (fflags, newSViv (f));
 		}
 	    else
@@ -1006,7 +1006,7 @@ restart:
 		    sv_setpvn (sv, "", 0);
 		unless (csv->is_bound)
 		    av_push (fields, sv);
-		if (csv->keep_meta_info)
+		if (csv->keep_meta_info && fflags)
 		    av_push (fflags, newSViv (f));
 		return TRUE;
 		}
@@ -1326,7 +1326,7 @@ restart:
 		sv_setpvn (sv, "", 0);
 	    unless (csv->is_bound)
 		av_push (fields, sv);
-	    if (csv->keep_meta_info)
+	    if (csv->keep_meta_info && fflags)
 		av_push (fflags, newSViv (f));
 	    return TRUE;
 	    }
@@ -1345,13 +1345,9 @@ restart:
     return TRUE;
     } /* Parse */
 
-#define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
-static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
+static int x_xsParse (csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
-    csv_t	csv;
     int		result, ahead = 0;
-
-    SetupCsv (&csv, hv, self);
 
     if ((csv.useIO = useIO)) {
 	csv.tmp  = NULL;
@@ -1386,13 +1382,15 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
 	    }
 	csv.cache[CACHE_ID__has_ahead] = csv.has_ahead;
 
-	if (csv.keep_meta_info) {
-	    (void)hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
-	    (void)hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
-	    }
-	else {
-	    av_undef (avf);
-	    sv_free ((SV *)avf);
+	if (avf) {
+	    if (csv.keep_meta_info) {
+		(void)hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
+		(void)hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
+		}
+	    else {
+		av_undef (avf);
+		sv_free ((SV *)avf);
+		}
 	    }
 	}
     if (result && csv.types) {
@@ -1418,7 +1416,34 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
 	    }
 	}
     return result;
+    } /* x_xsParse */
+
+#define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
+static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
+{
+    csv_t	csv;
+    SetupCsv (&csv, hv, self);
+    return (x_xsParse (csv, hv, av, avf, src, useIO));
     } /* xsParse */
+
+#define xsParse_all(self,hv,io)	cx_xsParse_all (aTHX_ self, hv, io)
+static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io)
+{
+    csv_t	csv;
+    int		n = 0;
+    AV		*avr = newAV ();
+    AV		*row = newAV ();
+
+    SetupCsv (&csv, hv, self);
+    csv.keep_meta_info = 0;
+
+    while (x_xsParse (csv, hv, row, NULL, io, 1)) {
+	n++;
+	av_push (avr, newRV ((SV *)row));
+	row = newAV ();
+	}
+    return n ? (SV *)sv_2mortal (newRV_noinc ((SV *)avr)) : NULL;
+    } /* xsParse_all */
 
 #define xsCombine(self,hv,av,io,useIO)	cx_xsCombine (aTHX_ self, hv, av, io, useIO)
 static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
@@ -1552,6 +1577,19 @@ getline (self, io)
 	: &PL_sv_undef;
     XSRETURN (1);
     /* XS getline */
+
+void
+getline_all (self, io)
+    SV		*self
+    SV		*io
+
+  PPCODE:
+    HV	*hv;
+
+    CSV_XS_SELF;
+    ST (0) = xsParse_all (self, hv, io);
+    XSRETURN (1);
+    /* XS getline_all */
 
 void
 _cache_set (self, idx, val)

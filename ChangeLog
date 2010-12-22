@@ -1,5 +1,5 @@
-2010-11-26 0.80 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-    *
+2010-12-22 0.80 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Implement getline_all ()
 
 2010-11-26 0.79 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Use correct type for STRLEN (HP-UX/PA-RISC/32)

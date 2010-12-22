@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+
+use strict;
+$^W = 1;
+
+use Test::More tests => 8;
+
+BEGIN {
+    require_ok "Text::CSV_XS";
+    plan skip_all => "Cannot load Text::CSV_XS" if $@;
+    require "t/util.pl";
+    }
+
+$| = 1;
+
+my @list = (
+    [ 1, "a", "\x01", "A" ],
+    [ 2, "b", "\x02", "B" ],
+    [ 3, "c", "\x03", "C" ],
+    [ 4, "d", "\x04", "D" ],
+    );
+
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" }), "csv out");
+    open  FH, ">_77test.csv" or die "_77test.csv: $!";
+    ok ($csv->print (*FH, $_), "write $_->[0]") for @list;
+    close FH;
+    }
+
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "csv in");
+    open  FH, "<_77test.csv" or die "_77test.csv: $!";
+    is_deeply ($csv->getline_all (*FH), \@list, "Content");
+    close FH;
+    }
+
+unlink "_77test.csv";
