@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
-use Test::More tests => 8;
+use Test::More tests => 11;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -29,6 +29,14 @@ my @list = (
 {   ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "csv in");
     open  FH, "<_77test.csv" or die "_77test.csv: $!";
     is_deeply ($csv->getline_all (*FH), \@list, "Content");
+    close FH;
+    }
+
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "csv in");
+    ok ($csv->column_names (my @cn = qw( foo bar bin baz )));
+    open  FH, "<_77test.csv" or die "_77test.csv: $!";
+    is_deeply ($csv->getline_hr_all (*FH),
+	[ map { my %h; @h{@cn} = @$_; \%h } @list ], "Content");
     close FH;
     }
 
