@@ -1505,9 +1505,9 @@ Using C<getline ()> and C<print ()> instead is the preferred way to go.
 
 =item Parse the whole file at once
 
-Implement a new methods that enables the parsing of a complete file
-at once, returning a list of hashes. Possible extension to this could
-be to enable a column selection on the call:
+Implement new methods that enable parsing of a complete file at once,
+returning a list of hashes. Possible extension to this could be to
+enable a column selection on the call:
 
    my @AoH = $csv->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
 
@@ -1515,13 +1515,14 @@ Returning something like
 
    [ { fields => [ 1, 2, "foo", 4.5, undef, "", 8 ],
        flags  => [ ... ],
-       errors => [ ... ],
        },
      { fields => [ ... ],
        .
-       .
        },
      ]
+
+Note that C<getline_all ()> already returns all rows for an open
+stream, but this will not return flags.
 
 =item EBCDIC
 
