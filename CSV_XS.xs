@@ -25,6 +25,9 @@
 #ifndef PERLIO_F_UTF8
 #  define PERLIO_F_UTF8	0x00008000
 #  endif
+#ifndef MAXINT
+#  define MAXINT ((int)(~(unsigned)0 >> 1))
+#  endif
 
 #define MAINT_DEBUG	0
 
@@ -83,7 +86,7 @@
     if (!self || !SvOK (self) || !SvROK (self) ||	\
 	 SvTYPE (SvRV (self)) != SVt_PVHV)		\
         croak ("self is not a hash ref");		\
-    hv = (HV*)SvRV (self)
+    hv = (HV *)SvRV (self)
 
 #define	byte	unsigned char
 typedef struct {
@@ -1345,8 +1348,8 @@ restart:
     return TRUE;
     } /* Parse */
 
-#define x_xsParse(csv,hv,av,avf,src,useIO)	cx_x_xsParse (aTHX_ csv, hv, av, avf, src, useIO)
-static int cx_x_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
+#define c_xsParse(csv,hv,av,avf,src,useIO)	cx_c_xsParse (aTHX_ csv, hv, av, avf, src, useIO)
+static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     int		result, ahead = 0;
 
@@ -1417,33 +1420,80 @@ static int cx_x_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	    }
 	}
     return result;
-    } /* x_xsParse */
+    } /* c_xsParse */
 
 #define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
 static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     csv_t	csv;
     SetupCsv (&csv, hv, self);
-    return (x_xsParse (csv, hv, av, avf, src, useIO));
+    return (c_xsParse (csv, hv, av, avf, src, useIO));
     } /* xsParse */
 
-#define xsParse_all(self,hv,io)	cx_xsParse_all (aTHX_ self, hv, io)
-static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io)
+static void av_empty (AV *av)
+{
+    while (av_len (av) >= 0)
+	sv_free (av_pop (av));
+    } /* av_empty */
+
+static void av_free (AV *av)
+{
+    av_empty (av);
+    sv_free ((SV *)av);
+    } /* av_free */
+
+static void rav_free (SV *rv)
+{
+    av_free ((AV *)SvRV (rv));
+    sv_free (rv);
+    } /* rav_free */
+
+#define xsParse_all(self,hv,io,off,len)		cx_xsParse_all (aTHX_ self, hv, io, off, len)
+static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 {
     csv_t	csv;
-    int		n = 0;
+    int		n = 0, skip = 0, length = MAXINT, tail = MAXINT;
     AV		*avr = newAV ();
     AV		*row = newAV ();
 
     SetupCsv (&csv, hv, self);
     csv.keep_meta_info = 0;
 
-    while (x_xsParse (csv, hv, row, NULL, io, 1)) {
-	n++;
+    if (SvIOK (off)) {
+	skip = SvIV (off);
+	if (skip < 0) {
+	    tail = -skip;
+	    skip = -1;
+	    }
+	}
+    if (SvIOK (len))
+	length = SvIV (len);
+
+    while (c_xsParse (csv, hv, row, NULL, io, 1)) {
+	if (skip > 0) {
+	    skip--;
+	    av_empty (row); /* re-use */
+	    continue;
+	    }
+
+	if (n++ >= tail) {
+	    rav_free (av_shift (avr));
+	    n--;
+	    }
+
 	av_push (avr, newRV ((SV *)row));
+
+	if (n >= length && skip >= 0)
+	    break; /* We have enough */
+
 	row = newAV ();
 	}
-    return n ? (SV *)sv_2mortal (newRV_noinc ((SV *)avr)) : NULL;
+    while (n > length) {
+	rav_free (av_pop (avr));
+	n--;
+	}
+
+    return (SV *)sv_2mortal (newRV_noinc ((SV *)avr));
     } /* xsParse_all */
 
 #define xsCombine(self,hv,av,io,useIO)	cx_xsCombine (aTHX_ self, hv, av, io, useIO)
@@ -1533,8 +1583,8 @@ Parse (self, src, fields, fflags)
     AV	*avf;
 
     CSV_XS_SELF;
-    av  = (AV*)SvRV (fields);
-    avf = (AV*)SvRV (fflags);
+    av  = (AV *)SvRV (fields);
+    avf = (AV *)SvRV (fflags);
 
     ST (0) = xsParse (self, hv, av, avf, src, 0) ? &PL_sv_yes : &PL_sv_no;
     XSRETURN (1);
@@ -1554,7 +1604,7 @@ print (self, io, fields)
     unless (_is_arrayref (fields))
 	croak ("Expected fields to be an array ref");
 
-    av = (AV*)SvRV (fields);
+    av = (AV *)SvRV (fields);
 
     ST (0) = xsCombine (self, hv, av, io, 1) ? &PL_sv_yes : &PL_sv_no;
     XSRETURN (1);
@@ -1580,15 +1630,20 @@ getline (self, io)
     /* XS getline */
 
 void
-getline_all (self, io)
+getline_all (self, io, ...)
     SV		*self
     SV		*io
 
   PPCODE:
     HV	*hv;
+    SV  *offset, *length;
 
     CSV_XS_SELF;
-    ST (0) = xsParse_all (self, hv, io);
+
+    offset = items > 2 ? ST (2) : &PL_sv_undef;
+    length = items > 3 ? ST (3) : &PL_sv_undef;
+
+    ST (0) = xsParse_all (self, hv, io, offset, length);
     XSRETURN (1);
     /* XS getline_all */
 
