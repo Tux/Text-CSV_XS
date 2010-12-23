@@ -1430,19 +1430,22 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
     return (c_xsParse (csv, hv, av, avf, src, useIO));
     } /* xsParse */
 
-static void av_empty (AV *av)
+#define av_empty(av)	cx_av_empty (aTHX_ av)
+static void cx_av_empty (pTHX_ AV *av)
 {
     while (av_len (av) >= 0)
 	sv_free (av_pop (av));
     } /* av_empty */
 
-static void av_free (AV *av)
+#define av_free(av)	cx_av_free (aTHX_ av)
+static void cx_av_free (pTHX_ AV *av)
 {
     av_empty (av);
     sv_free ((SV *)av);
     } /* av_free */
 
-static void rav_free (SV *rv)
+#define rav_free(rv)	cx_rav_free (aTHX_ rv)
+static void cx_rav_free (pTHX_ AV *rv)
 {
     av_free ((AV *)SvRV (rv));
     sv_free (rv);
