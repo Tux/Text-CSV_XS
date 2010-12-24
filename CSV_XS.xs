@@ -569,6 +569,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    csv->is_bound = 0;
 	}
 
+    csv->eol_pos = -1;
     csv->eolx = csv->eol_len 
 	? csv->verbatim || csv->eol_len >= 2
 	    ? 1
