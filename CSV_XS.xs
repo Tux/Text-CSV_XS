@@ -774,6 +774,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	    }
 	PUTBACK;
 #if MAINT_DEBUG > 4
+	fprintf (stderr, "getline () returned:\n");
 	sv_dump (csv->tmp);
 #endif
 	}
@@ -862,7 +863,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 int CSV_GET_ (csv_t *csv, SV *src, int l)
 {
     int c;
-    fprintf (stderr, "# 1-CSV_GET @ %4d: (used: %d, size: %d, eol_pos: %d)\n", l, csv->used, csv->size, csv->eol_pos);
+    fprintf (stderr, "# 1-CSV_GET @ %4d: (used: %d, size: %d, eol_pos: %d, eolx = %d)\n", l, csv->used, csv->size, csv->eol_pos, csv->eolx);
     c = CSV_GET1;
     fprintf (stderr, "# 2-CSV_GET @ %4d: 0x%02x '%c'\n", l, c, isprint (c) ? c : '?');
     return (c);
