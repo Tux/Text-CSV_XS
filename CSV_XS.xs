@@ -1445,7 +1445,7 @@ static void cx_av_free (pTHX_ AV *av)
     } /* av_free */
 
 #define rav_free(rv)	cx_rav_free (aTHX_ rv)
-static void cx_rav_free (pTHX_ AV *rv)
+static void cx_rav_free (pTHX_ SV *rv)
 {
     av_free ((AV *)SvRV (rv));
     sv_free (rv);
