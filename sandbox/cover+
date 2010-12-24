@@ -29,7 +29,9 @@ foreach my $p (@perls) {
     $p eq "perl" or qx{make distclean 2>/dev/null};
     }
 
+(my $xsd = (glob "sandbox/cover_db_?/*xs*")[-1]) =~ s{[^/]+$}{};
 # The last should be first
+system "cpdir $xsd sandbox/cover_db_0";
 system qq{cover -nogcov sandbox/cover_db_?};
-system "cpdir sandbox/cover_db_$n sandbox/cover_db_0";
-system qq{cover -nogcov sandbox/cover_db_?};
+#system "cpdir sandbox/cover_db_$n sandbox/cover_db_0";
+#system qq{cover -nogcov sandbox/cover_db_?};
