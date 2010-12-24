@@ -1217,6 +1217,14 @@ restart:
 			    AV_PUSH;
 			    return TRUE;
 			    }
+
+			if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c3)) {
+			    set_eol_is_cr (csv);
+			    csv->used--;
+			    csv->has_ahead++;
+			    AV_PUSH;
+			    return TRUE;
+			    }
 			}
 
 		    if (csv->allow_loose_escapes && csv->escape_char == csv->quote_char) {
