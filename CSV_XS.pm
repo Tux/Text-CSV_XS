@@ -631,9 +631,9 @@ perhaps better called ASV (anything separated values) rather than just CSV.
 
 B<Important Note>: The default behavior is to only accept ASCII characters.
 This means that fields can not contain newlines. If your data contains
-newlines embedded in fields, or characters above 0x7e (tilde), or binary data,
-you *must* set C<< binary => 1 >> in the call to C<new>.  To cover the widest
-range of parsing options, you will always want to set binary.
+newlines embedded in fields, or characters above 0x7e (tilde), or binary
+data, you *must* set C<< binary => 1 >> in the call to C<new>.  To cover
+the widest range of parsing options, you will always want to set binary.
 
 But you still have the problem that you have to pass a correct line to the
 C<parse> method, which is more complicated from the usual point of
@@ -681,39 +681,40 @@ For complete control over encoding, please use Text::CSV::Encoded:
     # combine () and print () accept UTF8 marked data
     # parse () and getline () return UTF8 marked data
 
-On combining (C<print> and C<combine>), if any of the combining fields
-was marked UTF8, the resulting string will be marked UTF8. Note however
-that all fields C<before> the first field that was marked UTF8 and
-contained 8-bit characters that were not upgraded to UTF8, these will
-be bytes in the resulting string too, causing errors. If you pass data
-of different encoding, or you don't know if there is different encoding,
-force it to be upgraded before you pass them on:
+On combining (C<print> and C<combine>), if any of the combining fields was
+marked UTF8, the resulting string will be marked UTF8. Note however that
+all fields C<before> the first field that was marked UTF8 and contained
+8-bit characters that were not upgraded to UTF8, these will be bytes in the
+resulting string too, causing errors. If you pass data of different
+encoding, or you don't know if there is different encoding, force it to be
+upgraded before you pass them on:
 
     $csv->print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);
 
 =head1 SPECIFICATION
 
-While no formal specification for CSV exists, RFC 4180 1) describes a common
-format and establishes "text/csv" as the MIME type registered with the IANA.
+While no formal specification for CSV exists, RFC 4180 1) describes a
+common format and establishes "text/csv" as the MIME type registered with
+the IANA.
 
-Many informal documents exist that describe the CSV format. How To: The Comma
-Separated Value (CSV) File Format 2) provides an overview of the CSV format in
-the most widely used applications and explains how it can best be used and
-supported.
+Many informal documents exist that describe the CSV format. How To: The
+Comma Separated Value (CSV) File Format 2) provides an overview of the CSV
+format in the most widely used applications and explains how it can best be
+used and supported.
 
  1) http://tools.ietf.org/html/rfc4180
  2) http://www.creativyst.com/Doc/Articles/CSV/CSV01.htm
 
 The basic rules are as follows:
 
-B<CSV> is a delimited data format that has fields/columns separated by the comma
-character and records/rows separated by newlines. Fields that contain a special
-character (comma, newline, or double quote), must be enclosed in double quotes.
-However, if a line contains a single entry which is the empty string, it may be
-enclosed in double quotes. If a field's value contains a double quote character
-it is escaped by placing another double quote character next to it. The CSV file
-format does not require a specific character encoding, byte order, or line
-terminator format.
+B<CSV> is a delimited data format that has fields/columns separated by the
+comma character and records/rows separated by newlines. Fields that contain
+a special character (comma, newline, or double quote), must be enclosed in
+double quotes.  However, if a line contains a single entry which is the
+empty string, it may be enclosed in double quotes. If a field's value
+contains a double quote character it is escaped by placing another double
+quote character next to it. The CSV file format does not require a specific
+character encoding, byte order, or line terminator format.
 
 =over 2
 
@@ -729,19 +730,19 @@ Fields are separated by commas.
 
 =item *
 
-Allowable characters within a CSV field include 0x09 (tab) and the inclusive
-range of 0x20 (space) through 0x7E (tilde). In binary mode all characters
-are accepted, at least in quoted fields.
+Allowable characters within a CSV field include 0x09 (tab) and the
+inclusive range of 0x20 (space) through 0x7E (tilde). In binary mode all
+characters are accepted, at least in quoted fields.
 
 =item *
 
-A field within CSV must be surrounded by double-quotes to contain a
-the separator character (comma).
+A field within CSV must be surrounded by double-quotes to contain a the
+separator character (comma).
 
 =back
 
-Though this is the most clear and restrictive definition, Text::CSV_XS is way
-more liberal than this, and allows extension:
+Though this is the most clear and restrictive definition, Text::CSV_XS is
+way more liberal than this, and allows extension:
 
 =over 2
 
@@ -752,23 +753,23 @@ Line termination by a single carriage return is accepted by default
 =item *
 
 The separation-, escape-, and escape- characters can be any ASCII character
-in the range from 0x20 (space) to 0x7E (tilde). Characters outside this range
-may or may not work as expected. Multibyte characters, like U+060c (ARABIC
-COMMA), U+FF0C (FULLWIDTH COMMA), U+241B (SYMBOL FOR ESCAPE), U+2424 (SYMBOL
-FOR NEWLINE), U+FF02 (FULLWIDTH QUOTATION MARK), and U+201C (LEFT DOUBLE
-QUOTATION MARK) (to give some examples of what might look promising) are
-therefor not allowed.
+in the range from 0x20 (space) to 0x7E (tilde). Characters outside this
+range may or may not work as expected. Multibyte characters, like U+060c
+(ARABIC COMMA), U+FF0C (FULLWIDTH COMMA), U+241B (SYMBOL FOR ESCAPE),
+U+2424 (SYMBOL FOR NEWLINE), U+FF02 (FULLWIDTH QUOTATION MARK), and U+201C
+(LEFT DOUBLE QUOTATION MARK) (to give some examples of what might look
+promising) are therefor not allowed.
 
-If you use perl-5.8.2 or higher, these three attributes are utf8-decoded, to
-increase the likelihood of success. This way U+00FE will be allowed as a
+If you use perl-5.8.2 or higher, these three attributes are utf8-decoded,
+to increase the likelihood of success. This way U+00FE will be allowed as a
 quote character.
 
 =item *
 
-A field within CSV must be surrounded by double-quotes to contain an embedded
-double-quote, represented by a pair of consecutive double-quotes. In binary
-mode you may additionally use the sequence C<"0> for representation of a
-NULL byte.
+A field within CSV must be surrounded by double-quotes to contain an
+embedded double-quote, represented by a pair of consecutive double-quotes.
+In binary mode you may additionally use the sequence C<"0> for
+representation of a NULL byte.
 
 =item *
 
@@ -786,40 +787,40 @@ options to the object creator.
 =head2 new (\%attr)
 
 (Class method) Returns a new instance of Text::CSV_XS. The objects
-attributes are described by the (optional) hash ref C<\%attr>.
-Currently the following attributes are available:
+attributes are described by the (optional) hash ref C<\%attr>.  Currently
+the following attributes are available:
 
 =over 4
 
 =item eol
 
-An end-of-line string to add to rows. C<undef> is replaced with an
-empty string. The default is C<$\>. Common values for C<eol> are
-C<"\012"> (Line Feed) or C<"\015\012"> (Carriage Return, Line Feed).
-Cannot be longer than 7 (ASCII) characters.
+An end-of-line string to add to rows. C<undef> is replaced with an empty
+string. The default is C<$\>. Common values for C<eol> are C<"\012"> (Line
+Feed) or C<"\015\012"> (Carriage Return, Line Feed).  Cannot be longer than
+7 (ASCII) characters.
 
-If both C<$/> and C<eol> equal C<"\015">, parsing lines that end on
-only a Carriage Return without Line Feed, will be C<parse>d correct.
-Line endings, whether in C<$/> or C<eol>, other than C<undef>,
-C<"\n">, C<"\r\n">, or C<"\r"> are not (yet) supported for parsing.
+If both C<$/> and C<eol> equal C<"\015">, parsing lines that end on only a
+Carriage Return without Line Feed, will be C<parse>d correct.  Line endings,
+whether in C<$/> or C<eol>, other than C<undef>, C<"\n">, C<"\r\n">, or
+C<"\r"> are not (yet) supported for parsing.
 
 =item sep_char
 
-The char used for separating fields, by default a comma. (C<,>).
-Limited to a single-byte character, usually in the range from 0x20
-(space) to 0x7e (tilde).
+The char used for separating fields, by default a comma. (C<,>).  Limited
+to a single-byte character, usually in the range from 0x20 (space) to 0x7e
+(tilde).
 
-The separation character can not be equal to the quote character.
-The separation character can not be equal to the escape character.
+The separation character can not be equal to the quote character.  The
+separation character can not be equal to the escape character.
 
 See also CAVEATS
 
 =item allow_whitespace
 
-When this option is set to true, whitespace (TAB's and SPACE's)
-surrounding the separation character is removed when parsing. If
-either TAB or SPACE is one of the three major characters C<sep_char>,
-C<quote_char>, or C<escape_char> it will not be considered whitespace.
+When this option is set to true, whitespace (TAB's and SPACE's) surrounding
+the separation character is removed when parsing. If either TAB or SPACE is
+one of the three major characters C<sep_char>, C<quote_char>, or
+C<escape_char> it will not be considered whitespace.
 
 So lines like:
 
@@ -827,9 +828,9 @@ So lines like:
 
 are now correctly parsed, even though it violates the CSV specs.
 
-Note that B<all> whitespace is stripped from start and end of each
-field. That would make it more a I<feature> than a way to be able
-to parse bad CSV lines, as
+Note that B<all> whitespace is stripped from start and end of each field.
+That would make it more a I<feature> than a way to be able to parse bad CSV
+lines, as
 
  1,   2.0,  3,   ape  , monkey
 
@@ -841,9 +842,9 @@ even if the original line was perfectly sane CSV.
 
 =item blank_is_undef
 
-Under normal circumstances, CSV data makes no distinction between
-quoted- and unquoted empty fields. They both end up in an empty
-string field once read, so
+Under normal circumstances, CSV data makes no distinction between quoted-
+and unquoted empty fields. They both end up in an empty string field once
+read, so
 
  1,"",," ",2
 
@@ -852,17 +853,17 @@ is read as
  ("1", "", "", " ", "2")
 
 When I<writing> CSV files with C<always_quote> set, the unquoted empty
-field is the result of an undefined value. To make it possible to also
-make this distinction when reading CSV data, the C<blank_is_undef> option
-will cause unquoted empty fields to be set to undef, causing the above to
-be parsed as
+field is the result of an undefined value. To make it possible to also make
+this distinction when reading CSV data, the C<blank_is_undef> option will
+cause unquoted empty fields to be set to undef, causing the above to be
+parsed as
 
  ("1", "", undef, " ", "2")
 
 =item empty_is_undef
 
-Going one step further than C<blank_is_undef>, this attribute converts
-all empty fields to undef, so
+Going one step further than C<blank_is_undef>, this attribute converts all
+empty fields to undef, so
 
  1,"",," ",2
 
@@ -875,24 +876,23 @@ that are empty after stripping allowed whitespace. YMMV.
 
 =item quote_char
 
-The char used for quoting fields containing blanks, by default the
-double quote character (C<">). A value of undef suppresses
-quote chars. (For simple cases only).
-Limited to a single-byte character, usually in the range from 0x20
-(space) to 0x7e (tilde).
+The char used for quoting fields containing blanks, by default the double
+quote character (C<">). A value of undef suppresses quote chars. (For
+simple cases only).  Limited to a single-byte character, usually in the
+range from 0x20 (space) to 0x7e (tilde).
 
 The quote character can not be equal to the separation character.
 
 =item allow_loose_quotes
 
-By default, parsing fields that have C<quote_char> characters inside
-an unquoted field, like
+By default, parsing fields that have C<quote_char> characters inside an
+unquoted field, like
 
  1,foo "bar" baz,42
 
-would result in a parse error. Though it is still bad practice to
-allow this format, we cannot help there are some vendors that make
-their applications spit out lines styled like this.
+would result in a parse error. Though it is still bad practice to allow
+this format, we cannot help there are some vendors that make their
+applications spit out lines styled like this.
 
 In case there is B<really> bad CSV data, like
 
@@ -909,8 +909,8 @@ making sure that the C<escape_char> is I<not> equal to C<quote_char>.
 =item escape_char
 
 The character used for escaping certain characters inside quoted fields.
-Limited to a single-byte character, usually in the range from 0x20
-(space) to 0x7e (tilde).
+Limited to a single-byte character, usually in the range from 0x20 (space)
+to 0x7e (tilde).
 
 The C<escape_char> defaults to being the literal double-quote mark (C<">)
 in other words, the same as the default C<quote_char>. This means that
@@ -919,29 +919,29 @@ doubling the quote mark in a field escapes it:
   "foo","bar","Escape ""quote mark"" with two ""quote marks""","baz"
 
 If you change the default quote_char without changing the default
-escape_char, the escape_char will still be the quote mark.  If instead
-you want to escape the quote_char by doubling it, you will need to change
-the escape_char to be the same as what you changed the quote_char to.
+escape_char, the escape_char will still be the quote mark.  If instead you
+want to escape the quote_char by doubling it, you will need to change the
+escape_char to be the same as what you changed the quote_char to.
 
 The escape character can not be equal to the separation character.
 
 =item allow_loose_escapes
 
-By default, parsing fields that have C<escape_char> characters that
-escape characters that do not need to be escaped, like:
+By default, parsing fields that have C<escape_char> characters that escape
+characters that do not need to be escaped, like:
 
  my $csv = Text::CSV_XS->new ({ escape_char => "\\" });
  $csv->parse (qq{1,"my bar\'s",baz,42});
 
-would result in a parse error. Though it is still bad practice to
-allow this format, this option enables you to treat all escape character
+would result in a parse error. Though it is still bad practice to allow
+this format, this option enables you to treat all escape character
 sequences equal.
 
 =item binary
 
 If this attribute is TRUE, you may use binary characters in quoted fields,
-including line feeds, carriage returns and NULL bytes. (The latter must
-be escaped as C<"0>.) By default this feature is off.
+including line feeds, carriage returns and NULL bytes. (The latter must be
+escaped as C<"0>.) By default this feature is off.
 
 If a string is marked UTF8, binary will be turned on automatically when
 binary characters other than CR or NL are encountered. Note that a simple
@@ -950,84 +950,81 @@ setting C<{ binary => 1 }> is still a wise option.
 
 =item types
 
-A set of column types; this attribute is immediately passed to the
-I<types> method below. You must not set this attribute otherwise,
-except for using the I<types> method. For details see the description
-of the I<types> method below.
+A set of column types; this attribute is immediately passed to the I<types>
+method below. You must not set this attribute otherwise, except for using
+the I<types> method. For details see the description of the I<types> method
+below.
 
 =item always_quote
 
 By default the generated fields are quoted only, if they need to, for
-example, if they contain the separator. If you set this attribute to
-a TRUE value, then all defined fields will be quoted. This is typically
-easier to handle in external applications. (Poor creatures who are not
-using Text::CSV_XS. :-)
+example, if they contain the separator. If you set this attribute to a TRUE
+value, then all defined fields will be quoted. This is typically easier to
+handle in external applications. (Poor creatures who are not using
+Text::CSV_XS. :-)
 
 =item quote_space
 
-By default, a space in a field would trigger quotation. As no rule
-exists this to be forced in CSV, nor any for the opposite, the default
-is true for safety. You can exclude the space from this trigger by
-setting this attribute to 0.
+By default, a space in a field would trigger quotation. As no rule exists
+this to be forced in CSV, nor any for the opposite, the default is true for
+safety. You can exclude the space from this trigger by setting this
+attribute to 0.
 
 =item quote_null
 
-By default, a NULL byte in a field would be escaped. This attribute
-enables you to treat the NULL byte as a simple binary character in
-binary mode (the C<{ binary => 1 }> is set). The default is true.
-You can prevent NULL escapes by setting this attribute to 0.
+By default, a NULL byte in a field would be escaped. This attribute enables
+you to treat the NULL byte as a simple binary character in binary mode (the
+C<{ binary => 1 }> is set). The default is true.  You can prevent NULL
+escapes by setting this attribute to 0.
 
 =item keep_meta_info
 
-By default, the parsing of input lines is as simple and fast as
-possible. However, some parsing information - like quotation of
-the original field - is lost in that process. Set this flag to
-true to be able to retrieve that information after parsing with
-the methods C<meta_info>, C<is_quoted>, and C<is_binary> described
-below.  Default is false.
+By default, the parsing of input lines is as simple and fast as possible.
+However, some parsing information - like quotation of the original field -
+is lost in that process. Set this flag to true to be able to retrieve that
+information after parsing with the methods C<meta_info>, C<is_quoted>, and
+C<is_binary> described below.  Default is false.
 
 =item verbatim
 
-This is a quite controversial attribute to set, but it makes hard
-things possible.
+This is a quite controversial attribute to set, but it makes hard things
+possible.
 
 The basic thought behind this is to tell the parser that the normally
 special characters newline (NL) and Carriage Return (CR) will not be
-special when this flag is set, and be dealt with as being ordinary
-binary characters. This will ease working with data with embedded
-newlines.
+special when this flag is set, and be dealt with as being ordinary binary
+characters. This will ease working with data with embedded newlines.
 
-When C<verbatim> is used with C<getline>, C<getline> auto-chomp's
-every line.
+When C<verbatim> is used with C<getline>, C<getline> auto-chomp's every
+line.
 
 Imagine a file format like
 
   M^^Hans^Janssen^Klas 2\n2A^Ja^11-06-2007#\r\n
 
-where, the line ending is a very specific "#\r\n", and the sep_char
-is a ^ (caret). None of the fields is quoted, but embedded binary
-data is likely to be present. With the specific line ending, that
-should not be too hard to detect.
+where, the line ending is a very specific "#\r\n", and the sep_char is a ^
+(caret). None of the fields is quoted, but embedded binary data is likely
+to be present. With the specific line ending, that should not be too hard
+to detect.
 
-By default, Text::CSV_XS' parse function however is instructed to only
-know about "\n" and "\r" to be legal line endings, and so has to deal
-with the embedded newline as a real end-of-line, so it can scan the next
-line if binary is true, and the newline is inside a quoted field.
-With this attribute however, we can tell parse () to parse the line
-as if \n is just nothing more than a binary character.
+By default, Text::CSV_XS' parse function however is instructed to only know
+about "\n" and "\r" to be legal line endings, and so has to deal with the
+embedded newline as a real end-of-line, so it can scan the next line if
+binary is true, and the newline is inside a quoted field.  With this
+attribute however, we can tell parse () to parse the line as if \n is just
+nothing more than a binary character.
 
 For parse () this means that the parser has no idea about line ending
 anymore, and getline () chomps line endings on reading.
 
 =item auto_diag
 
-Set to true will cause C<error_diag> to be automatically be called in
-void context upon errors.
+Set to true will cause C<error_diag> to be automatically be called in void
+context upon errors.
 
 In case of error C<2012 - EOF>, this call will be void.
 
-If set to a value greater than 1, it will die on errors instead of
-warn.
+If set to a value greater than 1, it will die on errors instead of warn.
 
 Future extensions to this feature will include more reliable auto-detection
 of the C<autodie> module being enabled, which will raise the value of
@@ -1060,19 +1057,18 @@ is equivalent to
      auto_diag           => 0,
      });
 
-For all of the above mentioned flags, there is an accessor method
-available where you can inquire for the current value, or change
-the value
+For all of the above mentioned flags, there is an accessor method available
+where you can inquire for the current value, or change the value
 
  my $quote = $csv->quote_char;
  $csv->binary (1);
 
-It is unwise to change these settings halfway through writing CSV
-data to a stream. If however, you want to create a new stream using
-the available CSV object, there is no harm in changing them.
+It is unwise to change these settings halfway through writing CSV data to a
+stream. If however, you want to create a new stream using the available CSV
+object, there is no harm in changing them.
 
-If the C<new> constructor call fails, it returns C<undef>, and makes
-the fail reason available through the C<error_diag> method.
+If the C<new> constructor call fails, it returns C<undef>, and makes the
+fail reason available through the C<error_diag> method.
 
  $csv = Text::CSV_XS->new ({ ecs_char => 1 }) or
      die "".Text::CSV_XS->error_diag ();
@@ -1100,20 +1096,20 @@ to hide the glob behind an IO::Wrap object. See L<IO::File> and L<IO::Wrap>
 for details.
 
 For performance reasons the print method does not create a result string.
-In particular the I<$csv-E<gt>string>, I<$csv-E<gt>status>,
-I<$csv->fields> and I<$csv-E<gt>error_input> methods are meaningless
-after executing this method.
+In particular the I<$csv-E<gt>string>, I<$csv-E<gt>status>, I<$csv->fields>
+and I<$csv-E<gt>error_input> methods are meaningless after executing this
+method.
 
 =head2 combine
 
  $status = $csv->combine (@columns);
 
 This object function constructs a CSV string from the arguments, returning
-success or failure.  Failure can result from lack of arguments or an argument
-containing an invalid character.  Upon success, C<string> can be called to
-retrieve the resultant CSV string.  Upon failure, the value returned by
-C<string> is undefined and C<error_input> can be called to retrieve an
-invalid argument.
+success or failure.  Failure can result from lack of arguments or an
+argument containing an invalid character.  Upon success, C<string> can be
+called to retrieve the resultant CSV string.  Upon failure, the value
+returned by C<string> is undefined and C<error_input> can be called to
+retrieve an invalid argument.
 
 =head2 string
 
@@ -1126,13 +1122,13 @@ string of C<combine>, whichever was called more recently.
 
  $colref = $csv->getline ($io);
 
-This is the counterpart to print, like parse is the counterpart to
-combine: It reads a row from the IO object $io using $io->getline ()
-and parses this row into an array ref. This array ref is returned
-by the function or undef for failure.
+This is the counterpart to print, like parse is the counterpart to combine:
+It reads a row from the IO object $io using $io->getline () and parses this
+row into an array ref. This array ref is returned by the function or undef
+for failure.
 
-When fields are bound with C<bind_columns>, the return value is a
-reference to an empty list.
+When fields are bound with C<bind_columns>, the return value is a reference
+to an empty list.
 
 The I<$csv-E<gt>string>, I<$csv-E<gt>fields> and I<$csv-E<gt>status>
 methods are meaningless, again.
@@ -1143,10 +1139,10 @@ methods are meaningless, again.
  $arrayref = $csv->getline_all ($io, $offset);
  $arrayref = $csv->getline_all ($io, $offset, $length);
 
-This will return a reference to a list of C<getline ($io)> results.
-In this call, C<keep_meta_info> is disabled. If C<$offset> is negative,
-as with C<splice>, only the last C<abs ($offset)> records of C<$io>
-are taken into consideration.
+This will return a reference to a list of C<getline ($io)> results. In this
+call, C<keep_meta_info> is disabled. If C<$offset> is negative, as with
+C<splice>, only the last C<abs ($offset)> records of C<$io> are taken into
+consideration.
 
 Given a CSV file with 10 lines:
 
@@ -1165,21 +1161,21 @@ Given a CSV file with 10 lines:
 
  $status = $csv->parse ($line);
 
-This object function decomposes a CSV string into fields, returning
-success or failure.  Failure can result from a lack of argument or the
-given CSV string is improperly formatted.  Upon success, C<fields> can
-be called to retrieve the decomposed fields .  Upon failure, the value
-returned by C<fields> is undefined and C<error_input> can be called
-to retrieve the invalid argument.
+This object function decomposes a CSV string into fields, returning success
+or failure.  Failure can result from a lack of argument or the given CSV
+string is improperly formatted.  Upon success, C<fields> can be called to
+retrieve the decomposed fields .  Upon failure, the value returned by
+C<fields> is undefined and C<error_input> can be called to retrieve the
+invalid argument.
 
 You may use the I<types> method for setting column types. See the
 description below.
 
 =head2 getline_hr
 
-The C<getline_hr> and C<column_names> methods work together to allow
-you to have rows returned as hashrefs. You must call C<column_names>
-first to declare your column names.
+The C<getline_hr> and C<column_names> methods work together to allow you to
+have rows returned as hashrefs. You must call C<column_names> first to
+declare your column names.
 
  $csv->column_names (qw( code name price description ));
  $hr = $csv->getline_hr ($io);
@@ -1193,37 +1189,37 @@ C<getline_hr> will croak if called before C<column_names>.
  $arrayref = $csv->getline_hr_all ($io, $offset);
  $arrayref = $csv->getline_hr_all ($io, $offset, $length);
 
-This will return a reference to a list of C<getline_hr ($io)> results.
-In this call, C<keep_meta_info> is disabled.
+This will return a reference to a list of C<getline_hr ($io)> results.  In
+this call, C<keep_meta_info> is disabled.
 
 =head2 column_names
 
 Set the keys that will be used in the C<getline_hr> calls. If no keys
 (column names) are passed, it'll return the current setting.
 
-C<column_names> accepts a list of scalars (the column names) or a
-single array_ref, so you can pass C<getline>
+C<column_names> accepts a list of scalars (the column names) or a single
+array_ref, so you can pass C<getline>
 
   $csv->column_names ($csv->getline ($io));
 
-C<column_names> does B<no> checking on duplicates at all, which might
-lead to unwanted results. Undefined entries will be replaced with the
-string C<"\cAUNDEF\cA">, so
+C<column_names> does B<no> checking on duplicates at all, which might lead
+to unwanted results. Undefined entries will be replaced with the string
+C<"\cAUNDEF\cA">, so
 
   $csv->column_names (undef, "", "name", "name");
   $hr = $csv->getline_hr ($io);
 
-Will set C<$hr->{"\cAUNDEF\cA"}> to the 1st field, C<$hr->{""}> to the
-2nd field, and C<$hr->{name}> to the 4th field, discarding the 3rd field.
+Will set C<$hr->{"\cAUNDEF\cA"}> to the 1st field, C<$hr->{""}> to the 2nd
+field, and C<$hr->{name}> to the 4th field, discarding the 3rd field.
 
 C<column_names> croaks on invalid arguments.
 
 =head2 bind_columns
 
-Takes a list of references to scalars to store the fields fetched
-C<getline> in. When you don't pass enough references to store the
-fetched fields in, C<getline> will fail. If you pass more than there are
-fields to return, the remaining references are left untouched.
+Takes a list of references to scalars to store the fields fetched C<getline>
+in. When you don't pass enough references to store the fetched fields in,
+C<getline> will fail. If you pass more than there are fields to return, the
+remaining references are left untouched.
 
   $csv->bind_columns (\$code, \$name, \$price, \$description);
   while ($csv->getline ($io)) {
@@ -1235,25 +1231,25 @@ fields to return, the remaining references are left untouched.
  $eof = $csv->eof ();
 
 If C<parse> or C<getline> was used with an IO stream, this method will
-return true (1) if the last call hit end of file, otherwise it will
-return false (''). This is useful to see the difference between a
-failure and end of file.
+return true (1) if the last call hit end of file, otherwise it will return
+false (''). This is useful to see the difference between a failure and end
+of file.
 
 =head2 types
 
  $csv->types (\@tref);
 
-This method is used to force that columns are of a given type. For
-example, if you have an integer column, two double columns and a
-string column, then you might do a
+This method is used to force that columns are of a given type. For example,
+if you have an integer column, two double columns and a string column, then
+you might do a
 
  $csv->types ([Text::CSV_XS::IV (),
                Text::CSV_XS::NV (),
                Text::CSV_XS::NV (),
                Text::CSV_XS::PV ()]);
 
-Column types are used only for decoding columns, in other words
-by the I<parse> and I<getline> methods.
+Column types are used only for decoding columns, in other words by the
+I<parse> and I<getline> methods.
 
 You can unset column types by doing a
 
@@ -1287,16 +1283,16 @@ This object function returns the input to C<combine> or the resultant
 decomposed fields of C successful <parse>, whichever was called more
 recently.
 
-Note that the return value is undefined after using C<getline>, which
-does not fill the data structures returned by C<parse>.
+Note that the return value is undefined after using C<getline>, which does
+not fill the data structures returned by C<parse>.
 
 =head2 meta_info
 
  @flags = $csv->meta_info ();
 
-This object function returns the flags of the input to C<combine> or
-the flags of the resultant decomposed fields of C<parse>, whichever
-was called more recently.
+This object function returns the flags of the input to C<combine> or the
+flags of the resultant decomposed fields of C<parse>, whichever was called
+more recently.
 
 For each field, a meta_info field will hold flags that tell something about
 the field returned by the C<fields> method or passed to the C<combine>
@@ -1320,30 +1316,30 @@ See the C<is_***> methods below.
 
   my $quoted = $csv->is_quoted ($column_idx);
 
-Where C<$column_idx> is the (zero-based) index of the column in the
-last result of C<parse>.
+Where C<$column_idx> is the (zero-based) index of the column in the last
+result of C<parse>.
 
-This returns a true value if the data in the indicated column was
-enclosed in C<quote_char> quotes. This might be important for data
-where C<,20070108,> is to be treated as a numeric value, and where
-C<,"20070108",> is explicitly marked as character string data.
+This returns a true value if the data in the indicated column was enclosed
+in C<quote_char> quotes. This might be important for data where
+C<,20070108,> is to be treated as a numeric value, and where C<,"20070108",>
+is explicitly marked as character string data.
 
 =head2 is_binary
 
   my $binary = $csv->is_binary ($column_idx);
 
-Where C<$column_idx> is the (zero-based) index of the column in the
-last result of C<parse>.
+Where C<$column_idx> is the (zero-based) index of the column in the last
+result of C<parse>.
 
-This returns a true value if the data in the indicated column
-contained any byte in the range [\x00-\x08,\x10-\x1F,\x7F-\xFF]
+This returns a true value if the data in the indicated column contained any
+byte in the range [\x00-\x08,\x10-\x1F,\x7F-\xFF]
 
 =head2 is_missing
 
   my $missing = $csv->is_missing ($column_idx);
 
-Where C<$column_idx> is the (zero-based) index of the column in the
-last result of C<getline_hr>.
+Where C<$column_idx> is the (zero-based) index of the column in the last
+result of C<getline_hr>.
 
   while (my $hr = $csv->getline_hr ($fh)) {
       $csv->is_missing (0) and next; # This was an empty line
@@ -1352,16 +1348,16 @@ last result of C<getline_hr>.
 When using C<getline_hr> for parsing, it is impossible to tell if the
 fields are C<undef> because they where not filled in the CSV stream or
 because they were not read at all, as B<all> the fields defined by
-C<column_names> are set in the hash-ref. If you still need to know if
-all fields in each row are provided, you should enable C<keep_meta_info>
-so you can check the flags.
+C<column_names> are set in the hash-ref. If you still need to know if all
+fields in each row are provided, you should enable C<keep_meta_info> so you
+can check the flags.
 
 =head2 status
 
  $status = $csv->status ();
 
-This object function returns success (or failure) of C<combine> or
-C<parse>, whichever was called more recently.
+This object function returns success (or failure) of C<combine> or C<parse>,
+whichever was called more recently.
 
 =head2 error_input
 
@@ -1385,14 +1381,14 @@ If called in void context, it will print the internal error code and the
 associated error message to STDERR.
 
 If called in list context, it will return the error code and the error
-message in that order. If the last error was from parsing, the third
-value returned is a best guess at the location within the line that was
-being parsed. It's value is 1-based. See C<examples/csv-check> for how
-this can be used.
+message in that order. If the last error was from parsing, the third value
+returned is a best guess at the location within the line that was being
+parsed. It's value is 1-based. See C<examples/csv-check> for how this can
+be used.
 
 If called in scalar context, it will return the diagnostics in a single
-scalar, a-la $!. It will contain the error code in numeric context, and
-the diagnostics message in string context.
+scalar, a-la $!. It will contain the error code in numeric context, and the
+diagnostics message in string context.
 
 When called as a class method or a direct function call, the error
 diagnostics is that of the last C<new> call.
@@ -1414,9 +1410,9 @@ Use to reset the diagnostics if you are dealing with errors.
 =back
 
 The arguments to these two internal functions are deliberately not
-described or documented to enable the module author(s) to change it
-when they feel the need for it and using them is highly discouraged
-as the API may change in future releases.
+described or documented to enable the module author(s) to change it when
+they feel the need for it and using them is highly discouraged as the API
+may change in future releases.
 
 =head1 EXAMPLES
 
@@ -1505,9 +1501,9 @@ CSV file and report on its content.
 
 =item csv2xls
 
-A script to convert CSV to Microsoft Excel. This requires L<Date::Calc>
-and L<Spreadsheet::WriteExcel>. The converter accepts various options and
-can produce UTF-8 Excel files.
+A script to convert CSV to Microsoft Excel. This requires L<Date::Calc> and
+L<Spreadsheet::WriteExcel>. The converter accepts various options and can
+produce UTF-8 Excel files.
 
 =item csvdiff
 
@@ -1529,12 +1525,12 @@ can try to detect these characters yourself.
 =head2 Microsoft Excel
 
 The import/export from Microsoft Excel is a I<risky task>, according to the
-documentation in C<Text::CSV::Separator>. Microsoft uses the system's default
-list separator defined in the regional settings, which happens to be a
-semicolon for Dutch, German and Spanish (and probably some others as well).
-For the English locale, the default is a comma. In Windows however, the user
-is free to choose a predefined locale, and then change every individual
-setting in it, so checking the locale is no solution.
+documentation in C<Text::CSV::Separator>. Microsoft uses the system's
+default list separator defined in the regional settings, which happens to
+be a semicolon for Dutch, German and Spanish (and probably some others as
+well).  For the English locale, the default is a comma. In Windows however,
+the user is free to choose a predefined locale, and then change every
+individual setting in it, so checking the locale is no solution.
 
 =head1 TODO
 
@@ -1560,16 +1556,16 @@ specify which fields are quoted in the C<combine>/C<string> combination.
 
 =item combined methods
 
-Requests for adding means (methods) that combine C<combine> and
-C<string> in a single call will B<not> be honored. Likewise for
-C<parse> and C<fields>. Given the trouble with embedded newlines,
-Using C<getline> and C<print> instead is the preferred way to go.
+Requests for adding means (methods) that combine C<combine> and C<string>
+in a single call will B<not> be honored. Likewise for C<parse> and
+C<fields>. Given the trouble with embedded newlines, Using C<getline> and
+C<print> instead is the preferred way to go.
 
 =item Parse the whole file at once
 
 Implement new methods that enable parsing of a complete file at once,
-returning a list of hashes. Possible extension to this could be to
-enable a column selection on the call:
+returning a list of hashes. Possible extension to this could be to enable a
+column selection on the call:
 
    my @AoH = $csv->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
 
@@ -1583,17 +1579,17 @@ Returning something like
        },
      ]
 
-Note that C<getline_all> already returns all rows for an open
-stream, but this will not return flags.
+Note that C<getline_all> already returns all rows for an open stream, but
+this will not return flags.
 
 =item EBCDIC
 
 The hard-coding of characters and character ranges makes this module
-unusable on EBCDIC system. Using some #ifdef structure could enable
-these again without loosing speed. Testing would be the hard part.
+unusable on EBCDIC system. Using some #ifdef structure could enable these
+again without loosing speed. Testing would be the hard part.
 
-Opening EBCDIC encode files on ASCII+ systems is likely to succeed
-using Encode's cp37, cp1047, or posix-bc:
+Opening EBCDIC encode files on ASCII+ systems is likely to succeed using
+Encode's cp37, cp1047, or posix-bc:
 
   open my $fh, "<:encoding(cp1047)", "ebcdic_file.csv" or die "...";
 
@@ -1622,10 +1618,11 @@ No guarantees, but this is what I have in mind right now:
 
 Still under construction ...
 
-If an error occurred, C<$csv->error_diag> can be used to get more information
-on the cause of the failure. Note that for speed reasons, the internal value
-is never cleared on success, so using the value returned by C<error_diag> in
-normal cases - when no error occurred - may cause unexpected results.
+If an error occurred, C<$csv->error_diag> can be used to get more
+information on the cause of the failure. Note that for speed reasons, the
+internal value is never cleared on success, so using the value returned by
+C<error_diag> in normal cases - when no error occurred - may cause
+unexpected results.
 
 If the constructor failed, the cause can be found using C<error_diag> as a
 class method, like C<Text::CSV_XS->error_diag>.
@@ -1636,8 +1633,8 @@ When set to 1, this will cause a C<warn> with the error message, when set
 to 2, it will C<die>. C<2012 - EOF> is excluded from C<auto_diag> reports.
 
 Currently errors as described below are available. I have tried to make the
-error itself explanatory enough, but more descriptions will be added. For most
-of these errors, the first three capitals describe the error category:
+error itself explanatory enough, but more descriptions will be added. For
+most of these errors, the first three capitals describe the error category:
 
 =over 2
 
@@ -1703,9 +1700,9 @@ sequence or a separation character.
 
 =item 2012 "EOF - End of data in parsing input stream"
 
-Self-explaining. End-of-file while inside parsing a stream. Can only
-happen when reading from streams with C<getline>, as using C<parse>
-is done on strings that are not required to have a trailing C<eol>.
+Self-explaining. End-of-file while inside parsing a stream. Can only happen
+when reading from streams with C<getline>, as using C<parse> is done on
+strings that are not required to have a trailing C<eol>.
 
 =item 2021 "EIQ - NL char inside quotes, binary off"
 
@@ -1728,16 +1725,16 @@ The escape character is not allowed as last character in an input stream.
 
 =item 2025 "EIQ - Loose unescaped escape"
 
-An escape character should escape only characters that need escaping. Allowing
-the escape for other characters is possible with the C<allow_loose_escape>
-attribute.
+An escape character should escape only characters that need escaping.
+Allowing the escape for other characters is possible with the
+C<allow_loose_escape> attribute.
 
 =item 2026 "EIQ - Binary character inside quoted field, binary off"
 
 Binary characters are not allowed by default. Exceptions are fields that
 contain valid UTF-8, that will automatically be upgraded is the content is
-valid UTF-8. Pass the C<binary> attribute with a true value to accept binary
-characters.
+valid UTF-8. Pass the C<binary> attribute with a true value to accept
+binary characters.
 
 =item 2027 "EIQ - Quoted field not terminated"
 
@@ -1782,34 +1779,38 @@ exhausted before the quote is found, that field is not terminated.
 =head1 SEE ALSO
 
 L<perl>, L<IO::File>, L<IO::Handle>, L<IO::Wrap>, L<Text::CSV>,
-L<Text::CSV_PP>, L<Text::CSV::Encoded>, L<Text::CSV::Separator>,
-and L<Spreadsheet::Read>.
+L<Text::CSV_PP>, L<Text::CSV::Encoded>, L<Text::CSV::Separator>, and
+L<Spreadsheet::Read>.
 
 =head1 AUTHORS and MAINTAINERS
 
-Alan Citterman F<E<lt>alan@mfgrtl.comE<gt>> wrote the original Perl
-module. Please don't send mail concerning Text::CSV_XS to Alan, as
-he's not involved in the C part which is now the main part of the
-module.
+Alan Citterman F<E<lt>alan@mfgrtl.comE<gt>> wrote the original Perl module.
+Please don't send mail concerning Text::CSV_XS to Alan, as he's not
+involved in the C part which is now the main part of the module.
 
 Jochen Wiedmann F<E<lt>joe@ispsoft.deE<gt>> rewrote the encoding and
-decoding in C by implementing a simple finite-state machine and added
-the variable quote, escape and separator characters, the binary mode
-and the print and getline methods. See ChangeLog releases 0.10 through
-0.23.
+decoding in C by implementing a simple finite-state machine and added the
+variable quote, escape and separator characters, the binary mode and the
+print and getline methods. See ChangeLog releases 0.10 through 0.23.
 
-H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>> cleaned up the code,
-added the field flags methods, wrote the major part of the test suite,
-completed the documentation, fixed some RT bugs and added all the allow
-flags. See ChangeLog releases 0.25 and on.
+H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>> cleaned up the code, added
+the field flags methods, wrote the major part of the test suite, completed
+the documentation, fixed some RT bugs and added all the allow flags. See
+ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007-2011 H.Merijn Brand for PROCURA B.V.
-Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
-Portions Copyright (C) 1997 Alan Citterman. All rights reserved.
+ Copyright (C) 2007-2011 H.Merijn Brand for PROCURA B.V.
+ Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
+ Portions Copyright (C) 1997 Alan Citterman. All rights reserved.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This library is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
+
+=for elvis
+
+:ex:se gw=75:
 
 =cut
