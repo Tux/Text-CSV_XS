@@ -88,12 +88,12 @@ requires:
     DynaLoader:          0
     IO::Handle:          0
 recommends:     
-    perl:                5.010001
+    perl:                5.012003
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:
-    perl:                5.005
     Config:              0
+test_requires:
     Test::Harness:       0
     Test::More:          0
     Tie::Scalar:         0
