@@ -1,3 +1,6 @@
+2011-02-04 0.81 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * 
+
 2010-12-24 0.80 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Implement getline_all () and getaline_hr_all ()
     * Fixed another parsing for eol = \r (RT#61525)

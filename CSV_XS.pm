@@ -1,6 +1,6 @@
 package Text::CSV_XS;
 
-# Copyright (c) 2007-2010 H.Merijn Brand.  All rights reserved.
+# Copyright (c) 2007-2011 H.Merijn Brand.  All rights reserved.
 # Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
 # Portions Copyright (c) 1997 Alan Citterman. All rights reserved.
 #
@@ -30,7 +30,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.80";
+$VERSION = "0.81";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1777,7 +1777,7 @@ flags. See ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007-2010 H.Merijn Brand for PROCURA B.V.
+Copyright (C) 2007-2011 H.Merijn Brand for PROCURA B.V.
 Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
 Portions Copyright (C) 1997 Alan Citterman. All rights reserved.
 
