@@ -66,6 +66,7 @@
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
 #define CSV_FLAGS_EIF	0x0004
+#define CSV_FLAGS_MIS	0x0010
 
 #define CH_TAB		'\011'
 #define CH_NL		'\012'
@@ -1240,7 +1241,7 @@ restart:
 	    else
 	    /* !waitingForField, !InsideQuotes */
 	    if (csv->allow_loose_quotes) { /* 1,foo "boo" d'uh,1 */
-		f |= CSV_FLAGS_EIF;
+		f |= CSV_FLAGS_EIF;	/* Mark as error-in-field */
 		CSV_PUT_SV (c);
 		}
 	    else

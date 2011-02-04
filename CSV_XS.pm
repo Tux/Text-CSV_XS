@@ -444,6 +444,14 @@ sub is_binary
     $self->{_FFLAGS}[$idx] & 0x0002 ? 1 : 0;
     } # is_binary
 
+sub is_missing
+{
+    my ($self, $idx, $val) = @_;
+    ref $self->{_FFLAGS} &&
+	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
+    $self->{_FFLAGS}[$idx] & 0x0010 ? 1 : 0;
+    } # is_missing
+
 # combine
 #
 #   object method returning success or failure.  the given arguments are
@@ -547,6 +555,9 @@ sub getline_hr
     my ($self, @args, %hr) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
     my $fr = $self->getline (@args) or return;
+    if (ref $self->{_FFLAGS}) {
+	$self->{_FFLAGS}[$_] = 0x0010 for ($#{$fr} + 1) .. $#{$self->{_COLUMN_NAMES}};
+	}
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
     } # getline_hr
@@ -1326,6 +1337,24 @@ last result of C<parse>.
 
 This returns a true value if the data in the indicated column
 contained any byte in the range [\x00-\x08,\x10-\x1F,\x7F-\xFF]
+
+=head2 is_missing
+
+  my $missing = $csv->is_missing ($column_idx);
+
+Where C<$column_idx> is the (zero-based) index of the column in the
+last result of C<getline_hr>.
+
+  while (my $hr = $csv->getline_hr ($fh)) {
+      $csv->is_missing (0) and next; # This was an empty line
+      }
+
+When using C<getline_hr> for parsing, it is impossible to tell if the
+fields are C<undef> because they where not filled in the CSV stream or
+because they were not read at all, as B<all> the fields defined by
+C<column_names> are set in the hash-ref. If you still need to know if
+all fields in each row are provided, you should enable C<keep_meta_info>
+so you can check the flags.
 
 =head2 status
 
