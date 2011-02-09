@@ -749,7 +749,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	}
 
     {	STRLEN		result, rslen;
-	const char	*rs;
+	const char	*rs = NULL;
 
 	dSP;
 
@@ -847,7 +847,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	int x; PUT_EOLX_RPT1;			\
 	if (csv->eol_pos == -2)			\
 	    csv->size = 0;			\
-	for (x = 0; x < csv->eol_len; x++)	\
+	for (x = 0; x < (int)csv->eol_len; x++)	\
 	    CSV_PUT_SV1 (csv->eol[x]);		\
 	csv->eol_pos = -1;			\
 	PUT_EOLX_RPT2;				\
