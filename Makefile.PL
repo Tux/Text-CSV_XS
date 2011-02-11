@@ -51,6 +51,7 @@ package MY;
 
 sub postamble
 {
+    my $make_sep = $^O eq "VMS" ? "," : "";
     my $valgrind = join " ", qw(
 	PERL_DESTRUCT_LEVEL=2 PERL_DL_NONLAZY=1
 	    valgrind
@@ -72,7 +73,7 @@ sub postamble
 	    ''
 	: "";
     join "\n" =>
-	'cover test_cover:',
+	'cover $make_sep test_cover:',
 	'	ccache -C',
 	'	-@rm -f *.gc??',
 	'	cover -test',
