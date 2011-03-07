@@ -1557,7 +1557,7 @@ SetDiag (self, xse, ...)
 	ST (0) = SetDiag (&csv, xse);
 	}
     else
-	ST (0) = SvDiag (xse);
+	ST (0) = sv_2mortal (SvDiag (xse));
 
     if (xse && items > 1 && SvPOK (ST (2))) {
 	sv_setpvn (ST (0),  SvPVX (ST (2)), SvCUR (ST (2)));
