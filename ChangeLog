@@ -1,5 +1,8 @@
-2011-02-04 0.81 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-    * 
+2011-03-07 0.81 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Add is_missing ()
+    * Doc overhaul
+    * Fix Build on OpenVMS (RT#65654, Martin P.J. Zinser)
+    * Fix SetDiag () leak (RT#66453, Sven Schöling)
 
 2010-12-24 0.80 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Implement getline_all () and getaline_hr_all ()
