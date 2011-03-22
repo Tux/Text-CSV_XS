@@ -58,7 +58,7 @@ else {
     }
 $csvmod->import ();
 
-my $fn = $ARGV[0] // "-";
+my $fn = defined $ARGV[0] ? $ARGV[0] : "-";
 my $data = do { local $/; <> } or die "No data to analyze\n";
 
 my ($bin, $rows, $eol, %cols) = (0, 0, undef);
@@ -84,7 +84,7 @@ my $csv = $csvmod->new ({
 
 sub done
 {
-    (my $file = $ARGV // "") =~ s{(\S)$}{$1 };
+    (my $file = defined $ARGV ? $ARGV : "") =~ s{(\S)$}{$1 };
     (my $prog = $0) =~ s{.*/}{};
     print "Checked $file with $prog $VERSION using $csvmod @{[$csvmod->VERSION]}\n";
     my @diag = $csv->error_diag;
