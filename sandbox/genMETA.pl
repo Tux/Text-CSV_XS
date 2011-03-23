@@ -27,6 +27,18 @@ while (<DATA>) {
     }
 
 if ($check) {
+    use Encode qw( encode decode );
+    print "Check if ChangeLog and README are still valid UTF8 ...\n";
+    foreach my $tf (qw( ChangeLog README )) {
+	open my $fh, "<", $tf or die "$tf: $!\n";
+	my $c = do { local $/; <$fh> };
+	my @e;
+	my $s = decode ("utf-8", $c, sub { push @e, shift; });
+	@e and die "$tf is not valid UTF-8\n";
+	my $u = encode ("utf-8", $s);
+	$c eq $u or die "$tf: recode makes content differ\n";
+	}
+
     print STDERR "Check required and recommended module versions ...\n";
     BEGIN { $V::NO_EXIT = $V::NO_EXIT = 1 } require V;
     my %vsn = map { m/^\s*([\w:]+):\s+([0-9.]+)$/ ? ($1, $2) : () } @yml;
