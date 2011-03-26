@@ -603,7 +603,7 @@ Text::CSV_XS - comma-separated values manipulation routines
 
  my @rows;
  my $csv = Text::CSV_XS->new ({ binary => 1 }) or
-     die "Cannot use CSV: ".Text::CSV->error_diag ();
+     die "Cannot use CSV: ".Text::CSV_XS->error_diag ();
  open my $fh, "<:encoding(utf8)", "test.csv" or die "test.csv: $!";
  while (my $row = $csv->getline ($fh)) {
      $row->[2] =~ m/pattern/ or next; # 3rd field should match
