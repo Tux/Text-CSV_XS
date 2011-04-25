@@ -659,7 +659,7 @@ or, more safely in perl 5.6 and up
  while (my $row = $csv->getline ($io)) {
      my @fields = @$row;
 
-=head2 Unicode (UTF8)
+=head2 Unicode
 
 On parsing (both for C<getline> and C<parse>), if the source is marked
 being UTF8, then all fields that are marked binary will also be be
@@ -780,15 +780,18 @@ options to the object creator.
 
 =head1 FUNCTIONS
 
-=head2 version ()
+=head2 version
 
 (Class method) Returns the current module version.
 
-=head2 new (\%attr)
+=head2 new
 
 (Class method) Returns a new instance of Text::CSV_XS. The objects
-attributes are described by the (optional) hash ref C<\%attr>.  Currently
-the following attributes are available:
+attributes are described by the (optional) hash ref C<\%attr>.
+
+  my $csv = Text::CSV_XS->new ({ attributes ... });
+
+Currently the following attributes are available:
 
 =over 4
 
