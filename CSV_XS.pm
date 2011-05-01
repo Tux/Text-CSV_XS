@@ -1233,8 +1233,9 @@ C<"\cAUNDEF\cA">, so
  $csv->column_names (undef, "", "name", "name");
  $hr = $csv->getline_hr ($io);
 
-Will set C<$hr->{"\cAUNDEF\cA"}> to the 1st field, C<$hr->{""}> to the 2nd
-field, and C<$hr->{name}> to the 4th field, discarding the 3rd field.
+Will set C<< $hr->{"\cAUNDEF\cA"} >> to the 1st field, C<< $hr->{""} >> to
+the 2nd field, and C<< $hr->{name} >> to the 4th field, discarding the 3rd
+field.
 
 L</column_names> croaks on invalid arguments.
 
@@ -1311,7 +1312,7 @@ X<fields>
  @columns = $csv->fields ();
 
 This object function returns the input to L</combine> or the resultant
-decomposed fields of C successful <parse>, whichever was called more
+decomposed fields of a successful L</parse>, whichever was called more
 recently.
 
 Note that the return value is undefined after using L</getline>, which does
@@ -1330,13 +1331,13 @@ For each field, a meta_info field will hold flags that tell something about
 the field returned by the L</fields> method or passed to the L</combine>
 method. The flags are bit-wise-or'd like:
 
-=over 4
+=over 2
 
-=item 0x0001
+=item C< >0x0001
 
 The field was quoted.
 
-=item 0x0002
+=item C< >0x0002
 
 The field was binary.
 
@@ -1366,7 +1367,7 @@ Where C<$column_idx> is the (zero-based) index of the column in the last
 result of L</parse>.
 
 This returns a true value if the data in the indicated column contained any
-byte in the range [\x00-\x08,\x10-\x1F,\x7F-\xFF]
+byte in the range C<[\x00-\x08,\x10-\x1F,\x7F-\xFF]>.
 
 =head2 is_missing
 X<is_missing>
@@ -1455,7 +1456,7 @@ may change in future releases.
 
 =head1 EXAMPLES
 
-Reading a CSV file line by line:
+=head2 Reading a CSV file line by line:
 
  my $csv = Text::CSV_XS->new ({ binary => 1 });
  open my $fh, "<", "file.csv" or die "file.csv: $!";
@@ -1465,7 +1466,7 @@ Reading a CSV file line by line:
  $csv->eof or $csv->error_diag;
  close $fh or die "file.csv: $!";
 
-Parsing CSV strings:
+=head2 Parsing CSV strings:
 
  my $csv = Text::CSV_XS->new ({ keep_meta_info => 1, binary => 1 });
 
@@ -1484,6 +1485,10 @@ Parsing CSV strings:
      $csv->error_diag ();
      }
 
+=head2 Printing CSV data
+
+=head3 The fast way: using L</print>
+
 An example for creating CSV files using the L</print> method, like in
 dumping the content of a database ($dbh) table ($tbl) to CSV:
 
@@ -1496,6 +1501,8 @@ dumping the content of a database ($dbh) table ($tbl) to CSV:
      $csv->print ($fh, $row) or $csv->error_diag;
      }
  close $fh or die "$tbl.csv: $!";
+
+=head3 The slow way: using L</combine> and L</string>
 
 or using the slower L</combine> and L</string> methods:
 
@@ -1515,10 +1522,15 @@ or using the slower L</combine> and L</string> methods:
      }
  close $csv_fh or die "hello.csv: $!";
 
-For more extended examples, see the F<examples/> sub-directory in the
-original distribution or the git repository at
-http://repo.or.cz/w/Text-CSV_XS.git?a=tree;f=examples. The following files
-can be found there:
+=head2 The examples folder
+
+For more extended examples, see the F<examples/> (1) sub-directory in the
+original distribution or the git repository (2).
+
+ 1. http://repo.or.cz/w/Text-CSV_XS.git?a=tree;f=examples
+ 2. http://repo.or.cz/w/Text-CSV_XS.git
+
+The following files can be found there:
 
 =over 2
 
@@ -1536,7 +1548,7 @@ This is a command-line tool that uses parser-xs.pl techniques to check the
 CSV file and report on its content.
 
  $ csv-check files/utf8.csv
- Checked with examples/csv-check 1.2 using Text::CSV_XS 0.61
+ Checked with examples/csv-check 1.5 using Text::CSV_XS 0.81
  OK: rows: 1, columns: 2
      sep = <,>, quo = <">, bin = <1>
 
@@ -1681,57 +1693,70 @@ most of these errors, the first three capitals describe the error category:
 
 =over 2
 
-=item INI
+=item *
+INI
 
 Initialization error or option conflict.
 
-=item ECR
+=item *
+ECR
 
 Carriage-Return related parse error.
 
-=item EOF
+=item *
+EOF
 
 End-Of-File related parse error.
 
-=item EIQ
+=item *
+EIQ
 
 Parse error inside quotation.
 
-=item EIF
+=item *
+EIF
 
 Parse error inside field.
 
-=item ECB
+=item *
+ECB
 
 Combine error.
 
-=item EHR
+=item *
+EHR
 
 HashRef parse related error.
 
 =back
 
+And below should be the complete list of error codes that can be returned:
+
 =over 2
 
-=item 1001 "INI - sep_char is equal to quote_char or escape_char"
+=item *
+1001 "INI - sep_char is equal to quote_char or escape_char"
 X<1001>
 
 The separation character cannot be equal to either the quotation character
 or the escape character, as that will invalidate all parsing rules.
 
-=item 1002 "INI - allow_whitespace with escape_char or quote_char SP or TAB"
+=item *
+1002 "INI - allow_whitespace with escape_char or quote_char SP or TAB"
 X<1002>
 
 Using C<allow_whitespace> when either C<escape_char> or C<quote_char> is
 equal to SPACE or TAB is too ambiguous to allow.
 
-=item 1003 "INI - \r or \n in main attr not allowed"
+=item *
+1003 "INI - \r or \n in main attr not allowed"
 X<1003>
 
 Using default C<eol> characters in either C<sep_char>, C<quote_char>, or
 C<escape_char> is not allowed.
 
-=item 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
+=item *
+2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 X<2010>
 
 When C<eol> has been set to something specific, other than the default,
@@ -1739,51 +1764,59 @@ like C<"\r\t\n">, and the C<"\r"> is following the B<second> (closing)
 C<quote_char>, where the characters following the C<"\r"> do not make up
 the C<eol> sequence, this is an error.
 
-=item 2011 "ECR - Characters after end of quoted field"
+=item *
+2011 "ECR - Characters after end of quoted field"
 X<2011>
 
 Sequences like C<1,foo,"bar"baz,2> are not allowed. C<"bar"> is a quoted
 field, and after the closing quote, there should be either a new-line
 sequence or a separation character.
 
-=item 2012 "EOF - End of data in parsing input stream"
+=item *
+2012 "EOF - End of data in parsing input stream"
 X<2012>
 
 Self-explaining. End-of-file while inside parsing a stream. Can only happen
 when reading from streams with L</getline>, as using L</parse> is done on
 strings that are not required to have a trailing C<eol>.
 
-=item 2021 "EIQ - NL char inside quotes, binary off"
+=item *
+2021 "EIQ - NL char inside quotes, binary off"
 X<2021>
 
 Sequences like C<1,"foo\nbar",2> are only allowed when the binary option
 has been selected with the constructor.
 
-=item 2022 "EIQ - CR char inside quotes, binary off"
+=item *
+2022 "EIQ - CR char inside quotes, binary off"
 X<2022>
 
 Sequences like C<1,"foo\rbar",2> are only allowed when the binary option
 has been selected with the constructor.
 
-=item 2023 "EIQ - QUO character not allowed"
+=item *
+2023 "EIQ - QUO character not allowed"
 X<2023>
 
 Sequences like C<"foo "bar" baz",quux> and C<2023,",2008-04-05,"Foo, Bar",\n>
 will cause this error.
 
-=item 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
+=item *
+2024 "EIQ - EOF cannot be escaped, not even inside quotes"
 X<2024>
 
 The escape character is not allowed as last character in an input stream.
 
-=item 2025 "EIQ - Loose unescaped escape"
+=item *
+2025 "EIQ - Loose unescaped escape"
 X<2025>
 
 An escape character should escape only characters that need escaping.
 Allowing the escape for other characters is possible with the
 C<allow_loose_escape> attribute.
 
-=item 2026 "EIQ - Binary character inside quoted field, binary off"
+=item *
+2026 "EIQ - Binary character inside quoted field, binary off"
 X<2026>
 
 Binary characters are not allowed by default. Exceptions are fields that
@@ -1791,59 +1824,76 @@ contain valid UTF-8, that will automatically be upgraded is the content is
 valid UTF-8. Pass the C<binary> attribute with a true value to accept
 binary characters.
 
-=item 2027 "EIQ - Quoted field not terminated"
+=item *
+2027 "EIQ - Quoted field not terminated"
 X<2027>
 
 When parsing a field that started with a quotation character, the field is
 expected to be closed with a quotation character. When the parsed line is
 exhausted before the quote is found, that field is not terminated.
 
-=item 2030 "EIF - NL char inside unquoted verbatim, binary off"
+=item *
+2030 "EIF - NL char inside unquoted verbatim, binary off"
 X<2030>
 
-=item 2031 "EIF - CR char is first char of field, not part of EOL"
+=item *
+2031 "EIF - CR char is first char of field, not part of EOL"
 X<2031>
 
-=item 2032 "EIF - CR char inside unquoted, not part of EOL"
+=item *
+2032 "EIF - CR char inside unquoted, not part of EOL"
 X<2032>
 
-=item 2034 "EIF - Loose unescaped quote"
+=item *
+2034 "EIF - Loose unescaped quote"
 X<2034>
 
-=item 2035 "EIF - Escaped EOF in unquoted field"
+=item *
+2035 "EIF - Escaped EOF in unquoted field"
 X<2035>
 
-=item 2036 "EIF - ESC error"
+=item *
+2036 "EIF - ESC error"
 X<2036>
 
-=item 2037 "EIF - Binary character in unquoted field, binary off"
+=item *
+2037 "EIF - Binary character in unquoted field, binary off"
 X<2037>
 
-=item 2110 "ECB - Binary character in Combine, binary off"
+=item *
+2110 "ECB - Binary character in Combine, binary off"
 X<2110>
 
-=item 2200 "EIO - print to IO failed. See errno"
+=item *
+2200 "EIO - print to IO failed. See errno"
 X<2200>
 
-=item 3001 "EHR - Unsupported syntax for column_names ()"
+=item *
+3001 "EHR - Unsupported syntax for column_names ()"
 X<3001>
 
-=item 3002 "EHR - getline_hr () called before column_names ()"
+=item *
+3002 "EHR - getline_hr () called before column_names ()"
 X<3002>
 
-=item 3003 "EHR - bind_columns () and column_names () fields count mismatch"
+=item *
+3003 "EHR - bind_columns () and column_names () fields count mismatch"
 X<3003>
 
-=item 3004 "EHR - bind_columns () only accepts refs to scalars"
+=item *
+3004 "EHR - bind_columns () only accepts refs to scalars"
 X<3004>
 
-=item 3006 "EHR - bind_columns () did not pass enough refs for parsed fields"
+=item *
+3006 "EHR - bind_columns () did not pass enough refs for parsed fields"
 X<3006>
 
-=item 3007 "EHR - bind_columns needs refs to writable scalars"
+=item *
+3007 "EHR - bind_columns needs refs to writable scalars"
 X<3007>
 
-=item 3008 "EHR - unexpected error in bound fields"
+=item *
+3008 "EHR - unexpected error in bound fields"
 X<3008>
 
 =back
