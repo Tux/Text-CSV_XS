@@ -7,7 +7,6 @@ package Text::CSV_XS;
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-################################################################################
 # HISTORY
 #
 # Written by:
@@ -18,8 +17,6 @@ package Text::CSV_XS;
 #
 # Extended and Remodelled by:
 #    H.Merijn Brand (h.m.brand@xs4all.nl)
-#
-############################################################################
 
 require 5.005;
 
@@ -819,6 +816,7 @@ separation character can not be equal to the escape character.
 See also CAVEATS
 
 =item allow_whitespace
+X<allow_whitespace>
 
 When this option is set to true, whitespace (TAB's and SPACE's) surrounding
 the separation character is removed when parsing. If either TAB or SPACE is
@@ -844,6 +842,7 @@ will now be parsed as
 even if the original line was perfectly sane CSV.
 
 =item blank_is_undef
+X<blank_is_undef>
 
 Under normal circumstances, CSV data makes no distinction between quoted-
 and unquoted empty fields. They both end up in an empty string field once
@@ -864,6 +863,7 @@ parsed as
  ("1", "", undef, " ", "2")
 
 =item empty_is_undef
+X<empty_is_undef>
 
 Going one step further than C<blank_is_undef>, this attribute converts all
 empty fields to undef, so
@@ -878,6 +878,7 @@ Note that this only effects fields that are I<really> empty, not fields
 that are empty after stripping allowed whitespace. YMMV.
 
 =item quote_char
+X<quote_char>
 
 The char used for quoting fields containing blanks, by default the double
 quote character (C<">). A value of undef suppresses quote chars. (For
@@ -887,6 +888,7 @@ range from 0x20 (space) to 0x7e (tilde).
 The quote character can not be equal to the separation character.
 
 =item allow_loose_quotes
+X<allow_loose_quotes>
 
 By default, parsing fields that have C<quote_char> characters inside an
 unquoted field, like
@@ -910,6 +912,7 @@ field as-is. This can be achieved by setting C<allow_loose_quotes> B<AND>
 making sure that the C<escape_char> is I<not> equal to C<quote_char>.
 
 =item escape_char
+X<escape_char>
 
 The character used for escaping certain characters inside quoted fields.
 Limited to a single-byte character, usually in the range from 0x20 (space)
@@ -929,6 +932,7 @@ escape_char to be the same as what you changed the quote_char to.
 The escape character can not be equal to the separation character.
 
 =item allow_loose_escapes
+X<allow_loose_escapes>
 
 By default, parsing fields that have C<escape_char> characters that escape
 characters that do not need to be escaped, like:
@@ -941,6 +945,7 @@ this format, this option enables you to treat all escape character
 sequences equal.
 
 =item binary
+X<binary>
 
 If this attribute is TRUE, you may use binary characters in quoted fields,
 including line feeds, carriage returns and NULL bytes. (The latter must be
@@ -952,6 +957,7 @@ string like C<"\x{00a0}"> might still be binary, but not marked UTF8, so
 setting C<{ binary => 1 }> is still a wise option.
 
 =item types
+X<types>
 
 A set of column types; this attribute is immediately passed to the I<types>
 method below. You must not set this attribute otherwise, except for using
@@ -959,6 +965,7 @@ the I<types> method. For details see the description of the I<types> method
 below.
 
 =item always_quote
+X<always_quote>
 
 By default the generated fields are quoted only, if they need to, for
 example, if they contain the separator. If you set this attribute to a TRUE
@@ -967,6 +974,7 @@ handle in external applications. (Poor creatures who are not using
 Text::CSV_XS. :-)
 
 =item quote_space
+X<quote_space>
 
 By default, a space in a field would trigger quotation. As no rule exists
 this to be forced in CSV, nor any for the opposite, the default is true for
@@ -974,6 +982,7 @@ safety. You can exclude the space from this trigger by setting this
 attribute to 0.
 
 =item quote_null
+X<quote_null>
 
 By default, a NULL byte in a field would be escaped. This attribute enables
 you to treat the NULL byte as a simple binary character in binary mode (the
@@ -981,6 +990,7 @@ C<{ binary => 1 }> is set). The default is true.  You can prevent NULL
 escapes by setting this attribute to 0.
 
 =item keep_meta_info
+X<keep_meta_info>
 
 By default, the parsing of input lines is as simple and fast as possible.
 However, some parsing information - like quotation of the original field -
@@ -989,6 +999,7 @@ information after parsing with the methods C<meta_info>, C<is_quoted>, and
 C<is_binary> described below.  Default is false.
 
 =item verbatim
+X<verbatim>
 
 This is a quite controversial attribute to set, but it makes hard things
 possible.
@@ -1021,6 +1032,7 @@ For parse () this means that the parser has no idea about line ending
 anymore, and getline () chomps line endings on reading.
 
 =item auto_diag
+X<auto_diag>
 
 Set to true will cause C<error_diag> to be automatically be called in void
 context upon errors.
@@ -1265,14 +1277,17 @@ or fetch the current type settings with
 =over 4
 
 =item IV
+X<IV>
 
 Set field type to integer.
 
 =item NV
+X<NV>
 
 Set field type to numeric/float.
 
 =item PV
+X<PV>
 
 Set field type to string.
 
@@ -1487,12 +1502,14 @@ can be found there:
 =over 2
 
 =item parser-xs.pl
+X<parser-xs.pl>
 
 This can be used as a boilerplate to `fix' bad CSV and parse beyond errors.
 
   $ perl examples/parser-xs.pl bad.csv >good.csv
 
 =item csv-check
+X<csv-check>
 
 This is a command-line tool that uses parser-xs.pl techniques to check the
 CSV file and report on its content.
@@ -1503,12 +1520,14 @@ CSV file and report on its content.
       sep = <,>, quo = <">, bin = <1>
 
 =item csv2xls
+X<csv2xls>
 
 A script to convert CSV to Microsoft Excel. This requires L<Date::Calc> and
 L<Spreadsheet::WriteExcel>. The converter accepts various options and can
 produce UTF-8 Excel files.
 
 =item csvdiff
+X<csvdiff>
 
 A script that provides colorized diff on sorted CSV files, assuming first
 line is header and first field is the key. Output options include colorized
@@ -1598,7 +1617,7 @@ Encode's cp37, cp1047, or posix-bc:
 
 =back
 
-=head1 Release plan
+=head2 Release plan
 
 No guarantees, but this is what I have in mind right now:
 
@@ -1674,21 +1693,25 @@ HashRef parse related error.
 =over 2
 
 =item 1001 "INI - sep_char is equal to quote_char or escape_char"
+X<1001>
 
 The separation character cannot be equal to either the quotation character
 or the escape character, as that will invalidate all parsing rules.
 
 =item 1002 "INI - allow_whitespace with escape_char or quote_char SP or TAB"
+X<1002>
 
 Using C<allow_whitespace> when either C<escape_char> or C<quote_char> is
 equal to SPACE or TAB is too ambiguous to allow.
 
 =item 1003 "INI - \r or \n in main attr not allowed"
+X<1003>
 
 Using default C<eol> characters in either C<sep_char>, C<quote_char>, or
 C<escape_char> is not allowed.
 
 =item 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
+X<2010>
 
 When C<eol> has been set to something specific, other than the default,
 like C<"\r\t\n">, and the C<"\r"> is following the B<second> (closing)
@@ -1696,43 +1719,51 @@ C<quote_char>, where the characters following the C<"\r"> do not make up
 the C<eol> sequence, this is an error.
 
 =item 2011 "ECR - Characters after end of quoted field"
+X<2011>
 
 Sequences like C<1,foo,"bar"baz,2> are not allowed. C<"bar"> is a quoted
 field, and after the closing quote, there should be either a new-line
 sequence or a separation character.
 
 =item 2012 "EOF - End of data in parsing input stream"
+X<2012>
 
 Self-explaining. End-of-file while inside parsing a stream. Can only happen
 when reading from streams with C<getline>, as using C<parse> is done on
 strings that are not required to have a trailing C<eol>.
 
 =item 2021 "EIQ - NL char inside quotes, binary off"
+X<2021>
 
 Sequences like C<1,"foo\nbar",2> are only allowed when the binary option
 has been selected with the constructor.
 
 =item 2022 "EIQ - CR char inside quotes, binary off"
+X<2022>
 
 Sequences like C<1,"foo\rbar",2> are only allowed when the binary option
 has been selected with the constructor.
 
 =item 2023 "EIQ - QUO character not allowed"
+X<2023>
 
 Sequences like C<"foo "bar" baz",quux> and C<2023,",2008-04-05,"Foo, Bar",\n>
 will cause this error.
 
 =item 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
+X<2024>
 
 The escape character is not allowed as last character in an input stream.
 
 =item 2025 "EIQ - Loose unescaped escape"
+X<2025>
 
 An escape character should escape only characters that need escaping.
 Allowing the escape for other characters is possible with the
 C<allow_loose_escape> attribute.
 
 =item 2026 "EIQ - Binary character inside quoted field, binary off"
+X<2026>
 
 Binary characters are not allowed by default. Exceptions are fields that
 contain valid UTF-8, that will automatically be upgraded is the content is
@@ -1740,42 +1771,59 @@ valid UTF-8. Pass the C<binary> attribute with a true value to accept
 binary characters.
 
 =item 2027 "EIQ - Quoted field not terminated"
+X<2027>
 
 When parsing a field that started with a quotation character, the field is
 expected to be closed with a quotation character. When the parsed line is
 exhausted before the quote is found, that field is not terminated.
 
 =item 2030 "EIF - NL char inside unquoted verbatim, binary off"
+X<2030>
 
 =item 2031 "EIF - CR char is first char of field, not part of EOL"
+X<2031>
 
 =item 2032 "EIF - CR char inside unquoted, not part of EOL"
+X<2032>
 
 =item 2034 "EIF - Loose unescaped quote"
+X<2034>
 
 =item 2035 "EIF - Escaped EOF in unquoted field"
+X<2035>
 
 =item 2036 "EIF - ESC error"
+X<2036>
 
 =item 2037 "EIF - Binary character in unquoted field, binary off"
+X<2037>
 
 =item 2110 "ECB - Binary character in Combine, binary off"
+X<2110>
 
 =item 2200 "EIO - print to IO failed. See errno"
+X<2200>
 
 =item 3001 "EHR - Unsupported syntax for column_names ()"
+X<3001>
 
 =item 3002 "EHR - getline_hr () called before column_names ()"
+X<3002>
 
 =item 3003 "EHR - bind_columns () and column_names () fields count mismatch"
+X<3003>
 
 =item 3004 "EHR - bind_columns () only accepts refs to scalars"
+X<3004>
 
 =item 3006 "EHR - bind_columns () did not pass enough refs for parsed fields"
+X<3006>
 
 =item 3007 "EHR - bind_columns needs refs to writable scalars"
+X<3007>
 
 =item 3008 "EHR - unexpected error in bound fields"
+X<3008>
 
 =back
 
@@ -1813,7 +1861,6 @@ under the same terms as Perl itself.
 =cut
 
 =for elvis
-
-:ex:se gw=75:
+:ex:se gw=75|color guide #ff0000:
 
 =cut
