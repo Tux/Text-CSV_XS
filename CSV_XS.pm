@@ -629,7 +629,7 @@ perhaps better called ASV (anything separated values) rather than just CSV.
 B<Important Note>: The default behavior is to only accept ASCII characters.
 This means that fields can not contain newlines. If your data contains
 newlines embedded in fields, or characters above 0x7e (tilde), or binary
-data, you *must* set C<< binary => 1 >> in the call to L</new>. To cover
+data, you B<I<must>> set C<< binary => 1 >> in the call to L</new>. To cover
 the widest range of parsing options, you will always want to set binary.
 
 But you still have the problem that you have to pass a correct line to the
@@ -1143,8 +1143,8 @@ X<getline>
  $colref = $csv->getline ($io);
 
 This is the counterpart to L</print>, like L</parse> is the counterpart to
-L</combine>: It reads a row from the IO object C<$io> using L</getline> and
-parses this row into an array ref. This array ref is returned by the
+L</combine>: It reads a row from the IO object using C<< $io->getline >>
+and parses this row into an array ref. This array ref is returned by the
 function or undef for failure.
 
 When fields are bound with L</bind_columns>, the return value is a
@@ -1159,10 +1159,10 @@ X<getline_all>
  $arrayref = $csv->getline_all ($io, $offset);
  $arrayref = $csv->getline_all ($io, $offset, $length);
 
-This will return a reference to a list of L</getline> results. In this call,
-C<keep_meta_info> is disabled. If C<$offset> is negative, as with C<splice>,
-only the last C<abs ($offset)> records of C<$io> are taken into
-consideration.
+This will return a reference to a list of L<getline ($io)|/getline> results.
+In this call, C<keep_meta_info> is disabled. If C<$offset> is negative, as
+with C<splice>, only the last C<abs ($offset)> records of C<$io> are taken
+into consideration.
 
 Given a CSV file with 10 lines:
 
@@ -1212,8 +1212,8 @@ X<getline_hr_all>
  $arrayref = $csv->getline_hr_all ($io, $offset);
  $arrayref = $csv->getline_hr_all ($io, $offset, $length);
 
-This will return a reference to a list of L</getline_hr> results.  In this
-call, C<keep_meta_info> is disabled.
+This will return a reference to a list of L<getline_hr ($io)|/getline_hr>
+results.  In this call, C<keep_meta_info> is disabled.
 
 =head2 column_names
 X<column_names>
