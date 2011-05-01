@@ -1,5 +1,6 @@
-2011-03-25 0.82 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2011-05-01 0.82 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Doc fix (RT#66905, Peter Newman)
+    * Documentation overhaul (pod links)
 
 2011-03-07 0.81 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Add is_missing ()
