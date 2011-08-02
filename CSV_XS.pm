@@ -1923,7 +1923,7 @@ ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2007-2011 H.Merijn Brand for PROCURA B.V.
+ Copyright (C) 2007-2011 H.Merijn Brand for PROCURA B.V. All rights reserved.
  Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
  Portions Copyright (C) 1997 Alan Citterman. All rights reserved.
 
