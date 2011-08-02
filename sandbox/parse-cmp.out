@@ -1,85 +1,85 @@
-Text::CSV_XS-0.77
-Text::CSV_PP-1.28
+Text::CSV_XS-0.83
+Text::CSV_PP-1.29
 
 test       lines     cols  file size file
 =======  =========   ==== ========== ========
 -------       1024 x    4      25529 test.csv
-xs perl:      1024 x    4 parsed in     0.014 seconds -  100
-xs gtln:      1024 x    4 parsed in     0.006 seconds -   42
-xs bndc:      1024 x    4 parsed in     0.002 seconds -   16
-pp perl:      1024 x    4 parsed in     0.045 seconds -  317
-pp gtln:      1024 x    4 parsed in     0.055 seconds -  388
-pp bndc:      1024 x    4 parsed in     0.060 seconds -  420
+xs perl:      1024 x    4 parsed in     0.015 seconds -  100
+xs gtln:      1024 x    4 parsed in     0.005 seconds -   31
+xs bndc:      1024 x    4 parsed in     0.002 seconds -   11
+pp perl:      1024 x    4 parsed in     0.032 seconds -  209
+pp gtln:      1024 x    4 parsed in     0.039 seconds -  254
+pp bndc:      1024 x    4 parsed in     0.043 seconds -  278
 -------       1024 x    8      65473 test.csv
-xs perl:      1024 x    8 parsed in     0.017 seconds -  100
-xs gtln:      1024 x    8 parsed in     0.005 seconds -   29
-xs bndc:      1024 x    8 parsed in     0.003 seconds -   18
-pp perl:      1024 x    8 parsed in     0.078 seconds -  462
-pp gtln:      1024 x    8 parsed in     0.094 seconds -  554
-pp bndc:      1024 x    8 parsed in     0.104 seconds -  611
+xs perl:      1024 x    8 parsed in     0.012 seconds -  100
+xs gtln:      1024 x    8 parsed in     0.003 seconds -   27
+xs bndc:      1024 x    8 parsed in     0.002 seconds -   19
+pp perl:      1024 x    8 parsed in     0.057 seconds -  458
+pp gtln:      1024 x    8 parsed in     0.064 seconds -  521
+pp bndc:      1024 x    8 parsed in     0.070 seconds -  571
 -------       1024 x   16     131032 test.csv
-xs perl:      1024 x   16 parsed in     0.021 seconds -  100
-xs gtln:      1024 x   16 parsed in     0.007 seconds -   35
-xs bndc:      1024 x   16 parsed in     0.005 seconds -   21
-pp perl:      1024 x   16 parsed in     0.145 seconds -  681
-pp gtln:      1024 x   16 parsed in     0.153 seconds -  716
-pp bndc:      1024 x   16 parsed in     0.169 seconds -  793
+xs perl:      1024 x   16 parsed in     0.015 seconds -  100
+xs gtln:      1024 x   16 parsed in     0.005 seconds -   33
+xs bndc:      1024 x   16 parsed in     0.003 seconds -   19
+pp perl:      1024 x   16 parsed in     0.103 seconds -  693
+pp gtln:      1024 x   16 parsed in     0.111 seconds -  748
+pp bndc:      1024 x   16 parsed in     0.119 seconds -  804
 -------       1024 x   32     209928 test.csv
-xs perl:      1024 x   32 parsed in     0.029 seconds -  100
-xs gtln:      1024 x   32 parsed in     0.011 seconds -   37
-xs bndc:      1024 x   32 parsed in     0.006 seconds -   20
-pp perl:      1024 x   32 parsed in     0.228 seconds -  776
-pp gtln:      1024 x   32 parsed in     0.251 seconds -  852
-pp bndc:      1024 x   32 parsed in     0.279 seconds -  947
+xs perl:      1024 x   32 parsed in     0.020 seconds -  100
+xs gtln:      1024 x   32 parsed in     0.008 seconds -   38
+xs bndc:      1024 x   32 parsed in     0.004 seconds -   19
+pp perl:      1024 x   32 parsed in     0.172 seconds -  869
+pp gtln:      1024 x   32 parsed in     0.184 seconds -  928
+pp bndc:      1024 x   32 parsed in     0.200 seconds - 1008
 -------       1024 x   64     431208 test.csv
-xs perl:      1024 x   64 parsed in     0.054 seconds -  100
-xs gtln:      1024 x   64 parsed in     0.025 seconds -   45
-xs bndc:      1024 x   64 parsed in     0.011 seconds -   20
-pp perl:      1024 x   64 parsed in     0.466 seconds -  868
-pp gtln:      1024 x   64 parsed in     0.489 seconds -  910
-pp bndc:      1024 x   64 parsed in     0.541 seconds - 1007
+xs perl:      1024 x   64 parsed in     0.038 seconds -  100
+xs gtln:      1024 x   64 parsed in     0.012 seconds -   33
+xs bndc:      1024 x   64 parsed in     0.006 seconds -   17
+pp perl:      1024 x   64 parsed in     0.336 seconds -  893
+pp gtln:      1024 x   64 parsed in     0.360 seconds -  957
+pp bndc:      1024 x   64 parsed in     0.387 seconds - 1029
 -------       1024 x  128     876869 test.csv
-xs perl:      1024 x  128 parsed in     0.106 seconds -  100
-xs gtln:      1024 x  128 parsed in     0.044 seconds -   41
-xs bndc:      1024 x  128 parsed in     0.020 seconds -   18
-pp perl:      1024 x  128 parsed in     0.933 seconds -  876
-pp gtln:      1024 x  128 parsed in     0.978 seconds -  918
-pp bndc:      1024 x  128 parsed in     1.082 seconds - 1016
+xs perl:      1024 x  128 parsed in     0.078 seconds -  100
+xs gtln:      1024 x  128 parsed in     0.026 seconds -   33
+xs bndc:      1024 x  128 parsed in     0.011 seconds -   14
+pp perl:      1024 x  128 parsed in     0.673 seconds -  862
+pp gtln:      1024 x  128 parsed in     0.704 seconds -  901
+pp bndc:      1024 x  128 parsed in     0.758 seconds -  970
 -------       1024 x  256    1753925 test.csv
-xs perl:      1024 x  256 parsed in     0.204 seconds -  100
-xs gtln:      1024 x  256 parsed in     0.083 seconds -   40
-xs bndc:      1024 x  256 parsed in     0.037 seconds -   18
-pp perl:      1024 x  256 parsed in     1.786 seconds -  876
-pp gtln:      1024 x  256 parsed in     1.938 seconds -  951
-pp bndc:      1024 x  256 parsed in     2.159 seconds - 1059
+xs perl:      1024 x  256 parsed in     0.138 seconds -  100
+xs gtln:      1024 x  256 parsed in     0.050 seconds -   36
+xs bndc:      1024 x  256 parsed in     0.021 seconds -   15
+pp perl:      1024 x  256 parsed in     1.322 seconds -  957
+pp gtln:      1024 x  256 parsed in     1.376 seconds -  996
+pp bndc:      1024 x  256 parsed in     1.487 seconds - 1077
 -------       1024 x  512    3455813 test.csv
-xs perl:      1024 x  512 parsed in     0.423 seconds -  100
-xs gtln:      1024 x  512 parsed in     0.168 seconds -   39
-xs bndc:      1024 x  512 parsed in     0.071 seconds -   16
-pp perl:      1024 x  512 parsed in     3.446 seconds -  813
-pp gtln:      1024 x  512 parsed in     3.638 seconds -  859
-pp bndc:      1024 x  512 parsed in     4.050 seconds -  956
+xs perl:      1024 x  512 parsed in     0.269 seconds -  100
+xs gtln:      1024 x  512 parsed in     0.099 seconds -   36
+xs bndc:      1024 x  512 parsed in     0.040 seconds -   15
+pp perl:      1024 x  512 parsed in     2.595 seconds -  965
+pp gtln:      1024 x  512 parsed in     2.699 seconds - 1004
+pp bndc:      1024 x  512 parsed in     3.022 seconds - 1124
 -------       1024 x 1024    6923102 test.csv
-xs perl:      1024 x 1024 parsed in     0.802 seconds -  100
-xs gtln:      1024 x 1024 parsed in     0.322 seconds -   40
-xs bndc:      1024 x 1024 parsed in     0.147 seconds -   18
-pp perl:      1024 x 1024 parsed in     6.907 seconds -  861
-pp gtln:      1024 x 1024 parsed in     7.237 seconds -  902
-pp bndc:      1024 x 1024 parsed in     8.094 seconds - 1009
+xs perl:      1024 x 1024 parsed in     0.542 seconds -  100
+xs gtln:      1024 x 1024 parsed in     0.197 seconds -   36
+xs bndc:      1024 x 1024 parsed in     0.081 seconds -   14
+pp perl:      1024 x 1024 parsed in     5.287 seconds -  974
+pp gtln:      1024 x 1024 parsed in     5.391 seconds -  993
+pp bndc:      1024 x 1024 parsed in     5.823 seconds - 1073
 -------       1024 x 2048   13861726 test.csv
-xs perl:      1024 x 2048 parsed in     1.658 seconds -   99
-xs gtln:      1024 x 2048 parsed in     0.638 seconds -   38
-xs bndc:      1024 x 2048 parsed in     0.286 seconds -   17
-pp perl:      1024 x 2048 parsed in    13.797 seconds -  831
-pp gtln:      1024 x 2048 parsed in    14.658 seconds -  883
-pp bndc:      1024 x 2048 parsed in    16.336 seconds -  985
-4,100,42,16,317,388,420
-8,100,29,18,462,554,611
-16,100,35,21,681,716,793
-32,100,37,20,776,852,947
-64,100,45,20,868,910,1007
-128,100,41,18,876,918,1016
-256,100,40,18,876,951,1059
-512,100,39,16,813,859,956
-1024,100,40,18,861,902,1009
-2048,99,38,17,831,883,985
+xs perl:      1024 x 2048 parsed in     1.054 seconds -  100
+xs gtln:      1024 x 2048 parsed in     0.390 seconds -   36
+xs bndc:      1024 x 2048 parsed in     0.155 seconds -   14
+pp perl:      1024 x 2048 parsed in    10.369 seconds -  983
+pp gtln:      1024 x 2048 parsed in    10.711 seconds - 1016
+pp bndc:      1024 x 2048 parsed in    11.600 seconds - 1100
+4,100,31,11,209,254,278
+8,100,27,19,458,521,571
+16,100,33,19,693,748,804
+32,100,38,19,869,928,1008
+64,100,33,17,893,957,1029
+128,100,33,14,862,901,970
+256,100,36,15,957,996,1077
+512,100,36,15,965,1004,1124
+1024,100,36,14,974,993,1073
+2048,100,36,14,983,1016,1100
