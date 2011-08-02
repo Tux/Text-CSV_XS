@@ -1,3 +1,6 @@
+2011-08-02 0.83 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * Fix spurious auto_diag warning (RT#69673)
+
 2011-05-01 0.82 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Doc fix (RT#66905, Peter Newman)
     * Documentation overhaul (pod links)

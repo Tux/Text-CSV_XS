@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.82";
+$VERSION = "0.83";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -353,8 +353,9 @@ sub error_diag
 
     if ($self && ref $self && # Not a class method or direct call
 	 $self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
-	@diag = (0 + $self->{_ERROR_DIAG}, $self->{_ERROR_DIAG});
-	exists $self->{_ERROR_POS} and $diag[2] = 1 + $self->{_ERROR_POS};
+	$diag[0] = 0 + $self->{_ERROR_DIAG};
+	$diag[1] =     $self->{_ERROR_DIAG};
+	$diag[2] = 1 + $self->{_ERROR_POS} if exists $self->{_ERROR_POS};
 	}
 
     my $context = wantarray;
