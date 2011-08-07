@@ -1,5 +1,6 @@
-2011-08-02 0.83 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+2011-08-07 0.83 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Fix spurious auto_diag warning (RT#69673)
+    * Tested with 50 versions of perl, including 1.15.1
 
 2011-05-01 0.82 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * Doc fix (RT#66905, Peter Newman)
