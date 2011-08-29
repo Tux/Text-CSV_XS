@@ -10,6 +10,13 @@ use Time::HiRes qw( gettimeofday tv_interval );
 my ($csv, $fh, $n, @row);
 
 my %test = (
+    splt => sub {
+		while (<$fh>) {
+		    @row = split m/,/ => $_, -1;
+		    $n++;
+		    $row[2] eq "Text::CSV_XS" or die "Parse error";
+		    }
+		},
     perl => sub {
 		while (<$fh>) {
 		    $csv->parse ($_) or die $csv->error_diag;
@@ -34,11 +41,14 @@ my %test = (
     );
 
 my %res;
-print "Text::CSV_XS-$Text::CSV_XS::VERSION\n",
-      "Text::CSV_PP-$Text::CSV_PP::VERSION\n",
-      "\n",
-      "test       lines     cols  file size file\n",
-      "=======  =========   ==== ========== ========\n";
+print <<EOH;
+perl-$]
+Text::CSV_XS-$Text::CSV_XS::VERSION
+Text::CSV_PP-$Text::CSV_PP::VERSION
+
+test       lines     cols  file size file
+-------  ---------   ---- ---------- --------
+EOH
 foreach my $nc (4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048) {
     #foreach my $nr (4, 16, 1024, 10240, 102400) {
     foreach my $nr (1024) {
@@ -50,12 +60,18 @@ foreach my $nc (4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048) {
 	my $slowest;
 	foreach my $typ ("xs", "pp") {
 	    #$typ eq "pp" && $fsz > 10_000_000 and next;
-	    foreach my $test ("perl", "gtln", "bndc") {
+	    foreach my $test ("perl", "gtln", "bndc", "splt") {
+		"$typ$test" eq "ppsplt" and next; # Only run once
 		#$typ eq "pp" && $test eq "bndc" && $nc > 250 and next; # NYI
 		open $fh, "<", $fnm or die "$fnm: $!";
-		$csv = "Text::CSV_\U$typ"->new ({ binary => 1 });
-		$csv->parse (scalar <$fh>) or die $csv->error_diag;
-		@row = $csv->fields;
+		if ($test eq "splt") {
+		    @row = split m/,/ => scalar <$fh>;
+		    }
+		else {
+		    $csv = "Text::CSV_\U$typ"->new ({ binary => 1 });
+		    $csv->parse (scalar <$fh>) or die $csv->error_diag;
+		    @row = $csv->fields;
+		    }
 		my $ncol = @row;
 		my $start = [ gettimeofday ];
 		$n = 0;
@@ -77,5 +93,6 @@ binmode STDOUT, ":utf8";
 $csv = Text::CSV_XS->new ({ eol => "\r\n" });
 foreach my $nc (sort { $a <=> $b } keys %res) {
     $csv->print (*STDOUT, [ $nc, @{$res{$nc}}{
-	  "xs perl", "xs gtln", "xs bndc", "pp perl", "pp gtln", "pp bndc"} ]);
+	  "xs perl", "xs gtln", "xs bndc", "pp perl", "pp gtln", "pp bndc",
+	  "pp splt" } ]);
     }

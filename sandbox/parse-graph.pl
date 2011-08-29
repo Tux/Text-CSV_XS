@@ -14,12 +14,13 @@ GetOptions (
     ) or die "usage: $0 [--xs-only]\n";
 
 my @id = (
-    [ "xs perl", "Black"   ],
-    [ "xs gtln", "Blue" ],
-    [ "xs bndc", "Green" ],
-    [ "pp perl", "Navy" ],
-    [ "pp gtln", "Cyan" ],
-    [ "pp bndc", "Red" ],
+    [ "xs perl", "Black"  ],
+    [ "xs gtln", "Blue"   ],
+    [ "xs bndc", "Green"  ],
+    [ "xs splt", "Purple" ],
+    [ "pp perl", "Navy"   ],
+    [ "pp gtln", "Cyan"   ],
+    [ "pp bndc", "Red"    ],
     );
 
 my %set = (
@@ -37,10 +38,10 @@ my %set = (
 my %vsn;
 {   my ($p, $cols) = (0);
     my %pos = map { $_ => $p++ }
-	"xs perl", "xs gtln", "xs bndc",
+	"xs perl", "xs gtln", "xs bndc", "xs splt",
 	"pp perl", "pp gtln", "pp bndc";
     while (<>) {
-	if (m/^(Text::CSV_(..)-[0-9.]+)/) {
+	if (m/^((?|perl()|Text::CSV_(..))-[0-9.]+)/) {
 	    $opt_xs && $2 eq "PP" and next;
 	    $vsn{$1} = 1;
 	    next;
@@ -49,7 +50,7 @@ my %vsn;
 	    $cols = $1;
 	    next;
 	    }
-	m/^((?:xs|pp) (?:perl|gtln|bndc)):.*-\s*([0-9]+)$/ and
+	m/^((?:xs|pp) (?:perl|gtln|bndc|splt)):.*-\s*([0-9]+)$/ and
 	    $set{$cols}[$pos{$1}] = $2;
 	}
     }
@@ -111,13 +112,7 @@ $c->update;
 
 foreach my $r (0 .. $#id) {
     my ($key, $color) = @{$id[$r]};
-    $opt_xs && $key =~ m/^pp/ or
-    $c->createText ($cx + 5, 40 + $r * 30,
-	-text	=> $key,
-	-fill	=> $color,
-	-anchor	=> "w",
-	-font	=> "{DejaVu Sans Mono} 12",
-	);
+    $opt_xs && $key =~ m/^pp/ and next;
     my @line;
     foreach my $rs (0 .. $#rs) {
 	my $v = $set{$rs[$rs]}[$r];
@@ -127,8 +122,15 @@ foreach my $r (0 .. $#id) {
 	-smooth => 0,
 	-fill   => $color,
 	-width  => 3);
+    $key =~ s/xs splt/split/;
+    $c->createText ($cx + 5, 40 + $r * 30,
+	-text	=> $key,
+	-fill	=> $color,
+	-anchor	=> "w",
+	-font	=> "{DejaVu Sans Mono} 12",
+	);
     }
-$c->createText ($cx - 72, $cy - 300,
+$c->createText ($cx - 72, $cy - 280,
     -text	=> (join "\n" => reverse sort keys %vsn),
     -fill	=> "Blue4",
     -anchor	=> "w",
