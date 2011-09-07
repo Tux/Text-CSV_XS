@@ -8,7 +8,7 @@ use strict;
 use ExtUtils::MakeMaker;
 
 my %wm = (
-    NAME         => "Text::CSV_XS",
+    NAME         => "Text-CSV_XS",
     ABSTRACT     => "Comma-Separated Values manipulation routines",
     AUTHOR       => "H.Merijn Brand <h.merijn\@xs4all.nl>",
     VERSION_FROM => "CSV_XS.pm",
