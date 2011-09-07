@@ -1,3 +1,6 @@
+2011-09-07 0.85 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+    * NAME / DISTNAME in Makefile.PL
+
 2011-09-07 0.84 - H.Merijn Brand   <h.m.brand@xs4all.nl>
     * More cross-checks for META data
 

@@ -36,6 +36,12 @@ sub version_from
 
 	if ($mf =~ m{\b NAME         \s*=>\s* ["'] (\S+) ['"]}x) {
 	    $self->{name} = $1;
+	    $self->{name} =~ m/-/ and
+		warn "NAME in Makefile.PL contains a -\n";
+	    $self->{name} =~ s/::/-/g;
+	    }
+	if ($mf =~ m{\b DISTNAME     \s*=>\s* ["'] (\S+) ['"]}x) {
+	    $self->{name} = $1;
 	    }
 
 	if ($mf =~ m{\b VERSION_FROM \s*=>\s* ["'] (\S+) ['"]}x) {
