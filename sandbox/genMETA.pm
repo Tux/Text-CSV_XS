@@ -2,7 +2,7 @@
 
 package genMETA;
 
-our $VERSION = "1.02-20110904";
+our $VERSION = "1.03-20110907";
 
 use strict;
 use warnings;
@@ -12,6 +12,7 @@ use List::Util qw( first );
 use Encode qw( encode decode );
 use Test::YAML::Meta::Version;
 use Test::MinimumVersion;
+use Test::More ();
 use Parse::CPAN::Meta;
 use File::Find;
 use YAML::Syck;
@@ -233,7 +234,9 @@ sub check_minimum
     $reqv or croak "No minimal required version for perl";
     print "Checking if $reqv is still OK as minimal version for $paths\n";
     # All other minimum version checks done in xt
-    all_minimum_version_ok ($reqv, $locs);
+    Test::More::subtest "Minimum perl version $reqv" => sub {
+	all_minimum_version_ok ($reqv, $locs);
+	};
     } # check_minimum
 
 sub print_yaml
