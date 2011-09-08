@@ -1,64 +1,64 @@
-2011-09-07 0.85 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.86	- 2011-09-08, H.Merijn Brand
+    *
+
+0.85	- 2011-09-07, H.Merijn Brand
     * NAME / DISTNAME in Makefile.PL
 
-2011-09-07 0.84 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.84	- 2011-09-07, H.Merijn Brand
     * More cross-checks for META data
 
-2011-08-07 0.83 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.83	- 2011-08-07, H.Merijn Brand
     * Fix spurious auto_diag warning (RT#69673)
     * Tested with 50 versions of perl, including 1.15.1
 
-2011-05-01 0.82 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.82	- 2011-05-01, H.Merijn Brand
     * Doc fix (RT#66905, Peter Newman)
     * Documentation overhaul (pod links)
 
-2011-03-07 0.81 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.81	- 2011-03-07, H.Merijn Brand
     * Add is_missing ()
     * Doc overhaul
     * Fix Build on OpenVMS (RT#65654, Martin P.J. Zinser)
     * Fix SetDiag () leak (RT#66453, Sven Schöling)
 
-2010-12-24 0.80 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.80	- 2010-12-24, H.Merijn Brand
     * Implement getline_all () and getaline_hr_all ()
     * Fixed another parsing for eol = \r (RT#61525)
 
-2010-11-26 0.79 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.79	- 2010-11-26, H.Merijn Brand
     * Use correct type for STRLEN (HP-UX/PA-RISC/32)
     * More code coverage
     * EOF unreliable when line-end missing at eof
 
-2010-11-26 0.78 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.78	- 2010-11-26, H.Merijn Brand
     * Version 0.77 broke MacOS exported CSV files with only \r
 
-2010-10-23 0.77 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.77	- 2010-10-23, H.Merijn Brand
     * Internals now use warn () instead of (void)fprintf (stderr, ...)
       Now the test in t/80_diag also passes on Windows
     * Better parsing for eol = \r and set as such (RT#61525)
     * Workaround for AIX cpp bug (RT#62388, Jan Dubois)
 
-2010-10-09 0.76 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.76	- 2010-10-09, H.Merijn Brand
     * Windows doesn't support STDERR redirection as used in t/80_diag
 
-2010-10-05 0.75 - H.Merijn Brand   <h.m.brand@xs4all.nl>
+0.75	- 2010-10-05, H.Merijn Brand
     * Fixed undefinedness of $\ in print (RT#61880)
 
-2010-09-29 0.74 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.74	- 2010-09-29, H.Merijn Brand
     * Spelling fixes
     * Real eol support for parsing streams (beyond \n, \r and \r\n)
     * Clarify doc for always_quote to not quote undef fields
     * Clarify UTF8 process for print () and combine ()
 
-2010-05-03 0.73 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.73	- 2010-05-03, H.Merijn Brand
     * Improve date conversion in examples/csv2xls
       new option -D allows column selection for date conversions
     * Tested under perl-5.12.0 (and 21 other versions of perl)
     * Added a note about EBCDIC data files
     * Test suite is now safe for parallel test (prove --shuffle -j6)
 
-2010-03-16 0.72 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.72	- 2010-03-16, H.Merijn Brand
     * Introduce quote_null attribute (RT#55200)
     * examples/csv-check can be used for Text::CSV_PP
     * examples/csv-check more options for sep_, escape_ and quote_char
@@ -66,8 +66,7 @@
     * examples/csv2xls added auto_diag and verbosity
     * Dropped YAML spec to 1.0
 
-2010-02-15 0.71 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.71	- 2010-02-15, H.Merijn Brand
     * Upped copyright to 2010
     * Prevent double encoding: make Text::CSV_XS streams behave just
       like perl would (thanks ikegami for the test cases)
@@ -75,33 +74,28 @@
       doing nothing
     * auto_diag also used for new () itself
 
-2009-12-02 0.70 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.70	- 2009-12-02, H.Merijn Brand
     * Add quote_space attribute
     * Forbid \r and \n in sep_char, quote_char, and escape_char
 
-2009-10-10 0.69 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.69	- 2009-10-10, H.Merijn Brand
     * Missing end quotes in error code docs
     * examples/csv-check now shows detected eol
     * Auto detection of eol => "\r" in streams
     * Optimized caching. All cache changes now in XS
 
-2009-10-04 0.68 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.68	- 2009-10-04, H.Merijn Brand
     * Attribute auto_diag now localizes to +1 if autodie is active
     * Output name generation in csv2xls (RT#48954)
     * Added csvdiff to examples/
     * Reordered docs. Rewrote SYNOPSIS to be more like a real-world
       code example
 
-2009-08-08 0.67 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.67	- 2009-08-08, H.Merijn Brand
     * Fix empty_diag typo for attribute handler
     * Fix AUTOMATED_TESTING erroneous skip
 
-2009-08-07 0.66 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.66	- 2009-08-07, H.Merijn Brand
     * Reordered examples in doc to show best method first
     * Documentation grammatical fix (John P. Linderman, RT#46411)
     * Fail if first arg to new () is not a hash ref
@@ -111,8 +105,7 @@
     * Add auto_diag attribute (still under construction)
     * FIX: reset attributes (after they have been set) with accessor
 
-2009-05-14 0.65 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.65	- 2009-05-14, H.Merijn Brand
     * Initial known errors can now be checked on number (1002)
     * More tests for illegal combinations
     * Added -u option to examples/csv-check to validate utf-8 encoding
@@ -122,38 +115,32 @@
       and string context valid)
     * Remove (3) from L<..> links (Slaven, RT#46078)
 
-2009-04-03 0.64 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.64	- 2009-04-03, H.Merijn Brand
     * Skip perlio tests for perl older than 5.8, as perlio
       was experimental in 5.6
     * Up Devel::PPPort to 3.17
     * Fix initialization of eol => undef (could cause core dump)
     * Added configure_require to META.yml
 
-2009-03-20 0.63 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.63	- 2009-03-20, H.Merijn Brand
     * Fixed allow_whitespace with sep_char = TAB (RT#44402)
 
-2009-03-13 0.62 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.62	- 2009-03-13, H.Merijn Brand
     * Prevent warnings in older perls (without utf8)
     * All known errors are covered and/or documented. TODO dropped
     * Unicode TODO dropped. All covered, or use Text::CSV::Encoded
     * Documented the examples
 
-2009-03-08 0.61 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.61	- 2009-03-08, H.Merijn Brand
     * valgrind found a possible uninitialized value
     * Restriction in print () was only for really old perls
     * Fix for bind_columns () initialization (vincent, RT#43927)
 
-2009-01-27 0.60 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.60	- 2009-01-27, H.Merijn Brand
     * Optimize for threaded perls. (Goro Fuji, RT#42517)
       Non-threaded perls won't notice
 
-2009-01-23 0.59 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.59	- 2009-01-23, H.Merijn Brand
     * Wrong e-mail in META.yml
     * Missing $IO argument in bind_columns example (docs only)
     * Upped Copyright notices to 2009
@@ -165,18 +152,15 @@
     * Optimize getline/print method calls (Goro Fuji, RT#42517)
     * Decode *_char attributes for perl 5.8.2 and up
 
-2008-10-30 0.58 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.58	- 2008-10-30, H.Merijn Brand
     * Small typo in test message (RT#40410, JPL)
     * Parse error test on "\0 (RT#40507)
     * Fixed allow_loose_escapes bug disclosed by RT#40507
 
-2008-10-21 0.57 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.57	- 2008-10-21, H.Merijn Brand
     * Don't bootstrap twice. Don't know how/when it came in there
 
-2008-10-21 0.56 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.56	- 2008-10-21, H.Merijn Brand
     * Update to ppport.h 3.14_01
     * Updated docs (Unicode, TODO, Release Plan)
     * As Text::CSV::Encoded is about to be released, refer to it
@@ -189,8 +173,7 @@
     * Sync up doc with latest Text::CSV::Encoded
     * YAML declared 1.4 (META.yml) instead of 1.1 (YAML)
 
-2008-10-15 0.55 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.55	- 2008-10-15, H.Merijn Brand
     * Improve documentation on eol
     * Unicode on perl-5.8.[0-2] sucks. Don't use it!
     * Test error codes in expected IO failures
@@ -198,12 +181,10 @@
     * Document the MS/Excel separation character
     * Hint that eof is not an error per se (RT#40047)
 
-2008-09-04 0.54 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.54	- 2008-09-04, H.Merijn Brand
     * IO failure in print () was not propagated (ilmari, RT#38960)
 
-2008-09-01 0.53 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.53	- 2008-09-01, H.Merijn Brand
     * SvUPGRADE is a safer choice than sv_upgrade (Lubomir Rintel, RT#38890)
     * bring docs in sync with reality for msg 2023
     * Default eol for print is $\
@@ -212,19 +193,16 @@
     * Tests for error 2030
     * Code cleanup (Devel::Cover++)
 
-2008-06-28  0.52 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.52	- 2008-06-28, H.Merijn Brand
     * Using undef for hash keys is a bad plan
     * Fix, tests, and documentation for column_names ()
 
-2008-06-17  0.51 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.51	- 2008-06-17, H.Merijn Brand
     * Allow UTF8 even without binary => 1
     * Fixed a few pod typo's
     * Lifted the max of 255 for bind_columns
 
-2008-06-04  0.50 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.50	- 2008-06-04, H.Merijn Brand
     * Skip a few tests in automated testing, as they confuse
       reports. This is important for the automated sites that
       mark modules as fail if it is not an obvious full PASS
@@ -232,8 +210,7 @@
     * Tested on 5.11.0, 5.10.0, 5.8.8, 5.6.2, and 5.005_04,
       Strawberry and Cygwin
 
-2008-06-04  0.46 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.46	- 2008-06-04, H.Merijn Brand
     * In examples add die on failed close calls
     * Use Test::MinimumVersion (not distributed)
     * Added option -F to examples/csv2xls
@@ -241,35 +218,30 @@
     * Nailed the UTF8 issues for parsing
     * Nailed the UTF8 issues for combining
 
-2008-04-23  0.45 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.45	- 2008-04-23, H.Merijn Brand
     * Forgot to pack examples/parser-xs.pl
 
-2008-04-23  0.44 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.44	- 2008-04-23, H.Merijn Brand
     * Fixed the error position returned as third arg in error_diag ()
     * Made examples/csv-check use this even more vebose
     * Removed double-double quote from TODO
     * Added examples/parse-xs.pl (attempt to fix bad CSV)
 
-2008-04-21  0.43 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.43	- 2008-04-21, H.Merijn Brand
     * parse errors try to remember failing position
     * used valgrind to test for leaks (devel-only)
     * used Test::Valgrind as alternative leak check (devel-only)
     * improve documentation for error 2023
     * nailed the loose quotes in quoted fields
 
-2008-04-16  0.42 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.42	- 2008-04-16, H.Merijn Brand
     * Generate META.yml myself. I won't use Build.PL
     * Array-refs now accept scalars with magic:
       $csv->print (*STDOUT, $sth->{NAME_lc});
     * More/better examples
     * Added t/76_magic.t
 
-2008-04-11  0.41 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.41	- 2008-04-11, H.Merijn Brand
     * error_diag () subclassable
     * typo in bind_columns () docs
     * examples/csv2xls now uses getline ()
@@ -277,8 +249,7 @@
     * document return value of getline () with bind_columns ()
     * add perl version prereq to META.yml
 
-2008-04-07  0.40 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.40	- 2008-04-07, H.Merijn Brand
     * Implemented getline_hr () and column_names () (RT#34474)
       (suggestions accepted from Mark Stosberg)
     * Corrected misspelled variable names in XS
@@ -293,20 +264,18 @@
     * Completed bind_columns. On straight fetches now up to three
       times as fast as normal fetches (both using getline ())
 
-2008-03-11  0.37 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.37	- 2008-03-11, H.Merijn Brand
     * Copied GIT repo to public mirror
     * Fix leak / make meta info available to getline () + tests
 
-2008-03-06  0.36 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.36	- 2008-03-06, H.Merijn Brand
     * Updated ppport.h
     * auto-load IO::Handle when needed
     * Tested with all available perl builds, including a fresh
       threaded 5.11 (blead)
 
-2008-03-01  0.35 (Valloire) - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.35	- 2008-03-01, H.Merijn Brand
+    Valloire-release
     * use warnings/$^W = 1
     * Tested on 5.10.0, 5.8.8, 5.6.2, and 5.005_04, Strawberry and Cygwin
     * Diagnostics for failed new ()
@@ -322,35 +291,30 @@
     * Extended XS coverage
     * Removed error 2033
 
-2008-01-04  0.34 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.34	- 2008-01-04, H.Merijn Brand
     * No change, but 0.33 was shipped with an old META.yml
 
-2008-01-02  0.33 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.33	- 2008-01-02, H.Merijn Brand
     * Text-CSV_XS now under git
     * Upped copyright to 2008
     * Added all prereq's to Makefile.PL
     * Tested under perl 5.10
 
-2007-10-24  0.32 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.32	- 2007-10-24, H.Merijn Brand
     * Added $csv->error_diag () to SYNOPSIS
     * Added need for diag when new () fails to TODO
     * Fixed a sneaked-in defined or in examples/csv2xls
     * Plugged a 32byte memory leak in the cache code (valgrind++)
     * Some perlcritic level1 changes
 
-2007-07-23  0.31 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.31	- 2007-07-23, H.Merijn Brand
     * Removed prototypes in examples/csv2xls
     * Improved usage for examples/csv2xls (GetOpt::Long now does --help/-?)
     * Extended examples/csv2xls to deal with Unicode (-u)
     * Serious bug in Text::CSV_XS::NV () type setting, causing the
       resulting field to be truncated to IV
 
-2007-06-21  0.30 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.30	- 2007-06-21, H.Merijn Brand
     * ,\rx, is definitely an error without binary (used to HANG!)
     * Fixed bug in attribute caching for undefined eol
     * Cleaned up some code after -W*** warnings
@@ -363,8 +327,7 @@
     * Small pod niot (abeltje)
     * Doc fix in TODO (Miller Hall)
 
-2007-06-08  0.29 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.29	- 2007-06-08, H.Merijn Brand
     * Removed an unused 'use Data::Dumper'
     * Added $csv->eof () (RT#27424)
     * Two typo's in the doc's (Amsterdam.pm)
@@ -398,8 +361,7 @@
     * Reworked error_input, which also had an undetected internal error
     * Added IO tests for lexical IO handles and perlio IO to/from scalars
 
-2007-06-03  0.28 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.28	- 2007-06-03, H.Merijn Brand
     * IMPORTANT CHANGE: new () returns undef if it gets unsupported
       attributes. Until now, new ({ esc_char => "\\" }) was just
       silently ignored. Rejecting it and failing is better than
@@ -410,8 +372,7 @@
     * More code cleanup in XS
     * Added allow_whitespace    (see doc)
 
-2007-05-31  0.27 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.27	- 2007-05-31, H.Merijn Brand
     * checked with perlcritic (still works under 5.00504)
       so 3-arg open cannot be used (except in the docs)
     * 3-arg open in docs too
@@ -424,8 +385,7 @@
     * More docs for eol
     * More eol = \r fixes, tfrayner's test case added to t/45_eol.t
 
-2007-05-15  0.26 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
+0.26	- 2007-05-15, H.Merijn Brand
     * Add $csv->allow_undef (1) suggestion in TODO
       Still have to find the best spot to document
       the difference between empty string and undef
@@ -443,85 +403,76 @@
       equal to either quote_char or escape_char. Done in XS, as it
       was a slowdown of 10% when done in perl.
 
-2007-05-07  0.25 - H.Merijn Brand   <h.m.brand@xs4all.nl>
-
-    * Merijn got the maintainership
-    - code reformat and code cleanup
-    - renamed internal (Encode, Decode) to (Combine, Parse) to
+0.25	- 2007-05-07, H.Merijn Brand
+    # Merijn got the maintainership
+    * code reformat and code cleanup
+    * renamed internal (Encode, Decode) to (Combine, Parse) to
       prevent misinterpretation with upcoming Unicode changes
       and possible name clashes
-    - added pod check (and fixed pod)
-    - added pod coverage and small additions to the pod.
+    * added pod check (and fixed pod)
+    * added pod coverage and small additions to the pod.
       More to do in this area
-    - renamed test to fixate the sequence
-    - Added t/50_utf8.t
-    - tests now use Test::More
+    * renamed test to fixate the sequence
+    * Added t/50_utf8.t
+    * tests now use Test::More
       . Makefile.PL requires Test::More
-    - checked proclaimed version compatibility
+    * checked proclaimed version compatibility
       . 5.9.x-64int     works @31159
       . 5.8.x-64int-dor works @31162
       . 5.8.0-dor       works
       . 5.6.2           works
       . 5.005.04        works
       . 5.004.05        fails
-    - 5.005 is now prerequisite
-    - Added missing info in docs for new ()
-    - Added meta_info () method and docs
-    - Added keep_meta_info in new ()
-    - Added t/15_flags.t
-    - Added test_cover make target
-    - Added test for error_input ()
-    - Added tests for fields () and meta_info () before parse ()
-    - Added tests for ->types () as method
-    - Added tests for deleting types (coverage now over 99%)
-    - Added is_quoted (), is_binary () and tests
-    - Added COPYRIGHT section to pod
-    - Added the parse example from the pod to test.pl
-    - Added accessor methods for internals: quote_char () et all
-    - Added tests for the new accessor methods
-    - Added always_quote to the missing places in the doc and in new ()
-    - Changed the tests to use the accessors instead of the hash keys
+    * 5.005 is now prerequisite
+    * Added missing info in docs for new ()
+    * Added meta_info () method and docs
+    * Added keep_meta_info in new ()
+    * Added t/15_flags.t
+    * Added test_cover make target
+    * Added test for error_input ()
+    * Added tests for fields () and meta_info () before parse ()
+    * Added tests for ->types () as method
+    * Added tests for deleting types (coverage now over 99%)
+    * Added is_quoted (), is_binary () and tests
+    * Added COPYRIGHT section to pod
+    * Added the parse example from the pod to test.pl
+    * Added accessor methods for internals: quote_char () et all
+    * Added tests for the new accessor methods
+    * Added always_quote to the missing places in the doc and in new ()
+    * Changed the tests to use the accessors instead of the hash keys
       except for the ->{types} and ->{_types}
-    - Moved test.pl to examples/speed.pl
+    * Moved test.pl to examples/speed.pl
 
-2001-10-10  Jochen Wiedmann  <joe@ispsoft.de> (0.23)
-
+0.23	- 2001-10-10, Jochen Wiedmann  <joe@ispsoft.de>
     * Changed "char" to "unsigned char" in CSV_XS.xs.
       Matthew Graham <MGraham@pacificaccess.com.au>
 
-2000-12-22  Jochen Wiedmann  <joe@ispsoft.de> (0.22)
-
+0.22	- 2000-12-22, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.xs: Added the handling of escape characters
       outside of quotes. Kirill Paliy <kpaliy@aaanet.ru>
 
-2000-08-18  Jochen Wiedmann  <joe@ispsoft.de> (0.21)
-
+0.21	- 2000-08-18, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.pm (parse): Minor bugfix in the parse method.
       Norikatsu Shigemura (nork@cityfujisawa.ne.jp)
 
-1999-06-28  Jochen Wiedmann  <joe@ispsoft.de> (0.20)
-
+0.20	- 1999-06-28, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.xs: Fixed a bug in the decoder where escapeChar wasn't
       handled right. Pavel Kotala <pkotala@logis.cz>
 
-1999-05-01  Jochen Wiedmann  <joe@ispsoft.de> (0.19)
-
+0.19	- 1999-05-01, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.xs: Setting escape_char => undef should now work.
       Requested by Syed Muhammad Nayeem <smnayeem@dhaka.agni.com>
 
-1999-04-05  Jochen Wiedmann  <joe@ispsoft.de> (0.18)
-
+0.18	- 1999-04-05, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.pm: Portability fixes (sv_undef => PL_sv_undef
       and the like.
 
-1999-03-04  Jochen Wiedmann  <joe@ispsoft.de> (0.17)
-
-    * CSV_XS.pm: Added always_quote attribute. 
+0.17	- 1999-03-04, Jochen Wiedmann  <joe@ispsoft.de>
+    * CSV_XS.pm: Added always_quote attribute.
       (Ken Williams <kwilliam@DigitalRiver.com>)
     * The types method is now implemented in Perl.
 
-1999-02-11  Jochen Wiedmann  <joe@ispsoft.de> (0.16)
-
+0.16	- 1999-02-11, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.pm: PV, IV and NV are no longer exportable, so that I
       need not inherit from Exporter any longer. (This caused trying
       to autoload DESTROY without any reason. Seems to me to be a
@@ -530,37 +481,30 @@
       escapeChar are different, then the quote char may be part of
       the field. (Not at the fields start, of course.)
 
-1998-08-21  Jochen Wiedmann  <joe@ispsoft.de> (0.15)
-
+0.15	- 1998-08-21, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.pm: Moved print () and getline () to XS.
 
-1998-08-13  Jochen Wiedmann  <joe@ispsoft.de> (0.14)
-
+0.14	- 1998-08-13, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.xs: Forgot to escape sepchar; patched by Paul Walmsley,
       <shag@nicar.org>.
 
-1998-07-20  Jochen Wiedmann  <joe@ispsoft.de> (0.13)
-
-    * CSV_XS.xs (Encode): Strings qre quoted only if required. 
+0.13	- 1998-07-20, Jochen Wiedmann  <joe@ispsoft.de>
+    * CSV_XS.xs (Encode): Strings qre quoted only if required.
     * CSV_XS.xs: Added support for $csv->{types}.
 
-1998-06-11  Jochen Wiedmann  <joe@ispsoft.de> (0.12)
-
+0.12	- 1998-06-11, Jochen Wiedmann  <joe@ispsoft.de>
     * CSV_XS.xs (Encode): Integers and Reals are no longer quoted.
 
     * Added $csv->{types}.
 
-1998-05-12  Jochen Wiedmann  <joe@ispsoft.de> (0.11)
-
+0.11	- 1998-05-12, Jochen Wiedmann  <joe@ispsoft.de>
     * Added $csv->{eol}
 
     * Added $csv->{quote_char} = undef
 
-1998-05-05  Jochen Wiedmann  <joe@ispsoft.de> (0.10)
-
+0.10	- 1998-05-05, Jochen Wiedmann  <joe@ispsoft.de>
     * Moved encoding and decoding to XS; added binary mode; added
       print () and getline () methods.
 
 1998-06-05  Alan Citterman  <alan@mfgrtl.com>
-
     * Initial version
