@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'10 [15 Apr 2010] Copyright H.M.Brand 2007-2011
+#	   (m)'11 [06 Oct 2011] Copyright H.M.Brand 2007-2011
 
 use strict;
 use warnings;
 
-our $VERSION = "1.70";
+our $VERSION = "1.71";
 
 sub usage
 {
@@ -72,19 +72,16 @@ if (-s $xls) {
     print STDERR "File '$xls' already exists. Overwrite? [y/N] > N\b";
     scalar <STDIN> =~ m/^[yj](es|a)?$/i or exit;
     }
-my $swe = "Spreadsheet::WriteExcel";
-@ARGV && -f $ARGV[0] && -s $ARGV[0] < 5_000_000 or $swe .= "::Big";
 
 # Don't split ourselves when modules do it _much_ better, and follow the standards
 use Text::CSV_XS;
 use Date::Calc qw( Delta_Days Days_in_Month );
 use Spreadsheet::WriteExcel;
-use Spreadsheet::WriteExcel::Big;
 use Encode qw( from_to );
 
 my $csv;
 
-my $wbk = $swe->new ($xls);
+my $wbk = Spreadsheet::WriteExcel->new ($xls);
 my $wks = $wbk->add_worksheet ();
    $dtf =~ s/j/y/g;
 my %fmt = (
