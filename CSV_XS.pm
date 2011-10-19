@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.85";
+$VERSION = "0.86";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -58,6 +58,7 @@ my %def_attr = (
     always_quote	=> 0,
     quote_space		=> 1,
     quote_null		=> 1,
+    quote_binary	=> 1,
     binary		=> 0,
     keep_meta_info	=> 0,
     allow_loose_quotes	=> 0,
@@ -149,6 +150,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     auto_diag		=> 24,
     quote_space		=> 25,
     quote_null		=> 31,
+    quote_binary	=> 32,
     _is_bound		=> 26,	# 26 .. 29
     );
 
@@ -242,6 +244,13 @@ sub quote_null
     @_ and $self->_set_attr_X ("quote_null", shift);
     $self->{quote_null};
     } # quote_null
+
+sub quote_binary
+{
+    my $self = shift;
+    @_ and $self->_set_attr_X ("quote_binary", shift);
+    $self->{quote_binary};
+    } # quote_binary
 
 sub binary
 {
@@ -992,6 +1001,13 @@ you to treat the NULL byte as a simple binary character in binary mode (the
 C<< { binary => 1 } >> is set). The default is true.  You can prevent NULL
 escapes by setting this attribute to 0.
 
+=item quote_binary
+X<quote_binary>
+
+By default,  all "unsafe" bytes inside a string cause the combined field to
+be quoted. By setting this attribute to 0, you can disable that trigger for
+bytes >= 0x7f.
+
 =item keep_meta_info
 X<keep_meta_info>
 
@@ -1064,6 +1080,7 @@ is equivalent to
      always_quote        => 0,
      quote_space         => 1,
      quote_null	         => 1,
+     quote_binary        => 1,
      binary              => 0,
      keep_meta_info      => 0,
      allow_loose_quotes  => 0,

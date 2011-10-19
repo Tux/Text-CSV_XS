@@ -10,7 +10,7 @@ BEGIN {
 	plan skip_all => "UTF8 tests useless in this ancient perl version";
 	}
     else {
-	plan tests => 67;
+	plan tests => 75;
 	}
     }
 
@@ -86,3 +86,21 @@ SKIP: {
     $csv->combine (@$row);
     ok (utf8::valid ($csv->string),	"Combined string is valid utf8");
     }
+
+# Test quote_binary
+$csv->always_quote (0);
+$csv->quote_space  (0);
+$csv->quote_binary (0);
+ok ($csv->combine (" ", 1, "\x{20ac} "),	"Combine");
+is ($csv->string, qq{ ,1,\x{20ac} },		"String 0-0");
+$csv->quote_binary (1);
+ok ($csv->combine (" ", 1, "\x{20ac} "),	"Combine");
+is ($csv->string, qq{ ,1,"\x{20ac} "},		"String 0-1");
+
+$csv->quote_space  (1);
+$csv->quote_binary (0);
+ok ($csv->combine (" ", 1, "\x{20ac} "),	"Combine");
+is ($csv->string, qq{" ",1,"\x{20ac} "},	"String 1-0");
+$csv->quote_binary (1);
+ok ($csv->combine (" ", 1, "\x{20ac} "),	"Combine");
+is ($csv->string, qq{" ",1,"\x{20ac} "},	"String 1-1");

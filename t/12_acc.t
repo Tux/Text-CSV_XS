@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;	# use warnings core since 5.6
 
-use Test::More tests => 113;
+use Test::More tests => 116;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -29,6 +29,7 @@ is ($csv->auto_diag,			0,		"auto_diag");
 is ($csv->verbatim,			0,		"verbatim");
 is ($csv->quote_space,			1,		"quote_space");
 is ($csv->quote_null,			1,		"quote_null");
+is ($csv->quote_binary,			1,		"quote_binary");
 
 is ($csv->binary (1),			1,		"binary (1)");
 my @fld = ( 'txt =, "Hi!"', "Yes", "", 2, undef, "1.09", "\r", undef );
@@ -53,13 +54,15 @@ is ($csv->auto_diag (1),		1,		"auto_diag (1)");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
 is ($csv->quote_space (1),		1,		"quote_space (1)");
 is ($csv->quote_null (1),		1,		"quote_null (1)");
+is ($csv->quote_binary (1),		1,		"quote_binary (1)");
 is ($csv->escape_char ("\\"),		"\\",		"escape_char (\\)");
 ok ($csv->combine (@fld),				"combine");
 is ($csv->string,
     qq{=txt \\=, "Hi!"=;=Yes=;==;=2=;;=1.09=;=\r=;\r},	"string");
 
-is ($csv->quote_space (0),		0,		"quote_space (1)");
-is ($csv->quote_null (0),		0,		"quote_null (1)");
+is ($csv->quote_space (0),		0,		"quote_space (0)");
+is ($csv->quote_null (0),		0,		"quote_null (0)");
+is ($csv->quote_binary (0),		0,		"quote_binary (0)");
 
 # Funny settings, all three translate to \0 internally
 ok ($csv = Text::CSV_XS->new ({
