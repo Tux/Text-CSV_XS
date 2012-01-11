@@ -1,5 +1,7 @@
-0.86	- 2011-10-19, H.Merijn Brand
+0.86	- 2012-01-11, H.Merijn Brand
     * Introduce quote_binary attribute
+    * Update copyright to 2012
+    * Versions
 
 0.85	- 2011-09-07, H.Merijn Brand
     * NAME / DISTNAME in Makefile.PL
