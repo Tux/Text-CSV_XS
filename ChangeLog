@@ -1,7 +1,8 @@
-0.86	- 2012-01-11, H.Merijn Brand
+0.86	- 2012-01-21, H.Merijn Brand
     * Introduce quote_binary attribute
     * Update copyright to 2012
     * Versions
+    * Fixed a utf8::decode on undef (found by perl-5.15.7)
 
 0.85	- 2011-09-07, H.Merijn Brand
     * NAME / DISTNAME in Makefile.PL

@@ -108,7 +108,8 @@ sub new
 
     for (keys %{$attr}) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
-	    $] >= 5.008002 && m/_char$/ and utf8::decode ($attr->{$_});
+	    defined $attr->{$_} && $] >= 5.008002 && m/_char$/ and
+		utf8::decode ($attr->{$_});
 	    next;
 	    }
 #	croak?
