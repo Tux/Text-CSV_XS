@@ -763,25 +763,25 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 
 	require_IO_Handle;
 
-	csv->eol_pos = -1;
-	if (csv->eolx || csv->eol_is_cr) {
-	    rs = SvPOK (PL_rs) || SvPOKp (PL_rs) ? SvPV_const (PL_rs, rslen) : NULL;
-	    sv_setpvn (PL_rs, (char *)csv->eol, csv->eol_len);
-	    }
+	ENTER;
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-	result = call_sv (m_getline, G_SCALAR | G_METHOD);
-	SPAGAIN;
-	csv->tmp = result ? POPs : NULL;
+
+	csv->eol_pos = -1;
 	if (csv->eolx || csv->eol_is_cr) {
-	    if (rs)
-		sv_setpvn (PL_rs, rs, rslen);
-	    else
-		SvPOK_off (PL_rs);
+	    /* local $\ = $eol */
+	    SAVEGENERICSV (PL_rs);
+	    PL_rs = newSVpvn ((char *)csv->eol, csv->eol_len);
 	    }
+
+	result = call_sv (m_getline, G_SCALAR | G_METHOD);
+	csv->tmp = result ? POPs : NULL;
+	SPAGAIN;
 	PUTBACK;
+	LEAVE;
+
 #if MAINT_DEBUG > 4
 	fprintf (stderr, "getline () returned:\n");
 	sv_dump (csv->tmp);

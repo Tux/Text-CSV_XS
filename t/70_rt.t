@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 438;
+ use Test::More tests => 442;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -30,9 +30,7 @@ while (<DATA>) {
 # Regression Tests based on RT reports
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=24386
-    # #24386: \t doesn't work in _XS, works in _PP
-
-    $rt = 24386;
+    $rt = 24386; # \t doesn't work in _XS, works in _PP
     my @lines = @{$input{$rt}};
 
     ok (my $csv = Text::CSV_XS->new ({ sep_char => "\t" }), "RT-$rt: $desc{$rt}");
@@ -46,9 +44,8 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
-    # 21530: getline () does not return documented value at end of filehandle
-    # IO::Handle  was first released with perl 5.00307
-    $rt = 21530;
+    $rt = 21530; # getline () does not return documented value at end of
+    		 # filehandle IO::Handle  was first released with perl 5.00307
     open  FH, ">$csv_file";
     print FH @{$input{$rt}};
     close FH;
@@ -67,8 +64,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
-    # 18703: Fails to use quote_char of '~'
-    $rt = 18703;
+    $rt = 18703; # Fails to use quote_char of '~'
     my ($csv, @fld);
     ok ($csv = Text::CSV_XS->new ({ quote_char => "~" }), "RT-$rt: $desc{$rt}");
     is ($csv->quote_char, "~", "quote_char is '~'");
@@ -84,8 +80,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=15076
-    # 15076: escape_char before characters that do not need to be escaped.
-    $rt = 15076;
+    $rt = 15076; # escape_char before characters that do not need to be escaped.
     my ($csv, @fld);
     ok ($csv = Text::CSV_XS->new ({
 	sep_char		=> ";",
@@ -101,8 +96,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=34474
-    # 34474: wish: integrate row-as-hashref feature from Parse::CSV
-    $rt = 34474;
+    $rt = 34474; # wish: integrate row-as-hashref feature from Parse::CSV
     open  FH, ">$csv_file";
     print FH @{$input{$rt}};
     close FH;
@@ -125,8 +119,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=38960
-    # 38960: print () on invalid filehandle warns and returns success
-    $rt = 38960;
+    $rt = 38960; # print () on invalid filehandle warns and returns success
     open  FH, ">$csv_file";
     print FH "";
     close FH;
@@ -142,8 +135,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=40507
-    # 40507: Parsing fails on escaped null byte
-    $rt = 40507;
+    $rt = 40507; # Parsing fails on escaped null byte
     ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
     my $str = $input{$rt}[0];
     ok ($csv->parse ($str),		"parse () correctly escaped NULL");
@@ -161,8 +153,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=42642
-    # 42642: failure on unusual quote/sep values
-    $rt = 42642;
+    $rt = 42642; # failure on unusual quote/sep values
     SKIP: {
 	$] < 5.008002 and skip "UTF8 unreliable in perl $]", 6;
 
@@ -185,8 +176,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=43927
-    # 43927: Is bind_columns broken or am I using it wrong?
-    $rt = 43927;
+    $rt = 43927; # Is bind_columns broken or am I using it wrong?
     open  FH, ">$csv_file";
     print FH @{$input{$rt}};
     close FH;
@@ -203,8 +193,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=44402
-    # 44402 - Unexpected results parsing tab-separated spaces
-    $rt = 44402;
+    $rt = 44402; # Unexpected results parsing tab-separated spaces
     open  FH, ">$csv_file";
     my @ws = ("", " ", "  ");
     foreach my $f1 (@ws) {
@@ -295,8 +284,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=58356
-    # 58356 - Incorrect CSV generated if "quote_space => 0"
-    $rt = "58356";
+    $rt = "58356"; # Incorrect CSV generated if "quote_space => 0"
     ok (my $csv = Text::CSV_XS->new ({
 	binary      => 1,
 	quote_space => 0 }), "RT-$rt: $desc{$rt}");
@@ -306,7 +294,7 @@ while (<DATA>) {
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=61525
-    $rt = "61525";
+    $rt = "61525"; # eol not working for values other than "\n"?
     # First try with eol in constructor
     foreach my $eol ("\n", "\r", "!") {
 	$/ = "\n";
@@ -363,6 +351,38 @@ while (<DATA>) {
 	}
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=74216
+    $rt = "74216"; # setting 'eol' affects global input record separator
+
+    open  FH, ">$csv_file";
+    print FH @{$input{$rt}};
+    close FH;
+
+    my $slurp_check = sub {
+	open FH, "<$csv_file";
+	is (scalar @{[<FH>]}, 4);
+	close FH;
+	};
+
+    $slurp_check->();
+
+    my $crlf = "\015\012";
+    open  FHX, ">_$csv_file";
+    print FHX "a,b,c" . $crlf . "1,2,3" . $crlf;
+    close FHX;
+    open  FHX, "<_$csv_file";
+    my $csv = Text::CSV_XS->new ({ eol => $crlf });
+    is_deeply ($csv->getline (*FHX), [qw( a b c )]);
+    close FHX;
+    unlink "_$csv_file";
+
+    $slurp_check->();
+
+    {	local $/ = "\n";
+	$slurp_check->();
+	}
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -407,6 +427,11 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 --------------090302050909040309030109--
 «58356» - Incorrect CSV generated if "quote_space => 0"
 «61525» - eol not working for values other than "\n"?
+«74216» - setting 'eol' affects global input record separator
+1,2
+3,4
+5,6
+7,8
 «x1001» - Lines starting with "0" (Ruslan Dautkhanov)
 "0","A"
 "0","A"
