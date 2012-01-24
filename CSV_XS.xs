@@ -601,7 +601,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	PUSHs ((dst));
 	PUSHs (tmp);
 	PUTBACK;
-	if (csv->utf8)
+	if (csv->utf8 && is_utf8_string (SvPV_nolen (tmp), 0))
 	    SvUTF8_on (tmp);
 	result = call_sv (m_print, G_SCALAR | G_METHOD);
 	SPAGAIN;
@@ -617,7 +617,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	sv_catpvn (SvRV (dst), csv->buffer, csv->used);
 	result = TRUE;
 	}
-    if (csv->utf8 && SvROK (dst))
+    if (csv->utf8 && SvROK (dst) && is_utf8_string (SvPV_nolen (SvRV (dst)), 0))
 	SvUTF8_on (SvRV (dst));
     csv->used = 0;
     return result;

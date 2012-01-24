@@ -4,7 +4,7 @@ use strict;
 $^W = 1;
 
 #use Test::More "no_plan";
- use Test::More tests => 442;
+ use Test::More tests => 449;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -383,6 +383,29 @@ while (<DATA>) {
 	}
     }
 
+SKIP: {   # http://rt.cpan.org/Ticket/Display.html?id=74220
+    $] < 5.008002 and skip "UTF8 unreliable in perl $]", 7;
+
+    $rt = "74220"; # Text::CSV_XS can be made to produce bad strings
+    my $csv = Text::CSV_XS->new ({ binary => 1 });
+
+    my $ax = chr (0xfa);
+    my $bx = "foo";
+
+    # We set the UTF-8 flag on a string with no funny characters
+    utf8::upgrade ($bx);
+    is ($bx, "foo", "no funny characters in the string");
+
+    ok (utf8::valid ($ax), "first string correct in Perl");
+    ok (utf8::valid ($bx), "second string correct in Perl");
+
+    ok ($csv->combine ($ax, $bx),	"combine ()");
+    ok (my $foo = $csv->string (),	"string ()");
+
+    ok (utf8::valid ($foo), "is combined string correct inside Perl?");
+    is ($foo, qq{\xfa,foo}, "expected result");
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -432,6 +455,7 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 3,4
 5,6
 7,8
+«74330» - Text::CSV_XS can be made to produce bad strings
 «x1001» - Lines starting with "0" (Ruslan Dautkhanov)
 "0","A"
 "0","A"

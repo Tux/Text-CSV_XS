@@ -1,5 +1,5 @@
-0.87	- 2012-01-22, H.Merijn Brand
-    *
+0.87	- 2012-01-24, H.Merijn Brand
+    * Extra check on utf8 output (RT#74330)
 
 0.86	- 2012-01-22, H.Merijn Brand
     * Introduce quote_binary attribute
