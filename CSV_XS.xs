@@ -19,6 +19,7 @@
 #include "ppport.h"
 #if (PERL_BCDVERSION <= 0x5005005)
 #  define sv_utf8_upgrade(sv)	/* no-op */
+#  define is_utf8_string(s,l)	0
 #  define SvUTF8_on(sv)		/* no-op */
 #  define SvUTF8(sv)		0
 #  endif
