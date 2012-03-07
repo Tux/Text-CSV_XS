@@ -1,5 +1,6 @@
-0.87	- 2012-01-24, H.Merijn Brand
+0.87	- 2012-03-07, H.Merijn Brand
     * Extra check on utf8 output (RT#74330)
+    * examples/csvdiff now recognizes numerically sorted CSV files
 
 0.86	- 2012-01-22, H.Merijn Brand
     * Introduce quote_binary attribute

@@ -37,7 +37,7 @@ use Text::CSV_XS;
 my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 0 });
 
 if ($opt_h) {
-    binmode STDOUT, ":utf8";
+    binmode STDOUT, ":encoding(utf-8)";
     print <<EOH;
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -50,6 +50,7 @@ if ($opt_h) {
   <style type="text/css">
     .rd { background:	#ffe0e0;	}
     .gr { background:	#e0ffe0;	}
+    .hd { background:	#e0e0ff;	}
     .b0 { background:	#e0e0e0;	}
     .b1 { background:	#f0f0f0;	}
     .r  { color:	red;		}
@@ -71,21 +72,28 @@ elsif (!$opt_c) {
     }
 
 my @f;
+my $opt_n = 1;
 foreach my $x (0, 1) {
     open my $fh, "<", $ARGV[$x] or die "$ARGV[$x]: $!\n";
-    while (1) { $_ = $csv->getline ($fh) or last; @$_ and push @{$f[$x]}, $_ }
+    my $n = 0;
+    while (1) {
+	my $row = $csv->getline ($fh) or last;
+	@$row and push @{$f[$x]}, $row;
+	$n++ && $row->[0] =~ m/\D/ and $opt_n = 0;
+	}
     }
 my @n   = map { $#{$f[$_]} } 0, 1;
 my @i   = (1, 1);
 my $hdr = "# csvdiff   < $ARGV[0]    > $ARGV[1]\n";
 
-$f[$_][1+$n[$_]][0] = "\xff\xff\xff\xff" for 0, 1;
+$f[$_][1+$n[$_]][0] = $opt_n ? 2147483647 : "\xff\xff\xff\xff" for 0, 1;
 
 my %cls;
    %cls = (
     "b" => 0,
     "-"	=> sub { "rd" },
     "+"	=> sub { "gr" },
+    "H"	=> sub { "hd" },
     "<"	=> sub { $cls{b} ^= 1; "b$cls{b}" },
     ">"	=> sub { "b$cls{b}" },
     );
@@ -109,17 +117,39 @@ sub show
     $hdr = "";
     } # show
 
+# Skip first line of both are same: it probably is a header
+my @h0 = @{$f[0][0]};
+my @h1 = @{$f[1][0]};
+if ("@h0" eq "@h1") {
+    if ($opt_h) {
+    	$i[0]--;
+    	show ("H", 0);
+    	}
+    shift @{$f[0]};
+    shift @{$f[1]};
+    }
+
+my $x = 0;
 while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
-    $f[0][$i[0]][0] lt $f[1][$i[1]][0] and show ("-", 0), next;
-    $f[0][$i[0]][0] gt $f[1][$i[1]][0] and show ("+", 1), next;
+    my @r0 = @{$f[0][$i[0]]};
+    my @r1 = @{$f[1][$i[1]]};
 
-    "@{[@{$f[0][$i[0]]}]}" eq "@{[@{$f[1][$i[1]]}]}" and
-	$i[0]++, $i[1]++, next;
+    if ($opt_n) {
+	$r0[0] <  $r1[0] and show ("-", 0), next;
+	$r0[0] >  $r1[0] and show ("+", 1), next;
+	}
+    else {
+	$r0[0] lt $r1[0] and show ("-", 0), next;
+	$r0[0] gt $r1[0] and show ("+", 1), next;
+	}
 
-    foreach my $c (1 .. $#{$f[0][0]}) {
-	$f[0][$i[0]][$c] eq $f[1][$i[1]][$c] and next;
-	$f[0][$i[0]][$c] = RED   . $f[0][$i[0]][$c] . RESET;
-	$f[1][$i[1]][$c] = GREEN . $f[1][$i[1]][$c] . RESET;
+    "@r0" eq "@r1" and $i[0]++, $i[1]++, next;
+
+    foreach my $c (1 .. $#h0) {
+	my ($L, $R) = map { $_ // "" } $r0[$c], $r1[$c];
+	$L eq $R and next;
+	$f[0][$i[0]][$c] = RED   . $L . RESET;
+	$f[1][$i[1]][$c] = GREEN . $R . RESET;
 	}
 
     show ("<", 0);
