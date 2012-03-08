@@ -1243,7 +1243,7 @@ Could easily be rewritten to the much faster:
      print $row->{price};
      }
 
-Your milage may vary for the size of the data and the numbers of rows, but 
+Your mileage may vary for the size of the data and the numbers of rows, but 
 with perl-5.14.2 the difference is like for a 100_000 line file with 14 rows:
 
             Rate hashrefs getlines
