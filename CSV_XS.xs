@@ -764,24 +764,15 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 
 	require_IO_Handle;
 
-	ENTER;
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-
-	csv->eol_pos = -1;
-	if (csv->eolx || csv->eol_is_cr) {
-	    /* local $\ = $eol */
-	    SAVEGENERICSV (PL_rs);
-	    PL_rs = newSVpvn ((char *)csv->eol, csv->eol_len);
-	    }
-
 	result = call_sv (m_getline, G_SCALAR | G_METHOD);
-	csv->tmp = result ? POPs : NULL;
 	SPAGAIN;
+	csv->eol_pos = -1;
+	csv->tmp = result ? POPs : NULL;
 	PUTBACK;
-	LEAVE;
 
 #if MAINT_DEBUG > 4
 	fprintf (stderr, "getline () returned:\n");
@@ -1373,6 +1364,13 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 {
     int		result, ahead = 0;
 
+    ENTER;
+    if (csv.eolx || csv.eol_is_cr) {
+	/* local $\ = $eol */
+	SAVEGENERICSV (PL_rs);
+	PL_rs = newSVpvn ((char *)csv.eol, csv.eol_len);
+	}
+
     if ((csv.useIO = useIO)) {
 	csv.tmp  = NULL;
 	if ((ahead = csv.has_ahead)) {
@@ -1439,6 +1437,9 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 		}
 	    }
 	}
+
+    LEAVE;
+
     return result;
     } /* c_xsParse */
 

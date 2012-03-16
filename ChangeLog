@@ -1,3 +1,6 @@
+0.88	- 2012-03-16, H.Merijn Brand
+    * Fix for $/ in 0.86 broke parsing fields that contain excessive $/'s
+
 0.87	- 2012-03-08, H.Merijn Brand
     * Extra check on utf8 output (RT#74330)
     * examples/csvdiff now recognizes numerically sorted CSV files
