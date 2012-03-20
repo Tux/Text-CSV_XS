@@ -106,7 +106,7 @@ sub done
 	}
 
     if ($diag[2]) {
-	print "$ARGV line $./$diag[2] - $diag[0] - $diag[1]\n";
+	print "$ARGV record $diag[3] at line $./$diag[2] - $diag[0] - $diag[1]\n";
 	my $ep  = $diag[2] - 1; # diag[2] is 1-based
 	my $err = $csv->error_input . "         ";
 	substr $err, $ep + 1, 0, "*";

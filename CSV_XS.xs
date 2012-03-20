@@ -1389,6 +1389,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     (void)hv_delete (hv, "_ERROR_INPUT", 12, G_DISCARD);
 
     result = Parse (&csv, src, av, avf);
+    sv_inc (*(hv_fetchs (hv, "_RECNO", FALSE)));
 
     (void)hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
     if (csv.useIO) {

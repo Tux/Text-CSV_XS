@@ -3,7 +3,7 @@
 use strict;
 $^W = 1;
 
- use Test::More tests => 125;
+ use Test::More tests => 127;
 #use Test::More "no_plan";
 
 my %err;
@@ -23,7 +23,7 @@ $| = 1;
 
 my $csv = Text::CSV_XS->new ();
 is (Text::CSV_XS::error_diag (), "",	"Last failure for new () - OK");
-is_deeply ([ $csv->error_diag ], [ 0, "", 0], "OK in list context");
+is_deeply ([ $csv->error_diag ], [ 0, "", 0, 0], "OK in list context");
 
 sub parse_err ($$$)
 {
@@ -107,9 +107,11 @@ ok (1, "Test auto_diag");
 $csv = Text::CSV_XS->new ({ auto_diag => 1 });
 {   my @warn;
     local $SIG{__WARN__} = sub { push @warn, @_ };
+    is ($csv->{_RECNO}, 0, "No records read yet");
     is ($csv->parse ('"","'), 0, "1 - bad parse");
     ok (@warn == 1, "1 - One error");
     like ($warn[0], qr '^# CSV_XS ERROR: 2027 -', "1 - error message");
+    is ($csv->{_RECNO}, 1, "One record read");
     }
 {   ok ($csv->{auto_diag} = 2, "auto_diag = 2 to die");
     eval { $csv->parse ('"","') };

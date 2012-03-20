@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.88";
+$VERSION = "0.89";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -71,6 +71,7 @@ my %def_attr = (
     types		=> undef,
 
     _EOF		=> 0,
+    _RECNO		=> 0,
     _STATUS		=> undef,
     _FIELDS		=> undef,
     _FFLAGS		=> undef,
@@ -359,13 +360,14 @@ sub error_input
 sub error_diag
 {
     my $self = shift;
-    my @diag = (0 + $last_new_err, $last_new_err, 0);
+    my @diag = (0 + $last_new_err, $last_new_err, 0, 0);
 
     if ($self && ref $self && # Not a class method or direct call
 	 $self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	$diag[0] = 0 + $self->{_ERROR_DIAG};
 	$diag[1] =     $self->{_ERROR_DIAG};
 	$diag[2] = 1 + $self->{_ERROR_POS} if exists $self->{_ERROR_POS};
+	$diag[3] =     $self->{_RECNO};
 	}
 
     my $context = wantarray;
@@ -398,6 +400,12 @@ sub error_diag
 	}
     return $context ? @diag : $diag[1];
     } # error_diag
+
+sub record_number
+{
+    my $self = shift;
+    return $self->{_RECNO};
+    } # record_number
 
 # string
 #
@@ -1454,9 +1462,9 @@ X<error_diag>
 
  Text::CSV_XS->error_diag ();
  $csv->error_diag ();
- $error_code   = 0  + $csv->error_diag ();
- $error_str    = "" . $csv->error_diag ();
- ($cde, $str, $pos) = $csv->error_diag ();
+ $error_code           = 0  + $csv->error_diag ();
+ $error_str            = "" . $csv->error_diag ();
+ ($cde, $str, $pos, $recno) = $csv->error_diag ();
 
 If (and only if) an error occurred, this function returns the diagnostics
 of that error.
@@ -1467,8 +1475,9 @@ associated error message to STDERR.
 If called in list context, it will return the error code and the error
 message in that order. If the last error was from parsing, the third value
 returned is a best guess at the location within the line that was being
-parsed. It's value is 1-based. See F<examples/csv-check> for how this can
-be used.
+parsed. It's value is 1-based. The forth value represents the record count
+parsed by this csv object See F<examples/csv-check> for how this can be
+used.
 
 If called in scalar context, it will return the diagnostics in a single
 scalar, a-la $!. It will contain the error code in numeric context, and the
@@ -1476,6 +1485,15 @@ diagnostics message in string context.
 
 When called as a class method or a direct function call, the error
 diagnostics is that of the last L</new> call.
+
+=head2 record_number
+X<record_number>
+
+ $recno = $csv->record_number ();
+
+Returns the records parsed by this csv instance. This value should be more
+accurate than C<$.> when embedded newlines come in play. Records written by
+this instance are not counted.
 
 =head2 SetDiag
 X<SetDiag>
