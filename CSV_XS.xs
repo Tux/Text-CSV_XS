@@ -202,7 +202,7 @@ xs_error_t xs_errors[] =  {
     };
 
 static int  io_handle_loaded = 0;
-static SV  *m_getline, *m_print;
+static SV  *m_getline, *m_print, *m_tell, *m_seek, *m_read;
 
 #define require_IO_Handle				\
     unless (io_handle_loaded) {				\
@@ -1362,7 +1362,8 @@ restart:
 #define c_xsParse(csv,hv,av,avf,src,useIO)	cx_c_xsParse (aTHX_ csv, hv, av, avf, src, useIO)
 static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
-    int		result, ahead = 0;
+    int	result, ahead = 0;
+    SV	*pos = NULL;
 
     ENTER;
     if (csv.eolx || csv.eol_is_cr) {
@@ -1373,11 +1374,30 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 
     if ((csv.useIO = useIO)) {
 	csv.tmp  = NULL;
+	/* If on a IO handle, I can save the current position with
+	 * IO::Seekable::tell, so I can reconstruct the last record
+	 * in case of parse error. See after Parse ()
+	 *   pos = $io->tell ();
+	 */
+	dSP;
+	require_IO_Handle;
+
+	PUSHMARK (sp);
+	EXTEND (sp, 1);
+	PUSHs (src);
+	PUTBACK;
+	result = call_sv (m_tell, G_SCALAR | G_METHOD);
+	SPAGAIN;
+	pos = result ? POPs : NULL;
+	PUTBACK;
+
 	if ((ahead = csv.has_ahead)) {
 	    SV **svp;
 	    if ((svp = hv_fetchs (hv, "_AHEAD", FALSE)) && *svp) {
 		csv.bptr = SvPV (csv.tmp = *svp, csv.size);
 		csv.used = 0;
+		if (pos && SvIV (pos) > csv.size)
+		    sv_setiv (pos, SvIV (pos) - csv.size);
 		}
 	    }
 	}
@@ -1413,6 +1433,56 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	    else {
 		av_undef (avf);
 		sv_free ((SV *)avf);
+		}
+	    }
+
+	if (!result && pos && !(csv.useIO & useIO_EOF)) {	/* We have a FAIL */
+	    /* Restore the complete source for this failing Parse () if possible
+	     * if (Failed && pos && now = $io->tell && now > pos) {
+	     *     $io->seek (pos, 0);
+	     *     read ($io, $csv->{_ERROR_INPUT}, now - pos);
+	     *     }
+	     */
+	    SV *now = NULL;
+	    int can = 0, r;
+
+	    /* now = $io->tell */
+	    dSP;
+	    PUSHMARK (sp);
+	    EXTEND (sp, 1);
+	    PUSHs (src);
+	    PUTBACK;
+	    r = call_sv (m_tell, G_SCALAR | G_METHOD);
+	    SPAGAIN;
+	    now = r ? POPs : NULL;
+	    PUTBACK;
+
+	    if (now && SvIV (now) > SvIV (pos)) {
+		/* $io->seek (pos, 0) */
+		PUSHMARK (sp);
+		EXTEND (sp, 3);
+		PUSHs (src);
+		PUSHs (pos);
+		PUSHs (sv_2mortal (newSViv (0)));
+		PUTBACK;
+		r = call_sv (m_seek, G_SCALAR | G_METHOD);
+		SPAGAIN;
+		if (r && SvTRUE (TOPs)) can = 1;
+		PUTBACK;
+
+		if (can) {
+		    int buflen = SvIV (now) - SvIV (pos);
+		    SV *ei = newSV (buflen);
+		    /* read ($io, $csv->{_ERROR_INPUT}, now - pos) */
+		    PUSHMARK (sp);
+		    EXTEND (sp, 3);
+		    PUSHs (src);
+		    PUSHs (ei);
+		    PUSHs (newSViv (buflen));
+		    PUTBACK;
+		    if (call_sv (m_read, G_SCALAR | G_METHOD))
+			(void)hv_store (hv, "_ERROR_INPUT", 12, ei, 0);
+		    }
 		}
 	    }
 	}
@@ -1552,6 +1622,9 @@ PROTOTYPES: DISABLE
 BOOT:
     m_getline = newSVpvs ("getline");
     m_print   = newSVpvs ("print");
+    m_tell    = newSVpvs ("tell");
+    m_seek    = newSVpvs ("seek");
+    m_read    = newSVpvs ("read");
 
 void
 SetDiag (self, xse, ...)

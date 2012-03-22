@@ -1,5 +1,7 @@
-0.89	- 2012-03-20, H.Merijn Brand
+0.89	- 2012-03-22, H.Merijn Brand
     * Introduce record_number
+    * Try harder to get the complete input parsed for the current record
+      when hitting errors on parsing seekable IO
 
 0.88	- 2012-03-16, H.Merijn Brand
     * Fix for $/ in 0.86 broke parsing fields that contain excessive $/'s
