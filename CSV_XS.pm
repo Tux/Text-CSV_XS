@@ -119,7 +119,7 @@ sub new
 	return;
 	}
 
-    my $self  = {%def_attr, %{$attr}};
+    my $self = { %def_attr, %{$attr} };
     if (my $ec = _check_sanity ($self)) {
 	$last_new_err = SetDiag (undef, $ec);
 	$attr->{auto_diag} and error_diag ();
