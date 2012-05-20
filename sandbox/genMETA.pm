@@ -265,7 +265,7 @@ sub fix_meta
     $yf =~ s/yml$/json/;
     my $jsn = $self->{h};
     $jsn->{"meta-spec"} = {
-	version	=> "2.0",
+	version	=> 2,
 	url	=> "https://metacpan.org/module/CPAN::Meta::Spec?#meta-spec",
 	};
     open $my, ">", $yf or croak "Cannot update $yf\n";
