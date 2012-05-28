@@ -18,7 +18,7 @@ package Text::CSV_XS;
 # Extended and Remodelled by:
 #    H.Merijn Brand (h.m.brand@xs4all.nl)
 
-require 5.005;
+require 5.006;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.89";
+$VERSION = "0.90";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 

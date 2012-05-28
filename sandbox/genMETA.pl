@@ -47,11 +47,11 @@ provides:
         file:            CSV_XS.pm
         version:         VERSION
 requires:     
-    perl:                5.005
+    perl:                5.006
     DynaLoader:          0
     IO::Handle:          0
 recommends:     
-    perl:                5.014002
+    perl:                5.016000
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:

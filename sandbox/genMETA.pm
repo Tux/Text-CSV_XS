@@ -10,7 +10,7 @@ use Carp;
 
 use List::Util qw( first );
 use Encode qw( encode decode );
-use Test::YAML::Meta::Version;
+use Test::CPAN::Meta::YAML::Version;
 use Test::MinimumVersion;
 use Test::More ();
 use Parse::CPAN::Meta;
@@ -207,7 +207,7 @@ sub check_yaml
 
     $self->{verbose} and print Dump $h;
 
-    my $t = Test::YAML::Meta::Version->new (yaml => $h);
+    my $t = Test::CPAN::Meta::YAML::Version->new (yaml => $h);
     $t->parse () and
 	croak join "\n", "Test::YAML::Meta reported failure:", $t->errors, "";
 

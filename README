@@ -26,8 +26,7 @@ Copying:
 	       'http://repo.or.cz/w/Text-CSV_XS.git?a=snapshot;sf=tgz'
 
 Prerequisites:
-    perl 5.005_03. 5.005 will not be able to build the manual pages.
-    examples require 5.006, but are probably easy to mold into 5.005
+    perl 5.6.0 or up.
     examples/csv-check requires perl with defined-or and PerlIO, and
     making that work on other versions is left as an exercise to the
     reader.
@@ -35,10 +34,8 @@ Prerequisites:
 Build/Installation:
     Standard build/installation:
 	perl Makefile.PL
-	make
 	make test
 	make install
-    (The 'make' step cannot be omitted for perl-5.005)
 
 Author:
     H.Merijn Brand <h.m.brand@xs4all.nl>

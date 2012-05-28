@@ -17,14 +17,7 @@
 #define NEED_sv_2pv_flags
 #define NEED_vload_module
 #include "ppport.h"
-#if (PERL_BCDVERSION <= 0x5005005)
-#  define sv_utf8_upgrade(sv)	/* no-op */
-#  define is_utf8_sv(s)		0
-#  define SvUTF8_on(sv)		/* no-op */
-#  define SvUTF8(sv)		0
-#else
-#  define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), 0)
-#  endif
+#define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), 0)
 #ifndef PERLIO_F_UTF8
 #  define PERLIO_F_UTF8	0x00008000
 #  endif

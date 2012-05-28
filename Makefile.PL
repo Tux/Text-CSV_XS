@@ -2,7 +2,7 @@
 
 # Copyright PROCURA B.V. (c) 2006-2012 H.Merijn Brand
 
-require 5.005; # <- also see postamble at the bottom for META.yml
+require 5.006; # <- also see postamble at the bottom for META.yml
 use strict;
 
 use ExtUtils::MakeMaker;
