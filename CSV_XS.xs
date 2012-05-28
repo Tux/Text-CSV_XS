@@ -197,14 +197,22 @@ xs_error_t xs_errors[] =  {
 static int  io_handle_loaded = 0;
 static SV  *m_getline, *m_print, *m_tell, *m_seek, *m_read;
 
-#define require_IO_Handle				\
-    unless (io_handle_loaded) {				\
-	ENTER;						\
-	load_module (PERL_LOADMOD_NOIMPORT,		\
-	    newSVpvs ("IO::Handle"), NULL, NULL, NULL);	\
-	LEAVE;						\
-	io_handle_loaded = 1;				\
-	}
+static void require_IO_Handle ()
+{
+    if (io_handle_loaded)
+	return;
+
+    ENTER;
+#if (PERL_BCDVERSION >= 0x5012000) && (PERL_BCDVERSION <= 0x5012099)
+    Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT,
+	newSVpvs ("IO::File"), NULL, NULL, NULL);
+#endif
+    Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT,
+	newSVpvs ("IO::Handle"), NULL, NULL, NULL);
+    LEAVE;
+
+    io_handle_loaded = 1;
+    } /* require_IO_Handle */
 
 #define is_whitespace(ch) \
     ( (ch) != csv->sep_char    && \
@@ -591,7 +599,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
     if (csv->useIO) {
 	SV *tmp = newSVpv (csv->buffer, csv->used);
 	dSP;
-	require_IO_Handle;
+	require_IO_Handle ();
 	PUSHMARK (sp);
 	EXTEND (sp, 2);
 	PUSHs ((dst));
@@ -755,7 +763,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     {	STRLEN		result;
 	dSP;
 
-	require_IO_Handle;
+	require_IO_Handle ();
 
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
@@ -1373,13 +1381,14 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	 *   pos = $io->tell ();
 	 */
 	dSP;
-	require_IO_Handle;
+	require_IO_Handle ();
 
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
 	result = call_sv (m_tell, G_SCALAR | G_METHOD);
+	/* result = Perl_pp_tell (aTHX_); ? */
 	SPAGAIN;
 	pos = result ? POPs : NULL;
 	PUTBACK;
