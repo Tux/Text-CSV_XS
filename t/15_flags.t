@@ -149,7 +149,7 @@ sub crnlsp
     is ($csv->is_quoted (0), undef,		"is_quoted () before parse");
     is ($csv->is_binary (0), undef,		"is_binary () before parse");
 
-    my $bintxt = chr ($] < 5.006 ? 0xbf : 0x20ac);
+    my $bintxt = chr (0x20ac);
     ok ( $csv->parse (qq{,"1","a\rb",0,"a\nb",1,\x8e,"a\r\n","$bintxt","",}),
 			"parse () - mixed quoted/binary");
     is (scalar $csv->fields, 11,		"fields () - count");

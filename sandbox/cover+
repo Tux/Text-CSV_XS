@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 my @perls = (
-#   "perl5.005_04",	# Not supported by Devel::Cover
     "perl5.6.2",	# 5.6.2  threaded 64bitint
     "perl5.8.8",	# 5.8.8  64bitint defined-or
     "perl5.10.0",	# 5.10.0 64bitint debug

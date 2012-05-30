@@ -18,7 +18,7 @@ package Text::CSV_XS;
 # Extended and Remodelled by:
 #    H.Merijn Brand (h.m.brand@xs4all.nl)
 
-require 5.006;
+require 5.006001;
 
 use strict;
 use warnings;
@@ -1129,20 +1129,11 @@ X<print>
 Similar to L</combine> + L</string> + L</print>, but way more efficient. It
 expects an array ref as input (not an array!) and the resulting string is
 not really created, but immediately written to the I<$io> object, typically
-an IO handle or any other object that offers a L</print> method. Note, this
-implies that the following is wrong in perl 5.005_xx and older:
-
- open FILE, ">", "whatever";
- $status = $csv->print (\*FILE, $colref);
+an IO handle or any other object that offers a L</print> method.
 
 For performance reasons the print method does not create a result string.
 In particular the L</string>, L</status>, L</fields>, and L</error_input>
 methods are meaningless after executing this method.
-
-as in perl 5.005 and older, the glob C<\*FILE> is not an object, thus it
-does not have a print method. The solution is to use an IO::File object or
-to hide the glob behind an IO::Wrap object. See L<IO::File> and L<IO::Wrap>
-for details.
 
 =head2 combine
 X<combine>

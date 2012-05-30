@@ -2,8 +2,6 @@
 
 package Text::CSV_XS::Subclass;
 
-BEGIN { require Text::CSV_XS; }	# needed for perl5.005
-
 use strict;
 $^W = 1;
 $|  = 1;

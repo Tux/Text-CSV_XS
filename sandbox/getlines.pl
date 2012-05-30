@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-require 5.006;
+require 5.006001;
 use strict;
 
 use IO::Handle;

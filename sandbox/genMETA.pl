@@ -23,7 +23,7 @@ $meta->from_data (<DATA>);
 if ($check) {
     $meta->check_encoding ();
     $meta->check_required ();
-    $meta->check_minimum ("5.006", [ "examples" ]);
+    $meta->check_minimum ("5.006001", [ "examples" ]);
     }
 elsif ($opt_v) {
     $meta->print_yaml ();
@@ -47,7 +47,7 @@ provides:
         file:            CSV_XS.pm
         version:         VERSION
 requires:     
-    perl:                5.006
+    perl:                5.006001
     DynaLoader:          0
     IO::Handle:          0
 recommends:     
