@@ -1,10 +1,12 @@
-0.90	- 2012-05-30, H.Merijn Brand
+0.90	- 2012-06-07, H.Merijn Brand
     * Introduce record_number
     * Try harder to get the complete input parsed for the current record
       when hitting errors on parsing seekable IO (only works in 5.14.0 and up)
     * Drop 5.005 support (5.6.1 is now minimum)
     * Tested with perl 5.6.1 .. 5.17.0 (99 versions of perl) on Linux, HP-UX,
       AIX, and Windows
+    * SvSETMAGIC was missing for tied variables causing weird actions at a
+      distance, e.g. in printf
 
 0.88	- 2012-03-16, H.Merijn Brand
     * Fix for $/ in 0.86 broke parsing fields that contain excessive $/'s

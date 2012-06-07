@@ -869,17 +869,17 @@ int CSV_GET_ (csv_t *csv, SV *src, int l)
 
 #define AV_PUSH { \
     *SvEND (sv) = (char)0;					\
-    if (SvCUR (sv) == 0 && (csv->empty_is_undef || (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef))) {\
+    SvUTF8_off (sv);						\
+    if (SvCUR (sv) == 0 && (csv->empty_is_undef || (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef)))\
 	sv_setpvn (sv, NULL, 0);				\
-	unless (csv->is_bound) av_push (fields, sv);		\
-	}							\
     else {							\
 	if (csv->allow_whitespace && ! (f & CSV_FLAGS_QUO))	\
 	    strip_trail_whitespace (sv);			\
 	if (f & CSV_FLAGS_BIN && csv->utf8)			\
 	    SvUTF8_on (sv);					\
-	unless (csv->is_bound) av_push (fields, sv);		\
 	}							\
+    SvSETMAGIC (sv);						\
+    unless (csv->is_bound) av_push (fields, sv);		\
     PUSH_RPT;							\
     sv = NULL;							\
     if (csv->keep_meta_info && fflags)				\
