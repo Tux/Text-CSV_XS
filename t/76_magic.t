@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-$^W = 1;
+use warnings;
 
 #use Test::More "no_plan";
  use Test::More tests => 7;
@@ -41,7 +41,7 @@ unlink "_76test.csv";
 package Foo;
 
 use strict;
-local $^W = 1;
+use warnings;
 
 require Tie::Scalar;
 use vars qw( @ISA );

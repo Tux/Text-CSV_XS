@@ -3,7 +3,7 @@
 package Text::CSV_XS::Subclass;
 
 use strict;
-$^W = 1;
+use warnings;
 $|  = 1;
 
 use base "Text::CSV_XS";

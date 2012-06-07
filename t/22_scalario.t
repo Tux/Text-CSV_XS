@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-$^W = 1;	# use warnings;
+use warnings;
 $|  = 1;
 
 use Config;

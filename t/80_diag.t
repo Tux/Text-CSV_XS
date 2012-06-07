@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-$^W = 1;
+use warnings;
 
  use Test::More tests => 127;
 #use Test::More "no_plan";
