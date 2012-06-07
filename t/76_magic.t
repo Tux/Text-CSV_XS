@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 11;
+ use Test::More tests => 13;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -45,9 +45,11 @@ untie $foo;
 is_deeply ([$csv->column_names], \@foo,	"column_names ()");
 
 open  $fh, "<", "_76test.csv";
-$csv->bind_columns (\$bar, \my ($f0, $f1, $f2));
+is ($csv->bind_columns (undef), undef,	"bind column clear");
+ok ($csv->bind_columns (\$bar, \my ($f0, $f1, $f2)), "bind");
 ok ($csv->getline ($fh),		"fetch with magic");
 is_deeply ([$bar,$f0,$f1,$f2], \@foo,	"columns fetched on magic");
+close $fh;
 
 unlink "_76test.csv";
 

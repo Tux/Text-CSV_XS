@@ -552,8 +552,10 @@ sub bind_columns
     @refs or
 	return defined $self->{_BOUND_COLUMNS} ? @{$self->{_BOUND_COLUMNS}} : undef;
 
-    @refs == 1 && ! defined $refs[0] and
+    if (@refs == 1 && ! defined $refs[0]) {
+	$self->{_COLUMN_NAMES} = undef;
 	return $self->{_BOUND_COLUMNS} = undef;
+	}
 
     $self->{_COLUMN_NAMES} && @refs != @{$self->{_COLUMN_NAMES}} and
 	croak ($self->SetDiag (3003));
@@ -1295,6 +1297,11 @@ return, the remaining references are left untouched.
  while ($csv->getline ($io)) {
      print "The price of a $name is \x{20ac} $price\n";
      }
+
+To reset or clear all column binding, call L</bind_columns> with a single
+argument C<undef>. This will also clear column names.
+
+ $csv->bind_columns (undef);
 
 =head2 eof
 X<eof>
