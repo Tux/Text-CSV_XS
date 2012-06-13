@@ -26,7 +26,7 @@ is_deeply ([$csv->fields], \@foo,	"column_names ()");
 tie $bar, "Bar";
 $bar = "#";
 ok ($csv->combine ($bar, @{$foo}[1..3]),"combine () from magic");
-untie $foo;
+untie $bar;
 is_deeply ([$csv->fields], \@foo,	"column_names ()");
 
 tie $foo, "Foo";
@@ -45,10 +45,13 @@ untie $foo;
 is_deeply ([$csv->column_names], \@foo,	"column_names ()");
 
 open  $fh, "<", "_76test.csv";
-is ($csv->bind_columns (undef), undef,	"bind column clear");
+tie $bar, "Bar";
 ok ($csv->bind_columns (\$bar, \my ($f0, $f1, $f2)), "bind");
 ok ($csv->getline ($fh),		"fetch with magic");
 is_deeply ([$bar,$f0,$f1,$f2], \@foo,	"columns fetched on magic");
+# free any refs
+is ($csv->bind_columns (undef), undef,	"bind column clear");
+untie $bar;
 close $fh;
 
 unlink "_76test.csv";
@@ -83,20 +86,19 @@ unlink "_76test.csv";
     use vars qw( @ISA );
     @ISA = qw(Tie::Scalar);
 
-    my $bar;
-
     sub FETCH
     {
-	return $bar;
+	return ${$_[0]};
 	} # FETCH
 
     sub STORE
     {
-	$bar = $_[1];
+	${$_[0]} = $_[1];
 	} # STORE
 
     sub TIESCALAR
     {
+	my $bar;
 	bless \$bar, "Bar";
 	} # TIESCALAR
 
