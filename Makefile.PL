@@ -61,7 +61,9 @@ sub postamble
 		--show-reachable=yes
 		--num-callers=50
 		--log-fd=3
-		$(FULLPERLRUN) "-MExtUtils::Command::MM" "-e"
+		$(FULLPERLRUN)
+		    "-MPerl::Destruct::Level=level,2"
+		    "-MExtUtils::Command::MM" "-e"
 		    "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"
 		    $(TEST_FILES) 3>valgrind.log
 		    );

@@ -1,3 +1,6 @@
+0.91	- 2012-06-15, H.Merijn Brand
+    * 
+
 0.90	- 2012-06-15, H.Merijn Brand
     * Drop 5.005 support (5.6.1 is now minimum)
     * Introduce record_number
