@@ -85,8 +85,8 @@ ok ( $csv->status (),					"status ()");
 #    reason. This file ought to guarantee compatibility to Text::CSV.
 #
 ok (1,							"Integers and Reals");
-ok ( $csv->combine ("", 2, 3.4, "a", "a b"),		"Mixed - combine ()");
-is ( $csv->string, ',2,3.4,a,"a b"',			"Mixed - string ()");
+ok ( $csv->combine ("", 2, 3.25, "a", "a b"),		"Mixed - combine ()");
+is ( $csv->string, ',2,3.25,a,"a b"',			"Mixed - string ()");
 
 # New from object
 ok ($csv->new (),					"\$csv->new ()");
