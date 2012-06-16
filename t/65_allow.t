@@ -324,14 +324,14 @@ foreach my $bin (0, 1) {
 	}
 
     ok (1, "verbatim on getline (*FH)");
-    open  FH, ">_65test.csv";
+    open  FH, ">", "_65test.csv";
     print FH @str, "M^Abe^*\r\n";
     close FH;
 
     foreach $gc (0, 1) {
 	$csv->verbatim ($gc);
 
-	open FH, "<_65test.csv";
+	open FH, "<", "_65test.csv";
 
 	my $row;
 	ok ($row = $csv->getline (*FH),		"#\\r\\n $gc getline");
@@ -357,13 +357,13 @@ foreach my $bin (0, 1) {
 	verbatim	=> 1,
 	eol		=> "#\r\n",
 	});
-    open  FH, ">_65test.csv";
-    print FH $str[1];
-    close FH;
-    open  FH, "<_65test.csv";
-    is ($csv->getline (*FH), undef,	"#\\r\\n $gc getline 2030");
+    open my $fh, ">", "_65test.csv";
+    print $fh $str[1];
+    close $fh;
+    open  $fh, "<", "_65test.csv";
+    is ($csv->getline ($fh), undef,	"#\\r\\n $gc getline 2030");
     is (0 + $csv->error_diag, 2030,	"Got 2030");
-    close FH;
+    close $fh;
 
     unlink "_65test.csv";
     }
@@ -372,31 +372,31 @@ foreach my $bin (0, 1) {
 
     my $csv = Text::CSV_XS->new ({ eol => "\n" });
 
-    open  FH, ">_65test.csv";
-    print FH qq{1,"",,"Q",2\n};
-    close FH;
+    open my $fh, ">", "_65test.csv";
+    print $fh qq{1,"",,"Q",2\n};
+    close $fh;
 
     is ($csv->keep_meta_info (0), 0,		"No meta info");
-    open  FH, "<_65test.csv";
-    my $row = $csv->getline (*FH);
+    open  $fh, "<", "_65test.csv";
+    my $row = $csv->getline ($fh);
     ok ($row,					"Get 1st line");
     $csv->error_diag ();
     is ($csv->is_quoted (2), undef,		"Is field 2 quoted?");
     is ($csv->is_quoted (3), undef,		"Is field 3 quoted?");
-    close FH;
+    close $fh;
 
-    open  FH, ">_65test.csv";
-    print FH qq{1,"",,"Q",2\n};
-    close FH;
+    open  $fh, ">", "_65test.csv";
+    print $fh qq{1,"",,"Q",2\n};
+    close $fh;
 
     is ($csv->keep_meta_info (1), 1,		"Keep meta info");
-    open  FH, "<_65test.csv";
-    $row = $csv->getline (*FH);
+    open  $fh, "<", "_65test.csv";
+    $row = $csv->getline ($fh);
     ok ($row,					"Get 2nd line");
     $csv->error_diag ();
     is ($csv->is_quoted (2), 0,			"Is field 2 quoted?");
     is ($csv->is_quoted (3), 1,			"Is field 3 quoted?");
-    close FH;
+    close $fh;
     unlink "_65test.csv";
     }
 

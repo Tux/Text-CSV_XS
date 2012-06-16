@@ -20,7 +20,9 @@ my $csv = Text::CSV_XS->new ();
 
 my $UTF8 = ($ENV{LANG} || "C").($ENV{LC_ALL} || "C") =~ m/utf-?8/i ? 1 : 0;
 
+open  $io, ">", "_21test.csv" or die "_21test.csv: $!";
 ok (!$csv->print ($io, ["abc", "def\007", "ghi"]), "print bad character");
+close $io;
 
 for ( [  1, 1, 1, '""'				],
       [  2, 1, 1, '', ''			],
@@ -38,15 +40,15 @@ for ( [  1, 1, 1, '""'				],
       ) {
     my ($tst, $validp, $validg, @arg, $row) = @$_;
 
-    open  $io, ">_21test.csv" or die "_21test.csv: $!";
+    open  $io, ">", "_21test.csv" or die "_21test.csv: $!";
     is ($csv->print ($io, \@arg), $validp||"", "$tst - print ()");
     close $io;
 
-    open  $io, ">_21test.csv" or die "_21test.csv: $!";
+    open  $io, ">", "_21test.csv" or die "_21test.csv: $!";
     print $io join ",", @arg;
     close $io;
 
-    open  $io, "<_21test.csv" or die "_21test.csv: $!";
+    open  $io, "<", "_21test.csv" or die "_21test.csv: $!";
     $row = $csv->getline ($io);
     unless ($validg) {
 	is ($row, undef, "$tst - false getline ()");
@@ -65,7 +67,7 @@ unlink "_21test.csv";
 # This test because of a problem with DBD::CSV
 
 ok (1, "Tests for DBD::CSV");
-open  $io, ">_21test.csv" or die "_21test.csv: $!";
+open  $io, ">", "_21test.csv" or die "_21test.csv: $!";
 $csv->binary (1);
 $csv->eol    ("\r\n");
 ok ($csv->print ($io, [ "id", "name"			]), "Bad character");
@@ -85,14 +87,14 @@ id,name\015
 5\015
 CONTENTS
 
-open  $io, "<_21test.csv" or die "_21test.csv: $!";
+open  $io, "<", "_21test.csv" or die "_21test.csv: $!";
 my $content = do { local $/; <$io> };
 close $io;
 is ($content, $expected, "Content");
-open  $io, ">_21test.csv" or die "_21test.csv: $!";
+open  $io, ">", "_21test.csv" or die "_21test.csv: $!";
 print $io $content;
 close $io;
-open  $io, "<_21test.csv" or die "_21test.csv: $!";
+open  $io, "<", "_21test.csv" or die "_21test.csv: $!";
 
 my $fields;
 print "# Retrieving data\n";
@@ -130,10 +132,10 @@ for ([  1, 1,    0, "\n"		],
      [ 22, 0, 2025, qq{"+\r\r+"\r}	],
      ) {
     my ($tst, $valid, $err, $str) = @$_;
-    open  my $io, ">_21test.csv" or die "_21test.csv: $!";
+    open  my $io, ">", "_21test.csv" or die "_21test.csv: $!";
     print $io $str;
     close $io;
-    open  $io, "<_21test.csv" or die "_21test.csv: $!";
+    open  $io, "<", "_21test.csv" or die "_21test.csv: $!";
     my $row = $csv->getline ($io);
     close $io;
     my @err  = $csv->error_diag;

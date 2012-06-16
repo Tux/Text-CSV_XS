@@ -21,9 +21,9 @@ my @list = (
     );
 
 {   ok (my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" }), "csv out");
-    open  FH, ">_77test.csv" or die "_77test.csv: $!";
-    ok ($csv->print (*FH, $_), "write $_->[0]") for @list;
-    close FH;
+    open my $fh, ">", "_77test.csv" or die "_77test.csv: $!";
+    ok ($csv->print ($fh, $_), "write $_->[0]") for @list;
+    close $fh;
     }
 
 sub do_tests
@@ -46,10 +46,10 @@ sub do_tests
 
     do_tests (sub {
 	my ($expect, @args) = @_;
-	open  FH, "<_77test.csv" or die "_77test.csv: $!";
+	open my $fh, "<", "_77test.csv" or die "_77test.csv: $!";
 	my $s_args = join ", " => @args;
-	is_deeply ($csv->getline_all (*FH, @args), $expect, "getline_all ($s_args)");
-	close FH;
+	is_deeply ($csv->getline_all ($fh, @args), $expect, "getline_all ($s_args)");
+	close $fh;
 	});
     }
 
@@ -59,10 +59,10 @@ sub do_tests
 
     do_tests (sub {
 	my ($expect, @args) = @_;
-	open  FH, "<_77test.csv" or die "_77test.csv: $!";
+	open my $fh, "<", "_77test.csv" or die "_77test.csv: $!";
 	my $s_args = join ", " => @args;
-	is_deeply ($csv->getline_hr_all (*FH, @args), $expect, "getline_hr_all ($s_args)");
-	close FH;
+	is_deeply ($csv->getline_hr_all ($fh, @args), $expect, "getline_hr_all ($s_args)");
+	close $fh;
 	});
     }
 

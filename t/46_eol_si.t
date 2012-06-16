@@ -38,13 +38,14 @@ foreach my $rs ("\n", "\r\n", "\r") {
 	my $csv = Text::CSV_XS->new ({ binary => 1 });
 	   $csv->eol ($/ = $rs) unless defined $\;
 
+	my $fh;
 	foreach my $pass (0, 1) {
 	    if ($pass == 0) {
 		$file = "";
-		open FH, ">", \$file;
+		open $fh, ">", \$file;
 		}
 	    else {
-		open FH, "<", \$file;
+		open $fh, "<", \$file;
 		}
 
 	    foreach my $eol ("", "\r", "\n", "\r\n", "\n\r") {
@@ -69,10 +70,10 @@ foreach my $rs ("\n", "\r\n", "\r") {
 			is ($csv->error_input, $str,	"error   |$s_eol|");
 			}
 
-		    print FH $str;
+		    print $fh $str;
 		    }
 		else {
-		    ok (my $row = $csv->getline (*FH),	"getline |$s_eol|");
+		    ok (my $row = $csv->getline ($fh),	"getline |$s_eol|");
 		    is (ref $row, "ARRAY",		"row     |$s_eol|");
 		    @p = @$row;
 		    }
@@ -81,7 +82,7 @@ foreach my $rs ("\n", "\r\n", "\r") {
 		is_binary ("@p", "@f",			"result  |$s_eol|");
 		}
 
-	    close FH;
+	    close $fh;
 	    }
 
 	}
@@ -104,24 +105,24 @@ SKIP: {
     {   local $\ = "#\r\n";
 	my $csv = Text::CSV_XS->new ();
 	$file = "";
-	open  FH, ">", \$file;
-	$csv->print (*FH, [ "a", 1 ]);
-	close FH;
-	open  FH, "<", \$file;
+	open my $fh, ">", \$file;
+	$csv->print ($fh, [ "a", 1 ]);
+	close $fh;
+	open  $fh, "<", \$file;
 	local $/;
-	is (<FH>, "a,1#\r\n", "Strange \$\\");
-	close FH;
+	is (<$fh>, "a,1#\r\n", "Strange \$\\");
+	close $fh;
 	}
     {   local $\ = "#\r\n";
 	my $csv = Text::CSV_XS->new ({ eol => $\ });
 	$file = "";
-	open  FH, ">", \$file;
-	$csv->print (*FH, [ "a", 1 ]);
-	close FH;
-	open  FH, "<", \$file;
+	open my $fh, ">", \$file;
+	$csv->print ($fh, [ "a", 1 ]);
+	close $fh;
+	open  $fh, "<", \$file;
 	local $/;
-	is (<FH>, "a,1#\r\n", "Strange \$\\ + eol");
-	close FH;
+	is (<$fh>, "a,1#\r\n", "Strange \$\\ + eol");
+	close $fh;
 	}
     }
 $/ = $def_rs;
@@ -131,38 +132,38 @@ ok (1, "Auto-detecting \\r");
     for (["\n", "\\n"], ["\r\n", "\\r\\n"], ["\r", "\\r"]) {
 	my ($eol, $s_eol) = @$_;
 	$file = "";
-	open  FH, ">", \$file;
-	print FH qq{@row$eol@row$eol@row$eol\x91};
-	close FH;
-	open  FH, "<", \$file;
+	open my $fh, ">", \$file;
+	print $fh qq{@row$eol@row$eol@row$eol\x91};
+	close $fh;
+	open  $fh, "<", \$file;
 	my $c = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 	is ($c->eol (),			"",		"default EOL");
-	is_deeply ($c->getline (*FH),	[ @row ],	"EOL 1 $s_eol");
+	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 1 $s_eol");
 	is ($c->eol (),	$eol eq "\r" ? "\r" : "",	"EOL");
-	is_deeply ($c->getline (*FH),	[ @row ],	"EOL 2 $s_eol");
-	is_deeply ($c->getline (*FH),	[ @row ],	"EOL 3 $s_eol");
-	close FH;
+	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 2 $s_eol");
+	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 3 $s_eol");
+	close $fh;
 	}
     }
 
 ok (1, "Specific \\r test from tfrayner");
 {   $/ = "\r";
     $file = "";
-    open  FH, ">", \$file;
-    print FH qq{a,b,c$/}, qq{"d","e","f"$/};
-    close FH;
-    open  FH, "<", \$file;
+    open my $fh, ">", \$file;
+    print $fh qq{a,b,c$/}, qq{"d","e","f"$/};
+    close $fh;
+    open  $fh, "<", \$file;
     my $c = Text::CSV_XS->new ({ eol => $/ });
 
     my $row;
     local $" = " ";
-    ok ($row = $c->getline (*FH),	"getline 1");
+    ok ($row = $c->getline ($fh),	"getline 1");
     is (scalar @$row, 3,		"# fields");
     is ("@$row", "a b c",		"fields 1");
-    ok ($row = $c->getline (*FH),	"getline 2");
+    ok ($row = $c->getline ($fh),	"getline 2");
     is (scalar @$row, 3,		"# fields");
     is ("@$row", "d e f",		"fields 2");
-    close FH;
+    close $fh;
     }
 $/ = $def_rs;
 
@@ -170,16 +171,16 @@ ok (1, "EOL undef");
 {   $/ = "\r";
     ok (my $csv = Text::CSV_XS->new ({ eol => undef }), "new csv with eol => undef");
     $file = "";
-    open FH, ">", \$file;
-    ok ($csv->print (*FH, [1, 2, 3]), "print");
-    ok ($csv->print (*FH, [4, 5, 6]), "print");
-    close FH;
+    open my $fh, ">", \$file;
+    ok ($csv->print ($fh, [1, 2, 3]), "print");
+    ok ($csv->print ($fh, [4, 5, 6]), "print");
+    close $fh;
 
-    open FH, "<", \$file;
-    ok (my $row = $csv->getline (*FH),	"getline 1");
+    open $fh, "<", \$file;
+    ok (my $row = $csv->getline ($fh),	"getline 1");
     is (scalar @$row, 5,		"# fields");
     is_deeply ($row, [ 1, 2, 34, 5, 6],	"fields 1");
-    close FH;
+    close $fh;
     }
 $/ = $def_rs;
 
@@ -188,23 +189,23 @@ foreach my $eol ("!", "!!", "!\n", "!\n!") {
     ok (1, "EOL $s_eol");
     ok (my $csv = Text::CSV_XS->new ({ eol => $eol }), "new csv with eol => $s_eol");
     $file = "";
-    open FH, ">", \$file;
-    ok ($csv->print (*FH, [1, 2, 3]), "print");
-    ok ($csv->print (*FH, [4, 5, 6]), "print");
-    close FH;
+    open my $fh, ">", \$file;
+    ok ($csv->print ($fh, [1, 2, 3]), "print");
+    ok ($csv->print ($fh, [4, 5, 6]), "print");
+    close $fh;
 
     foreach my $rs (undef, "", "\n", $eol, "!", "!\n", "\n!", "!\n!", "\n!\n") {
 	local $/ = $rs;
 	(my $s_rs = defined $rs ? $rs : "-- undef --") =~ s/\n/\\n/g;
 	ok (1, "with RS $s_rs");
-	open FH, "<", \$file;
-	ok (my $row = $csv->getline (*FH),	"getline 1");
+	open $fh, "<", \$file;
+	ok (my $row = $csv->getline ($fh),	"getline 1");
 	is (scalar @$row, 3,			"# fields");
 	is_deeply ($row, [ 1, 2, 3],		"fields 1");
-	ok (   $row = $csv->getline (*FH),	"getline 2");
+	ok (   $row = $csv->getline ($fh),	"getline 2");
 	is (scalar @$row, 3,			"# fields");
 	is_deeply ($row, [ 4, 5, 6],		"fields 2");
-	close FH;
+	close $fh;
 	}
     }
 $/ = $def_rs;

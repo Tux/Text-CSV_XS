@@ -50,30 +50,30 @@ my $csv = Text::CSV_XS->new ({
 ok ($csv->combine (@$line), "combine [ ... ]");
 is ($csv->string, qq{,,"0\n",,""0"0\n0"\n}, "string");
 
-open FH, ">__41test.csv" or die $!;
-binmode FH;
+open my $fh, ">", "__41test.csv" or die $!;
+binmode $fh;
 
 for (@pat) {
-    ok ($csv->print (*FH, [ $_ ]), "print $exp{$_}");
+    ok ($csv->print ($fh, [ $_ ]), "print $exp{$_}");
     }
 
 $csv->always_quote (1);
 
-ok ($csv->print (*FH, $line), "print [ ... ]");
+ok ($csv->print ($fh, $line), "print [ ... ]");
 
-close FH;
+close $fh;
 
-open FH, "<__41test.csv" or die $!;
-binmode FH;
+open $fh, "<", "__41test.csv" or die $!;
+binmode $fh;
 
 foreach my $pat (@pat) {
-    ok (my $row = $csv->getline (*FH), "getline $exp{$pat}");
+    ok (my $row = $csv->getline ($fh), "getline $exp{$pat}");
     is ($row->[0], $pat, "data $exp{$pat}");
     }
 
-is_deeply ($csv->getline (*FH), $line, "read [ ... ]");
+is_deeply ($csv->getline ($fh), $line, "read [ ... ]");
 
-close FH;
+close $fh;
 
 unlink "__41test.csv";
 
@@ -88,29 +88,29 @@ $csv = Text::CSV_XS->new ({
 ok ($csv->combine (@$line), "combine [ ... ]");
 is ($csv->string, qq{,,"0\n",,"\0\0\n0"\n}, "string");
 
-open FH, ">__41test.csv" or die $!;
-binmode FH;
+open $fh, ">", "__41test.csv" or die $!;
+binmode $fh;
 
 for (@pat) {
-    ok ($csv->print (*FH, [ $_ ]), "print $exp{$_}");
+    ok ($csv->print ($fh, [ $_ ]), "print $exp{$_}");
     }
 
 $csv->always_quote (1);
 
-ok ($csv->print (*FH, $line), "print [ ... ]");
+ok ($csv->print ($fh, $line), "print [ ... ]");
 
-close FH;
+close $fh;
 
-open FH, "<__41test.csv" or die $!;
-binmode FH;
+open $fh, "<", "__41test.csv" or die $!;
+binmode $fh;
 
 foreach my $pat (@pat) {
-    ok (my $row = $csv->getline (*FH), "getline $exp{$pat}");
+    ok (my $row = $csv->getline ($fh), "getline $exp{$pat}");
     is ($row->[0], $pat, "data $exp{$pat}");
     }
 
-is_deeply ($csv->getline (*FH), $line, "read [ ... ]");
+is_deeply ($csv->getline ($fh), $line, "read [ ... ]");
 
-close FH;
+close $fh;
 
 unlink "__41test.csv";

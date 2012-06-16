@@ -65,7 +65,6 @@ is ($csv->parse (qq{"\x{0123}\n\x{20ac}"}), 0, "\\n still needs binary");
 is ($csv->binary, 0, "bin flag still unset");
 is ($csv->error_diag + 0, 2021, "Error 2021");
 
-# As all utf tests are skipped for older pers, It's safe to use 3-arg open this way
 my $file = "files/utf8.csv";
 SKIP: {
     open my $fh, "<:encoding(utf8)", $file or
@@ -108,21 +107,26 @@ print $fh "euro\n\x{20ac}\neuro\n";
 close $fh;
 open     $fh, "<:encoding(utf-8)", "_50test.csv";
 
-my $out = "";
-ok ($csv->auto_diag (1), "auto diag");
-ok ($csv->binary (1),    "set binary");
-ok ($csv->bind_columns (\$out),			"bind");
-ok ($csv->getline ($fh),			"parse");
-is ($csv->is_binary (0),	0,		"not binary");
-is ($out,			"euro",		"euro");
-ok (!utf8::is_utf8 ($out),			"not utf8");
-ok ($csv->getline ($fh),			"parse");
-is ($csv->is_binary (0),	1,		"is binary");
-is ($out,			"\x{20ac}",	"euro");
-ok (utf8::is_utf8 ($out),			"is utf8");
-ok ($csv->getline ($fh),			"parse");
-is ($csv->is_binary (0),	0,		"not binary");
-is ($out,			"euro",		"euro");
-ok (!utf8::is_utf8 ($out),			"not utf8");
-close $fh;
-unlink "_50test.csv";
+SKIP: {
+    my $out = "";
+    my $isutf8 = $] < 5.008001 ?
+	sub { !$_[0]; } :	# utf8::is_utf8 () not available in 5.8.0
+	sub { utf8::is_utf8 ($out); };
+    ok ($csv->auto_diag (1),			"auto diag");
+    ok ($csv->binary (1),   			"set binary");
+    ok ($csv->bind_columns (\$out),		"bind");
+    ok ($csv->getline ($fh),			"parse");
+    is ($csv->is_binary (0),	0,		"not binary");
+    is ($out,			"euro",		"euro");
+    ok (!$isutf8->(1),				"not utf8");
+    ok ($csv->getline ($fh),			"parse");
+    is ($csv->is_binary (0),	1,		"is binary");
+    is ($out,			"\x{20ac}",	"euro");
+    ok ($isutf8->(0),				"is utf8");
+    ok ($csv->getline ($fh),			"parse");
+    is ($csv->is_binary (0),	0,		"not binary");
+    is ($out,			"euro",		"euro");
+    ok (!$isutf8->(1),				"not utf8");
+    close $fh;
+    unlink "_50test.csv";
+    }

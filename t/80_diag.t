@@ -13,7 +13,7 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     require "t/util.pl";
 
-    open XS, "< CSV_XS.xs" or die "Cannot read error messages from XS\n";
+    open XS, "<", "CSV_XS.xs" or die "Cannot read error messages from XS\n";
     while (<XS>) {
 	m/^    { ([0-9]{4}), "([^"]+)"\s+\}/ and $err{$1} = $2;
 	}
@@ -127,11 +127,11 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
 
 my $diag_file = "_$$.out";
 open  EH,     ">&STDERR";
-open  STDERR, ">$diag_file";
+open  STDERR, ">", $diag_file;
 ok ($csv->_cache_diag,	"Cache debugging output");
 close STDERR;
 open  STDERR, ">&EH";
-open  EH,     "<$diag_file";
+open  EH,     "<", $diag_file;
 is (scalar <EH>, "CACHE:\n",	"Title");
 while (<EH>) {
     like ($_, qr{^  \w+\s+[0-9a-f]+:(?:".*"|\s*[0-9]+)$}, "Content");
