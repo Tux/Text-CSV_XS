@@ -34,7 +34,7 @@
 #define CSV_XS_TYPE_NV	2
 
 /* Keep in sync with .pm! */
-#define CACHE_SIZE			36
+#define CACHE_SIZE			40
 
 #define CACHE_ID_quote_char		0
 #define CACHE_ID_escape_char		1
@@ -195,7 +195,7 @@ xs_error_t xs_errors[] =  {
     };
 
 static int  io_handle_loaded = 0;
-static SV  *m_getline, *m_print, *m_tell, *m_seek, *m_read;
+static SV  *m_getline, *m_print, *m_read;
 
 #define require_IO_Handle \
     unless (io_handle_loaded) {\
@@ -503,7 +503,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    csv->types_len = len;
 	    }
 
-	csv->is_bound  = 0;
+	csv->is_bound = 0;
 	if ((svp = hv_fetchs (self, "_is_bound", FALSE)) && *svp && SvOK(*svp))
 	    csv->is_bound = SvIV(*svp);
 
@@ -1366,27 +1366,10 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	}
 
     if ((csv.useIO = useIO)) {
-	/* If on a IO handle, I can save the current position with
-	 * IO::Seekable::tell, so I can reconstruct the last record
-	 * in case of parse error. See after Parse ()
-	 *   pos = $io->tell ();
-	 */
 	dSP;
 	require_IO_Handle;
 
 	csv.tmp = NULL;
-
-#if (PERL_BCDVERSION >= 0x5014000)
-	PUSHMARK (sp);
-	EXTEND (sp, 1);
-	PUSHs (src);
-	PUTBACK;
-	result = call_sv (m_tell, G_SCALAR | G_METHOD);
-	/* result = Perl_pp_tell (aTHX_); ? */
-	SPAGAIN;
-	pos = result ? POPs : NULL;
-	PUTBACK;
-#endif
 
 	if ((ahead = csv.has_ahead)) {
 	    SV **svp;
@@ -1432,58 +1415,6 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 		sv_free ((SV *)avf);
 		}
 	    }
-
-#if (PERL_BCDVERSION >= 0x5014000)
-	if (!result && pos && !(csv.useIO & useIO_EOF)) {	/* We have a FAIL */
-	    /* Restore the complete source for this failing Parse () if possible
-	     * if (Failed && pos && now = $io->tell && now > pos) {
-	     *     $io->seek (pos, 0);
-	     *     read ($io, $csv->{_ERROR_INPUT}, now - pos);
-	     *     }
-	     */
-	    SV *now = NULL;
-	    int can = 0, r;
-
-	    /* now = $io->tell */
-	    dSP;
-	    PUSHMARK (sp);
-	    EXTEND (sp, 1);
-	    PUSHs (src);
-	    PUTBACK;
-	    r = call_sv (m_tell, G_SCALAR | G_METHOD);
-	    SPAGAIN;
-	    now = r ? POPs : NULL;
-	    PUTBACK;
-
-	    if (now && SvIV (now) > SvIV (pos)) {
-		/* $io->seek (pos, 0) */
-		PUSHMARK (sp);
-		EXTEND (sp, 3);
-		PUSHs (src);
-		PUSHs (pos);
-		PUSHs (sv_2mortal (newSViv (0)));
-		PUTBACK;
-		r = call_sv (m_seek, G_SCALAR | G_METHOD);
-		SPAGAIN;
-		if (r && SvTRUE (TOPs)) can = 1;
-		PUTBACK;
-
-		if (can) {
-		    int buflen = SvIV (now) - SvIV (pos);
-		    SV *ei = newSV (buflen);
-		    /* read ($io, $csv->{_ERROR_INPUT}, now - pos) */
-		    PUSHMARK (sp);
-		    EXTEND (sp, 3);
-		    PUSHs (src);
-		    PUSHs (ei);
-		    PUSHs (newSViv (buflen));
-		    PUTBACK;
-		    if (call_sv (m_read, G_SCALAR | G_METHOD))
-			(void)hv_store (hv, "_ERROR_INPUT", 12, ei, 0);
-		    }
-		}
-	    }
-#endif
 	}
     if (result && csv.types) {
 	I32	i;
@@ -1621,8 +1552,6 @@ PROTOTYPES: DISABLE
 BOOT:
     m_getline = newSVpvs ("getline");
     m_print   = newSVpvs ("print");
-    m_tell    = newSVpvs ("tell");
-    m_seek    = newSVpvs ("seek");
     m_read    = newSVpvs ("read");
 
 void
