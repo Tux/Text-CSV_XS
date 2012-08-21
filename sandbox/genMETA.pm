@@ -207,9 +207,9 @@ sub check_yaml
 
     $self->{verbose} and print Dump $h;
 
-    my $t = Test::CPAN::Meta::YAML::Version->new (yaml => $h);
+    my $t = Test::CPAN::Meta::YAML::Version->new (data => $h);
     $t->parse () and
-	croak join "\n", "Test::YAML::Meta reported failure:", $t->errors, "";
+	croak join "\n", "Test::CPAN::Meta::YAML reported failure:", $t->errors, "";
 
     eval { Parse::CPAN::Meta::Load ($yml) };
     $@ and croak "$@\n";
