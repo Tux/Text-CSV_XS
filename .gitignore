@@ -17,7 +17,6 @@ Text
 *.gcno
 Text-CSV_XS*
 xx*
-.releaserc
 valgrind.log
 pod2htm*
 nytprof*
