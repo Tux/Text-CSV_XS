@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.91";
+$VERSION = "0.92";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1137,6 +1137,22 @@ For performance reasons the print method does not create a result string.
 In particular the L</string>, L</status>, L</fields>, and L</error_input>
 methods are meaningless after executing this method.
 
+If C<$colref> is undef (explicit, not through a variable) and L</bind_columns>
+was used to specify fields to be printed, one can gain speed when otherwise
+data would have to be copied as arguments:
+
+ $csv->bind_columns (\($foo, $bar));
+ $status = $csv->print ($fh, undef);
+
+A short benchmark
+
+ my @data = ("aa" .. "zz");
+ $csv->bind_columns (\(@data));
+
+ $csv->print ($io, [ @data ]);   # 10800 recs/sec
+ $csv->print ($io,  \@data  );   # 57100 recs/sec
+ $csv->print ($io,   undef  );   # 50500 recs/sec
+
 =head2 combine
 X<combine>
 
@@ -1288,10 +1304,10 @@ L</column_names> croaks on invalid arguments.
 =head2 bind_columns
 X<bind_columns>
 
-Takes a list of references to scalars to store the fields fetched
-L</getline> in. When you don't pass enough references to store the fetched
-fields in, L</getline> will fail. If you pass more than there are fields to
-return, the remaining references are left untouched.
+Takes a list of references to scalars to be printed with L</print> or to store
+the fields fetched by L</getline> in. When you don't pass enough references to
+store the fetched fields in, L</getline> will fail. If you pass more than
+there are fields to return, the remaining references are left untouched.
 
  $csv->bind_columns (\$code, \$name, \$price, \$description);
  while ($csv->getline ($io)) {

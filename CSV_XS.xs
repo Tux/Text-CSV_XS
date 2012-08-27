@@ -627,40 +627,85 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
     (csv)->buffer[(csv)->used++] = (c);			\
     }
 
+#define bound_field(csv,i,keep)	cx_bound_field (aTHX_ csv, i, keep)
+static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep)
+{
+    SV *sv = csv->bound;
+    AV *av;
+
+    /* fprintf (stderr, "# New bind %d/%d\n", i, csv->is_bound);\ */
+    if (i >= csv->is_bound) {
+	(void)SetDiag (csv, 3006);
+	return (NULL);
+	}
+
+    if (sv && SvROK (sv)) {
+	av = (AV *)(SvRV (sv));
+	/* fprintf (stderr, "# Bind %d/%d/%d\n", i, csv->is_bound, av_len (av)); */
+	sv = *av_fetch (av, i, FALSE);
+	if (sv && SvROK (sv)) {
+	    sv = SvRV (sv);
+	    if (keep)
+		return (sv);
+
+	    unless (SvREADONLY (sv)) {
+		sv_setpvn (sv, "", 0);
+		return (sv);
+		}
+	    }
+	}
+    (void)SetDiag (csv, 3008);
+    return (NULL);
+    } /* bound_field */
+
 /* Should be extended for EBCDIC ? */
 #define is_csv_binary(ch) ((ch < CH_SPACE || ch >= CH_DEL) && ch != CH_TAB)
 
 #define Combine(csv,dst,fields)	cx_Combine (aTHX_ csv, dst, fields)
 static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 {
-    int		i;
+    int		i, n, bound = 0;
 
     if (csv->sep_char == csv->quote_char || csv->sep_char == csv->escape_char) {
 	(void)SetDiag (csv, 1001);
 	return FALSE;
 	}
 
-    for (i = 0; i <= av_len (fields); i++) {
-	SV    **svp;
+    n = av_len (fields);
+    if (n < 0 && csv->is_bound) {
+	n = csv->is_bound - 1;
+	bound = 1;
+	}
+
+    for (i = 0; i <= n; i++) {
+	SV    *sv;
 
 	if (i > 0)
 	    CSV_PUT (csv, dst, csv->sep_char);
-	if ((svp = av_fetch (fields, i, 0)) && *svp) {
+
+	if (bound)
+	    sv = bound_field (csv, i, 1);
+	else {
+	    SV **svp = av_fetch (fields, i, 0);
+	    sv = svp && *svp ? *svp : NULL;
+	    }
+
+	if (sv) {
 	    STRLEN	 len;
 	    char	*ptr;
 	    int		 quoteMe = csv->always_quote;
 
-	    unless ((SvOK (*svp) || (
-		    (SvGMAGICAL (*svp) && (mg_get (*svp), 1) && SvOK (*svp)))
+	    unless ((SvOK (sv) || (
+		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
 		    )) continue;
-	    ptr = SvPV (*svp, len);
-	    if (len && SvUTF8 (*svp)) csv->utf8 = 1;
+	    ptr = SvPV (sv, len);
+	    if (len && SvUTF8 (sv)) csv->utf8 = 1;
 	    /* Do we need quoting? We do quote, if the user requested
 	     * (always_quote), if binary or blank characters are found
 	     * and if the string contains quote or escape characters.
 	     */
 	    if (!quoteMe &&
-	       ( quoteMe = (!SvIOK (*svp) && !SvNOK (*svp) && csv->quote_char))) {
+	       ( quoteMe = (!SvIOK (sv) && !SvNOK (sv) && csv->quote_char))) {
 		char	*ptr2;
 		STRLEN	 l;
 
@@ -685,14 +730,14 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		int	e = 0;
 
 		if (!csv->binary && is_csv_binary (c)) {
-		    if (SvUTF8 (*svp)) {
+		    if (SvUTF8 (sv)) {
 			csv->binary = 1;
 			csv->utf8   = 1;
 			}
 		    else {
-			SvREFCNT_inc (*svp);
-			unless (hv_store (csv->self, "_ERROR_INPUT", 12, *svp, 0))
-/* uncovered */		    SvREFCNT_dec (*svp);
+			SvREFCNT_inc (sv);
+			unless (hv_store (csv->self, "_ERROR_INPUT", 12, sv, 0))
+/* uncovered */		    SvREFCNT_dec (sv);
 			(void)SetDiag (csv, 2110);
 			return FALSE;
 			}
@@ -899,38 +944,10 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv)
     SvCUR_set (sv, len);
     } /* strip_trail_whitespace */
 
-#define bound_field(csv,i)	cx_bound_field (aTHX_ csv, i)
-static SV *cx_bound_field (pTHX_ csv_t *csv, int i)
-{
-    SV *sv = csv->bound;
-    AV *av;
-
-    /* fprintf (stderr, "# New bind %d/%d\n", i, csv->is_bound);\ */
-    if (i >= csv->is_bound) {
-	(void)SetDiag (csv, 3006);
-	return (NULL);
-	}
-
-    if (sv && SvROK (sv)) {
-	av = (AV *)(SvRV (sv));
-	/* fprintf (stderr, "# Bind %d/%d/%d\n", i, csv->is_bound, av_len (av)); */
-	sv = *av_fetch (av, i, FALSE);
-	if (sv && SvROK (sv)) {
-	    sv = SvRV (sv);
-	    unless (SvREADONLY (sv)) {
-		sv_setpvn (sv, "", 0);
-		return (sv);
-		}
-	    }
-	}
-    (void)SetDiag (csv, 3008);
-    return (NULL);
-    } /* bound_field */
-
 #define NewField				\
     unless (sv) {				\
 	if (csv->is_bound)			\
-	    sv = bound_field (csv, fnum++);	\
+	    sv = bound_field (csv, fnum++, 0);	\
 	else					\
 	    sv = newSVpvs ("");			\
 	unless (sv) return FALSE;		\
@@ -1627,10 +1644,14 @@ print (self, io, fields)
     AV	 *av;
 
     CSV_XS_SELF;
-    unless (_is_arrayref (fields))
-	croak ("Expected fields to be an array ref");
+    if (fields == &PL_sv_undef)
+	av = newAV ();
+    else {
+	unless (_is_arrayref (fields))
+	    croak ("Expected fields to be an array ref");
 
-    av = (AV *)SvRV (fields);
+	av = (AV *)SvRV (fields);
+	}
 
     ST (0) = xsCombine (self, hv, av, io, 1) ? &PL_sv_yes : &PL_sv_no;
     XSRETURN (1);
