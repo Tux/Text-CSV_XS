@@ -62,7 +62,7 @@ sub version_from
     my $version;
     open my $pm, "<", $src or croak "Cannot read $src";
     while (<$pm>) {
-	m/^(?:our\s+)? \$VERSION \s*=\s* "? ([-0-9._]+) "? \s*;\s*$/x or next;
+	m/^(?:our\s+)? \$VERSION \s*=\s* ["']? ([-0-9._]+) ['"]? \s*;\s*$/x or next;
 	$version = $1;
 	last;
 	}
