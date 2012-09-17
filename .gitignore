@@ -24,4 +24,5 @@ tmp/*
 sandbox/cover_db*
 sandbox/i-ttt*
 sandbox/parse-*.png
+sandbox/print-*.png
 sandbox/test.*
