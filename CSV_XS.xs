@@ -699,7 +699,10 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
 		    )) continue;
 	    ptr = SvPV (sv, len);
-	    if (len && SvUTF8 (sv)) csv->utf8 = 1;
+	    if (len && SvUTF8 (sv))  {
+		csv->utf8   = 1;
+		csv->binary = 1;
+		}
 	    /* Do we need quoting? We do quote, if the user requested
 	     * (always_quote), if binary or blank characters are found
 	     * and if the string contains quote or escape characters.
@@ -730,17 +733,11 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		int	e = 0;
 
 		if (!csv->binary && is_csv_binary (c)) {
-		    if (SvUTF8 (sv)) {
-			csv->binary = 1;
-			csv->utf8   = 1;
-			}
-		    else {
-			SvREFCNT_inc (sv);
-			unless (hv_store (csv->self, "_ERROR_INPUT", 12, sv, 0))
-/* uncovered */		    SvREFCNT_dec (sv);
-			(void)SetDiag (csv, 2110);
-			return FALSE;
-			}
+		    SvREFCNT_inc (sv);
+		    unless (hv_store (csv->self, "_ERROR_INPUT", 12, sv, 0))
+/* uncovered */	    SvREFCNT_dec (sv);
+		    (void)SetDiag (csv, 2110);
+		    return FALSE;
 		    }
 		if (c == csv->quote_char  && csv->quote_char)
 		    e = 1;
