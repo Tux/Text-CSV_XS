@@ -27,7 +27,7 @@
 
 #define MAINT_DEBUG	0
 
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE	65536
 
 #define CSV_XS_TYPE_PV	0
 #define CSV_XS_TYPE_IV	1
