@@ -1,6 +1,7 @@
-0.92	- 2012-11-08, H.Merijn Brand
+0.92	- 2012-11-12, H.Merijn Brand
     * Allow bind_columns () for print ()
     * Increase buffer size for print to 64k
+    * Fix RT#80680 - Buffer break halfway UTF8 + tests
 
 0.91	- 2012-08-21, H.Merijn Brand
     * Prevent test-failures for long doubles on weird architectures

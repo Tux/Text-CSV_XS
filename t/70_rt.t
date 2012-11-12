@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 449;
+ use Test::More tests => 20449;
+ use Encode "encode";
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -406,6 +407,36 @@ SKIP: {   # http://rt.cpan.org/Ticket/Display.html?id=74220
     is ($foo, qq{\xfa,foo}, "expected result");
     }
 
+SKIP: {   # http://rt.cpan.org/Ticket/Display.html?id=80680
+    $] < 5.008002 and skip "UTF8 unreliable in perl $]", 7;
+
+    $rt = "80680"; # Text::CSV_XS produces garbage on some data
+
+    my $csv = Text::CSV_XS->new ({ binary => 1 });
+    my $txt = "\x{415}\x{43a}\x{438}\x{43d}\x{431}\x{443}\x{440}\x{433}\x{2116}";
+    BIG_LOOP: foreach my $n (1 .. 5000) {
+	foreach my $e (0 .. 3) {
+
+	    my $data = ("a" x $e) . ($txt x $n);
+	    my $enc  = encode ("UTF-8", $data);
+	    my $exp  = qq{1,"$enc"};
+	    my $out  = "";
+	    open my $fh, ">:encoding(utf-8)", \$out;
+	    $csv->print ($fh, [ 1, $data ]);
+	    close $fh;
+
+	    my $l = length ($out);
+	    if ($out eq $exp) {
+		ok (1, "Buffer boundary check $n/$e ($l)");
+		next;
+		}
+
+	    is ($out, $exp, "Data $n/$e ($l)");
+	    last BIG_LOOP;
+	    }
+	}
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -456,6 +487,7 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 5,6
 7,8
 «74330» - Text::CSV_XS can be made to produce bad strings
+«80680» - Text::CSV_XS produces garbage on some data
 «x1001» - Lines starting with "0" (Ruslan Dautkhanov)
 "0","A"
 "0","A"

@@ -587,6 +587,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 {
     int result;
+    int keep = 0;
 
     if (csv->useIO) {
 	SV *tmp = newSVpv (csv->buffer, csv->used);
@@ -597,8 +598,21 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	PUSHs ((dst));
 	PUSHs (tmp);
 	PUTBACK;
-	if (csv->utf8 && is_utf8_sv (tmp))
+	if (csv->utf8) {
+	    STRLEN	 len;
+	    char	*ptr;
+	    int		 j, l;
+
+	    ptr = SvPV (tmp, len);
+	    while (len > 0 && !is_utf8_sv (tmp) && keep < 16) {
+		ptr[--len] = (char)0;
+		SvCUR_set (tmp, len);
+		keep++;
+		}
+	    for (j = 0; j < keep; j++)
+		csv->buffer[j] = csv->buffer[csv->used - keep + j];
 	    SvUTF8_on (tmp);
+	    }
 	result = call_sv (m_print, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	if (result) {
@@ -615,7 +629,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	}
     if (csv->utf8 && SvROK (dst) && is_utf8_sv (SvRV (dst)))
 	SvUTF8_on (SvRV (dst));
-    csv->used = 0;
+    csv->used = keep;
     return result;
     } /* Print */
 
