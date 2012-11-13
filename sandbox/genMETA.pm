@@ -11,6 +11,7 @@ use Carp;
 use List::Util qw( first );
 use Encode qw( encode decode );
 use Test::CPAN::Meta::YAML::Version;
+use CPAN::Meta::Converter;
 use Test::MinimumVersion;
 use Test::More ();
 use Parse::CPAN::Meta;
@@ -18,7 +19,7 @@ use File::Find;
 use YAML::Syck;
 use Data::Peek;
 use Text::Diff;
-use JSON;
+use JSON::PP;
 
 sub new
 {
@@ -255,23 +256,56 @@ sub fix_meta
 {
     my $self = shift;
 
-    my @my = glob <*/META.yml> or croak "No META files";
-    my $yf = $my[0];
+    # Convert to meta-spec version 2
+    # licenses are lists now
+    my $jsn = $self->{h};
+    $jsn->{"meta-spec"} = {
+	version	=> "2",
+	url	=> "https://metacpan.org/module/CPAN::Meta::Spec?#meta-spec",
+	};
+    exists $jsn->{resources}{license} and
+	$jsn->{resources}{license} = [ $jsn->{resources}{license} ];
+    delete $jsn->{distribution_type};
+    if (exists $jsn->{license}) {
+	$jsn->{license} =~ s/^perl$/perl_5/;
+	$jsn->{license} = [ $jsn->{license} ];
+	}
+    if (exists $jsn->{resources}{repository}) {
+	my $url = $jsn->{resources}{repository};
+	my $web = $url;
+	$url =~ s{repo.or.cz/w/}{repo.or.cz/r/};
+	$web =~ s{repo.or.cz/r/}{repo.or.cz/w/};
+	$jsn->{resources}{repository} = {
+	    type => "git",
+	    web  => $web,
+	    url  => $url,
+	    };
+	}
+    foreach my $sct ("", "configure_", "build_", "test_") {
+	(my $x = $sct || "runtime") =~ s/_$//;
+	for (qw( requires recommends suggests )) {
+	    exists $jsn->{"$sct$_"} and
+		$jsn->{prereqs}{$x}{$_} = delete $jsn->{"$sct$_"};
+	    }
+	}
+    $jsn = CPAN::Meta::Converter->new ($jsn)->convert (version => 2);
+    $jsn->{generated_by} = "Author";
 
+    my @my = glob <*/META.yml> or croak "No META files";
+
+    my $yf = $my[0];
     @my == 1 && open my $my, ">", $yf or croak "Cannot update $yf\n";
-    print $my @{$self->{yml}};
+    print $my Dump $jsn; # @{$self->{yml}};
     close $my;
 
     $yf =~ s/yml$/json/;
-    my $jsn = $self->{h};
-    $jsn->{"meta-spec"} = {
-	version	=> 2,
-	url	=> "https://metacpan.org/module/CPAN::Meta::Spec?#meta-spec",
-	};
     open $my, ">", $yf or croak "Cannot update $yf\n";
-    print $my JSON->new->utf8 (1)->pretty (1)->encode ($jsn);
+    #rint     JSON::PP->new->utf8 (1)->pretty (1)->encode ($jsn);
+    print $my JSON::PP->new->utf8 (1)->pretty (1)->encode ($jsn);
+    close $my;
 
     chmod 0644, glob "*/META.*";
+    unlink glob "MYMETA*";
     } # fix_meta
 
 1;
