@@ -38,6 +38,7 @@ my %wm = (
 			-Wswitch-default -Wuninitialized -Wunreachable-code
 			-Wundef
 			)),
+		      TARFLAGS   => "--format=ustar -c -v -f",
 		     "#OPTIMIZE" => "-O2 \$(GCC_WALL)",
 		    },
     );
