@@ -87,7 +87,7 @@ sub _check_sanity
 {
     my $attr = shift;
     for (qw( sep_char quote_char escape_char )) {
-	exists $attr->{$_} && defined $attr->{$_} && $attr->{$_} =~ m/[\r\n]/ and
+	defined $attr->{$_} && $attr->{$_} =~ m/[\r\n]/ and
 	    return 1003;
 	}
     $attr->{allow_whitespace} and
