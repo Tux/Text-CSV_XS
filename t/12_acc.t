@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 116;
+use Test::More tests => 119;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -30,6 +30,7 @@ is ($csv->verbatim,			0,		"verbatim");
 is ($csv->quote_space,			1,		"quote_space");
 is ($csv->quote_null,			1,		"quote_null");
 is ($csv->quote_binary,			1,		"quote_binary");
+is ($csv->record_number,		0,		"record_number");
 
 is ($csv->binary (1),			1,		"binary (1)");
 my @fld = ( 'txt =, "Hi!"', "Yes", "", 2, undef, "1.09", "\r", undef );
@@ -75,7 +76,9 @@ is ($csv->quote_char,		undef,		"quote_char undef");
 is ($csv->escape_char,		undef,		"escape_char undef");
 ok ($csv->parse ("foo"),			"parse (foo)");
 $csv->sep_char (",");
+is ($csv->record_number,	1,		"record_number");
 ok ($csv->parse ("foo"),			"parse (foo)");
+is ($csv->record_number,	2,		"record_number");
 ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
 $csv->escape_char ("\\");
 ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
