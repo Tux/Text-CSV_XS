@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 127;
+ use Test::More tests => 129;
 #use Test::More "no_plan";
 
 my %err;
@@ -99,9 +99,12 @@ is (Text::CSV_XS->error_diag (), "INI - Unknown attribute 'ecs_char'",
 					"Last failure for new () - FAIL");
 is (Text::CSV_XS::error_diag (bless {}, "Foo"), "INI - Unknown attribute 'ecs_char'",
 					"Last failure for new () - FAIL");
+$csv->SetDiag (1000);
+is (0 + $csv->error_diag (), 1000,			"Set error NUM");
+is (    $csv->error_diag (), "INI - constructor failed","Set error STR");
 $csv->SetDiag (0);
-is (0 + $csv->error_diag (), 0,  "Reset error NUM");
-is (    $csv->error_diag (), "", "Reset error NUM");
+is (0 + $csv->error_diag (),    0,			"Reset error NUM");
+is (    $csv->error_diag (),   "",			"Reset error STR");
 
 ok (1, "Test auto_diag");
 $csv = Text::CSV_XS->new ({ auto_diag => 1 });
