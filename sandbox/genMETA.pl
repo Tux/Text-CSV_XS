@@ -52,6 +52,7 @@ requires:
     IO::Handle:          0
 recommends:     
     perl:                5.016002
+    Encode:              2.47
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:
@@ -60,6 +61,7 @@ test_requires:
     Test::Harness:       0
     Test::More:          0
     Tie::Scalar:         0
+    Encode:              0
 resources:
     license:             http://dev.perl.org/licenses/
     repository:          http://repo.or.cz/w/Text-CSV_XS.git

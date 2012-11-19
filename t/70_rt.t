@@ -408,7 +408,8 @@ SKIP: {   # http://rt.cpan.org/Ticket/Display.html?id=74220
     }
 
 SKIP: {   # http://rt.cpan.org/Ticket/Display.html?id=80680
-    $] < 5.008002 and skip "UTF8 unreliable in perl $]", 7;
+    $] < 5.008002           and skip "UTF8 unreliable in perl $]",        20000;
+    $Encode::VERSION < 2.47 and skip "Encode is too old for these tests", 20000;
 
     $rt = "80680"; # Text::CSV_XS produces garbage on some data
 

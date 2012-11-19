@@ -1,3 +1,6 @@
+0.93	- 2012-11-19, H.Merijn Brand
+    * Skip Encode related tests on too old Encode
+
 0.92	- 2012-11-12, H.Merijn Brand
     * Allow bind_columns () for print ()
     * Increase buffer size for print to 64k
