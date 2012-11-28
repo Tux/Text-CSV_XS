@@ -1,3 +1,6 @@
+0.94	- 2012-11-28, H.Merijn Brand
+    * Guard against beta releases of Encode (Xavier Guimard)
+
 0.93	- 2012-11-19, H.Merijn Brand
     * Skip Encode related tests on too old Encode
     * Force old(er) tar format (ustar) - assumes GNU tar on release box
