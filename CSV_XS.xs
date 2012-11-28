@@ -194,6 +194,7 @@ xs_error_t xs_errors[] =  {
     {    0, "" },
     };
 
+static byte init_cache[CACHE_SIZE];
 static int  io_handle_loaded = 0;
 static SV  *m_getline, *m_print, *m_read;
 
@@ -522,9 +523,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->verbatim			= bool_opt ("verbatim");
 	csv->auto_diag			= bool_opt ("auto_diag");
 
-	sv_cache = newSVpvn ("", CACHE_SIZE);
+	sv_cache = newSVpvn (init_cache, CACHE_SIZE);
 	csv->cache = (byte *)SvPVX (sv_cache);
-	memset (csv->cache, 0, CACHE_SIZE);
 	SvREADONLY_on (sv_cache);
 
 	csv->cache[CACHE_ID_quote_char]			= csv->quote_char;

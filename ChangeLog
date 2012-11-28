@@ -1,5 +1,6 @@
 0.94	- 2012-11-28, H.Merijn Brand
-    * Guard against beta releases of Encode (Xavier Guimard)
+    * Guard against beta releases of Encode (Xavier Guimard - RT#81499)
+    * Fix sv_cache init global-buffer-overflow (Reini Urban - RT#81469)
 
 0.93	- 2012-11-19, H.Merijn Brand
     * Skip Encode related tests on too old Encode
