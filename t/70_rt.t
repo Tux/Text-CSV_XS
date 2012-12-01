@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20449;
+ use Test::More tests => 20450;
  use Encode "encode";
 
 BEGIN {
@@ -384,7 +384,7 @@ while (<DATA>) {
 	}
     }
 
-SKIP: {   # http://rt.cpan.org/Ticket/Display.html?id=74220
+SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=74220
     $] < 5.008002 and skip "UTF8 unreliable in perl $]", 7;
 
     $rt = "74220"; # Text::CSV_XS can be made to produce bad strings
@@ -439,6 +439,15 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 	}
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=81295
+    $rt = 81295; # escaped sep_char discarded when only item in unquoted field
+    my $csv = Text::CSV_XS->new ({ escape_char => "\\", auto_diag => 1 });
+    $csv->parse ($input{$rt}[0]);
+    is_deeply ([ $csv->fields ], [ 1, ",", 3 ], "escaped sep in quoted field");
+    #$csv->parse ($input{$rt}[1]);
+    #is_deeply ([ $csv->fields ], [ 1, ",", 3 ], "escaped sep in unquoted field");
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -490,6 +499,9 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 7,8
 «74330» - Text::CSV_XS can be made to produce bad strings
 «80680» - Text::CSV_XS produces garbage on some data
+«81295» - escaped sep_char discarded when only item in unquoted field
+1,"\,",3
+1,\,,3
 «x1001» - Lines starting with "0" (Ruslan Dautkhanov)
 "0","A"
 "0","A"

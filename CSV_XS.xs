@@ -1274,9 +1274,12 @@ restart:
 	    fprintf (stderr, "# %d/%d/%02x pos %d = ESC '%c'\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
-	    /*  This means quote_char != escape_char  */
-	    if (waitingForField)
+	    /* This means quote_char != escape_char */
+	    if (waitingForField) {
 		waitingForField = 0;
+		/* The escape character is the first character of an unquoted field */
+		/* sv_setpvn (sv, "", 0); */
+		}
 	    else
 	    if (f & CSV_FLAGS_QUO) {
 		int c2 = CSV_GET;
