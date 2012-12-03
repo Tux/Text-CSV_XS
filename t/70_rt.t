@@ -5,7 +5,6 @@ use warnings;
 
 #use Test::More "no_plan";
  use Test::More tests => 20450;
- use Encode "encode";
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -408,7 +407,7 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=74220
     }
 
 SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
-    $Encode::VERSION =~ m{^([0-9.]+)};
+    (eval { require Encode; $Encode::VERSION } || "0.00") =~ m{^([0-9.]+)};
     $1 < 2.47     and skip "Encode is too old for these tests", 20000;
     $] < 5.008002 and skip "UTF8 unreliable in perl $]",        20000;
 
@@ -420,7 +419,7 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 	foreach my $e (0 .. 3) {
 
 	    my $data = ("a" x $e) . ($txt x $n);
-	    my $enc  = encode ("UTF-8", $data);
+	    my $enc  = Encode::encode ("UTF-8", $data);
 	    my $exp  = qq{1,"$enc"};
 	    my $out  = "";
 	    open my $fh, ">:encoding(utf-8)", \$out;

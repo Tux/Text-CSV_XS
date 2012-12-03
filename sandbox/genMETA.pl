@@ -61,7 +61,8 @@ test_requires:
     Test::Harness:       0
     Test::More:          0
     Tie::Scalar:         0
-    Encode:              0
+test_recommends:
+    Encode:              2.47
 resources:
     license:             http://dev.perl.org/licenses/
     repository:          http://repo.or.cz/w/Text-CSV_XS.git
