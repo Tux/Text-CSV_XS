@@ -15,7 +15,7 @@ BEGIN {
 
     open XS, "<", "CSV_XS.xs" or die "Cannot read error messages from XS\n";
     while (<XS>) {
-	m/^    { ([0-9]{4}), "([^"]+)"\s+\}/ and $err{$1} = $2;
+	m/^    \{ ([0-9]{4}), "([^"]+)"\s+\}/ and $err{$1} = $2;
 	}
     }
 
