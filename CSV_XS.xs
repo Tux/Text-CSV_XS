@@ -194,7 +194,7 @@ xs_error_t xs_errors[] =  {
     {    0, "" },
     };
 
-static byte init_cache[CACHE_SIZE];
+static char init_cache[CACHE_SIZE];
 static int  io_handle_loaded = 0;
 static SV  *m_getline, *m_print, *m_read;
 
@@ -224,7 +224,7 @@ static SV *cx_SvDiag (pTHX_ int xse)
 
     while (xs_errors[i].xs_errno && xs_errors[i].xs_errno != xse) i++;
     if ((err = newSVpv (xs_errors[i].xs_errstr, 0))) {
-	SvUPGRADE (err, SVt_PVIV);
+	(void)SvUPGRADE (err, SVt_PVIV);
 	SvIV_set  (err, xse);
 	SvIOK_on  (err);
 	}
