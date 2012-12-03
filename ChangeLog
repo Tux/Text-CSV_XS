@@ -1,6 +1,8 @@
-0.94	- 2012-11-28, H.Merijn Brand
+0.94	- 2012-12-03, H.Merijn Brand
     * Guard against beta releases of Encode (Xavier Guimard - RT#81499)
     * Fix sv_cache init global-buffer-overflow (Reini Urban - RT#81469)
+    * Tested with perl compiled with clag (also to verify RT#81469)
+    * Fix memory leak reported in RT#81539 (Fix by Tony Cook)
 
 0.93	- 2012-11-19, H.Merijn Brand
     * Skip Encode related tests on too old Encode

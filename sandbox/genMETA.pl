@@ -23,7 +23,7 @@ $meta->from_data (<DATA>);
 if ($check) {
     $meta->check_encoding ();
     $meta->check_required ();
-    $meta->check_minimum ("5.006001", [ "examples" ]);
+    $meta->check_minimum ("5.008004", [ "examples" ]);
     }
 elsif ($opt_v) {
     $meta->print_yaml ();
