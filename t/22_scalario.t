@@ -29,7 +29,7 @@ $/ = "\n";
 $\ = undef;
 
 my $io;
-my $io_str;
+my $io_str = "";
 my $csv = Text::CSV_XS->new ();
 
 open  $io, ">", \$io_str or die "_22test.csv: $!";
