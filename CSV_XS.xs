@@ -1533,11 +1533,11 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 	    }
 
 	if (n++ >= tail) {
-	    rav_free (av_shift (avr));
+	    SvREFCNT_dec (av_shift (avr));
 	    n--;
 	    }
 
-	av_push (avr, newRV ((SV *)row));
+	av_push (avr, newRV_noinc ((SV *)row));
 
 	if (n >= length && skip >= 0)
 	    break; /* We have enough */
@@ -1545,7 +1545,7 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 	row = newAV ();
 	}
     while (n > length) {
-	rav_free (av_pop (avr));
+	SvREFCNT_dec (av_pop (avr));
 	n--;
 	}
 
