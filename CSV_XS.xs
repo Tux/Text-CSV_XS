@@ -1497,13 +1497,6 @@ static void cx_av_free (pTHX_ AV *av)
     sv_free ((SV *)av);
     } /* av_free */
 
-#define rav_free(rv)	cx_rav_free (aTHX_ rv)
-static void cx_rav_free (pTHX_ SV *rv)
-{
-    av_free ((AV *)SvRV (rv));
-    sv_free (rv);
-    } /* rav_free */
-
 #define xsParse_all(self,hv,io,off,len)		cx_xsParse_all (aTHX_ self, hv, io, off, len)
 static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 {
