@@ -979,7 +979,7 @@ sequences equal.
 =item allow_unquoted_escape
 X<allow_unquoted_escape>
 
-There is a backward compatability issue in that the escape character, when
+There is a backward compatibility issue in that the escape character, when
 differing from the quotation character, cannot be on the first position of
 a field. e.g. with C<quote_char> equal to the default C<"> and C<escape_char>
 set to C<\>, this would be illegal:
