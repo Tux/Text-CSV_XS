@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20450;
+ use Test::More tests => 20453;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -441,10 +441,11 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 {   # http://rt.cpan.org/Ticket/Display.html?id=81295
     $rt = 81295; # escaped sep_char discarded when only item in unquoted field
     my $csv = Text::CSV_XS->new ({ escape_char => "\\", auto_diag => 1 });
-    $csv->parse ($input{$rt}[0]);
+    ok ($csv->parse ($input{$rt}[0]),		"parse without allow_unquoted_escape");
     is_deeply ([ $csv->fields ], [ 1, ",", 3 ], "escaped sep in quoted field");
-    #$csv->parse ($input{$rt}[1]);
-    #is_deeply ([ $csv->fields ], [ 1, ",", 3 ], "escaped sep in unquoted field");
+    $csv->allow_unquoted_escape (1);
+    ok ($csv->parse ($input{$rt}[1]),		"parse with allow_unquoted_escape");
+    is_deeply ([ $csv->fields ], [ 1, ",", 3 ], "escaped sep in unquoted field");
     }
 
 __END__

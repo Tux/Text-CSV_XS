@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.94";
+$VERSION = "0.95";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -51,35 +51,36 @@ sub version
 #   a newly created Text::CSV object.
 
 my %def_attr = (
-    quote_char		=> '"',
-    escape_char		=> '"',
-    sep_char		=> ',',
-    eol			=> '',
-    always_quote	=> 0,
-    quote_space		=> 1,
-    quote_null		=> 1,
-    quote_binary	=> 1,
-    binary		=> 0,
-    keep_meta_info	=> 0,
-    allow_loose_quotes	=> 0,
-    allow_loose_escapes	=> 0,
-    allow_whitespace	=> 0,
-    blank_is_undef	=> 0,
-    empty_is_undef	=> 0,
-    verbatim		=> 0,
-    auto_diag		=> 0,
-    types		=> undef,
+    quote_char			=> '"',
+    escape_char			=> '"',
+    sep_char			=> ',',
+    eol				=> '',
+    always_quote		=> 0,
+    quote_space			=> 1,
+    quote_null			=> 1,
+    quote_binary		=> 1,
+    binary			=> 0,
+    keep_meta_info		=> 0,
+    allow_loose_quotes		=> 0,
+    allow_loose_escapes		=> 0,
+    allow_unquoted_escape	=> 0,
+    allow_whitespace		=> 0,
+    blank_is_undef		=> 0,
+    empty_is_undef		=> 0,
+    verbatim			=> 0,
+    auto_diag			=> 0,
+    types			=> undef,
 
-    _EOF		=> 0,
-    _RECNO		=> 0,
-    _STATUS		=> undef,
-    _FIELDS		=> undef,
-    _FFLAGS		=> undef,
-    _STRING		=> undef,
-    _ERROR_INPUT	=> undef,
-    _COLUMN_NAMES	=> undef,
-    _BOUND_COLUMNS	=> undef,
-    _AHEAD		=> undef,
+    _EOF			=> 0,
+    _RECNO			=> 0,
+    _STATUS			=> undef,
+    _FIELDS			=> undef,
+    _FFLAGS			=> undef,
+    _STRING			=> undef,
+    _ERROR_INPUT		=> undef,
+    _COLUMN_NAMES		=> undef,
+    _BOUND_COLUMNS		=> undef,
+    _AHEAD			=> undef,
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
@@ -135,25 +136,25 @@ sub new
 
 # Keep in sync with XS!
 my %_cache_id = ( # Only expose what is accessed from within PM
-    quote_char		=>  0,
-    escape_char		=>  1,
-    sep_char		=>  2,
-    binary		=>  3,
-    keep_meta_info	=>  4,
-    always_quote	=>  5,
-    allow_loose_quotes	=>  6,
-    allow_loose_escapes	=>  7,
-    allow_double_quoted	=>  8,
-    allow_whitespace	=>  9,
-    blank_is_undef	=> 10,
-    eol			=> 11,	# 11 .. 18
-    verbatim		=> 22,
-    empty_is_undef	=> 23,
-    auto_diag		=> 24,
-    quote_space		=> 25,
-    quote_null		=> 31,
-    quote_binary	=> 32,
-    _is_bound		=> 26,	# 26 .. 29
+    quote_char			=>  0,
+    escape_char			=>  1,
+    sep_char			=>  2,
+    binary			=>  3,
+    keep_meta_info		=>  4,
+    always_quote		=>  5,
+    allow_loose_quotes		=>  6,
+    allow_loose_escapes		=>  7,
+    allow_unquoted_escape	=>  8,
+    allow_whitespace		=>  9,
+    blank_is_undef		=> 10,
+    eol				=> 11,	# 11 .. 18
+    verbatim			=> 22,
+    empty_is_undef		=> 23,
+    auto_diag			=> 24,
+    quote_space			=> 25,
+    quote_null			=> 31,
+    quote_binary		=> 32,
+    _is_bound			=> 26,	# 26 .. 29
     );
 
 # A `character'
@@ -295,6 +296,13 @@ sub allow_whitespace
 	}
     $self->{allow_whitespace};
     } # allow_whitespace
+
+sub allow_unquoted_escape
+{
+    my $self = shift;
+    @_ and $self->_set_attr_X ("allow_unquoted_escape", shift);
+    $self->{allow_unquoted_escape};
+    } # allow_unquoted_escape
 
 sub blank_is_undef
 {
@@ -968,6 +976,19 @@ would result in a parse error. Though it is still bad practice to allow
 this format, this option enables you to treat all escape character
 sequences equal.
 
+=item allow_unquoted_escape
+X<allow_unquoted_escape>
+
+There is a backward compatability issue in that the escape character, when
+differing from the quotation character, cannot be on the first position of
+a field. e.g. with C<quote_char> equal to the default C<"> and C<escape_char>
+set to C<\>, this would be illegal:
+
+ 1,\0,2
+
+To overcome issues with backward compatibility, you can allow this by setting
+this attribute to 1.
+
 =item binary
 X<binary>
 
@@ -1084,23 +1105,24 @@ To sum it up,
 is equivalent to
 
  $csv = Text::CSV_XS->new ({
-     quote_char          => '"',
-     escape_char         => '"',
-     sep_char            => ',',
-     eol                 => $\,
-     always_quote        => 0,
-     quote_space         => 1,
-     quote_null	         => 1,
-     quote_binary        => 1,
-     binary              => 0,
-     keep_meta_info      => 0,
-     allow_loose_quotes  => 0,
-     allow_loose_escapes => 0,
-     allow_whitespace    => 0,
-     blank_is_undef      => 0,
-     empty_is_undef      => 0,
-     verbatim            => 0,
-     auto_diag           => 0,
+     quote_char            => '"',
+     escape_char           => '"',
+     sep_char              => ',',
+     eol                   => $\,
+     always_quote          => 0,
+     quote_space           => 1,
+     quote_null	           => 1,
+     quote_binary          => 1,
+     binary                => 0,
+     keep_meta_info        => 0,
+     allow_loose_quotes    => 0,
+     allow_loose_escapes   => 0,
+     allow_unquoted_escape => 0,
+     allow_whitespace      => 0,
+     blank_is_undef        => 0,
+     empty_is_undef        => 0,
+     verbatim              => 0,
+     auto_diag             => 0,
      });
 
 For all of the above mentioned flags, there is an accessor method available

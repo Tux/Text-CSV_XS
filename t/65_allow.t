@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 1115;
+ use Test::More tests => 1119;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -413,4 +413,14 @@ foreach my $bin (0, 1) {
     is ( $csv->parse ($s2023), 0,		"Parse 2023");
     is (($csv->error_diag)[0], 2023,		"Fail code 2023");
     is (($csv->error_diag)[2], 22,		"Space is eaten now");
+    }
+
+{   my $csv = Text::CSV_XS->new ({ allow_unquoted_escape => 1, escape_char => "=" });
+    my $str = q{1,3,=};
+    is ( $csv->parse ($str),   0,		"Parse trailing ESC");
+    is (($csv->error_diag)[0], 2035,		"Fail code 2035");
+
+    $str .= "0";
+    is ( $csv->parse ($str),   1,		"Parse trailing ESC");
+    is_deeply ([ $csv->fields ], [ 1,3,"\0" ],	"Parse passed");
     }

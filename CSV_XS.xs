@@ -44,7 +44,7 @@
 #define CACHE_ID_always_quote		5
 #define CACHE_ID_allow_loose_quotes	6
 #define CACHE_ID_allow_loose_escapes	7
-#define CACHE_ID_allow_double_quoted	8
+#define CACHE_ID_allow_unquoted_escape	8
 #define CACHE_ID_allow_whitespace	9
 #define CACHE_ID_blank_is_undef		10
 #define CACHE_ID_eol			11
@@ -100,7 +100,7 @@ typedef struct {
 
     byte	allow_loose_quotes;
     byte	allow_loose_escapes;
-    byte	allow_double_quoted;
+    byte	allow_unquoted_escape;
     byte	allow_whitespace;
 
     byte	blank_is_undef;
@@ -282,9 +282,9 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
          idx == CACHE_ID_quote_space		||
          idx == CACHE_ID_quote_null		||
          idx == CACHE_ID_quote_binary		||
-         idx == CACHE_ID_allow_loose_quotes	||
          idx == CACHE_ID_allow_loose_escapes	||
-         idx == CACHE_ID_allow_double_quoted	||
+         idx == CACHE_ID_allow_loose_quotes	||
+         idx == CACHE_ID_allow_unquoted_escape	||
          idx == CACHE_ID_allow_whitespace	||
          idx == CACHE_ID_blank_is_undef		||
 	 idx == CACHE_ID_empty_is_undef		||
@@ -351,9 +351,9 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_char ("sep",			CACHE_ID_sep_char);
     _cache_show_byte ("binary",			CACHE_ID_binary);
 
-    _cache_show_byte ("allow_double_quoted",	CACHE_ID_allow_double_quoted);
     _cache_show_byte ("allow_loose_escapes",	CACHE_ID_allow_loose_escapes);
     _cache_show_byte ("allow_loose_quotes",	CACHE_ID_allow_loose_quotes);
+    _cache_show_byte ("allow_unquoted_escape",	CACHE_ID_allow_unquoted_escape);
     _cache_show_byte ("allow_whitespace",	CACHE_ID_allow_whitespace);
     _cache_show_byte ("always_quote",		CACHE_ID_always_quote);
     _cache_show_byte ("quote_space",		CACHE_ID_quote_space);
@@ -425,7 +425,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->allow_loose_quotes		= csv->cache[CACHE_ID_allow_loose_quotes];
 	csv->allow_loose_escapes	= csv->cache[CACHE_ID_allow_loose_escapes];
-	csv->allow_double_quoted	= csv->cache[CACHE_ID_allow_double_quoted];
+	csv->allow_unquoted_escape	= csv->cache[CACHE_ID_allow_unquoted_escape];
 	csv->allow_whitespace		= csv->cache[CACHE_ID_allow_whitespace	];
 	csv->blank_is_undef		= csv->cache[CACHE_ID_blank_is_undef	];
 	csv->empty_is_undef		= csv->cache[CACHE_ID_empty_is_undef	];
@@ -516,7 +516,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->quote_binary		= bool_opt_def ("quote_binary", 1);
 	csv->allow_loose_quotes		= bool_opt ("allow_loose_quotes");
 	csv->allow_loose_escapes	= bool_opt ("allow_loose_escapes");
-	csv->allow_double_quoted	= bool_opt ("allow_double_quoted");
+	csv->allow_unquoted_escape	= bool_opt ("allow_unquoted_escape");
 	csv->allow_whitespace		= bool_opt ("allow_whitespace");
 	csv->blank_is_undef		= bool_opt ("blank_is_undef");
 	csv->empty_is_undef		= bool_opt ("empty_is_undef");
@@ -540,7 +540,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->cache[CACHE_ID_allow_loose_quotes]		= csv->allow_loose_quotes;
 	csv->cache[CACHE_ID_allow_loose_escapes]	= csv->allow_loose_escapes;
-	csv->cache[CACHE_ID_allow_double_quoted]	= csv->allow_double_quoted;
+	csv->cache[CACHE_ID_allow_unquoted_escape]	= csv->allow_unquoted_escape;
 	csv->cache[CACHE_ID_allow_whitespace]		= csv->allow_whitespace;
 	csv->cache[CACHE_ID_blank_is_undef]		= csv->blank_is_undef;
 	csv->cache[CACHE_ID_empty_is_undef]		= csv->empty_is_undef;
@@ -1277,8 +1277,30 @@ restart:
 	    /* This means quote_char != escape_char */
 	    if (waitingForField) {
 		waitingForField = 0;
-		/* The escape character is the first character of an unquoted field */
-		/* sv_setpvn (sv, "", 0); */
+		if (csv->allow_unquoted_escape) {
+		    /* The escape character is the first character of an unquoted field */
+
+		    sv_setpvn (sv, "", 0);
+
+		    /* ... get and store next character */
+		    int c2 = CSV_GET;
+
+		    if (c2 == EOF) {
+			csv->used--;
+			ERROR_INSIDE_FIELD (2035);
+			}
+
+		    if (c2 == '0')
+			CSV_PUT_SV (0)
+		    else
+		    if ( c2 == csv->quote_char  || c2 == csv->sep_char ||
+			 c2 == csv->escape_char || csv->allow_loose_escapes)
+			CSV_PUT_SV (c2)
+		    else {
+			csv->used--;
+			ERROR_INSIDE_QUOTES (2025);
+			}
+		    }
 		}
 	    else
 	    if (f & CSV_FLAGS_QUO) {

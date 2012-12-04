@@ -1,3 +1,6 @@
+0.95	- 2012-12-04, H.Merijn Brand
+    * Introduce allow_unquoted_escape as workaround for RT#81295
+
 0.94	- 2012-12-03, H.Merijn Brand
     * Guard against beta releases of Encode (Xavier Guimard - RT#81499)
     * Fix sv_cache init global-buffer-overflow (Reini Urban - RT#81469)
