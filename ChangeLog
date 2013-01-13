@@ -1,5 +1,6 @@
-0.95	- 2012-12-04, H.Merijn Brand
+0.95	- 2013-01-13, H.Merijn Brand
     * Introduce allow_unquoted_escape as workaround for RT#81295
+    * Update copyright to 2013
 
 0.94	- 2012-12-03, H.Merijn Brand
     * Guard against beta releases of Encode (Xavier Guimard - RT#81499)
