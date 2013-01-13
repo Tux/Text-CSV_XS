@@ -288,14 +288,14 @@ sub fix_meta
 		$jsn->{prereqs}{$x}{$_} = delete $jsn->{"$sct$_"};
 	    }
 	}
-    $jsn = CPAN::Meta::Converter->new ($jsn)->convert (version => 2);
-    $jsn->{generated_by} = "Author";
+       $jsn = CPAN::Meta::Converter->new ($jsn)->convert (version => "2");
+    my $yml = CPAN::Meta::Converter->new ($jsn)->convert (version => "1.4");
+    $_->{generated_by} = "Author" for $jsn, $yml;
 
     my @my = glob <*/META.yml> or croak "No META files";
-
     my $yf = $my[0];
     @my == 1 && open my $my, ">", $yf or croak "Cannot update $yf\n";
-    print $my Dump $jsn; # @{$self->{yml}};
+    print $my Dump $yml; # @{$self->{yml}};
     close $my;
 
     $yf =~ s/yml$/json/;
