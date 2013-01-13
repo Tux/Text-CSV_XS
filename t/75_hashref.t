@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 68;
+ use Test::More tests => 75;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -120,6 +120,19 @@ is (ref $hr, "HASH",				"returned a hashref");
 is_deeply ($hr, { "\cAUNDEF\cA" => "code", "" => "name", "name" => "description" },
     "Discarded 3rd field");
 
+close $fh;
+
+open $fh, ">", "_75test.csv";
+$hr = { c_foo => 1, foo => "poison", zebra => "Of course" };
+is ($csv->column_names (undef), undef,		"reset column headers");
+ok ($csv->column_names (sort keys %$hr),	"set column names");
+ok ($csv->eol ("\n"),				"set eol for output");
+ok ($csv->print ($fh, [ $csv->column_names ]),	"print header");
+ok ($csv->print_hr ($fh, $hr),			"print_hr");
+close $fh;
+open $fh, "<", "_75test.csv";
+ok ($csv->column_names ($csv->getline ($fh)),	"get column names");
+is_deeply ($csv->getline_hr ($fh), $hr,		"compare to written hr");
 close $fh;
 
 unlink "_75test.csv";

@@ -596,6 +596,14 @@ sub getline_hr_all
     [ map { my %h; @h{@cn} = @$_; \%h } @{$self->getline_all (@args)} ];
     } # getline_hr_all
 
+sub print_hr
+{
+    my ($self, $io, $hr) = @_;
+    $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3009));
+    ref $hr eq "HASH"      or croak ($self->SetDiag (3010));
+    $self->print ($io, [ map { $hr->{$_} } $self->column_names ]);
+    } # print_hr
+
 sub types
 {
     my $self = shift;
@@ -1299,6 +1307,18 @@ X<getline_hr_all>
 This will return a reference to a list of L<getline_hr ($io)|/getline_hr>
 results.  In this call, C<keep_meta_info> is disabled.
 
+=head2 print_hr
+X<print_hr>
+
+ $csv->print_hr ($io, $ref);
+
+Provides an easy way to print a C<$ref> as fetched with L<getline_hr>
+provided the column names are set with L<column_names>.
+
+It is no more than a wrapper method with basic parameter checks over
+
+ $csv->print ($io, [ map { $ref->{$_} } $csv->column_names ]);
+
 =head2 column_names
 X<column_names>
 
@@ -1994,6 +2014,14 @@ X<3007>
 =item *
 3008 "EHR - unexpected error in bound fields"
 X<3008>
+
+=item *
+3009 "EHR - print_hr () called before column_names ()"
+X<3009>
+
+=item *
+3010 "EHR - print_hr () called with invalid arguments"
+X<3010>
 
 =back
 
