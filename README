@@ -2,9 +2,9 @@ Module:
     Text::CSV_XS
 
 Description:
-    Text::CSV_XS provides facilities for the composition and decomposition of
-    comma-separated values.  An instance of the Text::CSV_XS class can combine
-    fields into a CSV string and parse a CSV string into fields.
+    Text::CSV_XS provides facilities for the composition and decomposition
+    of comma-separated values.  An instance of the Text::CSV_XS class can
+    combine fields into a CSV string and parse a CSV string into fields.
 
 Copying:
     Copyright (c) 2007-2013 H.Merijn Brand.  All rights reserved.
@@ -26,7 +26,7 @@ Copying:
 	       'http://repo.or.cz/w/Text-CSV_XS.git?a=snapshot;sf=tgz'
 
 Prerequisites:
-    perl 5.6.0 or up.
+    perl 5.6.1 or up.
     examples/csv-check requires perl with defined-or and PerlIO, and
     making that work on other versions is left as an exercise to the
     reader. Other examples are checked against 5.8.4.
@@ -46,6 +46,6 @@ Author:
     A pure-perl version is being maintained by Makamaka Hannyaharamitu
     as Text::CSV_PP, which tries to follow Text::CSV_XS very closely.
 
-    Text::CSV_PP is bundled in Text::CSV, which now is a wrapper module over
-    Text::CSV_XS and Text::CSV_PP that will select Text::CSV_XS if available,
-    and otherwise use Text::PP.
+    Text::CSV_PP is bundled in Text::CSV, which now is a wrapper module
+    over Text::CSV_XS and Text::CSV_PP that will select Text::CSV_XS if
+    available, and otherwise use Text::PP.

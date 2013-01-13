@@ -2,7 +2,7 @@ package Text::CSV_XS;
 
 # Copyright (c) 2007-2013 H.Merijn Brand.  All rights reserved.
 # Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
-# Portions Copyright (c) 1997 Alan Citterman. All rights reserved.
+# Copyright (c) 1997 Alan Citterman.       All rights reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -666,8 +666,9 @@ perhaps better called ASV (anything separated values) rather than just CSV.
 B<Important Note>: The default behavior is to only accept ASCII characters.
 This means that fields can not contain newlines. If your data contains
 newlines embedded in fields, or characters above 0x7e (tilde), or binary
-data, you B<I<must>> set C<< binary => 1 >> in the call to L</new>. To cover
-the widest range of parsing options, you will always want to set binary.
+data, you B<I<must>> set C<< binary => 1 >> in the call to L</new>. To
+cover the widest range of parsing options, you will always want to set
+binary.
 
 But you still have the problem that you have to pass a correct line to the
 L</parse> method, which is more complicated from the usual point of usage:
@@ -989,13 +990,13 @@ X<allow_unquoted_escape>
 
 There is a backward compatibility issue in that the escape character, when
 differing from the quotation character, cannot be on the first position of
-a field. e.g. with C<quote_char> equal to the default C<"> and C<escape_char>
-set to C<\>, this would be illegal:
+a field. e.g. with C<quote_char> equal to the default C<"> and
+C<escape_char> set to C<\>, this would be illegal:
 
  1,\0,2
 
-To overcome issues with backward compatibility, you can allow this by setting
-this attribute to 1.
+To overcome issues with backward compatibility, you can allow this by
+setting this attribute to 1.
 
 =item binary
 X<binary>
@@ -1012,9 +1013,9 @@ setting C<{ binary => 1 }> is still a wise option.
 =item types
 X<types>
 
-A set of column types; this attribute is immediately passed to the L</types>
-method. You must not set this attribute otherwise, except for using the
-L</types> method.
+A set of column types; this attribute is immediately passed to the
+L</types> method. You must not set this attribute otherwise, except for
+using the L</types> method.
 
 =item always_quote
 X<always_quote>
@@ -1167,9 +1168,9 @@ For performance reasons the print method does not create a result string.
 In particular the L</string>, L</status>, L</fields>, and L</error_input>
 methods are meaningless after executing this method.
 
-If C<$colref> is undef (explicit, not through a variable) and L</bind_columns>
-was used to specify fields to be printed, one can gain speed when otherwise
-data would have to be copied as arguments:
+If C<$colref> is undef (explicit, not through a variable) and
+L</bind_columns> was used to specify fields to be printed, one can gain
+speed when otherwise data would have to be copied as arguments:
 
  $csv->bind_columns (\($foo, $bar));
  $status = $csv->print ($fh, undef);
@@ -1290,8 +1291,9 @@ Could easily be rewritten to the much faster:
      print $row->{price};
      }
 
-Your mileage may vary for the size of the data and the numbers of rows, but 
-with perl-5.14.2 the difference is like for a 100_000 line file with 14 rows:
+Your mileage may vary for the size of the data and the numbers of rows,
+but with perl-5.14.2 the difference is like for a 100_000 line file with
+14 rows:
 
             Rate hashrefs getlines
  hashrefs 1.00/s       --     -76%
@@ -1346,10 +1348,11 @@ L</column_names> croaks on invalid arguments.
 =head2 bind_columns
 X<bind_columns>
 
-Takes a list of references to scalars to be printed with L</print> or to store
-the fields fetched by L</getline> in. When you don't pass enough references to
-store the fetched fields in, L</getline> will fail. If you pass more than
-there are fields to return, the remaining references are left untouched.
+Takes a list of references to scalars to be printed with L</print> or to
+store the fields fetched by L</getline> in. When you don't pass enough
+references to store the fetched fields in, L</getline> will fail. If you
+pass more than there are fields to return, the remaining references are
+left untouched.
 
  $csv->bind_columns (\$code, \$name, \$price, \$description);
  while ($csv->getline ($io)) {
@@ -1728,13 +1731,6 @@ specify which fields are quoted in the L</combine>/L</string> combination.
  $csv->meta_info (0, 1, 1, 3, 0, 0);
  $csv->is_quoted (3, 1);
 
-=item combined methods
-
-Requests for adding means (methods) that combine L</combine> and L</string>
-in a single call will B<not> be honored. Likewise for L</parse> and
-L</fields>. Given the trouble with embedded newlines, Using L</getline> and
-L</print> instead is the preferred way to go.
-
 =item Parse the whole file at once
 
 Implement new methods that enable parsing of a complete file at once,
@@ -1756,22 +1752,24 @@ Returning something like
 Note that L</getline_all> already returns all rows for an open stream, but
 this will not return flags.
 
-=item EBCDIC
+=back
 
-The hard-coding of characters and character ranges makes this module
-unusable on EBCDIC system. Using some #ifdef structure could enable these
-again without loosing speed. Testing would be the hard part.
+=head2 NOT TODO
 
-Opening EBCDIC encode files on ASCII+ systems is likely to succeed using
-Encode's cp37, cp1047, or posix-bc:
+=over 2
 
- open my $fh, "<:encoding(cp1047)", "ebcdic_file.csv" or die "...";
+=item combined methods
+
+Requests for adding means (methods) that combine L</combine> and L</string>
+in a single call will B<not> be honored. Likewise for L</parse> and
+L</fields>. Given the trouble with embedded newlines, using L</getline> and
+L</print> instead is the preferred way to go.
 
 =back
 
 =head2 Release plan
 
-No guarantees, but this is what I have in mind right now:
+No guarantees, but this is what I had in mind a while ago:
 
 =over 2
 
@@ -1784,9 +1782,18 @@ No guarantees, but this is what I have in mind right now:
 =item next + 1
 
  - csv2csv - a script to regenerate a CSV file to follow standards
- - EBCDIC support
 
 =back
+
+=head1 EBCDIC
+
+The hard-coding of characters and character ranges makes this module
+unusable on EBCDIC systems.
+
+Opening EBCDIC encoded files on ASCII+ systems is likely to succeed
+using Encode's cp37, cp1047, or posix-bc:
+
+ open my $fh, "<:encoding(cp1047)", "ebcdic_file.csv" or die "...";
 
 =head1 DIAGNOSTICS
 
@@ -2049,9 +2056,9 @@ ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2007-2013 H.Merijn Brand for PROCURA B.V. All rights reserved.
+ Copyright (C) 2007-2013 H.Merijn Brand.  All rights reserved.
  Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
- Portions Copyright (C) 1997 Alan Citterman. All rights reserved.
+ Copyright (C) 1997      Alan Citterman.  All rights reserved.
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
