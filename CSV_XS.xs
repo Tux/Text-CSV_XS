@@ -1280,12 +1280,12 @@ restart:
 	    if (waitingForField) {
 		waitingForField = 0;
 		if (csv->allow_unquoted_escape) {
-		    /* The escape character is the first character of an unquoted field */
-
-		    sv_setpvn (sv, "", 0);
-
+		    /* The escape character is the first character of an
+		     * unquoted field */
 		    /* ... get and store next character */
 		    int c2 = CSV_GET;
+
+		    sv_setpvn (sv, "", 0);
 
 		    if (c2 == EOF) {
 			csv->used--;
