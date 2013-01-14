@@ -58,7 +58,6 @@ configure_requires:
 build_requires:
     Config:              0
 test_requires:
-    Test::Harness:       0
     Test::More:          0
     Tie::Scalar:         0
 test_recommends:

@@ -17,7 +17,6 @@ my %wm = (
 		      "Config"		=> 0,
 		      "IO::Handle"	=> 0,
 		      "Test::More"	=> 0,
-		      "Test::Harness"	=> 0,
 		      },
     clean        => { FILES => join " ", qw(
 			 CSV_XS.c.gcov
