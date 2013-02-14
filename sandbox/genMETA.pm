@@ -2,14 +2,15 @@
 
 package genMETA;
 
-our $VERSION = "1.03-20110907";
+our $VERSION = "1.04-20130212";
 
-use strict;
+use 5.014;
 use warnings;
 use Carp;
 
 use List::Util qw( first );
 use Encode qw( encode decode );
+use Term::ANSIColor qw(:constants);
 use Test::CPAN::Meta::YAML::Version;
 use CPAN::Meta::Converter;
 use Test::MinimumVersion;
@@ -38,7 +39,7 @@ sub version_from
 	if ($mf =~ m{\b NAME         \s*=>\s* ["'] (\S+) ['"]}x) {
 	    $self->{name} = $1;
 	    $self->{name} =~ m/-/ and
-		warn "NAME in Makefile.PL contains a -\n";
+		warn RED, "NAME in Makefile.PL contains a -", RESET, "\n";
 	    $self->{name} =~ s/::/-/g;
 	    }
 	if ($mf =~ m{\b DISTNAME     \s*=>\s* ["'] (\S+) ['"]}x) {
@@ -47,15 +48,20 @@ sub version_from
 
 	if ($mf =~ m{\b VERSION_FROM \s*=>\s* ["'] (\S+) ['"]}x) {
 	    my $from = $1;
-	    -f $from or die "Makefile wants version from nonexisten $from\n";
+	    -f $from or
+		die RED, "Makefile wants version from nonexisten $from", RESET, "\n";
 	    $self->{from} //= $from;
-	    $from eq $self->{from} or die "VERSION_FROM mismatch Makefile.PL / YAML\n";
+	    $from eq $self->{from} or
+		die RED, "VERSION_FROM mismatch Makefile.PL / YAML", RESET, "\n";
 	    }
 
 	if ($mf =~ m[\b PREREQ_PM    \s*=>\s* \{ ( [^}]+ ) \}]x) {
 	    my @pr = split m/\n/ => $1;
 	    $self->{mfpr} = { map { (m{ \b ["']? (\S+?) ['"]? \s*=>\s* ["']? ([-0-9._]+) ['"]? }x) } grep !m/^\s*#/ => @pr };
 	    }
+
+	$mf =~ m{--format=ustar} or
+	    warn RED, "TARFLAGS macro is missing", RESET, "\n";
 	}
 
     $src //= $self->{from} or croak "No file to extract version from";
@@ -104,7 +110,7 @@ sub check_encoding
 		eval { decode ("utf-8", $_, 1) };
 		$@ or next;
 		$@ =~ s{ at /\S+ line \d+.*}{};
-		print "$tf:$n\t$_\t$@";
+		print BLUE, "$tf:$n\t$_\t$@", RESET;
 		}
 	    croak "$tf is not valid UTF-8\n";
 	    }
@@ -124,7 +130,7 @@ sub check_required
     
     my $yml = $self->{h} or croak "No YAML to check";
 
-    print STDERR "Check required and recommended module versions ...\n";
+    warn "Check required and recommended module versions ...\n";
     BEGIN { $V::NO_EXIT = $V::NO_EXIT = 1 } require V;
     my %req = map { %{$yml->{$_}} } grep m/requires/   => keys %{$yml};
     my %rec = map { %{$yml->{$_}} } grep m/recommends/ => keys %{$yml};
@@ -141,27 +147,27 @@ sub check_required
     for (sort keys %vsn) {
 	if (my $mfv = delete $self->{mfpr}{$_}) {
 	    $req{$_} eq $mfv or
-		die "PREREQ mismatch for $_ Makefile.PL ($mfv) / YAML ($req{$_})\n";
+		die RED, "PREREQ mismatch for $_ Makefile.PL ($mfv) / YAML ($req{$_})", RESET, "\n";
 	    }
 	$vsn{$_} eq "0" and next;
 	my $v = V::get_version ($_);
 	$v eq $vsn{$_} and next;
-	printf STDERR "%-35s %-6s => %s\n", $_, $vsn{$_}, $v;
+	printf STDERR "%s%-35s %-6s => %s%s%s\n", BLUE, $_, $vsn{$_}, GREEN, $v, RESET;
 	}
     if (my @mfpr = sort keys %{$self->{mfpr}}) {
-	die "Makefile.PL requires @mfpr, YAML does not\n";
+	die RED, "Makefile.PL requires @mfpr, YAML does not", RESET, "\n";
 	}
 
     find (sub {
 	$File::Find::dir  =~ m{^blib\b}			and return;
 	$File::Find::name =~ m{(?:^|/)Bundle/.*\.pm}	or  return;
 	if (open my $bh, "<", $_) {
-	    print STDERR "Check bundle module versions $File::Find::name ...\n";
+	    warn "Check bundle module versions $File::Find::name ...\n";
 	    while (<$bh>) {
 		my ($m, $dv) = m/^([A-Za-z_:]+)\s+([0-9.]+)\s*$/ or next;
 		my $v = $m eq $self->{name} ? $self->{version} : V::get_version ($m);
 		$v eq $dv and next;
-		printf STDERR "%-35s %-6s => %s\n", $m, $dv, $v;
+		printf STDERR "%s%-35s %-6s => %s%s%s\n", BLUE, $m, $dv, GREEN, $v, RESET;
 		}
 	    }
 	}, glob "*");
@@ -178,7 +184,7 @@ sub check_required
 		while (<$fh>) {
 		    m/\bVERSION\s*=\s*["']?([-0-9.]+)/ or next;
 		    $fv = $1;
-		    print $fv eq $ev ? "ok\n" : " mismatch, module has $1\n";
+		    print $fv eq $ev ? "ok\n" : RED." mismatch, module has $1".RESET."\n";
 		    last;
 		    }
 		defined $fv or print " .. no version defined\n";
@@ -196,15 +202,16 @@ sub check_yaml
 
     my @yml = @{$self->{yml}} or croak "No YAML to check";
 
-    print STDERR "Checking generated YAML ...\n";
+    warn "Checking generated YAML ...\n";
     my $h;
     my $yml = join "", @yml;
     eval { $h = Load ($yml) };
     $@ and croak "$@\n";
     $self->{name} //= $h->{name};
-    $self->{name} eq  $h->{name} or die "NAME mismatch Makefile.PL / YAML\n";
+    $self->{name} eq  $h->{name} or
+	die RED, "NAME mismatch Makefile.PL / YAML", RESET, "\n";
     $self->{name} =~ s/-/::/g;
-    print STDERR "Checking for $self->{name}-$self->{version}\n";
+    warn "Checking for $self->{name}-$self->{version}\n";
 
     $self->{verbose} and print Dump $h;
 
@@ -243,7 +250,7 @@ sub check_minimum
     # All other minimum version checks done in xt
     Test::More::subtest "Minimum perl version $reqv" => sub {
 	all_minimum_version_ok ($reqv, $locs);
-	};
+	} or warn RED, "\n### Use 'perlver --blame' on the failing file(s)\n\n", RESET;
     } # check_minimum
 
 sub print_yaml
@@ -288,20 +295,48 @@ sub fix_meta
 		$jsn->{prereqs}{$x}{$_} = delete $jsn->{"$sct$_"};
 	    }
 	}
-       $jsn = CPAN::Meta::Converter->new ($jsn)->convert (version => "2");
-    my $yml = CPAN::Meta::Converter->new ($jsn)->convert (version => "1.4");
-    $_->{generated_by} = "Author" for $jsn, $yml;
+
+    # optional features do not yet know about requires and/or recommends diirectly
+    if (my $of = $jsn->{optional_features}) {
+	foreach my $f (keys %$of) {
+	    if (my $r = delete $of->{$f}{requires}) {
+		#$jsn->{prereqs}{runtime}{recommends}{$_} //= $r->{$_} for keys %$r;
+		$of->{$f}{prereqs}{runtime}{requires} = $r;
+		}
+	    if (my $r = delete $of->{$f}{recommends}) {
+		#$jsn->{prereqs}{runtime}{recommends}{$_} //= $r->{$_} for keys %$r;
+		$of->{$f}{prereqs}{runtime}{recommends} = $r;
+		}
+	    }
+	}
+
+    $jsn = CPAN::Meta::Converter->new ($jsn)->convert (version => "2");
+    $jsn->{generated_by} = "Author";
 
     my @my = glob <*/META.yml> or croak "No META files";
     my $yf = $my[0];
+    (my $jf = $yf) =~ s/yml$/json/;
+    open my $jh, ">", $jf or croak "Cannot update $jf\n";
+    print   $jh JSON::PP->new->utf8 (1)->pretty (1)->encode ($jsn);
+    close   $jh;
+
+    # Now that 2.0 JSON is corrrect, create a 1.4 YAML back from the modified stuff
+    my $yml = $jsn;
+    # 1.4 does not know about test_*, move them to *
+    if (my $tp = delete $yml->{prereqs}{test}) {
+	foreach my $phase (keys %{$tp}) {
+	    my $p = $tp->{$phase};
+	    $yml->{runtime}{$phase}{$_} //= $p->{$_} for keys %{$p};
+	    }
+	}
+    #DDumper $yml;
+    # This does NOT create a correct YAML id the source does not comply!
+    $yml = CPAN::Meta::Converter->new ($yml)->convert (version => "1.4");
+    #DDumper $yml;
+    exit;
+
     @my == 1 && open my $my, ">", $yf or croak "Cannot update $yf\n";
     print $my Dump $yml; # @{$self->{yml}};
-    close $my;
-
-    $yf =~ s/yml$/json/;
-    open $my, ">", $yf or croak "Cannot update $yf\n";
-    #rint     JSON::PP->new->utf8 (1)->pretty (1)->encode ($jsn);
-    print $my JSON::PP->new->utf8 (1)->pretty (1)->encode ($jsn);
     close $my;
 
     chmod 0644, glob "*/META.*";

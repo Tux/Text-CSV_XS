@@ -14,18 +14,28 @@ if ($@) {
     exit 0;
     }
 
-my %f555 = map { $_ => 1 } glob ("t/*"), glob ("xt/*"), glob ("*.pm"), glob ("*.PL");
-my @f560 = ( "t/22_scalario.t", "t/46_eol_si.t", "xt/00_perlversion.t");
-my @f580 = ( "t/50_utf8.t",     "t/51_utf8.t");
-delete @f555{@f560, @f580};
-subtest (p553 => sub {
-    all_minimum_version_ok ("5.6.1", { paths => [ sort keys %f555 ]});
-    });
-subtest (p560 => sub {
-    all_minimum_version_ok ("5.6.1", { paths => [           @f560 ]});
-    });
-subtest (p580 => sub {
-    all_minimum_version_ok ("5.8.0", { paths => [           @f580 ]});
-    });
+my %f561 = map { $_ => 1 }
+    glob ("t/*"), glob ("xt/*"), glob ("*.pm"), glob ("*.PL");
+my %f5xx = (
+    "5.008.0"  => [qw(
+	t/22_scalario.t
+	t/46_eol_si.t
+	t/50_utf8.t     t/51_utf8.t
+	t/70_rt.t
+	xt/00_perlversion.t
+	)],
+    "5.010.0" => [],
+    "5.012.0" => [],
+    "5.014.0" => [],
+    "5.016.0" => [],
+    );
+
+delete @f561{map { @{$f5xx{$_}} } keys %f5xx};
+$f5xx{"5.006.1"} = [ sort keys %f561 ];
+
+foreach my $v (sort keys %f5xx) {
+    my @f = @{$f5xx{$v}} or next;
+    subtest ($v => sub { all_minimum_version_ok ($v, { paths => [ @f ]}); });
+    }
 
 done_testing ();
