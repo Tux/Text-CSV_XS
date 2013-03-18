@@ -1,5 +1,6 @@
-0.96	- 2013-01-14, H.Merijn Brand
+0.96	- 2013-03-18, H.Merijn Brand
     * No need to require Test::Harness if unused (RT#82693)
+    * parse ("") should return one empty field, not undef
 
 0.95	- 2013-01-13, H.Merijn Brand
     * Introduce allow_unquoted_escape as workaround for RT#81295

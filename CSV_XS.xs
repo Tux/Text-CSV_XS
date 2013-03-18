@@ -1380,7 +1380,7 @@ restart:
 	}
 
     if (waitingForField) {
-	if (seenSomething) {
+	if (seenSomething || !csv->useIO) {
 	    unless (sv) NewField;
 	    if (csv->blank_is_undef || csv->empty_is_undef)
 		sv_setpvn (sv, NULL, 0);
@@ -1392,12 +1392,11 @@ restart:
 		av_push (fflags, newSViv (f));
 	    return TRUE;
 	    }
-	if (csv->useIO) {
-	    (void)SetDiag (csv, 2012);
-	    return FALSE;
-	    }
+
+	(void)SetDiag (csv, 2012);
+	return FALSE;
 	}
-    else
+
     if (f & CSV_FLAGS_QUO) {
 	ERROR_INSIDE_QUOTES (2027);
 	}

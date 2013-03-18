@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 61;
+use Test::More tests => 64;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -78,6 +78,10 @@ is (($csv->fields ())[0], "",				"Hi! - fields () - field 1");
 is (($csv->fields ())[1], qq(I said,\t"Hi!"),		"Hi! - fields () - field 2");
 is (($csv->fields ())[2], "",				"Hi! - fields () - field 3");
 ok ( $csv->status (),					"status ()");
+
+ok ( $csv->parse (""),					"Empty line");
+is ( scalar $csv->fields (), 1,				"Empty - count");
+is (($csv->fields ())[0], "",				"One empty field");
 
 # Are Integers and Reals quoted?
 #
