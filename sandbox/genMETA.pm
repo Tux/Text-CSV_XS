@@ -332,8 +332,11 @@ sub fix_meta
     #DDumper $yml;
     # This does NOT create a correct YAML id the source does not comply!
     $yml = CPAN::Meta::Converter->new ($yml)->convert (version => "1.4");
+    $yml->{requires}{perl} //= $jsn->{prereqs}{runtime}{requires}{perl}
+			   //  $self->{h}{requires}{perl}
+			   //  "";
     #DDumper $yml;
-    exit;
+    #exit;
 
     @my == 1 && open my $my, ">", $yf or croak "Cannot update $yf\n";
     print $my Dump $yml; # @{$self->{yml}};
