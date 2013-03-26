@@ -404,7 +404,7 @@ sub error_diag
 	    if ($self && ref $self) {	# auto_diag
 		if ($self->{diag_verbose} and $self->{_ERROR_INPUT}) {
 		    $msg .= "$self->{_ERROR_INPUT}'\n";
-		    $msg .= " " x $diag[2];
+		    $msg .= " " x ($diag[2] - 1);
 		    $msg .= "^\n";
 		    }
 

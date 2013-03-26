@@ -125,7 +125,7 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
     ok (@warn == 3, "1 - error plus two lines");
     like ($warn[0], qr '^# CSV_XS ERROR: 2027 -', "1 - error message");
     like ($warn[1], qr '^"","',                   "1 - input line");
-    like ($warn[2], qr '^    \^',                 "1 - position indicator");
+    like ($warn[2], qr '^   \^',                 "1 - position indicator");
     is ($csv->{_RECNO}, 2, "Another record read");
     }
 {   ok ($csv->{auto_diag} = 2, "auto_diag = 2 to die");
