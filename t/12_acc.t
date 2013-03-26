@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 121;
+use Test::More tests => 133;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -27,6 +27,7 @@ is ($csv->allow_whitespace,		0,		"allow_whitespace");
 is ($csv->blank_is_undef,		0,		"blank_is_undef");
 is ($csv->empty_is_undef,		0,		"empty_is_undef");
 is ($csv->auto_diag,			0,		"auto_diag");
+is ($csv->diag_verbose,			0,		"diag_verbose");
 is ($csv->verbatim,			0,		"verbatim");
 is ($csv->quote_space,			1,		"quote_space");
 is ($csv->quote_null,			1,		"quote_null");
@@ -54,6 +55,17 @@ is ($csv->allow_whitespace (1),		1,		"allow_whitespace (1)");
 is ($csv->blank_is_undef (1),		1,		"blank_is_undef (1)");
 is ($csv->empty_is_undef (1),		1,		"empty_is_undef (1)");
 is ($csv->auto_diag (1),		1,		"auto_diag (1)");
+is ($csv->auto_diag (2),		2,		"auto_diag (2)");
+is ($csv->auto_diag (9),		9,		"auto_diag (9)");
+is ($csv->auto_diag ("true"),		1,		"auto_diag (\"true\")");
+is ($csv->auto_diag (undef),		0,		"auto_diag (undef)");
+is ($csv->auto_diag (""),		0,		"auto_diag (\"\")");
+is ($csv->diag_verbose (1),		1,		"diag_verbose (1)");
+is ($csv->diag_verbose (2),		2,		"diag_verbose (2)");
+is ($csv->diag_verbose (9),		9,		"diag_verbose (9)");
+is ($csv->diag_verbose ("true"),	1,		"diag_verbose (\"true\")");
+is ($csv->diag_verbose (undef),		0,		"diag_verbose (undef)");
+is ($csv->diag_verbose (""),		0,		"diag_verbose (\"\")");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
 is ($csv->quote_space (1),		1,		"quote_space (1)");
 is ($csv->quote_null (1),		1,		"quote_null (1)");

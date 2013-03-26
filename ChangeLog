@@ -6,6 +6,7 @@
     * No need to require Test::Harness if unused (RT#82693)
     * parse ("") should return one empty field, not undef
     * Now that we know the record number, show it in auto_diag
+    * Add diag_verbose attribute
 
 0.95	- 2013-01-13, H.Merijn Brand
     * Introduce allow_unquoted_escape as workaround for RT#81295

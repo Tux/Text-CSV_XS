@@ -69,6 +69,7 @@ my %def_attr = (
     empty_is_undef		=> 0,
     verbatim			=> 0,
     auto_diag			=> 0,
+    diag_verbose		=> 0,
     types			=> undef,
 
     _EOF			=> 0,
@@ -151,6 +152,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     verbatim			=> 22,
     empty_is_undef		=> 23,
     auto_diag			=> 24,
+    diag_verbose		=> 33,
     quote_space			=> 25,
     quote_null			=> 31,
     quote_binary		=> 32,
@@ -328,9 +330,26 @@ sub verbatim
 sub auto_diag
 {
     my $self = shift;
-    @_ and $self->_set_attr_X ("auto_diag", shift);
+    if (@_) {
+	my $v = shift;
+	!defined $v || $v eq "" and $v = 0;
+	$v =~ m/^[0-9]/ or $v = $v ? 1 : 0; # default for true/false
+	$self->_set_attr_X ("auto_diag", $v);
+	}
     $self->{auto_diag};
     } # auto_diag
+
+sub diag_verbose
+{
+    my $self = shift;
+    if (@_) {
+	my $v = shift;
+	!defined $v || $v eq "" and $v = 0;
+	$v =~ m/^[0-9]/ or $v = $v ? 1 : 0; # default for true/false
+	$self->_set_attr_X ("diag_verbose", $v);
+	}
+    $self->{diag_verbose};
+    } # diag_verbose
 
 # status
 #
@@ -383,6 +402,11 @@ sub error_diag
 	if ($diag[0] && $diag[0] != 2012) {
 	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1] \@ rec $diag[3] pos $diag[2]\n";
 	    if ($self && ref $self) {	# auto_diag
+		if ($self->{diag_verbose} and $self->{_ERROR_INPUT}) {
+		    $msg .= "$self->{_ERROR_INPUT}'\n";
+		    $msg .= " " x $diag[2];
+		    $msg .= "^\n";
+		    }
 
 		my $lvl = $self->{auto_diag};
 		if ($lvl < 2) {
@@ -1093,16 +1117,24 @@ anymore, and getline () chomps line endings on reading.
 =item auto_diag
 X<auto_diag>
 
-Set to true will cause L</error_diag> to be automatically be called in void
-context upon errors.
+Set to a true number between 1 and 9 will cause L</error_diag> to be
+automatically be called in void context upon errors.
 
 In case of error C<2012 - EOF>, this call will be void.
 
 If set to a value greater than 1, it will die on errors instead of warn.
+If set to anything unsupported, it will be silently ignored.
 
 Future extensions to this feature will include more reliable auto-detection
 of the C<autodie> module being enabled, which will raise the value of
 C<auto_diag> with C<1> on the moment the error is detected.
+
+=item diag_verbose
+X<diag_verbose>
+
+Set the verbosity of the C<auto_diag> output. Currently only adds the
+current input line (if known) to the diagnostic output with an indiaction
+of the position of the error.
 
 =back
 
@@ -1131,6 +1163,7 @@ is equivalent to
      empty_is_undef        => 0,
      verbatim              => 0,
      auto_diag             => 0,
+     diag_verbose          => 0,
      });
 
 For all of the above mentioned flags, an accessor method is available where

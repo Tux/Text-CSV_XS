@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 129;
+ use Test::More tests => 138;
 #use Test::More "no_plan";
 
 my %err;
@@ -115,6 +115,18 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
     ok (@warn == 1, "1 - One error");
     like ($warn[0], qr '^# CSV_XS ERROR: 2027 -', "1 - error message");
     is ($csv->{_RECNO}, 1, "One record read");
+    }
+{   my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    is ($csv->diag_verbose (3), 3, "Set diag_verbose");
+    is ($csv->parse ('"","'), 0, "1 - bad parse");
+    ok (@warn == 1, "1 - One error");
+    @warn = split m/\n/ => $warn[0];
+    ok (@warn == 3, "1 - error plus two lines");
+    like ($warn[0], qr '^# CSV_XS ERROR: 2027 -', "1 - error message");
+    like ($warn[1], qr '^"","',                   "1 - input line");
+    like ($warn[2], qr '^    \^',                 "1 - position indicator");
+    is ($csv->{_RECNO}, 2, "Another record read");
     }
 {   ok ($csv->{auto_diag} = 2, "auto_diag = 2 to die");
     eval { $csv->parse ('"","') };
