@@ -381,7 +381,7 @@ sub error_diag
     my $context = wantarray;
     unless (defined $context) {	# Void context, auto-diag
 	if ($diag[0] && $diag[0] != 2012) {
-	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1] \@ pos $diag[2]\n";
+	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1] \@ rec $diag[3] pos $diag[2]\n";
 	    if ($self && ref $self) {	# auto_diag
 
 		my $lvl = $self->{auto_diag};
