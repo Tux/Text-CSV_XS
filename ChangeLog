@@ -1,3 +1,6 @@
+0.97	- 2013-03-26, H.Merijn Brand
+    * Regain the speed from 0.91 (buffer back to 1k)
+
 0.96	- 2013-03-26, H.Merijn Brand
     * No need to require Test::Harness if unused (RT#82693)
     * parse ("") should return one empty field, not undef
