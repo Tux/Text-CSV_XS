@@ -518,7 +518,6 @@ sub parse
     my $fflags = [];
     $self->{_STRING} = \$str;
     if (defined $str && $self->Parse ($str, $fields, $fflags)) {
-	$self->{_ERROR_INPUT} = undef;
 	$self->{_FIELDS} = $fields;
 	$self->{_FFLAGS} = $fflags;
 	$self->{_STATUS} = 1;

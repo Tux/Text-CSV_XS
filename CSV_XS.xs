@@ -240,10 +240,10 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     SV *err = SvDiag (xse);
 
     if (err)
-	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,           0);
+	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
-	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0),  0);
-	(void)hv_store (csv->self, "_ERROR_INPUT", 12, newSVpvs (""), 0);
+	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
+	(void)hv_store (csv->self, "_ERROR_INPUT", 12, NULL,         0);
 	}
     if (err && csv->pself && csv->auto_diag) {
 	ENTER;
@@ -1440,7 +1440,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	csv.utf8 = SvUTF8 (src);
 	csv.bptr = SvPV (src, csv.size);
 	}
-    (void)hv_delete (hv, "_ERROR_INPUT", 12, G_DISCARD);
+    (void)hv_store (hv, "_ERROR_INPUT", 12, NULL, 0);
 
     result = Parse (&csv, src, av, avf);
     sv_inc (*(hv_fetchs (hv, "_RECNO", FALSE)));
