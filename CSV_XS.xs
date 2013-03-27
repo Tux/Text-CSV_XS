@@ -1449,7 +1449,6 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     if (csv.useIO) {
 	if (csv.tmp && csv.used < csv.size && csv.has_ahead) {
 	    SV *sv = newSVpvn (csv.bptr + csv.used, csv.size - csv.used);
-	    (void)hv_delete (hv, "_AHEAD", 6, G_DISCARD);
 	    (void)hv_store  (hv, "_AHEAD", 6, sv, 0);
 	    }
 	else {
@@ -1461,7 +1460,6 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 
 	if (avf) {
 	    if (csv.keep_meta_info) {
-		(void)hv_delete (hv, "_FFLAGS", 7, G_DISCARD);
 		(void)hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
 		}
 	    else {
