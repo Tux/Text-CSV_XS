@@ -1133,7 +1133,7 @@ C<auto_diag> with C<1> on the moment the error is detected.
 X<diag_verbose>
 
 Set the verbosity of the C<auto_diag> output. Currently only adds the
-current input line (if known) to the diagnostic output with an indiaction
+current input line (if known) to the diagnostic output with an indication
 of the position of the error.
 
 =back
