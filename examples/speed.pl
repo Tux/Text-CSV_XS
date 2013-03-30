@@ -12,8 +12,7 @@ use Benchmark qw(:all);
 
 our $csv = Text::CSV_XS->new ({ eol => "\n" });
 
-my $duration = int (shift || 10);
-my $bigfile = "_file.csv";
+my $duration = int (shift || 2);
 our @fields1 = (
     "Wiedmann", "Jochen",
     "Am Eisteich 9",
@@ -28,7 +27,7 @@ $csv->combine (@fields1  ); our $str1   = $csv->string;
 $csv->combine (@fields10 ); our $str10  = $csv->string;
 $csv->combine (@fields100); our $str100 = $csv->string;
 
-timethese (-$duration, {
+timethese (-1.2,{
 
     "combine   1"	=> q{ $csv->combine (@fields1  ) },
     "combine  10"	=> q{ $csv->combine (@fields10 ) },
@@ -41,20 +40,35 @@ timethese (-$duration, {
     });
 
 sub max { $_[0] >= $_[1] ? $_[0] : $_[1] }
-my $line_count = max (100_000, 20_000 * $duration);
+my $line_count = max (200_000, 20_000 * $duration);
 
-open our $io, ">", $bigfile;
+our $io;
+my $mem = "";
+my $bigfile = "_file.csv";
+if ($] >= 5.010) {
+    eval "use Sys::MemInfo qw( freemem );";
+    unless ($@) {
+	my $need = $line_count * (1 + length $str10);
+	if (freemem () > $need) {
+	    $mem = "";
+	    open $io, ">", \$mem;
+	    }
+	}
+    }
+$io or open $io, ">", $bigfile;
+
 $csv->print ($io, \@fields10) or die "Cannot print ()\n";
 timethese ($line_count, { "print    io" => q{ $csv->print ($io, \@fields10) }});
 close   $io;
--s $bigfile or die "File is empty!\n";
+my $l = $mem ? length ($mem) : -s $bigfile;
+$l or die "Buffer/file is empty!\n";
 my @f = @fields10;
 $csv->can ("bind_columns") and $csv->bind_columns (\(@f));
-open    $io, "<", $bigfile;
+open    $io, "<", ($mem ? \$mem : $bigfile);
 timethese ($line_count, { "getline  io" => q{ my $ref = $csv->getline ($io) }});
 close   $io;
-print "File was ", -s $bigfile, " bytes long, line length ", length ($str10), "\n";
-unlink $bigfile;
+print "Data was $l bytes long, line length ", length ($str10), "\n";
+$mem or unlink $bigfile;
 
 __END__
 # The examples from the docs
