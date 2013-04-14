@@ -326,15 +326,38 @@ sub fix_meta
     if (my $tp = delete $yml->{prereqs}{test}) {
 	foreach my $phase (keys %{$tp}) {
 	    my $p = $tp->{$phase};
-	    $yml->{runtime}{$phase}{$_} //= $p->{$_} for keys %{$p};
+	    #DDumper { $phase => $p };
+	    $yml->{prereqs}{runtime}{$phase}{$_} //= $p->{$_} for keys %{$p};
 	    }
 	}
+
+    # Optional features in 1.4 knows requires, but not recommends.
+    # The Lancaster Consensus moves 2.0 optional recommends promote to
+    # requires in 1.4
+    if (my $of = $yml->{optional_features}) {
+	foreach my $f (keys %$of) {
+	    if (my $r = delete $of->{$f}{prereqs}{runtime}{recommends}) {
+		$of->{$f}{requires} = $r;
+		}
+	    }
+	}
+    # runtime and test_requires are unknown as top-level in 1.4
+    foreach my $phase (qw( xuntime test_requires )) {
+	if (my $p = delete $yml->{$phase}) {
+	    foreach my $f (keys %$p) {
+		$yml->{$f}{$_} ||= $p->{$f}{$_} for keys %{$p->{$f}};
+		}
+	    }
+	}
+
     #DDumper $yml;
     # This does NOT create a correct YAML id the source does not comply!
     $yml = CPAN::Meta::Converter->new ($yml)->convert (version => "1.4");
     $yml->{requires}{perl} //= $jsn->{prereqs}{runtime}{requires}{perl}
 			   //  $self->{h}{requires}{perl}
 			   //  "";
+    $yml->{build_requires} && !keys %{$yml->{build_requires}} and
+	delete $yml->{build_requires};
     #DDumper $yml;
     #exit;
 
