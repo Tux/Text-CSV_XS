@@ -1,3 +1,6 @@
+0.98	- 2013-04-22, H.Merijn Brand
+    * Clarify eol documentation
+
 0.97	- 2013-03-30, H.Merijn Brand
     * Regain the speed from 0.91 (buffer back to 1k)
     * Minor cleanup in XS code

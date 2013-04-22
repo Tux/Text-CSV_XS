@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.97";
+$VERSION = "0.98";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -659,14 +659,12 @@ Text::CSV_XS - comma-separated values manipulation routines
  use Text::CSV_XS;
 
  my @rows;
- my $csv = Text::CSV_XS->new ({ binary => 1 }) or
-     die "Cannot use CSV: ".Text::CSV_XS->error_diag ();
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
  open my $fh, "<:encoding(utf8)", "test.csv" or die "test.csv: $!";
  while (my $row = $csv->getline ($fh)) {
      $row->[2] =~ m/pattern/ or next; # 3rd field should match
      push @rows, $row;
      }
- $csv->eof or $csv->error_diag ();
  close $fh;
 
  $csv->eol ("\r\n");
@@ -702,18 +700,17 @@ L</parse> method, which is more complicated from the usual point of usage:
 
 will break, as the while might read broken lines, as that does not care
 about the quoting. If you need to support embedded newlines, the way to go
-is either
+is to B<not> pass C<eol> in the parser (it accepts C<\n>, C<\r>, B<and>
+C<\r\n> by default) and then
 
- my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
- while (my $row = $csv->getline (*ARGV)) {
-     my @fields = @$row;
-
-or, more safely in perl 5.6 and up
-
- my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
+ my $csv = Text::CSV_XS->new ({ binary => 1 });
  open my $io, "<", $file or die "$file: $!";
  while (my $row = $csv->getline ($io)) {
      my @fields = @$row;
+
+The old(er) way of using global file handles is still supported
+
+ while (my $row = $csv->getline (*ARGV)) {
 
 =head2 Unicode
 
@@ -856,15 +853,18 @@ The following attributes are available:
 =item eol
 X<eol>
 
-An end-of-line string to add to rows. C<undef> is replaced with an empty
-string. The default is C<$\>. Common values for C<eol> are C<"\012"> (Line
-Feed) or C<"\015\012"> (Carriage Return, Line Feed). Cannot exceed 7 (ASCII)
-characters.
+An end-of-line string to add to rows.
+
+When not passed in a B<parser> instance, the default behavior is to accept
+C<\n>, C<\r>, and C<\r\n>, so it is probably safer to not specify C<eol> at
+all. Passing C<undef> or the empty string behave the same.
+
+Common values for C<eol> are C<"\012"> (C<\n> or Line Feed), C<"\015\012">
+(C<\r\n> or Carriage Return, Line Feed), and C<"\015"> (C<\r> or Carriage
+Return). The C<eol> attribute cannot exceed 7 (ASCII) characters.
 
 If both C<$/> and C<eol> equal C<"\015">, parsing lines that end on only a
-Carriage Return without Line Feed, will be L</parse>d correct. Line endings,
-whether in C<$/> or C<eol>, other than C<undef>, C<"\n">, C<"\r\n">, or
-C<"\r"> are not (yet) supported for parsing.
+Carriage Return without Line Feed, will be L</parse>d correct.
 
 =item sep_char
 X<sep_char>
