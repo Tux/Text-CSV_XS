@@ -368,17 +368,6 @@ sub eof
     return $self->{_EOF};
     } # status
 
-# error_input
-#
-#   object method returning the first invalid argument to the most recent
-#   combine () or parse ().  there are no side-effects.
-
-sub error_input
-{
-    my $self = shift;
-    return $self->{_ERROR_INPUT};
-    } # error_input
-
 # erro_diag
 #
 #   If (and only if) an error occurred, this function returns a code that
@@ -1546,7 +1535,8 @@ X<error_input>
  $bad_argument = $csv->error_input ();
 
 This object function returns the erroneous argument (if it exists) of
-L</combine> or L</parse>, whichever was called more recently.
+L</combine> or L</parse>, whichever was called more recently. If the last
+call was successful, C<error_input> will return C<undef>.
 
 =head2 error_diag
 X<error_diag>

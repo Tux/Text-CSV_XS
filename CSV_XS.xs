@@ -1637,6 +1637,27 @@ SetDiag (self, xse, ...)
     /* XS SetDiag */
 
 void
+error_input (self)
+    SV		*self
+
+  PPCODE:
+    HV		*hv;
+
+    if (self && SvOK (self) && SvROK (self) && SvTYPE (SvRV (self)) == SVt_PVHV) {
+	HV  *hv = (HV *)SvRV (self);
+	SV **sv = hv_fetchs (hv, "_ERROR_INPUT", FALSE);
+	if (sv && *sv && SvOK (*sv))
+	    ST (0) = *sv;
+	else
+	    ST (0) = newSV (0);
+	}
+    else
+	ST (0) = newSV (0);
+
+    XSRETURN (1);
+    /* XS error_input */
+
+void
 Combine (self, dst, fields, useIO)
     SV		*self
     SV		*dst
