@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "0.98";
+$VERSION = "0.99";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1384,6 +1384,9 @@ To reset or clear all column binding, call L</bind_columns> with a single
 argument C<undef>. This will also clear column names.
 
  $csv->bind_columns (undef);
+
+If no arguments are passed at all, L</bind_columns> will return the list
+current bindings or C<undef> if no binds are active.
 
 =head2 eof
 X<eof>
