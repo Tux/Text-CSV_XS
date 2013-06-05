@@ -1,5 +1,6 @@
 0.99	- 2013-06-05, H.Merijn Brand
     * Documents return value of bind_columns without arguments
+    * Fix automatic UTF-8 in getline/parse
 
 0.98	- 2013-06-03, H.Merijn Brand
     * Clarify eol documentation

@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 
 BEGIN {
-    $] < 5.008 and
+    $] < 5.008001 and
 	plan skip_all => "UTF8 tests useless in this ancient perl version";
     }
 
@@ -43,7 +43,7 @@ BEGIN {
 	[ "bytes up :encoding(UTF-8)", ":encoding(UTF-8)", $bytes_up,  "utf8",   "no warn", ],
 	);
 
-    plan tests => 1 + 6 * @tests;
+    plan tests => 7 + 6 * @tests;
     }
 
 BEGIN {
@@ -92,4 +92,29 @@ for (@tests) {
 
     is (warned ($c_warn), warned ($p_warn), "$test against Perl warning");
     is (warned ($c_warn), $expect_w,        "$test against expected warning");
+    }
+
+# Test automatic upgrades for valid UTF-8
+{   my $data = join "\n" => (
+	"1,aap,3",		# No diac
+	"1,a\x{e1}p,3",		# a_ACUTE in ISO-8859-1
+	"1,a\x{c4}\x{83}p,3",	# a_BREVE in UTF-8
+	) x 2;
+    my @expect = ("aap", "a\341p", "a\x{0103}p") x 2;
+
+    my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+
+    foreach my $bc (undef, 3) {
+	my @data;
+	open my $fh, "<", \$data;
+	$bc and $csv->bind_columns (\my ($f1, $f2, $f3));
+	is (scalar $csv->bind_columns, $bc, "Columns_bound?");
+	while (my $row = $csv->getline ($fh)) {
+	    push @data, $bc ? $f2 : $row->[1];
+	    }
+	close $fh;
+	is_deeply (\@data, \@expect, "Set and reset UTF-8 ".($bc?"no bind":"bind_columns"));
+	is_deeply ([ map { utf8::is_utf8 ($_) } @data ],
+	    [ "", "", 1, "", "", 1 ], "UTF8 flags");
+	}
     }
