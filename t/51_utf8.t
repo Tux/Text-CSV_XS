@@ -95,12 +95,14 @@ for (@tests) {
     }
 
 # Test automatic upgrades for valid UTF-8
-{   my $data = join "\n" => (
-	"1,aap,3",		# No diac
-	"1,a\x{e1}p,3",		# a_ACUTE in ISO-8859-1
-	"1,a\x{c4}\x{83}p,3",	# a_BREVE in UTF-8
+{   my $blob = pack "C*", 0..255; $blob =~ tr/",//d;
+    my $data = join "\n" => (
+	qq[1,aap,3],		# No diac
+	qq[1,a\x{e1}p,3],	# a_ACUTE in ISO-8859-1
+	qq[1,a\x{c4}\x{83}p,3],	# a_BREVE in UTF-8
+	qq[1,"$blob",3],	# Binary shit
 	) x 2;
-    my @expect = ("aap", "a\341p", "a\x{0103}p") x 2;
+    my @expect = ("aap", "a\341p", "a\x{0103}p", $blob) x 2;
 
     my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 
@@ -115,6 +117,6 @@ for (@tests) {
 	close $fh;
 	is_deeply (\@data, \@expect, "Set and reset UTF-8 ".($bc?"no bind":"bind_columns"));
 	is_deeply ([ map { utf8::is_utf8 ($_) } @data ],
-	    [ "", "", 1, "", "", 1 ], "UTF8 flags");
+	    [ "", "", 1, "", "", "", 1, "" ], "UTF8 flags");
 	}
     }
