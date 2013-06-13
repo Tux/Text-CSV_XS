@@ -7,16 +7,10 @@
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
-#define NEED_PL_parser
 #define DPPP_PL_parser_NO_DUMMY
-#define NEED_load_module
 #define NEED_my_snprintf
-#define NEED_newRV_noinc
 #define NEED_pv_escape
 #define	NEED_pv_pretty
-#define NEED_sv_2pv_flags
-#define NEED_vload_module
-#include "ppport.h"
 #if (PERL_BCDVERSION >= 0x5010000 && PERL_BCDVERSION <= 0x5012001)
 #  define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), 0)
 #else
@@ -28,6 +22,7 @@
 #ifndef MAXINT
 #  define MAXINT ((int)(~(unsigned)0 >> 1))
 #  endif
+#include "ppport.h"
 
 #define MAINT_DEBUG	0
 
