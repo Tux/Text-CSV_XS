@@ -11,11 +11,6 @@
 #define NEED_my_snprintf
 #define NEED_pv_escape
 #define	NEED_pv_pretty
-#if (PERL_BCDVERSION >= 0x5010000 && PERL_BCDVERSION <= 0x5012001)
-#  define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), 0)
-#else
-#  define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), SvCUR (s))
-#  endif
 #ifndef PERLIO_F_UTF8
 #  define PERLIO_F_UTF8	0x00008000
 #  endif
@@ -23,6 +18,7 @@
 #  define MAXINT ((int)(~(unsigned)0 >> 1))
 #  endif
 #include "ppport.h"
+#define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), SvCUR (s))
 
 #define MAINT_DEBUG	0
 
@@ -640,7 +636,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	sv_catpvn (SvRV (dst), csv->buffer, csv->used);
 	result = TRUE;
 	}
-    if (csv->utf8 && SvROK (dst) && is_utf8_sv (SvRV (dst)))
+    if (csv->utf8 && !csv->useIO && SvROK (dst) && is_utf8_sv (SvRV (dst)))
 	SvUTF8_on (SvRV (dst));
     csv->used = keep;
     return result;
