@@ -155,7 +155,7 @@ while (<DATA>) {
 {   # http://rt.cpan.org/Ticket/Display.html?id=42642
     $rt = 42642; # failure on unusual quote/sep values
     SKIP: {
-	$] < 5.008002 || $] == 5.010000 and skip "UTF8 unreliable in perl $]", 6;
+	$] < 5.008002 and skip "UTF8 unreliable in perl $]", 6;
 
 	open my $fh, ">", $csv_file;
 	print $fh @{$input{$rt}};
@@ -384,7 +384,7 @@ while (<DATA>) {
     }
 
 SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=74220
-    $] < 5.008002 || $] == 5.010000 and skip "UTF8 unreliable in perl $]", 7;
+    $] < 5.008002 and skip "UTF8 unreliable in perl $]", 7;
 
     $rt = "74220"; # Text::CSV_XS can be made to produce bad strings
     my $csv = Text::CSV_XS->new ({ binary => 1 });
@@ -409,8 +409,7 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=74220
 SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
     (eval { require Encode; $Encode::VERSION } || "0.00") =~ m{^([0-9.]+)};
     $1 < 2.47     and skip "Encode is too old for these tests", 20000;
-    $] < 5.008008 || $] == 5.010000
-		  and skip "UTF8+Encode unreliable in perl $]", 20000;
+    $] < 5.008008 and skip "UTF8+Encode unreliable in perl $]", 20000;
 
     $rt = "80680"; # Text::CSV_XS produces garbage on some data
 

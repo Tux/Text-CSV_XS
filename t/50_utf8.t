@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 
 BEGIN {
-    if ($] < 5.008001 || $] == 5.010000) {
+    if ($] < 5.008001) {
 	plan skip_all => "UTF8 tests useless in this ancient perl version";
 	}
     else {
