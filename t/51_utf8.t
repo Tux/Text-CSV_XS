@@ -97,7 +97,7 @@ for (@tests) {
 # Test automatic upgrades for valid UTF-8
 {   my $blob = pack "C*", 0..255; $blob =~ tr/",//d;
     # perl-5.10.x has buggy SvCUR () on blob
-    $] >= 5.010000 && $] <= 5.010010 and $blob =~ tr/\0//d;
+    $] >= 5.010000 && $] <= 5.012001 and $blob =~ tr/\0//d;
     my $data = join "\n" => (
 	qq[1,aap,3],		# No diac
 	qq[1,a\x{e1}p,3],	# a_ACUTE in ISO-8859-1
