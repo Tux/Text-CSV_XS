@@ -29,7 +29,8 @@ Prerequisites:
     perl 5.6.1 or up.
     examples/csv-check requires perl with defined-or and PerlIO, and
     making that work on other versions is left as an exercise to the
-    reader. Other examples are checked against 5.8.4.
+    reader. Other examples are checked against 5.8.4. For Unicode to
+    work more or less reliable, you'd need perl 5.8.2 or newer.
 
 Build/Installation:
     Standard build/installation:

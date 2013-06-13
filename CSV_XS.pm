@@ -703,6 +703,8 @@ The old(er) way of using global file handles is still supported
 
 =head2 Unicode
 
+Unicode is only tested to work with perl-5.8.2 and up.
+
 On parsing (both for L</getline> and L</parse>), if the source is marked
 being UTF8, then all fields that are marked binary will also be marked
 UTF8.
