@@ -1,4 +1,4 @@
-1.00	- 2013-06-11, H.Merijn Brand
+1.00	- 2013-06-13, H.Merijn Brand
     * Fix automatic UTF-8 in getline/parse for SV's with \0
 
 0.99	- 2013-06-05, H.Merijn Brand
