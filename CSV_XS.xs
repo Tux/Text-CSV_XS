@@ -1549,6 +1549,9 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 	length = SvIV (len);
 
     while (c_xsParse (csv, hv, row, NULL, io, 1)) {
+
+	SetupCsv (&csv, hv, self);
+
 	if (skip > 0) {
 	    skip--;
 	    av_empty (row); /* re-use */
