@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "1.01";
+$VERSION = "1.02";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -1607,12 +1607,19 @@ API may change in future releases.
 
 =head2 Reading a CSV file line by line:
 
- my $csv = Text::CSV_XS->new ({ binary => 1 });
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
  open my $fh, "<", "file.csv" or die "file.csv: $!";
  while (my $row = $csv->getline ($fh)) {
      # do something with @$row
      }
- $csv->eof or $csv->error_diag;
+ close $fh or die "file.csv: $!";
+
+=head3 Reading only a single column
+
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+ open my $fh, "<", "file.csv" or die "file.csv: $!";
+ # get only the 4th column
+ my @column = map { $_->[3] } @{$csv->getline_all ($fh)};
  close $fh or die "file.csv: $!";
 
 =head2 Parsing CSV strings:
