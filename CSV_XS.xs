@@ -244,7 +244,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
 	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
-	(void)hv_store (csv->self, "_ERROR_INPUT", 12, NULL,         0);
+	(void)hv_store (csv->self, "_ERROR_INPUT", 12, &PL_sv_undef, 0);
 	}
     if (err && csv->pself && csv->auto_diag) {
 	ENTER;
@@ -1449,7 +1449,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	csv.utf8 = SvUTF8 (src);
 	csv.bptr = SvPV (src, csv.size);
 	}
-    (void)hv_store (hv, "_ERROR_INPUT", 12, NULL, 0);
+    (void)hv_store (hv, "_ERROR_INPUT", 12, &PL_sv_undef, 0);
 
     result = Parse (&csv, src, av, avf);
     sv_inc (*(hv_fetchs (hv, "_RECNO", FALSE)));
@@ -1646,7 +1646,7 @@ error_input (self)
     if (self && SvOK (self) && SvROK (self) && SvTYPE (SvRV (self)) == SVt_PVHV) {
 	HV  *hv = (HV *)SvRV (self);
 	SV **sv = hv_fetchs (hv, "_ERROR_INPUT", FALSE);
-	if (sv && *sv && SvOK (*sv))
+	if (SvOK (*sv))
 	    ST (0) = *sv;
 	else
 	    ST (0) = newSV (0);
