@@ -56,6 +56,7 @@
 #define CACHE_ID_quote_binary		32
 #define CACHE_ID_diag_verbose		33
 #define CACHE_ID_has_error_input	34
+#define CACHE_ID_decode_utf8		35
 
 #define CSV_FLAGS_QUO	0x0001
 #define CSV_FLAGS_BIN	0x0002
@@ -112,6 +113,7 @@ typedef struct {
 
     byte	diag_verbose;
     byte	has_error_input;
+    byte	decode_utf8;
 
     long	is_bound;
 
@@ -288,6 +290,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
          idx == CACHE_ID_quote_space		||
          idx == CACHE_ID_quote_null		||
          idx == CACHE_ID_quote_binary		||
+	 idx == CACHE_ID_decode_utf8		||
          idx == CACHE_ID_allow_loose_escapes	||
          idx == CACHE_ID_allow_loose_quotes	||
          idx == CACHE_ID_allow_unquoted_escape	||
@@ -358,6 +361,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_char ("escape",			CACHE_ID_escape_char);
     _cache_show_char ("sep",			CACHE_ID_sep_char);
     _cache_show_byte ("binary",			CACHE_ID_binary);
+    _cache_show_byte ("decode_utf8",		CACHE_ID_decode_utf8);
 
     _cache_show_byte ("allow_loose_escapes",	CACHE_ID_allow_loose_escapes);
     _cache_show_byte ("allow_loose_quotes",	CACHE_ID_allow_loose_quotes);
@@ -425,6 +429,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->escape_char		= csv->cache[CACHE_ID_escape_char	];
 	csv->sep_char			= csv->cache[CACHE_ID_sep_char		];
 	csv->binary			= csv->cache[CACHE_ID_binary		];
+	csv->decode_utf8		= csv->cache[CACHE_ID_decode_utf8	];
 
 	csv->keep_meta_info		= csv->cache[CACHE_ID_keep_meta_info	];
 	csv->always_quote		= csv->cache[CACHE_ID_always_quote	];
@@ -521,6 +526,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    csv->is_bound = SvIV(*svp);
 
 	csv->binary			= bool_opt ("binary");
+	csv->decode_utf8		= bool_opt ("decode_utf8");
 	csv->keep_meta_info		= bool_opt ("keep_meta_info");
 	csv->always_quote		= bool_opt ("always_quote");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
@@ -546,6 +552,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->cache[CACHE_ID_escape_char]		= csv->escape_char;
 	csv->cache[CACHE_ID_sep_char]			= csv->sep_char;
 	csv->cache[CACHE_ID_binary]			= csv->binary;
+	csv->cache[CACHE_ID_decode_utf8]		= csv->decode_utf8;
 
 	csv->cache[CACHE_ID_keep_meta_info]		= csv->keep_meta_info;
 	csv->cache[CACHE_ID_always_quote]		= csv->always_quote;
@@ -643,7 +650,8 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	sv_catpvn (SvRV (dst), csv->buffer, csv->used);
 	result = TRUE;
 	}
-    if (csv->utf8 && !csv->useIO && SvROK (dst) && is_utf8_sv (SvRV (dst)))
+    if (csv->utf8 && !csv->useIO && csv->decode_utf8
+		  && SvROK (dst) && is_utf8_sv (SvRV (dst)))
 	SvUTF8_on (SvRV (dst));
     csv->used = keep;
     return result;
@@ -951,7 +959,8 @@ int CSV_GET_ (csv_t *csv, SV *src, int l)
     else {								\
 	if (csv->allow_whitespace && ! (f & CSV_FLAGS_QUO))		\
 	    strip_trail_whitespace (sv);				\
-	if (f & CSV_FLAGS_BIN && (csv->utf8 || is_utf8_sv (sv)))	\
+	if (f & CSV_FLAGS_BIN && csv->decode_utf8			\
+			      && (csv->utf8 || is_utf8_sv (sv)))	\
 	    SvUTF8_on (sv);						\
 	}								\
     SvSETMAGIC (sv);							\

@@ -60,6 +60,7 @@ my %def_attr = (
     quote_null			=> 1,
     quote_binary		=> 1,
     binary			=> 0,
+    decode_utf8			=> 1,
     keep_meta_info		=> 0,
     allow_loose_quotes		=> 0,
     allow_loose_escapes		=> 0,
@@ -156,6 +157,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     quote_space			=> 25,
     quote_null			=> 31,
     quote_binary		=> 32,
+    decode_utf8			=> 35,
     _is_bound			=> 26,	# 26 .. 29
     );
 
@@ -263,6 +265,13 @@ sub binary
     @_ and $self->_set_attr_X ("binary", shift);
     $self->{binary};
     } # binary
+
+sub decode_utf8
+{
+    my $self = shift;
+    @_ and $self->_set_attr_X ("decode_utf8", shift);
+    $self->{decode_utf8};
+    } # decode_utf8
 
 sub keep_meta_info
 {
@@ -1023,6 +1032,25 @@ binary characters other than CR or NL are encountered. Note that a simple
 string like C<"\x{00a0}"> might still be binary, but not marked UTF8, so
 setting C<{ binary => 1 }> is still a wise option.
 
+=item decode_utf8
+X<decode_utf8>
+
+This attributes defaults to TRUE.
+
+While parsing, fields that are valid UTF-8, are automatically set to be
+UTF-8, so that
+
+  $csv->parse ("\xC4\xA8\n");
+
+results in
+
+  PV("\304\250"\0) [UTF8 "\x{128}"]
+
+Sometimes it might not be a desired action. To prevent those upgrades,
+set this attribute to false, and the result will be
+
+  PV("\304\250"\0)
+
 =item types
 X<types>
 
@@ -1145,6 +1173,7 @@ is equivalent to
      quote_null	           => 1,
      quote_binary          => 1,
      binary                => 0,
+     decode_utf8           => 1,
      keep_meta_info        => 0,
      allow_loose_quotes    => 0,
      allow_loose_escapes   => 0,
