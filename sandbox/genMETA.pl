@@ -52,7 +52,7 @@ requires:
     IO::Handle:          0
 recommends:     
     perl:                5.016003
-    Encode:              2.51
+    Encode:              2.54
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:

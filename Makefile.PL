@@ -11,7 +11,7 @@ my %wm = (
     NAME         => "Text::CSV_XS",
     DISTNAME     => "Text-CSV_XS",
     ABSTRACT     => "Comma-Separated Values manipulation routines",
-    AUTHOR       => "H.Merijn Brand <h.merijn\@xs4all.nl>",
+    AUTHOR       => "H.Merijn Brand <h.m.brand\@xs4all.nl>",
     VERSION_FROM => "CSV_XS.pm",
     PREREQ_PM	 => { "DynaLoader"	=> 0,
 		      "Config"		=> 0,
