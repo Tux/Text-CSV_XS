@@ -8,7 +8,7 @@ use strict;
 
 use IO::Handle;
 use Text::CSV_XS;
-use Benchmark qw(:all);
+use Benchmark qw(:all :hireswallclock);
 
 our $csv = Text::CSV_XS->new ({ eol => "\n" });
 
