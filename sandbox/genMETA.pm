@@ -253,6 +253,11 @@ sub check_minimum
 	} or warn RED, "\n### Use 'perlver --blame' on the failing file(s)\n\n", RESET;
     } # check_minimum
 
+sub done_testing
+{
+    Test::More::done_testing ();
+    } # done_testing
+
 sub print_yaml
 {
     my $self = shift;
