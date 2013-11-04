@@ -1,6 +1,7 @@
 1.02	- 2013-09-25, H.Merijn Brand
     * Add example for reading only a single column
     * Don't store NULL in _ERROR_INPUT (RT#86217/Clone)
+    * Prevent double-decode in csv-check
     * Add decode_utf8 attribute (default is true)
 
 1.01	- 2013-06-16, H.Merijn Brand
