@@ -24,6 +24,7 @@ if ($check) {
     $meta->check_encoding ();
     $meta->check_required ();
     $meta->check_minimum ("5.008004", [ "examples" ]);
+    $meta->done_testing ();
     }
 elsif ($opt_v) {
     $meta->print_yaml ();
@@ -51,8 +52,8 @@ requires:
     DynaLoader:          0
     IO::Handle:          0
 recommends:     
-    perl:                5.016003
-    Encode:              2.54
+    perl:                5.018001
+    Encode:              2.55
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:
