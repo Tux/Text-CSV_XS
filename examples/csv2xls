@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'11 [06 Oct 2011] Copyright H.M.Brand 2007-2013
+#	   (m)'13 [04 Dec 2013] Copyright H.M.Brand 2007-2014
 
 use strict;
 use warnings;
 
-our $VERSION = "1.71";
+our $VERSION = "1.72";
 
 sub usage
 {
@@ -14,13 +14,13 @@ sub usage
     print <<EOU;
 usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                [-o <xls>] [file.csv]
-       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
+       -s <sep>   use <sep>   as seperator char, auto-detect, default = ','
                   The string "tab" is allowed.
-       -e <esc>   use <sep>   as seperator char. Auto-detect, default = ','
+       -e <esc>   use <esc>   as escape    char, auto-detect, default = '"'
                   The string "undef" is allowed.
-       -q <quot>  use <quot>  as quotation char. Default = '"'
+       -q <quot>  use <quot>  as quotation char,              default = '"'
                   The string "undef" will disable quotation.
-       -w <width> use <width> as default minimum column width (4)
+       -w <width> use <width> as default minimum column width default = 4
        -o <xls>   write output to file named <xls>, defaults
                   to input file name with .csv replaced with .xls
                   if from standard input, defaults to csv2xls.xls
@@ -28,6 +28,7 @@ usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                   an equal sign are forced to string
        -f         force usage of <xls> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
+       -C <C:fmt> use <fmt> as currency formats for currency <C>, no default
        -D cols    only convert dates in columns <cols>. Default is everywhere.
        -u         CSV is UTF8
        -v [<lvl>] verbosity (default = 1)
@@ -45,6 +46,7 @@ my $frc = 0;	# Force use of file
 my $utf = 0;	# Data is encoded in Unicode
 my $frm = 0;	# Allow formula's
 my $dtf = "dd-mm-yyyy";	# Date format
+my $crf = "";	# Currency format, e.g.: $:### ### ##0.00
 my $opt_v = 1;
 my $dtc;
 
@@ -58,6 +60,7 @@ GetOptions (
     "o|x=s"	=> \$xls,
     "d=s"	=> \$dtf,
     "D=s"	=> \$dtc,
+    "C=s"	=> \$crf,
     "f"		=> \$frc,
     "F"		=> \$frm,
     "u"		=> \$utf,
@@ -79,8 +82,6 @@ use Date::Calc qw( Delta_Days Days_in_Month );
 use Spreadsheet::WriteExcel;
 use Encode qw( from_to );
 
-my $csv;
-
 my $wbk = Spreadsheet::WriteExcel->new ($xls);
 my $wks = $wbk->add_worksheet ();
    $dtf =~ s/j/y/g;
@@ -93,6 +94,10 @@ my %fmt = (
     rest	=> $wbk->add_format (
 	align		=> "left",
 	),
+    );
+$crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
+    num_format	=> "$1 $2",
+    align	=> "right",
     );
 
 my ($h, $w, @w) = (0, 1); # data height, -width, and default column widths
@@ -117,7 +122,7 @@ unless ($sep) { # No sep char passed, try to auto-detect;
 	last;
 	}
     }
-$csv = Text::CSV_XS-> new ({
+my $csv = Text::CSV_XS-> new ({
     sep_char       => $sep eq "tab"   ? "\t"  : $sep,
     quote_char     => $quo eq "undef" ? undef : $quo,
     escape_char    => $esc eq "undef" ? undef : $esc,
@@ -186,6 +191,10 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 		$wks->write ($h, $c, $dt, $fmt{date});
 		next;
 		}
+	    }
+	if ($crf and $val =~ m/^\s*\Q$crf\E\s*([0-9.]+)$/) {
+	    $wks->write ($h, $c, $1 + 0, $fmt{currency});
+	    next;
 	    }
 
 	if (!$frm && $val =~ m/^=/) {
