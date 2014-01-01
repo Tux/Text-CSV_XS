@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright PROCURA B.V. (c) 2006-2013 H.Merijn Brand
+# Copyright PROCURA B.V. (c) 2006-2014 H.Merijn Brand
 
 require 5.006001; # <- also see postamble at the bottom for META.yml
 use strict;

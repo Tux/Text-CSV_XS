@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 # speed.pl: compare different versions of Text-CSV* modules
-#	   (m)'08 [07 Apr 2008] Copyright H.M.Brand 2007-2013
+#	   (m)'08 [07 Apr 2008] Copyright H.M.Brand 2007-2014
 
 require 5.006001;
 use strict;
