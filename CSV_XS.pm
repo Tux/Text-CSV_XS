@@ -625,6 +625,70 @@ sub print_hr
     $self->print ($io, [ map { $hr->{$_} } $self->column_names ]);
     } # print_hr
 
+sub fragment
+{
+    my ($self, $io, $spec) = @_;
+
+    my $qd = qr{\s* [0-9]+ \s* }x;
+    my $qr = qr{$qd (?: - (?: $qd | \s* \* \s* ))?}x;
+    my $qc = qr{$qr (?: ; $qr)*}x;
+    defined $spec && $spec =~ m{^ \s*
+	\x23 ? \s*			# optional leading #
+	( row | col | cell ) \s* =
+	( $qc				# for row and col
+	| $qd , $qd (?: - $qd , $qd)?	# for cell
+	) \s* $}xi or croak ($self->SetDiag (2014));
+    my ($type, $range) = (lc $1, $2);
+
+    my @c;
+    if ($type eq "cell") {
+	my ($tlr, $tlc, $brr, $brc) = ($range =~ m{
+	    ^ \s*
+		([0-9]+) \s* , \s* ([0-9]+)
+	    \s* (?: - \s*
+		([0-9]+) \s* , \s* ([0-9]+)
+		)?
+	    \s* $}x) or croak ($self->SetDiag (2014));
+	defined $brr or ($brr, $brc) = ($tlr, $tlc);
+	$tlr <= 0 || $tlc <= 0 || $brr <= 0 || $brc <= 0 ||
+	    $brr < $tlr || $brc < $tlc and croak ($self->SetDiag (2014));
+	$_-- for $tlc, $brc;
+	my $r = 0;
+	while (my $row = $self->getline ($io)) {
+	    ++$r <  $tlr and next;
+	    push @c, [ @{$row}[$tlc..$brc] ];
+	      $r >= $brr and last;
+	    }
+	return \@c;
+	}
+
+    # row or col
+    my @r;
+    my $eod = 0;
+    for (split m/\s*;\s*/ => $range) {
+	my ($from, $to) = m/^\s* ([0-9]+) (?: \s* - \s* ([0-9]+ | \* ))? \s* $/x
+	    or croak ($self->SetDiag (2014));
+	$to ||= $from;
+	$to eq "*" and ($to, $eod) = ($from, 1);
+	$from <= 0 || $to <= 0 || $to < $from and croak ($self->SetDiag (2014));
+	$r[$_] = 1 for $from .. $to;
+	}
+
+    my $r = 0;
+    $type eq "col" and shift @r;
+    $_ ||= 0 for @r;
+    while (my $row = $self->getline ($io)) {
+	$r++;
+	if ($type eq "row") {
+	    ($r > $#r && $eod) || $r[$r] and push @c, $row;
+	    next;
+	    }
+	push @c, [ map { ($_ > $#r && $eod) || $r[$_] ? $row->[$_] : () } 0..$#$row ];
+	}
+
+    return \@c;
+    } # fragment
+
 sub types
 {
     my $self = shift;
@@ -1373,6 +1437,53 @@ It is just a wrapper method with basic parameter checks over
 
  $csv->print ($io, [ map { $ref->{$_} } $csv->column_names ]);
 
+=head2 fragment
+
+This, for now experimental, function tries to implement RFC7111 (URI
+Fragment Identifiers for the text/csv Media Type) 1)
+
+ 1) http://tools.ietf.org/html/rfc7111
+
+ my $AoA = $csv->fragment ($io, $spec);
+
+In specifications, C<*> is used to specify the I<last> item, a dash (C<->)
+to indicate a range. All indices are 1-based: the first row has index 1.
+
+=over 2
+
+=item row
+
+ row=4
+ row=5-7
+ row=6-*
+
+=item col
+
+ col=2
+ col=1-3
+ col=4-*
+
+=item cell
+
+In cell-based selection, the comma (C<,>) is used to pair row and column
+
+ cell=4,1
+
+The range operator using cells can be used to define top-left and bottom-right
+cell location
+
+ cell=3,1-4,6
+
+=back
+
+Selections can be combined with the semi-colon (C<;>)
+
+ row=3;6
+ col=4;7-*
+
+RFC7111 does not allow any combination of the three selection methods. Passing
+an invalid fragment specification will croak and set error 2014.
+
 =head2 column_names
 X<column_names>
 
@@ -1838,7 +1949,6 @@ No guarantees, but this is what I had in mind some time ago:
 
 =item next
 
- - This might very well be 1.00
  - DIAGNOSTICS setction in pod to *describe* the errors (see below)
  - croak / carp
 
@@ -1968,6 +2078,12 @@ X<2012>
 Self-explaining. End-of-file while inside parsing a stream. Can happen only
 when reading from streams with L</getline>, as using L</parse> is done on
 strings that are not required to have a trailing C<eol>.
+
+=item *
+2013 "ESP - Specification error for fragments RFC7111"
+X<2013>
+
+Invalid specification for URI L</fragment> specification.
 
 =item *
 2021 "EIQ - NL char inside quotes, binary off"

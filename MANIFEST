@@ -26,7 +26,8 @@ t/65_allow.t		Allow bad formats
 t/70_rt.t		Tests based on RT reports
 t/75_hashref.t		getline_hr related tests
 t/76_magic.t		array_ref from magic
-t/77_getall.t		gat all rows at once
+t/77_getall.t		Get all rows at once
+t/78_fragment.t		Get fragments according to RFC7111 specs
 t/80_diag.t		Error diagnostics
 t/81_subclass.t		Subclassed
 t/util.pl		Extra test utilities

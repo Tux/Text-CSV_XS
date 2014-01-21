@@ -162,6 +162,7 @@ xs_error_t xs_errors[] =  {
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
     { 2011, "ECR - Characters after end of quoted field"			},
     { 2012, "EOF - End of data in parsing input stream"				},
+    { 2013, "ESP - Specification error for fragments RFC7111"			},
 
     /*  EIQ - Error Inside Quotes */
     { 2021, "EIQ - NL char inside quotes, binary off"				},
