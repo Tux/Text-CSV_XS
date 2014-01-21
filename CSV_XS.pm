@@ -1448,7 +1448,8 @@ Fragment Identifiers for the text/csv Media Type) 1)
 
 In specifications, C<*> is used to specify the I<last> item, a dash (C<->)
 to indicate a range. All indices are 1-based: the first row or column
-has index 1.
+has index 1. Selections on row and column can be combined with the
+semi-colon (C<;>).
 
 =over 2
 
@@ -1457,12 +1458,14 @@ has index 1.
  row=4
  row=5-7
  row=6-*
+ row=1-2;4;6-*
 
 =item col
 
  col=2
  col=1-3
  col=4-*
+ col=1-2;4;7-*
 
 =item cell
 
@@ -1476,11 +1479,6 @@ cell location
  cell=3,1-4,6
 
 =back
-
-Selections can be combined with the semi-colon (C<;>)
-
- row=3;6
- col=4;7-*
 
 RFC7111 does not allow any combination of the three selection methods. Passing
 an invalid fragment specification will croak and set error 2014.
