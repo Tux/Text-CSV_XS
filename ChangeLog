@@ -1,5 +1,6 @@
-1.03	- 2014-01-01, H.Merijn Brand
+1.03	- 2014-01-21, H.Merijn Brand
     * Update copyright to 2014
+    * Implement RCF7111
 
 1.02	- 2013-09-25, H.Merijn Brand
     * Add example for reading only a single column

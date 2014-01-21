@@ -1447,7 +1447,8 @@ Fragment Identifiers for the text/csv Media Type) 1)
  my $AoA = $csv->fragment ($io, $spec);
 
 In specifications, C<*> is used to specify the I<last> item, a dash (C<->)
-to indicate a range. All indices are 1-based: the first row has index 1.
+to indicate a range. All indices are 1-based: the first row or column
+has index 1.
 
 =over 2
 
