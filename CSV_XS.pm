@@ -27,7 +27,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA );
-$VERSION = "1.03";
+$VERSION = "1.04";
 @ISA     = qw( DynaLoader );
 bootstrap Text::CSV_XS $VERSION;
 
@@ -556,7 +556,7 @@ sub column_names
 {
     my ($self, @keys) = @_;
     @keys or
-	return defined $self->{_COLUMN_NAMES} ? @{$self->{_COLUMN_NAMES}} : undef;
+	return defined $self->{_COLUMN_NAMES} ? @{$self->{_COLUMN_NAMES}} : ();
 
     @keys == 1 && ! defined $keys[0] and
 	return $self->{_COLUMN_NAMES} = undef;
@@ -1487,7 +1487,7 @@ an invalid fragment specification will croak and set error 2014.
 X<column_names>
 
 Set the keys that will be used in the L</getline_hr> calls. If no keys
-(column names) are passed, it'll return the current setting.
+(column names) are passed, it'll return the current setting as a list.
 
 L</column_names> accepts a list of scalars (the column names) or a single
 array_ref, so you can pass L</getline>
