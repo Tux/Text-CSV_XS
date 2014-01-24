@@ -640,6 +640,8 @@ sub fragment
 	) \s* $}xi or croak ($self->SetDiag (2014));
     my ($type, $range) = (lc $1, $2);
 
+    my @h = $self->column_names ();
+
     my @c;
     if ($type eq "cell") {
 	my ($tlr, $tlc, $brr, $brc) = ($range =~ m{
@@ -657,7 +659,11 @@ sub fragment
 	while (my $row = $self->getline ($io)) {
 	    ++$r <  $tlr and next;
 	    push @c, [ @{$row}[$tlc..$brc] ];
-	      $r >= $brr and last;
+	    if (@h) {
+		my %h; @h{@h} = @{$c[-1]};
+		$c[-1] = \%h;
+		}
+	    $r >= $brr and last;
 	    }
 	return \@c;
 	}
@@ -680,10 +686,20 @@ sub fragment
     while (my $row = $self->getline ($io)) {
 	$r++;
 	if ($type eq "row") {
-	    ($r > $#r && $eod) || $r[$r] and push @c, $row;
+	    if (($r > $#r && $eod) || $r[$r]) {
+		push @c, $row;
+		if (@h) {
+		    my %h; @h{@h} = @{$c[-1]};
+		    $c[-1] = \%h;
+		    }
+		}
 	    next;
 	    }
 	push @c, [ map { ($_ > $#r && $eod) || $r[$_] ? $row->[$_] : () } 0..$#$row ];
+	if (@h) {
+	    my %h; @h{@h} = @{$c[-1]};
+	    $c[-1] = \%h;
+	    }
 	}
 
     return \@c;
@@ -1450,6 +1466,12 @@ In specifications, C<*> is used to specify the I<last> item, a dash (C<->)
 to indicate a range. All indices are 1-based: the first row or column
 has index 1. Selections on row and column can be combined with the
 semi-colon (C<;>).
+
+When using this method in combination with L</column_names>, the returned
+reference will point to a list of hashes instead of to a list of lists.
+
+ $csv->column_names ("Name", "Age");
+ my $AoH = $csv->fragment ($io, "col=3;8");
 
 =over 2
 

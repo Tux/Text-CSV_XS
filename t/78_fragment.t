@@ -15,7 +15,7 @@ BEGIN {
         plan skip_all => "No reliable perlIO available";
         }
     else {
-        plan tests => 10;
+        plan tests => 11;
         }
     }
 
@@ -55,6 +55,11 @@ foreach my $spec (keys %test) {
     my $aoa = $csv->fragment ($io, $spec);
     is_deeply ($aoa, $test{$spec}, "Fragment $spec");
     }
+
+$csv->column_names ("c3","c4");
+open my $io, "<", \$data;
+is_deeply ($csv->fragment ($io, "cell=3,2-4,3"),
+    [ { c3 => 32, c4 =>33 }, { c3 => 42, c4 => 43 }], "Fragment to AoH");
 
 done_testing ();
 
