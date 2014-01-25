@@ -377,6 +377,25 @@ sub eof
     return $self->{_EOF};
     } # status
 
+sub types
+{
+    my $self = shift;
+    if (@_) {
+	if (my $types = shift) {
+	    $self->{_types} = join "", map { chr $_ } @{$types};
+	    $self->{types}  = $types;
+	    }
+	else {
+	    delete $self->{types};
+	    delete $self->{_types};
+	    undef;
+	    }
+	}
+    else {
+	$self->{types};
+	}
+    } # types
+
 # erro_diag
 #
 #   If (and only if) an error occurred, this function returns a code that
@@ -704,25 +723,6 @@ sub fragment
 
     return \@c;
     } # fragment
-
-sub types
-{
-    my $self = shift;
-    if (@_) {
-	if (my $types = shift) {
-	    $self->{_types} = join "", map { chr $_ } @{$types};
-	    $self->{types}  = $types;
-	    }
-	else {
-	    delete $self->{types};
-	    delete $self->{_types};
-	    undef;
-	    }
-	}
-    else {
-	$self->{types};
-	}
-    } # types
 
 1;
 
