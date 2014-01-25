@@ -61,8 +61,6 @@ open my $io, "<", \$data;
 is_deeply ($csv->fragment ($io, "cell=3,2-4,3"),
     [ { c3 => 32, c4 =>33 }, { c3 => 42, c4 => 43 }], "Fragment to AoH");
 
-done_testing ();
-
 #$csv->eol ("\n");
 #foreach my $r (1..9){$csv->print(*STDOUT,[map{$r.$_}1..9])}
 __END__
