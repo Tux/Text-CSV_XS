@@ -1,0 +1,3 @@
+Jan|Birdwatching|7
+LA|coding|25
+Tux|skiing|52

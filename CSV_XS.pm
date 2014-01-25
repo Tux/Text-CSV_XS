@@ -23,12 +23,14 @@ require 5.006001;
 use strict;
 use warnings;
 
+require Exporter;
 use DynaLoader ();
 use Carp;
 
-use vars   qw( $VERSION @ISA );
-$VERSION = "1.04";
-@ISA     = qw( DynaLoader );
+use vars   qw( $VERSION @ISA @EXPORT_OK );
+$VERSION   = "1.04";
+@ISA       = qw( DynaLoader Exporter );
+@EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
 
 sub PV { 0 }
@@ -724,6 +726,48 @@ sub fragment
     return \@c;
     } # fragment
 
+my $csv_usage = q{usage: my $aoa = csv (file => $file);};
+
+sub csv
+{
+    # This is a function, not a method
+    @_ && ref $_[0] ne __PACKAGE__ or croak $csv_usage;
+
+    my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or die;
+
+    my $enc = delete $attr{encoding} || "";
+
+    my $fh;
+    if (my $fil = delete $attr{file}) {
+	$enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
+	open $fh, "<$enc", $fil or croak "$fil: $!";
+	}
+    elsif (my $dta = delete $attr{data}) {
+	$fh = $dta;
+	}
+    $fh or croak "No data source passed. file or data is required";
+
+    my $hdrs = delete $attr{headers};
+    my $frag = delete $attr{fragment};
+
+    defined $attr{auto_diag} or $attr{auto_diag} = 1;
+    defined $attr{binary}    or $attr{binary}    = 1;
+    my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
+
+    if (defined $hdrs && !ref $hdrs) {
+	$hdrs eq "skip" and         $csv->getline ($fh);
+	$hdrs eq "auto" and $hdrs = $csv->getline ($fh);
+	}
+
+    # aoa
+    ref $hdrs or
+	return $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
+
+    # aoh
+    $csv->column_names ($hdrs);
+    return $frag ? $csv->fragment ($fh, $frag) : $csv->getline_hr_all ($fh);
+    } # csv
+
 1;
 
 __END__
@@ -911,7 +955,7 @@ options to the object creator.
 
 =back
 
-=head1 FUNCTIONS
+=head1 METHODS
 
 =head2 version
 X<version>
@@ -1749,6 +1793,12 @@ X<SetDiag>
 
 Use to reset the diagnostics if you are dealing with errors.
 
+=head1 FUNCTIONS
+
+=head2 csv
+X<csv>
+
+This is an high-level funtion that aims at simple interfaces.
 =head1 INTERNALS
 
 =over 4
