@@ -1819,6 +1819,10 @@ Use to reset the diagnostics if you are dealing with errors.
 =head2 csv
 X<csv>
 
+This function is not exported by default and should be explicitely requested:
+
+ use Text::CSV_XS qw( csv );
+
 This is an high-level funtion that aims at simple interfaces. It can be used
 to read/parse a CSV file or stream (the default behavior) or to produce a file
 or write to a stream (define the C<out> attribute). It returns an array
@@ -1896,6 +1900,18 @@ If C<headers> is an anonymous list, it will be used instead
 X<fragment>
 
 Only output the fragment as defined in de L</fragment> method.
+
+Combining all of them could give something like
+
+ use Text::CSV_XS qw( csv );
+ my $aoh = csv (
+     in       => "test.txt",
+     encoding => "utf-8",
+     headers  => "auto",
+     sep_char => "|",
+     fragment => "row=3;6-9;15-*",
+     );
+ say $aoh->[15]{Foo};
 
 =head1 INTERNALS
 
