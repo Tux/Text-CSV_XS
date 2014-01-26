@@ -1,12 +1,12 @@
 #/pro/bin/perl
 
-use 5.16.2;
+use 5.12.1;
 use warnings;
 
 use Test::More;
 
 use Carp;
-use Data::Peek;
+#use Data::Peek;
 use Text::CSV_XS "csv";
 
 my $lac = "sandbox/la.csv";

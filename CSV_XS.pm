@@ -760,7 +760,6 @@ sub csv
 	$enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	open $fh, "<$enc", $in or croak "$in: $!";
 	}
-    use DP;DPeek ($fh);
     $fh or croak qq{No valid source passed. "in" is required};
 
     my $hdrs = delete $attr{headers};
