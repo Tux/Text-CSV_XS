@@ -770,6 +770,11 @@ sub csv
     defined $attr{binary}    or $attr{binary}    = 1;
     my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
 
+    if ($out) {
+	# NYI
+	return;
+	}
+
     if (defined $hdrs && !ref $hdrs) {
 	$hdrs eq "skip" and         $csv->getline ($fh);
 	$hdrs eq "auto" and $hdrs = $csv->getline ($fh);
@@ -1886,6 +1891,11 @@ of field headers and used to produce an array of hashes.
 If C<headers> is an anonymous list, it will be used instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
+
+=head2 fragment
+X<fragment>
+
+Only output the fragment as defined in de L</fragment> method.
 
 =head1 INTERNALS
 
