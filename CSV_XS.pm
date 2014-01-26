@@ -766,7 +766,7 @@ sub csv
     my $frag = delete $attr{fragment};
 
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
-    defined $attr{binary}    or $attr{binary}    = 1;
+    $attr{binary}    = 1;
     my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
 
     if ($out) {
@@ -1845,6 +1845,9 @@ enumerated and explained in L</new>.
 If not overridden, the default options used for CSV are
 
  auto_diag => 1
+
+These options are always set and cannot be altered
+
  binary    => 1
 
 =head2 in
