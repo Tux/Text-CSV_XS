@@ -1818,11 +1818,11 @@ Use to reset the diagnostics if you are dealing with errors.
 =head2 csv
 X<csv>
 
-This function is not exported by default and should be explicitely requested:
+This function is not exported by default and should be explicitly requested:
 
  use Text::CSV_XS qw( csv );
 
-This is an high-level funtion that aims at simple interfaces. It can be used
+This is an high-level function that aims at simple interfaces. It can be used
 to read/parse a CSV file or stream (the default behavior) or to produce a file
 or write to a stream (define the C<out> attribute). It returns an array
 reference on parsing (or undef on fail) or the numeric value of L</error_diag>
@@ -1898,7 +1898,7 @@ If C<headers> is an anonymous list, it will be used instead
 =head2 fragment
 X<fragment>
 
-Only output the fragment as defined in de L</fragment> method.
+Only output the fragment as defined in the L</fragment> method.
 
 Combining all of them could give something like
 
