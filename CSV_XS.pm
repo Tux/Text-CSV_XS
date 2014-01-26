@@ -726,7 +726,7 @@ sub fragment
     return \@c;
     } # fragment
 
-my $csv_usage = q{usage: my $aoa = csv (file => $file);};
+my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 
 sub csv
 {
@@ -738,14 +738,30 @@ sub csv
     my $enc = delete $attr{encoding} || "";
 
     my $fh;
-    if (my $fil = delete $attr{file}) {
+    my $in  = delete $attr{in} or croak $csv_usage;
+    my $out = delete $attr{out};
+    if (ref $in eq "ARRAY") {
+	# we need an out
+	$out or croak qq{for CSV source, "out" is required};
+	if (ref $out) {
+	    print STDERR "O H\n";
+	    $fh = $out;
+	    }
+	else {
+	    print STDERR "O F\n";
+	    $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
+	    open $fh, ">$enc", $out or croak "$out: $!";
+	    }
+	}
+    elsif (ref $in) {
+	$fh = $in;
+	}
+    else {
 	$enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
-	open $fh, "<$enc", $fil or croak "$fil: $!";
+	open $fh, "<$enc", $in or croak "$in: $!";
 	}
-    elsif (my $dta = delete $attr{data}) {
-	$fh = $dta;
-	}
-    $fh or croak "No data source passed. file or data is required";
+    use DP;DPeek ($fh);
+    $fh or croak qq{No valid source passed. "in" is required};
 
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
@@ -1798,7 +1814,79 @@ Use to reset the diagnostics if you are dealing with errors.
 =head2 csv
 X<csv>
 
-This is an high-level funtion that aims at simple interfaces.
+This is an high-level funtion that aims at simple interfaces. It can be used
+to read/parse a CSV file or stream (the default behavior) or to produce a file
+or write to a stream (define the C<out> attribute). It returns an array
+reference on parsing (or undef on fail) or the numeric value of L</error_diag>
+on writing. When this function fails you can get to the error using the class
+call to L</error_diag>
+
+ my $aoa = csv (in => "test.csv") or
+     die Text::CSV_XS->error_diag;
+
+This function takes the arguments as key-value pair. It can be passed as
+a list or as an anonymous hash:
+
+ my $aoa = csv (  in => "test.csv", sep_char => ";");
+ my $aoh = csv ({ in => $fh, headers => "auto" });
+
+The arguments passed consist of two parts: the arguments to L</csv> itself
+and the optional attributes to the CSV object used inside the function as
+enumerated and explained in L</new>.
+
+If not overridden, the default options used for CSV are
+
+ auto_diag => 1
+ binary    => 1
+
+=head2 in
+X<in>
+
+Specify the source. This can be a filename (which should exist), a file
+handle or a CSV structure (when using L</out>).
+
+ my $aoa = csv (in => "file.csv");
+
+ open my $fh, "<", "file.csv";
+ my $aoa = csv (in => $fh);
+
+ my $csv = [ [qw( Foo Bar )], [ 1, 2 ], [ 2, 3 ]];
+ my $err = csv (in => $csv, out => "file.csv");
+
+=head2 out
+X<out>
+
+In output mode, the default CSV options when producing CSV are
+
+ eol       => "\r\n"
+
+=head2 encoding
+X<encoding>
+
+If passed, it should be an encoding accepted by the C<:encoding()> option
+to C<open>. There is no default value.
+
+=head2 headers
+X<headers>
+
+If this attribute is not given, the default behavior is to produce an array
+of arrays.
+
+If C<headers> is given, it should be either an anonymous list of column names
+or a flag: C<auto> or C<skip>. When C<skip> is used, the header will not be
+included in the output.
+
+ my $aoa = csv (in => $fh, headers => "skip");
+
+If C<auto> is used, the first line of the CSV source will be read as the list
+of field headers and used to produce an array of hashes.
+
+ my $aoh = csv (in => $fh, headers => "auto");
+
+If C<headers> is an anonymous list, it will be used instead
+
+ my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
+
 =head1 INTERNALS
 
 =over 4

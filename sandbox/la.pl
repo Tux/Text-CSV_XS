@@ -13,29 +13,29 @@ my $lac = "sandbox/la.csv";
 my $lat = "sandbox/la.txt";
 
 my $r;
-ok ($r = csv (file => $lac));
+ok ($r = csv (in => $lac), "Default, only in => file");
 is_deeply ($r, [["Foo","Bar"],[1,2],[2,3]]);
 
-ok ($r = csv (file => $lac, headers => "skip"));
+ok ($r = csv (in => $lac, headers => "skip"), "headers => skip");
 is_deeply ($r, [[1,2],[2,3]]);
 
-ok ($r = csv (file => $lac, fragment => "row=2-*"));
+ok ($r = csv (in => $lac, fragment => "row=2-*"), "in with fragment");
 is_deeply ($r, [[1,2],[2,3]]);
 
-ok ($r = csv (file => $lac, headers => "auto"));
+ok ($r = csv (in => $lac, headers => "auto"), "headers => auto");
 is_deeply ($r, [{Foo=>1,Bar=>2},{Foo=>2,Bar=>3}]);
 
-ok ($r = csv (file => $lac, headers => [qw( foo bar )]));
+ok ($r = csv (in => $lac, headers => [qw( foo bar )]), "headers => [...]");
 is_deeply ($r, [{foo=>"Foo",bar=>"Bar"},{foo=>1,bar=>2},{foo=>2,bar=>3}]);
 
 my $aoa;
 # with la.txt having a valid header
-ok ($aoa = csv (file => $lat, sep_char => "|"));
-is (ref $aoa,      "ARRAY");
-is (ref $aoa->[0], "ARRAY");
+ok ($aoa = csv (in => $lat, sep_char => "|"), "txt with sep_char");
+is (ref $aoa,      "ARRAY", "is array");
+is (ref $aoa->[0], "ARRAY", "... of arrays");
 
 ok (open my $fh, "<", $lat);
-is_deeply (csv (data => $fh, sep_char => "|"), $aoa);
+is_deeply (csv (in => $fh, sep_char => "|"), $aoa, "in is FH");
 
 my %hoh = (
     Jan              => {
@@ -55,14 +55,14 @@ my %hoh = (
         }
     );
 
-my $aoh = csv (file => $lat, sep_char => "|", headers => [qw( Name Hobby Age )]);
+my $aoh = csv (in => $lat, sep_char => "|", headers => [qw( Name Hobby Age )]);
 is (ref $aoh,      "ARRAY");
 is (ref $aoh->[0], "HASH");
 my %new = map { $_->{Name} => $_ } @{$aoh};
 
 is_deeply (\%hoh, \%new, "New matches old");
 
-is_deeply (csv (file => $lat, sep_char => "|", fragment => "col=1;3",
+is_deeply (csv (in => $lat, sep_char => "|", fragment => "col=1;3",
 		     headers => [ "Name", "Age" ]),
    [ { Name => "Jan", Age =>  7, },
      { Name => "LA",  Age => 25, },
