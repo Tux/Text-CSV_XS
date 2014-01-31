@@ -728,27 +728,26 @@ sub fragment
 
 my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 
-sub csv
+sub _csv_attr
 {
-    # This is a function, not a method
-    @_ && ref $_[0] ne __PACKAGE__ or croak $csv_usage;
-
     my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or die;
+
+    $attr{binary} = 1;
 
     my $enc = delete $attr{encoding} || "";
 
     my $fh;
-    my $in  = delete $attr{in} or croak $csv_usage;
-    my $out = delete $attr{out};
+    my $in  = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
+    my $out = delete $attr{out} || delete $attr{file};
     if (ref $in eq "ARRAY") {
 	# we need an out
 	$out or croak qq{for CSV source, "out" is required};
+	defined $attr{eol} or $attr{eol} = "\r\n";
 	if (ref $out) {
-	    print STDERR "O H\n";
 	    $fh = $out;
 	    }
 	else {
-	    print STDERR "O F\n";
+	    print STDERR "O F: $out\n";
 	    $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	    open $fh, ">$enc", $out or croak "$out: $!";
 	    }
@@ -766,11 +765,39 @@ sub csv
     my $frag = delete $attr{fragment};
 
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
-    $attr{binary}    = 1;
     my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
 
-    if ($out) {
-	# NYI
+    return {
+	csv  => $csv,
+	fh   => $fh,
+	in   => $in,
+	out  => $out,
+	hdrs => $hdrs,
+	frag => $frag,
+	};
+    } # _csv_attr
+
+sub csv
+{
+    # This is a function, not a method
+    @_ && ref $_[0] ne __PACKAGE__ or croak $csv_usage;
+
+    my $c = _csv_attr (@_);
+    my ($csv, $fh, $hdrs) = @{$c}{"csv", "fh", "hdrs"};
+
+    if ($c->{out}) {
+	if (ref $c->{in}[0] eq "ARRAY") { # aoa
+	    ref $hdrs and $csv->print ($fh, $hdrs);
+	    $csv->print ($fh, $_) for @{$c->{in}};
+	    }
+	else { # aoh
+	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$c->{in}[0]};
+	    defined $hdrs or $hdrs = "auto";
+	    ref $hdrs || $hdrs eq "auto" and $csv->print ($fh, \@hdrs);
+	    $csv->print ($fh, [ @{$_}{@hdrs} ]) for @{$c->{in}};
+	    }
+
+	close $fh;
 	return;
 	}
 
@@ -779,6 +806,7 @@ sub csv
 	$hdrs eq "auto" and $hdrs = $csv->getline ($fh);
 	}
 
+    my $frag = $c->{frag};
     # aoa
     ref $hdrs or
 	return $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
@@ -1871,6 +1899,8 @@ In output mode, the default CSV options when producing CSV are
 
  eol       => "\r\n"
 
+The L</fragment> attribute is ignored in output mode.
+
 =head2 encoding
 X<encoding>
 
@@ -1901,7 +1931,8 @@ If C<headers> is an anonymous list, it will be used instead
 =head2 fragment
 X<fragment>
 
-Only output the fragment as defined in the L</fragment> method.
+Only output the fragment as defined in the L</fragment> method. This
+attribute is ignored when generating CSV. See L</out>.
 
 Combining all of them could give something like
 
@@ -2004,6 +2035,13 @@ or using the slower L</combine> and L</string> methods:
          $csv->error_input, "\n";
      }
  close $csv_fh or die "hello.csv: $!";
+
+=head2 Rewriting CSV
+
+Rewrite a CSV file with C<;> as separator character to well-formed CSV:
+
+ use Text::CSV_XS qw( csv );
+ csv (in => csv (in => "bad.csv", sep_char => ";"), out => \*STDOUT);
 
 =head2 The examples folder
 

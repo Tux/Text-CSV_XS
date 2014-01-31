@@ -68,4 +68,6 @@ is_deeply (csv (in => $lat, sep_char => "|", fragment => "col=1;3",
      { Name => "LA",  Age => 25, },
      { Name => "Tux", Age => 52, }]);
 
+csv (in => $aoh, headers => "auto", out => "flubber.csv");
+
 done_testing;
