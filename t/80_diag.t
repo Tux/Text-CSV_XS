@@ -165,7 +165,7 @@ foreach my $spec (
     eval { $r = $csv->fragment (undef, $spec); };
     is ($r, undef, "Cannot do fragment with bad RFC7111 spec");
     my ($c_diag, $s_diag, $p_diag) = $csv->error_diag ();
-    is ($c_diag, 2014,	"Illegal RFC7111 spec");
+    is ($c_diag, 2013,	"Illegal RFC7111 spec");
     is ($p_diag, 0,	"Position");
     }
 

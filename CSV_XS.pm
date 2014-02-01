@@ -658,7 +658,7 @@ sub fragment
 	( row | col | cell ) \s* =
 	( $qc				# for row and col
 	| $qd , $qd (?: - $qd , $qd)?	# for cell
-	) \s* $}xi or croak ($self->SetDiag (2014));
+	) \s* $}xi or croak ($self->SetDiag (2013));
     my ($type, $range) = (lc $1, $2);
 
     my @h = $self->column_names ();
@@ -671,10 +671,10 @@ sub fragment
 	    \s* (?: - \s*
 		([0-9]+) \s* , \s* ([0-9]+)
 		)?
-	    \s* $}x) or croak ($self->SetDiag (2014));
+	    \s* $}x) or croak ($self->SetDiag (2013));
 	defined $brr or ($brr, $brc) = ($tlr, $tlc);
 	$tlr <= 0 || $tlc <= 0 || $brr <= 0 || $brc <= 0 ||
-	    $brr < $tlr || $brc < $tlc and croak ($self->SetDiag (2014));
+	    $brr < $tlr || $brc < $tlc and croak ($self->SetDiag (2013));
 	$_-- for $tlc, $brc;
 	my $r = 0;
 	while (my $row = $self->getline ($io)) {
@@ -694,10 +694,10 @@ sub fragment
     my $eod = 0;
     for (split m/\s*;\s*/ => $range) {
 	my ($from, $to) = m/^\s* ([0-9]+) (?: \s* - \s* ([0-9]+ | \* ))? \s* $/x
-	    or croak ($self->SetDiag (2014));
+	    or croak ($self->SetDiag (2013));
 	$to ||= $from;
 	$to eq "*" and ($to, $eod) = ($from, 1);
-	$from <= 0 || $to <= 0 || $to < $from and croak ($self->SetDiag (2014));
+	$from <= 0 || $to <= 0 || $to < $from and croak ($self->SetDiag (2013));
 	$r[$_] = 1 for $from .. $to;
 	}
 
@@ -1595,7 +1595,7 @@ cell location
 =back
 
 RFC7111 does not allow any combination of the three selection methods. Passing
-an invalid fragment specification will croak and set error 2014.
+an invalid fragment specification will croak and set error 2013.
 
 =head2 column_names
 X<column_names>
@@ -2305,7 +2305,7 @@ when reading from streams with L</getline>, as using L</parse> is done on
 strings that are not required to have a trailing C<eol>.
 
 =item *
-2013 "ESP - Specification error for fragments RFC7111"
+2013 "INI - Specification error for fragments RFC7111"
 X<2013>
 
 Invalid specification for URI L</fragment> specification.
