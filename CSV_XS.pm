@@ -747,7 +747,6 @@ sub _csv_attr
 	    $fh = $out;
 	    }
 	else {
-	    print STDERR "O F: $out\n";
 	    $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	    open $fh, ">$enc", $out or croak "$out: $!";
 	    }
@@ -797,8 +796,7 @@ sub csv
 	    $csv->print ($fh, [ @{$_}{@hdrs} ]) for @{$c->{in}};
 	    }
 
-	close $fh;
-	return;
+	return close $fh;
 	}
 
     if (defined $hdrs && !ref $hdrs) {
@@ -2046,7 +2044,7 @@ or using the slower L</combine> and L</string> methods:
 Rewrite a CSV file with C<;> as separator character to well-formed CSV:
 
  use Text::CSV_XS qw( csv );
- csv (in => csv (in => "bad.csv", sep_char => ";"), out => \*STDOUT);
+ csv (in => csv (in => "bad.csv", sep_char => ";"), out => *STDOUT);
 
 =head2 The examples folder
 
