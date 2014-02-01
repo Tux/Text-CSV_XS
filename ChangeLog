@@ -1,7 +1,9 @@
-1.04	- 2014-01-24, H.Merijn Brand
+1.04	- 2014-02-01, H.Merijn Brand
     * get_columnd () with no argument now returns the empty list
       instead of undef when no columns defined
     * fragments (rcf7111) now also support AoH (was AoA only)
+    * Error code conflict for fragments resolved to 2013
+    * New function "csv" (not a method)
 
 1.03	- 2014-01-21, H.Merijn Brand
     * Update copyright to 2014

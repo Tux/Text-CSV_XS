@@ -743,7 +743,7 @@ sub _csv_attr
 	# we need an out
 	$out or croak qq{for CSV source, "out" is required};
 	defined $attr{eol} or $attr{eol} = "\r\n";
-	if (ref $out) {
+	if (ref $out or "GLOB" eq ref \$out) {
 	    $fh = $out;
 	    }
 	else {
@@ -752,7 +752,7 @@ sub _csv_attr
 	    open $fh, ">$enc", $out or croak "$out: $!";
 	    }
 	}
-    elsif (ref $in) {
+    elsif (ref $in or "GLOB" eq ref \$in) {
 	$fh = $in;
 	}
     else {
