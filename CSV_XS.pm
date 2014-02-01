@@ -1878,7 +1878,7 @@ These options are always set and cannot be altered
 
  binary    => 1
 
-=head2 in
+=head3 in
 X<in>
 
 Specify the source. This can be a filename (which should exist), a file
@@ -1892,7 +1892,7 @@ handle or a CSV structure (when using L</out>).
  my $csv = [ [qw( Foo Bar )], [ 1, 2 ], [ 2, 3 ]];
  my $err = csv (in => $csv, out => "file.csv");
 
-=head2 out
+=head3 out
 X<out>
 
 In output mode, the default CSV options when producing CSV are
@@ -1901,13 +1901,13 @@ In output mode, the default CSV options when producing CSV are
 
 The L</fragment> attribute is ignored in output mode.
 
-=head2 encoding
+=head3 encoding
 X<encoding>
 
 If passed, it should be an encoding accepted by the C<:encoding()> option
 to C<open>. There is no default value.
 
-=head2 headers
+=head3 headers
 X<headers>
 
 If this attribute is not given, the default behavior is to produce an array
@@ -1928,7 +1928,7 @@ If C<headers> is an anonymous list, it will be used instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
 
-=head2 fragment
+=head3 fragment
 X<fragment>
 
 Only output the fragment as defined in the L</fragment> method. This
@@ -1979,6 +1979,11 @@ API may change in future releases.
  # get only the 4th column
  my @column = map { $_->[3] } @{$csv->getline_all ($fh)};
  close $fh or die "file.csv: $!";
+
+with L</csv>, you could do
+
+ my @column = map { $_->[0] }
+     @{csv (in => "file.csv", fragment => "col=4")};
 
 =head2 Parsing CSV strings:
 
@@ -2174,12 +2179,8 @@ No guarantees, but this is what I had in mind some time ago:
 
 =item next
 
- - DIAGNOSTICS setction in pod to *describe* the errors (see below)
+ - DIAGNOSTICS secttion in pod to *describe* the errors (see below)
  - croak / carp
-
-=item next + 1
-
- - csv2csv - a script to regenerate a CSV file to follow standards
 
 =back
 
