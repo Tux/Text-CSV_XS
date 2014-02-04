@@ -824,6 +824,14 @@ Text::CSV_XS - comma-separated values manipulation routines
 
 =head1 SYNOPSIS
 
+ # Functional interface
+ use Text::CSV_XS qw( csv );
+ # Read whole file in memory as array of arrays
+ my $aoa = csv (in => "data.csv");
+ # Write array of arrays as csv file
+ csv (in => $aoa, out => "file.csv", sep_char=> ";");
+
+ # Object interface
  use Text::CSV_XS;
 
  my @rows;
@@ -1858,7 +1866,7 @@ call to L</error_diag>
  my $aoa = csv (in => "test.csv") or
      die Text::CSV_XS->error_diag;
 
-This function takes the arguments as key-value pair. It can be passed as
+This function takes the arguments as key-value pairs. It can be passed as
 a list or as an anonymous hash:
 
  my $aoa = csv (  in => "test.csv", sep_char => ";");
@@ -1925,6 +1933,7 @@ of field headers and used to produce an array of hashes.
 If C<headers> is an anonymous list, it will be used instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
+ csv (in => $aoa, out => $fh, headers => [qw( code description price }]);
 
 =head3 fragment
 X<fragment>
