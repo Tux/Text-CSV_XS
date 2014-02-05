@@ -752,7 +752,7 @@ sub _csv_attr
 	    }
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
-	if (!ref $in && $[ <= 5.008004) {
+	if (!ref $in && $] <= 5.008004) {
 	    $fh = \$in;
 	    }
 	else {
