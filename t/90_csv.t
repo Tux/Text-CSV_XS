@@ -39,12 +39,7 @@ for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ]) {
 
 for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ]) {
     open FH, "<", $file;
-    if ($] <= 5.008 && $io->[1] eq "glob") {
-	ok (1, "This ancient perl does not support *FH");
-	}
-    else {
-	is_deeply (csv (in => $io->[0], headers => "auto"), $aoh, "AOH $io->[1]");
-	}
+    is_deeply (csv (in => $io->[0], headers => "auto"), $aoh, "AOH $io->[1]");
     close FH;
     }
 

@@ -752,7 +752,12 @@ sub _csv_attr
 	    }
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
-	$fh = $in;
+	if (!ref $in && $[ <= 5.008004) {
+	    $fh = \$in;
+	    }
+	else {
+	    $fh = $in;
+	    }
 	}
     else {
 	$enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
@@ -1922,7 +1927,8 @@ not archaic - the glob itself (e.g. C<*STDOUT>).
 X<encoding>
 
 If passed, it should be an encoding accepted by the C<:encoding()> option
-to C<open>. There is no default value.
+to C<open>. There is no default value. This attribute does not work in
+perl 5.6.x.
 
 =head3 headers
 X<headers>
@@ -2065,11 +2071,6 @@ Rewrite a CSV file with C<;> as separator character to well-formed CSV:
 
  use Text::CSV_XS qw( csv );
  csv (in => csv (in => "bad.csv", sep_char => ";"), out => *STDOUT);
-
-On perl versions older than 5.8.1, the C<*STDOUT> notation is not supported
-and you need it referenced:
-
- csv (in => csv (in => "bad.csv", sep_char => ";"), out => \*STDOUT);
 
 =head2 The examples folder
 
