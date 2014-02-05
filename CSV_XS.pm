@@ -1889,8 +1889,12 @@ These options are always set and cannot be altered
 =head3 in
 X<in>
 
-Specify the source. This can be a filename (which should exist), a file
-handle or a CSV structure (when using L</out>).
+Used to specify the source.  C<in> can be a file name (e.g. C<"file.csv">),
+which will be opened for reading and closed when finished, a file handle (e.g.
+C<$fh> or C<FH>), a reference to a glob (e.g. C<\*ARGV>), or - when your
+version of perl is not archaic - the glob itself (e.g. C<*STDIN>).
+
+When used with L</out>, it should be a reference to a CSV structure (AoA or AoH).
 
  my $aoa = csv (in => "file.csv");
 
@@ -1908,6 +1912,11 @@ In output mode, the default CSV options when producing CSV are
  eol       => "\r\n"
 
 The L</fragment> attribute is ignored in output mode.
+
+C<out> can be a file name (e.g. C<"file.csv">), which will be opened for
+writing and closed when finished, a file handle (e.g. C<$fh> or C<FH>), a
+reference to a glob (e.g. C<\*STDOUT>), or - when your version of perl is
+not archaic - the glob itself (e.g. C<*STDOUT>).
 
 =head3 encoding
 X<encoding>
@@ -2056,6 +2065,11 @@ Rewrite a CSV file with C<;> as separator character to well-formed CSV:
 
  use Text::CSV_XS qw( csv );
  csv (in => csv (in => "bad.csv", sep_char => ";"), out => *STDOUT);
+
+On perl versions older than 5.8.1, the C<*STDOUT> notation is not supported
+and you need it referenced:
+
+ csv (in => csv (in => "bad.csv", sep_char => ";"), out => \*STDOUT);
 
 =head2 The examples folder
 
