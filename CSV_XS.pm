@@ -1553,10 +1553,8 @@ It is just a wrapper method with basic parameter checks over
 
 =head2 fragment
 
-This, for now experimental, function tries to implement RFC7111 (URI
-Fragment Identifiers for the text/csv Media Type) 1)
-
- 1) http://tools.ietf.org/html/rfc7111
+This function tries to implement RFC7111 (URI Fragment Identifiers for the
+text/csv Media Type) - http://tools.ietf.org/html/rfc7111
 
  my $AoA = $csv->fragment ($io, $spec);
 
@@ -1855,6 +1853,10 @@ X<csv>
 This function is not exported by default and should be explicitly requested:
 
  use Text::CSV_XS qw( csv );
+
+This is the first draft. This function will stay, but the arguments might
+change based on user feedback: esp. the C<headers> attribute is not complete.
+The basics will stay.
 
 This is an high-level function that aims at simple interfaces. It can be used
 to read/parse a CSV file or stream (the default behavior) or to produce a file
