@@ -810,13 +810,16 @@ sub csv
 	}
 
     my $frag = $c->{frag};
-    # aoa
-    ref $hdrs or
-	return $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
-
-    # aoh
-    $csv->column_names ($hdrs);
-    return $frag ? $csv->fragment ($fh, $frag) : $csv->getline_hr_all ($fh);
+    my $ref = ref $hdrs
+	? # aoh
+	  do {
+	    $csv->column_names ($hdrs);
+	    $frag ? $csv->fragment ($fh, $frag) : $csv->getline_hr_all ($fh);
+	    }
+	: # aoa
+	    $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
+    $ref or Text::CSV_XS->auto_diag;
+    return $ref;
     } # csv
 
 1;
@@ -1896,8 +1899,8 @@ X<in>
 
 Used to specify the source.  C<in> can be a file name (e.g. C<"file.csv">),
 which will be opened for reading and closed when finished, a file handle (e.g.
-C<$fh> or C<FH>), a reference to a glob (e.g. C<\*ARGV>), or - when your
-version of perl is not archaic - the glob itself (e.g. C<*STDIN>).
+C<$fh> or C<FH>), a reference to a glob (e.g. C<\*ARGV>), or the glob itself
+(e.g. C<*STDIN>).
 
 When used with L</out>, it should be a reference to a CSV structure (AoA or AoH).
 
@@ -1920,8 +1923,7 @@ The L</fragment> attribute is ignored in output mode.
 
 C<out> can be a file name (e.g. C<"file.csv">), which will be opened for
 writing and closed when finished, a file handle (e.g. C<$fh> or C<FH>), a
-reference to a glob (e.g. C<\*STDOUT>), or - when your version of perl is
-not archaic - the glob itself (e.g. C<*STDOUT>).
+reference to a glob (e.g. C<\*STDOUT>), or the glob itself (e.g. C<*STDOUT>).
 
 =head3 encoding
 X<encoding>
@@ -2177,8 +2179,10 @@ Returning something like
      },
    ]
 
-Note that L</getline_all> already returns all rows for an open stream, but
-this will not return flags.
+Note that the L</csv> function already supports most of this, but does not
+return flags. L</getline_all> returns all rows for an open stream, but this
+will not return flags either. L</fragment> can reduce the required rows I<or>
+columns, but cannot combine them.
 
 =back
 
