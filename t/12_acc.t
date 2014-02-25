@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 133;
+use Test::More tests => 136;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -98,6 +98,11 @@ $csv->escape_char ("\\");
 ok (!$csv->parse ("foo,foo\0bar"),		"parse (foo)");
 $csv->binary (1);
 ok ( $csv->parse ("foo,foo\0bar"),		"parse (foo)");
+
+# Attribute aliasses
+ok ($csv = Text::CSV_XS-> new ({ quote_always => 1, verbose_diag => 1}));
+is ($csv->always_quote, 1,	"always_quote = quote_always");
+is ($csv->diag_verbose, 1,	"diag_verbose = verbose_diag");
 
 # Some forbidden combinations
 foreach my $ws (" ", "\t") {

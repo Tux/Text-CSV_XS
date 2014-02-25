@@ -86,6 +86,10 @@ my %def_attr = (
     _BOUND_COLUMNS		=> undef,
     _AHEAD			=> undef,
     );
+my %attr_alias = (
+    quote_always		=> "always_quote",
+    verbose_diag		=> "diag_verbose",
+    );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
 sub _check_sanity
@@ -111,28 +115,33 @@ sub new
     my $class = ref ($proto) || $proto	or  return;
     @_ > 0 &&   ref $_[0] ne "HASH"	and return;
     my $attr  = shift || {};
+    my %attr  = map {
+	my $k = m/^[a-zA-Z]\w+$/ ? lc $_ : $_;
+	exists $attr_alias{$k} and $k = $attr_alias{$k};
+	$k => $attr->{$_};
+	} keys %$attr;
 
-    for (keys %{$attr}) {
+    for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
-	    defined $attr->{$_} && $] >= 5.008002 && m/_char$/ and
-		utf8::decode ($attr->{$_});
+	    defined $attr{$_} && $] >= 5.008002 && m/_char$/ and
+		utf8::decode ($attr{$_});
 	    next;
 	    }
 #	croak?
 	$last_new_err = SetDiag (undef, 1000, "INI - Unknown attribute '$_'");
-	$attr->{auto_diag} and error_diag ();
+	$attr{auto_diag} and error_diag ();
 	return;
 	}
 
-    my $self = { %def_attr, %{$attr} };
+    my $self = { %def_attr, %attr };
     if (my $ec = _check_sanity ($self)) {
 	$last_new_err = SetDiag (undef, $ec);
-	$attr->{auto_diag} and error_diag ();
+	$attr{auto_diag} and error_diag ();
 	return;
 	}
 
     $last_new_err = SetDiag (undef, 0);
-    defined $\ && !exists $attr->{eol} and $self->{eol} = $\;
+    defined $\ && !exists $attr{eol} and $self->{eol} = $\;
     bless $self, $class;
     defined $self->{types} and $self->types ($self->{types});
     $self;
