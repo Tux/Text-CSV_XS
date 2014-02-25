@@ -157,6 +157,7 @@ xs_error_t xs_errors[] =  {
     { 1001, "INI - sep_char is equal to quote_char or escape_char"		},
     { 1002, "INI - allow_whitespace with escape_char or quote_char SP or TAB"	},
     { 1003, "INI - \r or \n in main attr not allowed"				},
+    { 1004, "INI - callbacks should be undef or a hashref"			},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
@@ -205,6 +206,7 @@ xs_error_t xs_errors[] =  {
 static char init_cache[CACHE_SIZE];
 static int  io_handle_loaded = 0;
 static SV  *m_getline, *m_print, *m_read;
+static int  last_error = 0;
 
 #define require_IO_Handle \
     unless (io_handle_loaded) {\
@@ -245,6 +247,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     dSP;
     SV *err = SvDiag (xse);
 
+    last_error = xse;
     if (err)
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
@@ -420,6 +423,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     STRLEN	 len;
     char	*ptr;
 
+    last_error = 0;
     csv->self  = self;
     csv->pself = pself;
 
@@ -1532,7 +1536,7 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
 {
     csv_t	csv;
     SetupCsv (&csv, hv, self);
-    return (c_xsParse (csv, hv, av, avf, src, useIO));
+    return (c_xsParse (csv, hv, av, avf, src, useIO) || !last_error);
     } /* xsParse */
 
 #define av_empty(av)	cx_av_empty (aTHX_ av)
@@ -1754,7 +1758,7 @@ getline (self, io)
     av  = newAV ();
     avf = newAV ();
     ST (0) = xsParse (self, hv, av, avf, io, 1)
-	?  sv_2mortal (newRV_noinc ((SV *)av))
+	? sv_2mortal (newRV_noinc ((SV *)av))
 	: &PL_sv_undef;
     XSRETURN (1);
     /* XS getline */

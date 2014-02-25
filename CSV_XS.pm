@@ -74,6 +74,7 @@ my %def_attr = (
     auto_diag			=> 0,
     diag_verbose		=> 0,
     types			=> undef,
+    callbacks			=> undef,
 
     _EOF			=> 0,
     _RECNO			=> 0,
@@ -138,6 +139,10 @@ sub new
 	$last_new_err = SetDiag (undef, $ec);
 	$attr{auto_diag} and error_diag ();
 	return;
+	}
+    if ($self->{callbacks} && ref $self->{callbacks} ne "HASH") {
+	carp "The 'callbacks' attribute is set but is not a hash: ignored\n";
+	$self->{callbacks} = undef;
 	}
 
     $last_new_err = SetDiag (undef, 0);
@@ -407,6 +412,24 @@ sub types
 	}
     } # types
 
+sub callbacks
+{
+    my $self = shift;
+    if (@_) {
+	my $cb =
+	    @_ == 1 && (!defined $_[0] || ref $_[0] eq "HASH")	? shift  :
+	    @_ % 2 == 0 ? { @_ } :
+	    croak ($self->SetDiag (1004));
+	foreach my $cbk (keys %$cb) {
+	    (defined $cbk && !ref $cbk && $cbk =~ m/^[\w.]+$/) &&
+	    (defined $cb->{$cbk} && ref $cb->{$cbk} eq "CODE") or
+		croak ($self->SetDiag (1004));
+	    }
+	$self->{callbacks} = $cb;
+	}
+    $self->{callbacks};
+    } # callbacks
+
 # erro_diag
 #
 #   If (and only if) an error occurred, this function returns a code that
@@ -423,6 +446,9 @@ sub error_diag
 	$diag[1] =     $self->{_ERROR_DIAG};
 	$diag[2] = 1 + $self->{_ERROR_POS} if exists $self->{_ERROR_POS};
 	$diag[3] =     $self->{_RECNO};
+
+	$diag[0] && $self && $self->{callbacks} && $self->{callbacks}{error} and
+	    return $self->{callbacks}{error}->(@diag);
 	}
 
     my $context = wantarray;
@@ -1350,6 +1376,11 @@ Set the verbosity of the C<auto_diag> output. Currently only adds the
 current input line (if known) to the diagnostic output with an indication
 of the position of the error.
 
+=item callbacks
+X<callbacks>
+
+See the L</Callbacks> section below.
+ 
 =back
 
 To sum it up,
@@ -1379,6 +1410,7 @@ is equivalent to
      verbatim              => 0,
      auto_diag             => 0,
      diag_verbose          => 0,
+     callbacks             => undef,
      });
 
 For all of the above mentioned flags, an accessor method is available where
@@ -1981,6 +2013,23 @@ Combining all of them could give something like
      );
  say $aoh->[15]{Foo};
 
+=head2 Callbacks
+
+Callbacks enable actions inside L</Text::CSV_XS>. While most of what this
+offers can easily be done in an unrolled loop as described in the l</SYNOPSIS>
+callbacks can be used to meet special demands or enhance the L</csv> function.
+
+=over 2
+
+=item error
+
+ $csv->callbacks ( error => sub { $csv->SetDiag (0); } );
+
+the C<error> callback is invoked when an error occurs, but I<only> when
+L</auto_diag> is set to a true value.
+
+=back
+
 =head1 INTERNALS
 
 =over 4
@@ -2316,6 +2365,12 @@ X<1003>
 
 Using default C<eol> characters in either C<sep_char>, C<quote_char>, or
 C<escape_char> is not allowed.
+
+=item *
+1004 "INI - callbacks should be undef or a hashref"
+X<1004>
+
+The C<callbacks> attribute only allows to be C<undef> or a hash reference.
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
