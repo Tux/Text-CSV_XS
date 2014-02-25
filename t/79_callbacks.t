@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-#use Test::More tests => 179;
- use Test::More "no_plan";
+ use Test::More tests => 46;
+#use Test::More "no_plan";
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -49,8 +49,13 @@ sub ignore
     $csv->SetDiag (0); # Ignore this error
     } # ignore
 
+use Data::Peek;
 ok ($csv->auto_diag (1), "set auto_diag");
-is (ref $csv->callbacks ({ error => \&ignore }), "HASH", "callback set");
+is (ref $csv->callbacks ({
+    error        => \&ignore,
+    after_parse  => sub { push @{$_[0]}, "NEW" },
+    before_print => sub { warn "before print"; },
+    }), "HASH", "callbacks set");
 ok ($csv->getline (*DATA),		"parse ok");
 is ($c, 1,				"key");
 is ($s, "foo",				"value");
@@ -58,6 +63,11 @@ ok ($csv->getline (*DATA),		"parse bad, skip 3006");
 ok ($csv->getline (*DATA),		"parse good");
 is ($c, 2,				"key");
 is ($s, "bar",				"value");
+
+$csv->bind_columns (undef);
+ok (my $row = $csv->getline (*DATA),	"get row");
+is_deeply ($row, [ 1, 2, 3, "NEW" ],	"fetch + value from hook");
+
 $error = 2012; # EOF
 ok ($csv->getline (*DATA),		"parse past eof");
 
@@ -70,3 +80,4 @@ foo
 1,foo
 3,baz,2
 2,bar
+1,2,3

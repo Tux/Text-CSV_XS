@@ -174,6 +174,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     quote_null			=> 31,
     quote_binary		=> 32,
     decode_utf8			=> 35,
+    _has_hooks			=> 36,
     _is_bound			=> 26,	# 26 .. 29
     );
 
@@ -416,15 +417,24 @@ sub callbacks
 {
     my $self = shift;
     if (@_) {
-	my $cb =
-	    @_ == 1 && (!defined $_[0] || ref $_[0] eq "HASH")	? shift  :
-	    @_ % 2 == 0 ? { @_ } :
-	    croak ($self->SetDiag (1004));
-	foreach my $cbk (keys %$cb) {
-	    (defined $cbk && !ref $cbk && $cbk =~ m/^[\w.]+$/) &&
-	    (defined $cb->{$cbk} && ref $cb->{$cbk} eq "CODE") or
-		croak ($self->SetDiag (1004));
+	my $cb;
+	my $hf = 0x00;
+	if (!defined $_[0]) {
 	    }
+	else {
+	    $cb = @_ == 1 && ref $_[0] eq "HASH" ? shift 
+	        : @_ % 2 == 0                    ? { @_ }
+	        : croak ($self->SetDiag (1004));
+	    foreach my $cbk (keys %$cb) {
+		(defined $cbk && !ref $cbk && $cbk =~ m/^[\w.]+$/) &&
+		(defined $cb->{$cbk} && ref $cb->{$cbk} eq "CODE") or
+		    croak ($self->SetDiag (1004));
+		}
+	    exists $cb->{error}        and $hf |= 0x01;
+	    exists $cb->{after_parse}  and $hf |= 0x02;
+	    exists $cb->{before_print} and $hf |= 0x04;
+	    }
+	$self->_set_attr_X ("_has_hooks", $hf);
 	$self->{callbacks} = $cb;
 	}
     $self->{callbacks};
@@ -2023,7 +2033,7 @@ callbacks can be used to meet special demands or enhance the L</csv> function.
 
 =item error
 
- $csv->callbacks ( error => sub { $csv->SetDiag (0); } );
+ $csv->callbacks (error => sub { $csv->SetDiag (0) });
 
 the C<error> callback is invoked when an error occurs, but I<only> when
 L</auto_diag> is set to a true value. The callback is passed the values
@@ -2048,6 +2058,29 @@ returned by L</error_diag>:
  while ($csv->getline ($fh)) {
      # Error 3006 will not stop the loop
      }
+
+=item after_parse
+
+ $csv->callbacks (after_parse => sub { push @{$_[0]}, "NEW" });
+ while (my $row = $csv->getline ($fh)) {
+     $row->[-1] eq "NEW";
+     }
+
+This callback is invoked after parsing with L</getline> (not in L</parse>)
+only if no error occurred and the parse result was not empty. The callback
+is invoked with a single argument: an array reference to the fields parsed.
+
+The return code of the callback is ignored.
+
+ sub add_from_db
+ {
+     my $row = shift;
+     $sth->execute ($row->[4]);
+     push @$row, $sth->fetchrow_array;
+     } # add_from_db
+
+ my $aoa = csv (in => "file.csv", callbacks => {
+     after_parse => \&add_from_db);
 
 =back
 
