@@ -42,9 +42,10 @@ foreach my $args ([""], [1], [[]], [sub{}], [1,2], [1,2,3], ["error",undef]) {
     is ($csv->callbacks, undef,		"not set");
     }
 
+my $error = 3006;
 sub ignore
 {
-    is ($_[0], 3006, "Cauhgt error 3006");
+    is ($_[0], $error, "Caught error $error");
     $csv->SetDiag (0); # Ignore this error
     } # ignore
 
@@ -53,7 +54,12 @@ is (ref $csv->callbacks ({ error => \&ignore }), "HASH", "callback set");
 ok ($csv->getline (*DATA),		"parse ok");
 is ($c, 1,				"key");
 is ($s, "foo",				"value");
-ok ($csv->getline (*DATA),		"parse ok");
+ok ($csv->getline (*DATA),		"parse bad, skip 3006");
+ok ($csv->getline (*DATA),		"parse good");
+is ($c, 2,				"key");
+is ($s, "bar",				"value");
+$error = 2012; # EOF
+ok ($csv->getline (*DATA),		"parse past eof");
 
 __END__
 1,foo
@@ -63,3 +69,4 @@ foo
 3,baz,2
 1,foo
 3,baz,2
+2,bar

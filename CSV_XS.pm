@@ -2026,7 +2026,28 @@ callbacks can be used to meet special demands or enhance the L</csv> function.
  $csv->callbacks ( error => sub { $csv->SetDiag (0); } );
 
 the C<error> callback is invoked when an error occurs, but I<only> when
-L</auto_diag> is set to a true value.
+L</auto_diag> is set to a true value. The callback is passed the values
+returned by L</error_diag>:
+
+ my ($c, $s);
+
+ sub ignore3006
+ {
+     my ($err, $msg, $pos, $recno) = @_;
+     if ($err == 3006) {
+         # ignore this error
+         ($c, $s) = (undef, undef);
+         SetDiag (0);
+         }
+     # Any other error
+     return;
+     } # ignore3006
+
+ $csv->callbacks (error => \&ignore3006);
+ $csv->bind_columns (\$c, \$s);
+ while ($csv->getline ($fh)) {
+     # Error 3006 will not stop the loop
+     }
 
 =back
 
