@@ -2061,26 +2061,49 @@ returned by L</error_diag>:
 
 =item after_parse
 
- $csv->callbacks (after_parse => sub { push @{$_[0]}, "NEW" });
+ $csv->callbacks (after_parse => sub { push @{$_[1]}, "NEW" });
  while (my $row = $csv->getline ($fh)) {
      $row->[-1] eq "NEW";
      }
 
 This callback is invoked after parsing with L</getline> (not in L</parse>)
 only if no error occurred and the parse result was not empty. The callback
-is invoked with a single argument: an array reference to the fields parsed.
+is invoked with two arguments:  the current CSV parser object and an array
+reference to the fields parsed.
 
 The return code of the callback is ignored.
 
  sub add_from_db
  {
-     my $row = shift;
+     my ($csv, $row) = @_;
      $sth->execute ($row->[4]);
      push @$row, $sth->fetchrow_array;
      } # add_from_db
 
  my $aoa = csv (in => "file.csv", callbacks => {
-     after_parse => \&add_from_db);
+     after_parse => \&add_from_db });
+
+=item before_print
+
+ my $idx = 1;
+ $csv->callbacks (before_print => sub { $_[1][0] = $idx++ });
+ $csv->print (*STDOUT, [ 0, $_ ]) for @members;
+
+This callback is invoked before printing with L</print> (not in L</fields>)
+only if no error occurred and the argument list is not empty. The callback
+is invoked with two arguments:  the current CSV parser object and an array
+reference to the fields passed.
+
+The return code of the callback is ignored.
+
+ sub max_4_fields
+ {
+     my ($csv, $row) = @_;
+     @$row > 4 and splice @$row, 4;
+     } # max_4_fields
+
+ csv (in => csv (in => "file.csv"), out => *STDOUT,
+     callbacks => { before print => \&max_4_fields });
 
 =back
 

@@ -1573,6 +1573,7 @@ static void hook (HV *hv, char *cb_name, AV *av)
 	ENTER;
 	SAVETMPS;
 	PUSHMARK (SP);
+	XPUSHs (newRV_noinc ((SV *)hv));
 	XPUSHs (newRV_noinc ((SV *)av));
 	PUTBACK;
 	call_sv (*svp, G_VOID | G_DISCARD);

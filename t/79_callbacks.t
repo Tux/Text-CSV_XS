@@ -54,16 +54,18 @@ ok ($csv->auto_diag (1), "set auto_diag");
 is (ref $csv->callbacks ({
     error        => \&ignore,
     after_parse  => sub {
+	my ($c, $av) = @_;
 	# Just add a field
-	push @{$_[0]}, "NEW";
+	push @$av, "NEW";
 	},
     before_print => sub {
+	my ($c, $av) = @_;
 	# First field set to line number
-	$_[0][0] = $idx++;
+	$av->[0] = $idx++;
 	# Maximum 2 fields
-	@{$_[0]} > 2 and splice @{$_[0]}, 2;
+	@{$av} > 2 and splice @{$av}, 2;
 	# Minimum 2 fields
-	@{$_[0]} < 2 and push @{$_[0]}, "";
+	@{$av} < 2 and push @{$av}, "";
 	},
     }), "HASH", "callbacks set");
 ok ($csv->getline (*DATA),		"parse ok");
