@@ -4,7 +4,7 @@
     * Start callbacks support
 
 1.04	- 2014-02-06, H.Merijn Brand
-    * get_columnd () with no argument now returns the empty list
+    * get_columns () with no argument now returns the empty list
       instead of undef when no columns defined
     * fragments (rcf7111) now also support AoH (was AoA only)
     * Error code conflict for fragments resolved to 2013
