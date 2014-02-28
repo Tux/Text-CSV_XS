@@ -545,11 +545,11 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	if ((svp = hv_fetchs (self, "_is_bound", FALSE)) && *svp && SvOK (*svp))
 	    csv->is_bound = SvIV(*svp);
 	csv->has_hooks = 0;
-	if ((svp = hv_fetchs (self, "callbacks", FALSE)) && *svp && SvOK (*svp)) {
-	    HV *cb = (HV *)svp;
-	    if ((svp = hv_fetchs (cb, "after_parse", FALSE)) && *svp && SvOK (*svp))
+	if ((svp = hv_fetchs (self, "callbacks", FALSE)) && _is_hashref (*svp)) {
+	    HV *cb = (HV *)SvRV (*svp);
+	    if ((svp = hv_fetchs (cb, "after_parse",  FALSE)) && _is_coderef (*svp))
 		csv->has_hooks |= HOOK_AFTER_PARSE;
-	    if ((svp = hv_fetchs (cb, "before_print", FALSE)) && *svp && SvOK (*svp))
+	    if ((svp = hv_fetchs (cb, "before_print", FALSE)) && _is_coderef (*svp))
 		csv->has_hooks |= HOOK_BEFORE_PRINT;
 	    }
 
@@ -603,6 +603,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    memcpy ((char *)&csv->cache[CACHE_ID_eol], csv->eol, csv->eol_len);
 	csv->cache[CACHE_ID_has_types]			= csv->types ? 1 : 0;
 	csv->cache[CACHE_ID__has_ahead]			= csv->has_ahead = 0;
+	csv->cache[CACHE_ID__has_hooks]			= csv->has_hooks;
 	csv->cache[CACHE_ID__is_bound    ] = (csv->is_bound & 0xFF000000) >> 24;
 	csv->cache[CACHE_ID__is_bound + 1] = (csv->is_bound & 0x00FF0000) >> 16;
 	csv->cache[CACHE_ID__is_bound + 2] = (csv->is_bound & 0x0000FF00) >>  8;
@@ -1641,6 +1642,8 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 	    n--;
 	    }
 
+	if (csv.has_hooks & HOOK_AFTER_PARSE)
+	    hook (hv, "after_parse", row);
 	av_push (avr, newRV_noinc ((SV *)row));
 
 	if (n >= length && skip >= 0)
