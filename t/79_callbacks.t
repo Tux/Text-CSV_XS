@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 46;
+ use Test::More tests => 51;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -31,7 +31,7 @@ is ($s, "untouched",			"untouched");
 ok ($csv->getline (*DATA),		"parse good");
 is ($c, 2,				"key");
 is ($s, "bar",				"value");
-eval { is ($csv->getline (*DATA), undef,	"parse bad"); };
+eval { is ($csv->getline (*DATA), undef,"parse bad"); };
 my @diag = $csv->error_diag;
 is ($diag[0], 3006,			"too many values");
 
@@ -49,12 +49,22 @@ sub ignore
     $csv->SetDiag (0); # Ignore this error
     } # ignore
 
-use Data::Peek;
+my $idx = 1;
 ok ($csv->auto_diag (1), "set auto_diag");
 is (ref $csv->callbacks ({
     error        => \&ignore,
-    after_parse  => sub { push @{$_[0]}, "NEW" },
-    before_print => sub { warn "before print"; },
+    after_parse  => sub {
+	# Just add a field
+	push @{$_[0]}, "NEW";
+	},
+    before_print => sub {
+	# First field set to line number
+	$_[0][0] = $idx++;
+	# Maximum 2 fields
+	@{$_[0]} > 2 and splice @{$_[0]}, 2;
+	# Minimum 2 fields
+	@{$_[0]} < 2 and push @{$_[0]}, "";
+	},
     }), "HASH", "callbacks set");
 ok ($csv->getline (*DATA),		"parse ok");
 is ($c, 1,				"key");
@@ -70,6 +80,19 @@ is_deeply ($row, [ 1, 2, 3, "NEW" ],	"fetch + value from hook");
 
 $error = 2012; # EOF
 ok ($csv->getline (*DATA),		"parse past eof");
+
+my $fn = "_79test.csv";
+ok ($csv->eol ("\n"), "eol for output");
+open my $fh, ">", $fn or die "$fn: $!";
+ok ($csv->print ($fh, [ 0, "foo"    ]), "print OK");
+ok ($csv->print ($fh, [ 0, "bar", 3 ]), "print too many");
+ok ($csv->print ($fh, [ 0           ]), "print too few");
+close $fh;
+
+open $fh, "<", $fn or die "$fn: $!";
+is (do { local $/; <$fh> }, "1,foo\n2,bar\n3,\n", "Modified output");
+close $fh;
+unlink $fn;
 
 __END__
 1,foo
