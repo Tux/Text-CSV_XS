@@ -109,7 +109,7 @@ sub _check_sanity
 
 sub new
 {
-    $last_new_err = SetDiag (undef, 1000,
+    $last_new_err = Text::CSV_XS->SetDiag (1000,
 	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);");
 
     my $proto = shift;
@@ -129,14 +129,14 @@ sub new
 	    next;
 	    }
 #	croak?
-	$last_new_err = SetDiag (undef, 1000, "INI - Unknown attribute '$_'");
+	$last_new_err = Text::CSV_XS->SetDiag (1000, "INI - Unknown attribute '$_'");
 	$attr{auto_diag} and error_diag ();
 	return;
 	}
 
     my $self = { %def_attr, %attr };
     if (my $ec = _check_sanity ($self)) {
-	$last_new_err = SetDiag (undef, $ec);
+	$last_new_err = Text::CSV_XS->SetDiag ($ec);
 	$attr{auto_diag} and error_diag ();
 	return;
 	}
@@ -145,7 +145,7 @@ sub new
 	$self->{callbacks} = undef;
 	}
 
-    $last_new_err = SetDiag (undef, 0);
+    $last_new_err = Text::CSV_XS->SetDiag (0);
     defined $\ && !exists $attr{eol} and $self->{eol} = $\;
     bless $self, $class;
     defined $self->{types} and $self->types ($self->{types});

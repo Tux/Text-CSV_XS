@@ -7,7 +7,7 @@ use warnings;
 
 use base "Text::CSV_XS";
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 ok (1, "Subclassed");
 
@@ -21,5 +21,7 @@ is ($@, "", "error");
 
 is (Text::CSV_XS::Subclass->error_diag (),
     "INI - Unknown attribute 'ecs_char'", "Last failure for new () - FAIL");
+
+is (Text::CSV_XS::Subclass->new ({ fail_me => "now" }), undef, "bad new ()");
 
 1;
