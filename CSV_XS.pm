@@ -1084,11 +1084,16 @@ The following attributes are available:
 =item eol
 X<eol>
 
-An end-of-line string to add to rows.
+The end-of-line string to add to rows for L</print> or the record separator
+for L</getline>.
 
 When not passed in a B<parser> instance, the default behavior is to accept
 C<\n>, C<\r>, and C<\r\n>, so it is probably safer to not specify C<eol> at
 all. Passing C<undef> or the empty string behave the same.
+
+When not passed in a B<generating> instance, lines are not terminated at
+all, so it is probably wise to pass something you expect. A safe choice
+for C<eol> on output is either C<$/> or C<\r\n>.
 
 Common values for C<eol> are C<"\012"> (C<\n> or Line Feed), C<"\015\012">
 (C<\r\n> or Carriage Return, Line Feed), and C<"\015"> (C<\r> or Carriage
