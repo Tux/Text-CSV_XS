@@ -1,7 +1,10 @@
-1.05	- 2014-02-25, H.Merijn Brand
+1.05	- 2014-03-02, H.Merijn Brand
     * Allow case insensitive attributes and attribute aliases
       (quote_always = always_quote)
+    * Enhanced the csv () function (diagnostics)
     * Start callbacks support
+    * Minor doc fixes
+    * Make subclassing safer
 
 1.04	- 2014-02-06, H.Merijn Brand
     * get_columns () with no argument now returns the empty list
