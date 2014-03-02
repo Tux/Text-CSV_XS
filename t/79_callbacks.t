@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 51;
+ use Test::More tests => 53;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -51,7 +51,7 @@ sub ignore
 
 my $idx = 1;
 ok ($csv->auto_diag (1), "set auto_diag");
-is (ref $csv->callbacks ({
+my $callbacks = {
     error        => \&ignore,
     after_parse  => sub {
 	my ($c, $av) = @_;
@@ -67,7 +67,8 @@ is (ref $csv->callbacks ({
 	# Minimum 2 fields
 	@{$av} < 2 and push @{$av}, "";
 	},
-    }), "HASH", "callbacks set");
+    };
+is (ref $csv->callbacks ($callbacks), "HASH", "callbacks set");
 ok ($csv->getline (*DATA),		"parse ok");
 is ($c, 1,				"key");
 is ($s, "foo",				"value");
@@ -94,6 +95,10 @@ close $fh;
 open $fh, "<", $fn or die "$fn: $!";
 is (do { local $/; <$fh> }, "1,foo\n2,bar\n3,\n", "Modified output");
 close $fh;
+
+is_deeply (Text::CSV_XS::csv (in => $fn, callbacks => $callbacks),
+    [[1,"foo","NEW"],[2,"bar","NEW"],[3,"","NEW"]], "using getline_all");
+
 unlink $fn;
 
 __END__
