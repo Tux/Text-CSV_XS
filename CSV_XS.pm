@@ -2071,10 +2071,9 @@ returned by L</error_diag>:
      $row->[-1] eq "NEW";
      }
 
-This callback is invoked after parsing with L</getline> (not in L</parse>)
-only if no error occurred and the parse result was not empty. The callback
-is invoked with two arguments:  the current CSV parser object and an array
-reference to the fields parsed.
+This callback is invoked after parsing with L</getline> only if no error
+occurred. The callback is invoked with two arguments:  the current CSV
+parser object and an array reference to the fields parsed.
 
 The return code of the callback is ignored.
 
@@ -2094,10 +2093,9 @@ The return code of the callback is ignored.
  $csv->callbacks (before_print => sub { $_[1][0] = $idx++ });
  $csv->print (*STDOUT, [ 0, $_ ]) for @members;
 
-This callback is invoked before printing with L</print> (not in L</fields>)
-only if no error occurred and the argument list is not empty. The callback
-is invoked with two arguments:  the current CSV parser object and an array
-reference to the fields passed.
+This callback is invoked before printing with L</print> only if no error
+occurred. The callback is invoked with two arguments:  the current CSV
+parser object and an array reference to the fields passed.
 
 The return code of the callback is ignored.
 

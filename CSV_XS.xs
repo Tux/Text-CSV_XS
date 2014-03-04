@@ -1560,8 +1560,6 @@ static void hook (pTHX_ HV *hv, char *cb_name, AV *av)
     SV **svp;
     HV *cb;
 
-    unless (av_len (av) >= 0)
-	return;
     unless ((svp = hv_fetchs (hv, "callbacks", FALSE)) && _is_hashref (*svp))
 	return;
 
@@ -1588,7 +1586,7 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
     csv_t	csv;
     SetupCsv (&csv, hv, self);
     int state = c_xsParse (csv, hv, av, avf, src, useIO);
-    if (state && useIO && csv.has_hooks & HOOK_AFTER_PARSE)
+    if (state && csv.has_hooks & HOOK_AFTER_PARSE)
 	hook (aTHX_ hv, "after_parse", av);
     return (state || !last_error);
     } /* xsParse */
@@ -1675,7 +1673,7 @@ static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
     if (csv.eol && *csv.eol)
 	PL_ors_sv = NULL;
 #endif
-    if (useIO && csv.has_hooks & HOOK_BEFORE_PRINT)
+    if (csv.has_hooks & HOOK_BEFORE_PRINT)
 	hook (aTHX_ hv, "before_print", av);
     result = Combine (&csv, io, av);
 #if (PERL_BCDVERSION >= 0x5008000)
