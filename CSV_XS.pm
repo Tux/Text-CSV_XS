@@ -1633,6 +1633,9 @@ reference will point to a list of hashes instead of to a list of lists.
  $csv->column_names ("Name", "Age");
  my $AoH = $csv->fragment ($io, "col=3;8");
 
+If the L</after_parse> callback is active, it is also called on every line
+parsed and skipped before the fragment.
+
 =over 2
 
 =item row
