@@ -1673,7 +1673,7 @@ static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
     if (csv.eol && *csv.eol)
 	PL_ors_sv = NULL;
 #endif
-    if (csv.has_hooks & HOOK_BEFORE_PRINT)
+    if (useIO && csv.has_hooks & HOOK_BEFORE_PRINT)
 	hook (aTHX_ hv, "before_print", av);
     result = Combine (&csv, io, av);
 #if (PERL_BCDVERSION >= 0x5008000)

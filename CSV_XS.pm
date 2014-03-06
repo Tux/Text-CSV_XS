@@ -2111,6 +2111,8 @@ The return code of the callback is ignored.
  csv (in => csv (in => "file.csv"), out => *STDOUT,
      callbacks => { before print => \&max_4_fields });
 
+This callback is not active for L</combine>.
+
 =back
 
 =head1 INTERNALS

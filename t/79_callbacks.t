@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 53;
+ use Test::More tests => 57;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -85,6 +85,8 @@ $error = 2012; # EOF
 ok ($csv->getline (*DATA),		"parse past eof");
 
 my $fn = "_79test.csv";
+END { unlink $fn; }
+
 ok ($csv->eol ("\n"), "eol for output");
 open my $fh, ">", $fn or die "$fn: $!";
 ok ($csv->print ($fh, [ 0, "foo"    ]), "print OK");
@@ -99,7 +101,12 @@ close $fh;
 is_deeply (Text::CSV_XS::csv (in => $fn, callbacks => $callbacks),
     [[1,"foo","NEW"],[2,"bar","NEW"],[3,"","NEW"]], "using getline_all");
 
-unlink $fn;
+# Test the non-IO interface
+ok ($csv->parse ("10,blah,33\n"),			"parse");
+is_deeply ([ $csv->fields ], [ 10, "blah", 33, "NEW" ],	"fields");
+
+ok ($csv->combine (11, "fri", 22, 18),			"combine - no hook");
+is ($csv->string, qq{11,fri,22,18\n},			"string");
 
 __END__
 1,foo
