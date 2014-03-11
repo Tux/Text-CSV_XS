@@ -112,5 +112,8 @@ sub postamble
 	'test_speed: pure_all',
 	'	PERL_DL_NONLAZY=1 $(FULLPERLRUN) -I"$(INST_LIB)" -I"$(INST_ARCHLIB)" examples/speed.pl',
 	'',
+	'test_used:	test',
+	'	prove -vwb sandbox/used-by.pl',
+	'',
 	$min_vsn;
     } # postamble
