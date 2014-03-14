@@ -56,15 +56,14 @@ else {
     ok (1, q{This perl does not support open with "<:encoding(...)"});
     }
 
-unlink $file;
 ok (csv (in => $aoa, out => $file), "AOA out file");
 is_deeply (csv (in => $file), $aoa, "AOA parse out");
 
-unlink $file;
 ok (csv (in => $aoh, out => $file, headers => "auto"), "AOH out file");
 is_deeply (csv (in => $file, headers => "auto"), $aoh, "AOH parse out");
 
-unlink $file;
 ok (csv (in => $aoh, out => $file, headers => "skip"), "AOH out file no header");
 is_deeply (csv (in => $file, headers => [keys %{$aoh->[0]}]),
     $aoh, "AOH parse out no header");
+
+unlink $file;
