@@ -124,6 +124,7 @@ sub new
 
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
+	    # uncoverable condition false
 	    defined $attr{$_} && $] >= 5.008002 && m/_char$/ and
 		utf8::decode ($attr{$_});
 	    next;
@@ -140,8 +141,8 @@ sub new
 	$attr{auto_diag} and error_diag ();
 	return;
 	}
-    if ($self->{callbacks} && ref $self->{callbacks} ne "HASH") {
-	carp "The 'callbacks' attribute is set but is not a hash: ignored\n";
+    if (defined $self->{callbacks} && ref $self->{callbacks} ne "HASH") {
+	warn "The 'callbacks' attribute is set but is not a hash: ignored\n";
 	$self->{callbacks} = undef;
 	}
 
