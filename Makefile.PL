@@ -78,7 +78,7 @@ sub postamble
 	'cover $make_sep test_cover:',
 	'	ccache -C',
 	'	-@rm -f *.gc??',
-	'	cover -test',
+	'	cover -test -report html_basic',
 	'',
 	'leakrun:',
 	'	env HARNESS_PERL=sandbox/leakperl make test',

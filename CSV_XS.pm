@@ -93,18 +93,25 @@ my %attr_alias = (
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
-sub _check_sanity
+# NOT a method: is also used before bless
+sub _unhealthy_whitespace
 {
-    my $attr = shift;
-    for (qw( sep_char quote_char escape_char )) {
-	defined $attr->{$_} && $attr->{$_} =~ m/[\r\n]/ and
-	    return 1003;
-	}
-    $attr->{allow_whitespace} and
-      (defined $attr->{quote_char}  && $attr->{quote_char}  =~ m/^[ \t]$/) ||
-      (defined $attr->{escape_char} && $attr->{escape_char} =~ m/^[ \t]$/) and
+    my $self = shift;
+    $_[0] and
+      (defined $self->{quote_char}  && $self->{quote_char}  =~ m/^[ \t]$/) ||
+      (defined $self->{escape_char} && $self->{escape_char} =~ m/^[ \t]$/) and
 	return 1002;
     return 0;
+    } # _sane_whitespace
+
+sub _check_sanity
+{
+    my $self = shift;
+    for (qw( sep_char quote_char escape_char )) {
+	defined $self->{$_} && $self->{$_} =~ m/[\r\n]/ and
+	    return 1003;
+	}
+    return _unhealthy_whitespace ($self, $self->{allow_whitespace});
     } # _check_sanity
 
 sub new
@@ -317,9 +324,7 @@ sub allow_whitespace
     my $self = shift;
     if (@_) {
 	my $aw = shift;
-	$aw and
-	  (defined $self->{quote_char}  && $self->{quote_char}  =~ m/^[ \t]$/) ||
-	  (defined $self->{escape_char} && $self->{escape_char} =~ m/^[ \t]$/) and
+	_unhealthy_whitespace ($self, $aw) and
 	    croak ($self->SetDiag (1002));
 	$self->_set_attr_X ("allow_whitespace", $aw);
 	}
@@ -360,7 +365,7 @@ sub auto_diag
     if (@_) {
 	my $v = shift;
 	!defined $v || $v eq "" and $v = 0;
-	$v =~ m/^[0-9]/ or $v = $v ? 1 : 0; # default for true/false
+	$v =~ m/^[0-9]/ or $v = lc $v eq "false" ? 0 : 1; # true/truth = 1
 	$self->_set_attr_X ("auto_diag", $v);
 	}
     $self->{auto_diag};
@@ -372,7 +377,7 @@ sub diag_verbose
     if (@_) {
 	my $v = shift;
 	!defined $v || $v eq "" and $v = 0;
-	$v =~ m/^[0-9]/ or $v = $v ? 1 : 0; # default for true/false
+	$v =~ m/^[0-9]/ or $v = lc $v eq "false" ? 0 : 1; # true/truth = 1
 	$self->_set_attr_X ("diag_verbose", $v);
 	}
     $self->{diag_verbose};
@@ -420,20 +425,22 @@ sub callbacks
     if (@_) {
 	my $cb;
 	my $hf = 0x00;
-	if (!defined $_[0]) {
-	    }
-	else {
+	if (defined $_[0]) {
+	    grep { !defined $_ } @_ and croak ($self->SetDiag (1004));
 	    $cb = @_ == 1 && ref $_[0] eq "HASH" ? shift 
 	        : @_ % 2 == 0                    ? { @_ }
 	        : croak ($self->SetDiag (1004));
 	    foreach my $cbk (keys %$cb) {
-		(defined $cbk && !ref $cbk && $cbk =~ m/^[\w.]+$/) &&
-		(defined $cb->{$cbk} && ref $cb->{$cbk} eq "CODE") or
+		(!ref $cbk && $cbk =~ m/^[\w.]+$/) && ref $cb->{$cbk} eq "CODE" or
 		    croak ($self->SetDiag (1004));
 		}
 	    exists $cb->{error}        and $hf |= 0x01;
 	    exists $cb->{after_parse}  and $hf |= 0x02;
 	    exists $cb->{before_print} and $hf |= 0x04;
+	    }
+	elsif (@_ > 1) {
+	    # (undef, whatever)
+	    croak ($self->SetDiag (1004));
 	    }
 	$self->_set_attr_X ("_has_hooks", $hf);
 	$self->{callbacks} = $cb;
@@ -560,8 +567,8 @@ sub is_binary
 sub is_missing
 {
     my ($self, $idx, $val) = @_;
-    ref $self->{_FFLAGS} &&
-	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
+    $idx < 0 || !ref $self->{_FFLAGS} and return;
+    $idx >= @{$self->{_FFLAGS}} and return 1;
     $self->{_FFLAGS}[$idx] & 0x0010 ? 1 : 0;
     } # is_missing
 
@@ -1840,6 +1847,7 @@ X<is_missing>
 Where C<$column_idx> is the (zero-based) index of the column in the last
 result of L</getline_hr>.
 
+ $csv->keep_meta_info (1);
  while (my $hr = $csv->getline_hr ($fh)) {
      $csv->is_missing (0) and next; # This was an empty line
      }

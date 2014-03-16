@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 78;
+ use Test::More tests => 110;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -63,12 +63,25 @@ my @diag = $csv->error_diag;
 is ($diag[0], 3006,			"too many values");
 
 # These tests are for the method
-foreach my $args ([""], [1], [[]], [sub{}], [1,2], [1,2,3], ["error",undef]) {
+foreach my $args ([""], [1], [[]], [sub{}], [1,2], [1,2,3],
+		  [undef,"error"], ["error",undef],
+		  ["%23bad",sub {}],["error",sub{0;},undef,1],
+		  ["error",[]],["error","error"],["",sub{0;}],
+		  [sub{0;},0],[[],""]) {
     eval { $csv->callbacks (@$args); };
     my @diag = $csv->error_diag;
     is ($diag[0], 1004,			"invalid callbacks");
     is ($csv->callbacks, undef,		"not set");
     }
+
+# These tests are for invalid arguments *inside* the hash
+foreach my $arg (undef, 0, 1, \1, "", [], $csv) {
+    eval { $csv->callbacks ({ error => $arg }); };
+    my @diag = $csv->error_diag;
+    is ($diag[0], 1004,			"invalid callbacks");
+    is ($csv->callbacks, undef,		"not set");
+    }
+ok ($csv->callbacks (bogus => sub { 0; }), "useless callback");
 
 my $error = 3006;
 sub ignore
@@ -135,6 +148,8 @@ is_deeply ([ $csv->fields ], [ 10, "blah", 33, "NEW" ],	"fields");
 
 ok ($csv->combine (11, "fri", 22, 18),			"combine - no hook");
 is ($csv->string, qq{11,fri,22,18\n},			"string");
+
+is ($csv->callbacks (undef), undef,			"clear callbacks");
 
 __END__
 1,foo

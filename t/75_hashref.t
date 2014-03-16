@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 75;
+ use Test::More tests => 79;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -129,10 +129,16 @@ ok ($csv->column_names (sort keys %$hr),	"set column names");
 ok ($csv->eol ("\n"),				"set eol for output");
 ok ($csv->print ($fh, [ $csv->column_names ]),	"print header");
 ok ($csv->print_hr ($fh, $hr),			"print_hr");
+ok ($csv->print ($fh, []),			"empty print");
 close $fh;
+ok ($csv->keep_meta_info (1),			"keep meta info");
 open $fh, "<", "_75test.csv";
 ok ($csv->column_names ($csv->getline ($fh)),	"get column names");
 is_deeply ($csv->getline_hr ($fh), $hr,		"compare to written hr");
+
+is_deeply ($csv->getline_hr ($fh),
+    { c_foo => "", foo => undef, zebra => undef },	"compare to written hr");
+is ($csv->is_missing (1), 1,			"No col 1");
 close $fh;
 
 unlink "_75test.csv";
