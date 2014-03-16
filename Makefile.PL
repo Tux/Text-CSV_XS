@@ -74,11 +74,14 @@ sub postamble
 	    '	-@env TEST_FILES="xt/*.t" make -e test_dynamic',
 	    ''
 	: "";
+    my $no_inc = join " " => map { "-ignore $_" } grep { -s $_ }
+	map { "$_/CORE/inline.h" } @INC;
     join "\n" =>
 	'cover $make_sep test_cover:',
 	'	ccache -C',
 	'	-@rm -f *.gc??',
-	'	cover -test -report html_basic',
+	'	cover -test',
+	"	cover -report html_basic $no_inc",
 	'',
 	'leakrun:',
 	'	env HARNESS_PERL=sandbox/leakperl make test',
