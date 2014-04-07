@@ -260,14 +260,13 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     SV *err = SvDiag (xse);
 
     last_error = xse;
-    if (err)
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
 	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
 	(void)hv_store (csv->self, "_ERROR_INPUT", 12, &PL_sv_undef, 0);
 	csv->has_error_input = 0;
 	}
-    if (err && csv->pself && csv->auto_diag) {
+    if (csv->pself && csv->auto_diag) {
 	ENTER;
 	SAVETMPS;
 	PUSHMARK (SP);
