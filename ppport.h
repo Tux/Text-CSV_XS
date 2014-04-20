@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.21
+    ppport.h -- Perl/Pollution/Portability Version 3.23
 
     Automatically created by Devel::PPPort running under perl 5.018002.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.21
+ppport.h - Perl/Pollution/Portability version 3.23
 
 =head1 SYNOPSIS
 
@@ -56,7 +56,7 @@ ppport.h - Perl/Pollution/Portability version 3.21
 =head1 COMPATIBILITY
 
 This version of F<ppport.h> is designed to support operation with Perl
-installations back to 5.003, and has been tested up to 5.11.5.
+installations back to 5.003, and has been tested up to 5.20.
 
 =head1 OPTIONS
 
@@ -226,6 +226,7 @@ same function or variable in your project.
     grok_numeric_radix()      NEED_grok_numeric_radix      NEED_grok_numeric_radix_GLOBAL
     grok_oct()                NEED_grok_oct                NEED_grok_oct_GLOBAL
     load_module()             NEED_load_module             NEED_load_module_GLOBAL
+    mg_findext()              NEED_mg_findext              NEED_mg_findext_GLOBAL
     my_snprintf()             NEED_my_snprintf             NEED_my_snprintf_GLOBAL
     my_sprintf()              NEED_my_sprintf              NEED_my_sprintf_GLOBAL
     my_strlcat()              NEED_my_strlcat              NEED_my_strlcat_GLOBAL
@@ -245,6 +246,7 @@ same function or variable in your project.
     sv_pvn_force_flags()      NEED_sv_pvn_force_flags      NEED_sv_pvn_force_flags_GLOBAL
     sv_setpvf_mg()            NEED_sv_setpvf_mg            NEED_sv_setpvf_mg_GLOBAL
     sv_setpvf_mg_nocontext()  NEED_sv_setpvf_mg_nocontext  NEED_sv_setpvf_mg_nocontext_GLOBAL
+    sv_unmagicext()           NEED_sv_unmagicext           NEED_sv_unmagicext_GLOBAL
     vload_module()            NEED_vload_module            NEED_vload_module_GLOBAL
     vnewSVpvf()               NEED_vnewSVpvf               NEED_vnewSVpvf_GLOBAL
     warner()                  NEED_warner                  NEED_warner_GLOBAL
@@ -325,7 +327,7 @@ before sending a bug report.
 
 If F<ppport.h> was generated using the latest version of
 C<Devel::PPPort> and is causing failure of this module, please
-file a bug report using the CPAN Request Tracker at L<http://rt.cpan.org/>.
+file a bug report here: L<https://github.com/mhx/Devel-PPPort/issues/>
 
 Please include the following information:
 
@@ -378,7 +380,7 @@ use strict;
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if $] >= 5.009004 && $] <= 5.009005 }
 
-my $VERSION = 3.21;
+my $VERSION = 3.23;
 
 my %opt = (
   quiet     => 0,
@@ -499,7 +501,7 @@ GvHV|||
 GvSVn|5.009003||p
 GvSV|||
 Gv_AMupdate||5.011000|
-HEf_SVKEY||5.004000|
+HEf_SVKEY|5.004000|5.004000|p
 HeHASH||5.004000|
 HeKEY||5.004000|
 HeKLEN||5.004000|
@@ -507,7 +509,7 @@ HePV||5.004000|
 HeSVKEY_force||5.004000|
 HeSVKEY_set||5.004000|
 HeSVKEY||5.004000|
-HeUTF8||5.010001|
+HeUTF8|5.010001|5.010001|p
 HeVAL||5.004000|
 HvENAMELEN||5.015004|
 HvENAMEUTF8||5.015004|
@@ -536,6 +538,8 @@ LINKLIST||5.013006|
 LVRET|||
 MARK|||
 MULTICALL||5.019003|
+MUTABLE_PTR|||p
+MUTABLE_SV|||p
 MY_CXT_CLONE|5.009002||p
 MY_CXT_INIT|5.007003||p
 MY_CXT|5.007003||p
@@ -933,7 +937,7 @@ SvPVutf8x||5.006000|
 SvPVutf8||5.006000|
 SvPVx|||
 SvPV|||
-SvREFCNT_dec_NN||5.017007|
+SvREFCNT_dec_NN|5.017007|5.017007|p
 SvREFCNT_dec|||
 SvREFCNT_inc_NN|5.009004||p
 SvREFCNT_inc_simple_NN|5.009004||p
@@ -1884,7 +1888,7 @@ mg_clear|||
 mg_copy|||
 mg_dup|||
 mg_find_mglob|||
-mg_findext||5.013008|
+mg_findext|5.013008|5.013008|p
 mg_find|||
 mg_free_type||5.013006|
 mg_free|||
@@ -2598,7 +2602,7 @@ sv_taint||5.004000|
 sv_true||5.005000|
 sv_unglob|||
 sv_uni_display||5.007003|
-sv_unmagicext||5.013008|
+sv_unmagicext|5.013008|5.013008|p
 sv_unmagic|||
 sv_unref_flags||5.007001|
 sv_unref|||
@@ -4416,6 +4420,16 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 
 #endif
 
+/* Until we figure out how to support this in older perls... */
+#if (PERL_BCDVERSION >= 0x5008000)
+#ifndef HeUTF8
+#  define HeUTF8(he)                     ((HeKLEN(he) == HEf_SVKEY) ?            \
+                                 SvUTF8(HeKEY_sv(he)) :                 \
+                                 (U32)HeKUTF8(he))
+#endif
+
+#endif
+
 #ifndef PERL_SIGNALS_UNSAFE_FLAG
 
 #define PERL_SIGNALS_UNSAFE_FLAG 0x0001
@@ -4762,6 +4776,9 @@ DPPP_(my_vload_module)(U32 flags, SV *name, SV *ver, va_list *args)
 #if (PERL_BCDVERSION >= 0x5004000)
         utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(FALSE, 0),
                 veop, modname, imop);
+#elif (PERL_BCDVERSION > 0x5003000)
+        utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(),
+                veop, modname, imop);
 #else
         utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(),
                 modname, imop);
@@ -5083,6 +5100,20 @@ DPPP_(my_newCONSTSUB)(HV *stash, const char *name, SV *sv)
 #  else
 #    define SvREFCNT_inc_void(sv) \
           (void)((PL_Sv=(SV*)(sv)) ? ++(SvREFCNT(PL_Sv)) : 0)
+#  endif
+#endif
+
+#ifndef SvREFCNT_dec_NN
+#  ifdef PERL_USE_GCC_BRACE_GROUPS
+#    define SvREFCNT_dec_NN(sv)        \
+      ({                               \
+          SV * const _sv = (SV*)(sv);  \
+          SvREFCNT(_sv)--;             \
+          _sv;                         \
+      })
+#  else
+#    define SvREFCNT_dec_NN(sv) \
+          (PL_Sv=(SV*)(sv),--(SvREFCNT(PL_Sv)),PL_Sv)
 #  endif
 #endif
 #ifndef SvREFCNT_inc_simple_void
@@ -6032,6 +6063,22 @@ DPPP_(my_warner)(U32 err, const char *pat, ...)
 #ifndef SvGETMAGIC
 #  define SvGETMAGIC(x)                  STMT_START { if (SvGMAGICAL(x)) mg_get(x); } STMT_END
 #endif
+
+/* Some random bits for sv_unmagicext. These should probably be pulled in for
+   real and organized at some point */
+#ifndef HEf_SVKEY
+#  define HEf_SVKEY                      -2
+#endif
+
+#if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
+#  define MUTABLE_PTR(p) ({ void *_p = (p); _p; })
+#else
+#  define MUTABLE_PTR(p) ((void *) (p))
+#endif
+
+#define MUTABLE_SV(p)   ((SV *)MUTABLE_PTR(p))
+
+/* end of random bits */
 #ifndef PERL_MAGIC_sv
 #  define PERL_MAGIC_sv                  '\0'
 #endif
@@ -6345,6 +6392,103 @@ DPPP_(my_warner)(U32 err, const char *pat, ...)
 
 #  define sv_magic_portable(a, b, c, d, e)  sv_magic(a, b, c, d, e)
 
+#endif
+
+#if !defined(mg_findext)
+#if defined(NEED_mg_findext)
+static MAGIC * DPPP_(my_mg_findext)(pTHX_ SV * sv, int type, const MGVTBL *vtbl);
+static
+#else
+extern MAGIC * DPPP_(my_mg_findext)(pTHX_ SV * sv, int type, const MGVTBL *vtbl);
+#endif
+
+#ifdef mg_findext
+#  undef mg_findext
+#endif
+#define mg_findext(a,b,c) DPPP_(my_mg_findext)(aTHX_ a,b,c)
+#define Perl_mg_findext DPPP_(my_mg_findext)
+
+#if defined(NEED_mg_findext) || defined(NEED_mg_findext_GLOBAL)
+
+MAGIC *
+DPPP_(my_mg_findext)(pTHX_ SV * sv, int type, const MGVTBL *vtbl) {
+    if (sv) {
+        MAGIC *mg;
+
+#ifdef AvPAD_NAMELIST
+	assert(!(SvTYPE(sv) == SVt_PVAV && AvPAD_NAMELIST(sv)));
+#endif
+
+        for (mg = SvMAGIC (sv); mg; mg = mg->mg_moremagic) {
+            if (mg->mg_type == type && mg->mg_virtual == vtbl)
+                return mg;
+        }
+    }
+
+    return NULL;
+}
+
+#endif
+#endif
+
+#if !defined(sv_unmagicext)
+#if defined(NEED_sv_unmagicext)
+static int DPPP_(my_sv_unmagicext)(pTHX_ SV * const sv, const int type, MGVTBL * vtbl);
+static
+#else
+extern int DPPP_(my_sv_unmagicext)(pTHX_ SV * const sv, const int type, MGVTBL * vtbl);
+#endif
+
+#ifdef sv_unmagicext
+#  undef sv_unmagicext
+#endif
+#define sv_unmagicext(a,b,c) DPPP_(my_sv_unmagicext)(aTHX_ a,b,c)
+#define Perl_sv_unmagicext DPPP_(my_sv_unmagicext)
+
+#if defined(NEED_sv_unmagicext) || defined(NEED_sv_unmagicext_GLOBAL)
+
+int
+DPPP_(my_sv_unmagicext)(pTHX_ SV *const sv, const int type, MGVTBL *vtbl)
+{
+    MAGIC* mg;
+    MAGIC** mgp;
+
+    if (SvTYPE(sv) < SVt_PVMG || !SvMAGIC(sv))
+	return 0;
+    mgp = &(SvMAGIC(sv));
+    for (mg = *mgp; mg; mg = *mgp) {
+	const MGVTBL* const virt = mg->mg_virtual;
+	if (mg->mg_type == type && virt == vtbl) {
+	    *mgp = mg->mg_moremagic;
+	    if (virt && virt->svt_free)
+		virt->svt_free(aTHX_ sv, mg);
+	    if (mg->mg_ptr && mg->mg_type != PERL_MAGIC_regex_global) {
+		if (mg->mg_len > 0)
+		    Safefree(mg->mg_ptr);
+		else if (mg->mg_len == HEf_SVKEY) /* Questionable on older perls... */
+		    SvREFCNT_dec(MUTABLE_SV(mg->mg_ptr));
+		else if (mg->mg_type == PERL_MAGIC_utf8)
+		    Safefree(mg->mg_ptr);
+            }
+	    if (mg->mg_flags & MGf_REFCOUNTED)
+		SvREFCNT_dec(mg->mg_obj);
+	    Safefree(mg);
+	}
+	else
+	    mgp = &mg->mg_moremagic;
+    }
+    if (SvMAGIC(sv)) {
+	if (SvMAGICAL(sv))	/* if we're under save_magic, wait for restore_magic; */
+	    mg_magical(sv);	/*    else fix the flags now */
+    }
+    else {
+	SvMAGICAL_off(sv);
+	SvFLAGS(sv) |= (SvFLAGS(sv) & (SVp_IOK|SVp_NOK|SVp_POK)) >> PRIVSHIFT;
+    }
+    return 0;
+}
+
+#endif
 #endif
 
 #ifdef USE_ITHREADS
@@ -7309,10 +7453,10 @@ DPPP_(my_pv_escape)(pTHX_ SV *dsv, char const * const str,
         if (u > 255 || (flags & PERL_PV_ESCAPE_ALL)) {
             if (flags & PERL_PV_ESCAPE_FIRSTCHAR)
                 chsize = my_snprintf(octbuf, sizeof octbuf,
-                                      "%"UVxf, u);
+                                      "%" UVxf, u);
             else
                 chsize = my_snprintf(octbuf, sizeof octbuf,
-                                      "%cx{%"UVxf"}", esc, u);
+                                      "%cx{%" UVxf "}", esc, u);
         } else if (flags & PERL_PV_ESCAPE_NOBACKSLASH) {
             chsize = 1;
         } else {
