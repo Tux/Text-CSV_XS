@@ -790,6 +790,7 @@ sub _csv_attr
     my $enc = delete $attr{encoding} || "";
 
     my $fh;
+    my $cls = 0;	# If I open a file, I have to close it
     my $in  = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
     my $out = delete $attr{out} || delete $attr{file};
     if (ref $in eq "ARRAY") {
@@ -802,6 +803,7 @@ sub _csv_attr
 	else {
 	    $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	    open $fh, ">$enc", $out or croak "$out: $!";
+	    $cls = 1;
 	    }
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
@@ -815,6 +817,7 @@ sub _csv_attr
     else {
 	$enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	open $fh, "<$enc", $in or croak "$in: $!";
+	$cls = 1;
 	}
     $fh or croak qq{No valid source passed. "in" is required};
 
@@ -827,6 +830,7 @@ sub _csv_attr
     return {
 	csv  => $csv,
 	fh   => $fh,
+	cls  => $cls,
 	in   => $in,
 	out  => $out,
 	hdrs => $hdrs,
@@ -854,7 +858,8 @@ sub csv
 	    $csv->print ($fh, [ @{$_}{@hdrs} ]) for @{$c->{in}};
 	    }
 
-	return close $fh;
+	$c->{cls} and close $fh;
+	return 1;
 	}
 
     if (defined $hdrs && !ref $hdrs) {
@@ -872,6 +877,7 @@ sub csv
 	: # aoa
 	    $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
     $ref or Text::CSV_XS->auto_diag;
+    $c->{cls} and close $fh;
     return $ref;
     } # csv
 
