@@ -2188,7 +2188,7 @@ X<after_in>
 
 This callback is invoked for each record after all records have been parsed
 but before returning the reference to the caller. The hook is invoked with
-two arguments: the current CSV parser object and a reference to te record.
+two arguments: the current CSV parser object and a reference to the record.
 The reference can be a reference to a HASH or a reference to an ARRAY as
 determined by the arguments.
 
@@ -2200,7 +2200,7 @@ X<before_out>
 
 This callback is invoked for each record before the record is printed.  The
 hook is invoked with two arguments: the current CSV parser object and a
-reference to te record.  The reference can be a reference to a HASH or a
+reference to the record.  The reference can be a reference to a HASH or a
 reference to an ARRAY as determined by the arguments.
 
 This callback can also be passed as an attribute without the C<callbacks>
