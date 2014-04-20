@@ -824,6 +824,13 @@ sub _csv_attr
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
 
+    my $cbai = delete $attr{callbacks}{after_in}   ||
+	       delete $attr{after_in};
+    my $cbbo = delete $attr{callbacks}{before_out} ||
+	       delete $attr{before_out};
+    my $cboi = delete $attr{callbacks}{on_in}      ||
+	       delete $attr{on_in};
+
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
     my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
 
@@ -835,6 +842,9 @@ sub _csv_attr
 	out  => $out,
 	hdrs => $hdrs,
 	frag => $frag,
+	cbai => $cbai,
+	cbbo => $cbbo,
+	cboi => $cboi,
 	};
     } # _csv_attr
 
@@ -844,18 +854,27 @@ sub csv
     @_ && ref $_[0] ne __PACKAGE__ or croak $csv_usage;
 
     my $c = _csv_attr (@_);
+
     my ($csv, $fh, $hdrs) = @{$c}{"csv", "fh", "hdrs"};
 
     if ($c->{out}) {
 	if (ref $c->{in}[0] eq "ARRAY") { # aoa
 	    ref $hdrs and $csv->print ($fh, $hdrs);
-	    $csv->print ($fh, $_) for @{$c->{in}};
+	    for (@{$c->{in}}) {
+		$c->{cboi} and $c->{cboi}->($csv, $_);
+		$c->{cbbo} and $c->{cbbo}->($csv, $_);
+		$csv->print ($fh, $_);
+		}
 	    }
 	else { # aoh
 	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$c->{in}[0]};
 	    defined $hdrs or $hdrs = "auto";
 	    ref $hdrs || $hdrs eq "auto" and $csv->print ($fh, \@hdrs);
-	    $csv->print ($fh, [ @{$_}{@hdrs} ]) for @{$c->{in}};
+	    for (@{$c->{in}}) {
+		$c->{cboi} and $c->{cboi}->($csv, $_);
+		$c->{cbbo} and $c->{cbbo}->($csv, $_);
+		$csv->print ($fh, [ @{$_}{@hdrs} ]);
+		}
 	    }
 
 	$c->{cls} and close $fh;
@@ -878,6 +897,12 @@ sub csv
 	    $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
     $ref or Text::CSV_XS->auto_diag;
     $c->{cls} and close $fh;
+    if ($ref and $c->{cbai} || $c->{cboi}) {
+	for (@{$ref}) {
+	    $c->{cbai} and $c->{cbai}->($csv, $_);
+	    $c->{cboi} and $c->{cboi}->($csv, $_);
+	    }
+	}
     return $ref;
     } # csv
 
@@ -1630,6 +1655,7 @@ It is just a wrapper method with basic parameter checks over
  $csv->print ($io, [ map { $ref->{$_} } $csv->column_names ]);
 
 =head2 fragment
+X<fragment>
 
 This function tries to implement RFC7111 (URI Fragment Identifiers for the
 text/csv Media Type) - http://tools.ietf.org/html/rfc7111
@@ -2055,6 +2081,7 @@ callbacks can be used to meet special demands or enhance the L</csv> function.
 =over 2
 
 =item error
+X<error>
 
  $csv->callbacks (error => sub { $csv->SetDiag (0) });
 
@@ -2083,6 +2110,7 @@ returned by L</error_diag>:
      }
 
 =item after_parse
+X<after_parse>
 
  $csv->callbacks (after_parse => sub { push @{$_[1]}, "NEW" });
  while (my $row = $csv->getline ($fh)) {
@@ -2106,6 +2134,7 @@ The return code of the callback is ignored.
      after_parse => \&add_from_db });
 
 =item before_print
+X<before_print>
 
  my $idx = 1;
  $csv->callbacks (before_print => sub { $_[1][0] = $idx++ });
@@ -2127,6 +2156,63 @@ The return code of the callback is ignored.
      callbacks => { before print => \&max_4_fields });
 
 This callback is not active for L</combine>.
+
+=back
+
+=head3 Callbacks for csv ()
+
+The L</csv> allows for some callbacks that do not integrate in XS internals
+but only feature the L</csv> function.
+
+  csv (in        => "file.csv",
+       callbacks => {
+           after_parse  => sub { say "AFTER PARSE";  }, # first
+           after_in     => sub { say "AFTER IN";     }, # second
+           on_in        => sub { say "ON IN";        }, # third
+           },
+       );
+
+  csv (in        => $aoh,
+       out       => "file.csv",
+       callbacks => {
+           on_in        => sub { say "ON IN";        }, # first
+           before_out   => sub { say "BEFORE OUT";   }, # second
+           before_print => sub { say "BEFORE PRINT"; }, # third
+           },
+       );
+
+=over 2
+
+=item after_in
+X<after_in>
+
+This callback is invoked for each record after all records have been parsed
+but before returning the reference to the caller. The hook is invoked with
+two arguments: the current CSV parser object and a reference to te record.
+The reference can be a reference to a HASH or a reference to an ARRAY as
+determined by the arguments.
+
+This callback can also be passed as an attribute without the C<callbacks>
+wrapper.
+
+=item before_out
+X<before_out>
+
+This callback is invoked for each record before the record is printed.  The
+hook is invoked with two arguments: the current CSV parser object and a
+reference to te record.  The reference can be a reference to a HASH or a
+reference to an ARRAY as determined by the arguments.
+
+This callback can also be passed as an attribute without the C<callbacks>
+wrapper.
+
+=item on_in
+X<on_in>
+
+This callback acts exactly as the L</after_in> or the L</before_out> hooks.
+
+This callback can also be passed as an attribute without the C<callbacks>
+wrapper.
 
 =back
 
