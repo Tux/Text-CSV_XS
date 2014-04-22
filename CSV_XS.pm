@@ -2075,7 +2075,7 @@ Combining all of them could give something like
 =head2 Callbacks
 
 Callbacks enable actions inside L</Text::CSV_XS>. While most of what this
-offers can easily be done in an unrolled loop as described in the l</SYNOPSIS>
+offers can easily be done in an unrolled loop as described in the L</SYNOPSIS>
 callbacks can be used to meet special demands or enhance the L</csv> function.
 
 =over 2
