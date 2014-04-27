@@ -793,9 +793,9 @@ sub _csv_attr
     my $cls = 0;	# If I open a file, I have to close it
     my $in  = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
     my $out = delete $attr{out} || delete $attr{file};
-    if (ref $in eq "ARRAY") {
-	# we need an out
-	$out or croak qq{for CSV source, "out" is required};
+
+    if ($out) {
+	$in or croak $csv_usage;	# No out without in
 	defined $attr{eol} or $attr{eol} = "\r\n";
 	if (ref $out or "GLOB" eq ref \$out) {
 	    $fh = $out;
@@ -805,6 +805,13 @@ sub _csv_attr
 	    open $fh, ">$enc", $out or croak "$out: $!";
 	    $cls = 1;
 	    }
+	}
+
+    if (   ref $in eq "CODE") {		# we need an out
+	$out or croak qq{for CSV source, "out" is required};
+	}
+    elsif (ref $in eq "ARRAY") {	# we need an out
+	$out or croak qq{for CSV source, "out" is required};
 	}
     elsif (ref $in eq "SCALAR") {
 	open $fh, "<", $in;
@@ -859,22 +866,28 @@ sub csv
 
     my $c = _csv_attr (@_);
 
-    my ($csv, $fh, $hdrs) = @{$c}{"csv", "fh", "hdrs"};
+    my ($csv, $in, $fh, $hdrs) = @{$c}{"csv", "in", "fh", "hdrs"};
 
     if ($c->{out}) {
-	if (ref $c->{in}[0] eq "ARRAY") { # aoa
+	if (ref $in eq "CODE") {
 	    ref $hdrs and $csv->print ($fh, $hdrs);
-	    for (@{$c->{in}}) {
+	    while (my $row = $in->($csv)) {
+		$csv->print ($fh, $row);
+		}
+	    }
+	elsif (ref $in->[0] eq "ARRAY") { # aoa
+	    ref $hdrs and $csv->print ($fh, $hdrs);
+	    for (@{$in}) {
 		$c->{cboi} and $c->{cboi}->($csv, $_);
 		$c->{cbbo} and $c->{cbbo}->($csv, $_);
 		$csv->print ($fh, $_);
 		}
 	    }
 	else { # aoh
-	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$c->{in}[0]};
+	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$in->[0]};
 	    defined $hdrs or $hdrs = "auto";
 	    ref $hdrs || $hdrs eq "auto" and $csv->print ($fh, \@hdrs);
-	    for (@{$c->{in}}) {
+	    for (@{$in}) {
 		$c->{cboi} and $c->{cboi}->($csv, $_);
 		$c->{cbbo} and $c->{cbbo}->($csv, $_);
 		$csv->print ($fh, [ @{$_}{@hdrs} ]);
@@ -884,6 +897,8 @@ sub csv
 	$c->{cls} and close $fh;
 	return 1;
 	}
+
+    ref $in eq "CODE" and croak "CODE only valid fro in when using out";
 
     if (defined $hdrs && !ref $hdrs) {
 	$hdrs eq "skip" and         $csv->getline ($fh);

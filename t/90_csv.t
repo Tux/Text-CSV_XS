@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 18;
+ use Test::More tests => 20;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -65,5 +65,10 @@ is_deeply (csv (in => $file, headers => "auto"), $aoh, "AOH parse out");
 ok (csv (in => $aoh, out => $file, headers => "skip"), "AOH out file no header");
 is_deeply (csv (in => $file, headers => [keys %{$aoh->[0]}]),
     $aoh, "AOH parse out no header");
+
+{   my $idx = 0; sub getrow { return $aoa->[$idx++]; } }
+
+ok (csv (in => \&getrow, out => $file), "out from CODE");
+is_deeply (csv (in => $file), $aoa, "data from CODE");
 
 unlink $file;

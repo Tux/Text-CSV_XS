@@ -1,5 +1,6 @@
 1.07	- 2014-04-27, H.Merijn Brand
     - Allow ref to scalar for csv (in => ...)
+    - Allow CODE ref to in attribute
 
 1.06	- 2014-04-20, H.Merijn Brand
     * Fix possible fail in tests on Windows (Thanks Mithaldu for explaing)
