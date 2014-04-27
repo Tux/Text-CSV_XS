@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20;
+ use Test::More tests => 24;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -21,8 +21,9 @@ open  FH, ">", $file or die "_90test.csv: $!";
 print FH $data;
 close FH;
 
+my @hdr = qw( foo bar baz );
 my $aoa = [
-    [qw( foo bar baz )],
+    \@hdr,
     [ 1, 2, 3 ],
     [ 2, "a b", "" ],
     ];
@@ -66,9 +67,19 @@ ok (csv (in => $aoh, out => $file, headers => "skip"), "AOH out file no header")
 is_deeply (csv (in => $file, headers => [keys %{$aoh->[0]}]),
     $aoh, "AOH parse out no header");
 
-{   my $idx = 0; sub getrow { return $aoa->[$idx++]; } }
+my $idx = 0;
+sub getrowa { return $aoa->[$idx++]; }
+sub getrowh { return $aoh->[$idx++]; }
 
-ok (csv (in => \&getrow, out => $file), "out from CODE");
-is_deeply (csv (in => $file), $aoa, "data from CODE");
+ok (csv (in => \&getrowa, out => $file), "out from CODE/AR");
+is_deeply (csv (in => $file), $aoa, "data from CODE/AR");
+
+$idx = 0;
+ok (csv (in => \&getrowh, out => $file, headers => \@hdr), "out from CODE/HR");
+is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
+
+$idx = 0;
+ok (csv (in => \&getrowh, out => $file), "out from CODE/HR (auto headers)");
+is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
 
 unlink $file;

@@ -870,9 +870,20 @@ sub csv
 
     if ($c->{out}) {
 	if (ref $in eq "CODE") {
-	    ref $hdrs and $csv->print ($fh, $hdrs);
+	    my $hdr = 1;
 	    while (my $row = $in->($csv)) {
-		$csv->print ($fh, $row);
+		if (ref $row eq "ARRAY") {
+		    $csv->print ($fh, $row);
+		    next;
+		    }
+		if (ref $row eq "HASH") {
+		    if ($hdr) {
+			$hdrs ||= [ keys %$row ];
+			$csv->print ($fh, $hdrs);
+			$hdr = 0;
+			}
+		    $csv->print ($fh, [ @{$row}{@$hdrs} ]);
+		    }
 		}
 	    }
 	elsif (ref $in->[0] eq "ARRAY") { # aoa
@@ -2021,7 +2032,9 @@ which will be opened for reading and closed when finished, a file handle (e.g.
 C<$fh> or C<FH>), a reference to a glob (e.g. C<\*ARGV>), the glob itself
 (e.g. C<*STDIN>), or a reference to a scalar (e.g. C<\q{1,2,"csv"}>).
 
-When used with L</out>, it should be a reference to a CSV structure (AoA or AoH).
+When used with L</out>, C<in> should be a reference to a CSV structure (AoA
+or AoH) or a CODE-ref that returns an array-reference or a hash-reference.
+The code-ref will be invoked with no arguments and .
 
  my $aoa = csv (in => "file.csv");
 
@@ -2043,6 +2056,15 @@ The L</fragment> attribute is ignored in output mode.
 C<out> can be a file name (e.g. C<"file.csv">), which will be opened for
 writing and closed when finished, a file handle (e.g. C<$fh> or C<FH>), a
 reference to a glob (e.g. C<\*STDOUT>), or the glob itself (e.g. C<*STDOUT>).
+
+ csv (in => sub { $sth->fetch },            out => "dump.csv");
+ csv (in => sub { $sth->fetchrow_hashref }, out => "dump.csv",
+      headers => $sth->{NAME_lc});
+
+When a code-ref is used, the output is generated per invocation, so no
+buffering is involved. This implies that there is no size restriction on
+the number of records. The function ends when the coderef returns a false
+value.
 
 =head3 encoding
 X<encoding>
