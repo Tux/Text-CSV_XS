@@ -28,7 +28,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.06";
+$VERSION   = "1.07";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -805,6 +805,10 @@ sub _csv_attr
 	    open $fh, ">$enc", $out or croak "$out: $!";
 	    $cls = 1;
 	    }
+	}
+    elsif (ref $in eq "SCALAR") {
+	open $fh, "<", $in;
+	$cls = 1;
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
 	if (!ref $in && $] < 5.008005) {
@@ -1999,8 +2003,8 @@ X<in>
 
 Used to specify the source.  C<in> can be a file name (e.g. C<"file.csv">),
 which will be opened for reading and closed when finished, a file handle (e.g.
-C<$fh> or C<FH>), a reference to a glob (e.g. C<\*ARGV>), or the glob itself
-(e.g. C<*STDIN>).
+C<$fh> or C<FH>), a reference to a glob (e.g. C<\*ARGV>), the glob itself
+(e.g. C<*STDIN>), or a reference to a scalar (e.g. C<\q{1,2,"csv"}>).
 
 When used with L</out>, it should be a reference to a CSV structure (AoA or AoH).
 

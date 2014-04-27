@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 16;
+ use Test::More tests => 18;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -31,13 +31,13 @@ my $aoh = [
     { foo => 2, bar => "a b", baz => "" },
     ];
 
-for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ]) {
+for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
     open FH, "<", $file;
     is_deeply (csv ({ in => $io->[0] }), $aoa, "AOA $io->[1]");
     close FH;
     }
 
-for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ]) {
+for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
     open FH, "<", $file;
     is_deeply (csv (in => $io->[0], headers => "auto"), $aoh, "AOH $io->[1]");
     close FH;
