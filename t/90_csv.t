@@ -32,13 +32,15 @@ my $aoh = [
     { foo => 2, bar => "a b", baz => "" },
     ];
 
-for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
+SKIP: for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
+    $] < 5.008 && ref $io->[0] eq "SCALAR" and skip "No ScalarIO support for $]", 1;
     open FH, "<", $file;
     is_deeply (csv ({ in => $io->[0] }), $aoa, "AOA $io->[1]");
     close FH;
     }
 
-for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
+SKIP: for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
+    $] < 5.008 && ref $io->[0] eq "SCALAR" and skip "No ScalarIO support for $]", 1;
     open FH, "<", $file;
     is_deeply (csv (in => $io->[0], headers => "auto"), $aoh, "AOH $io->[1]");
     close FH;
