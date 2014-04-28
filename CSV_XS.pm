@@ -427,7 +427,7 @@ sub callbacks
 	my $hf = 0x00;
 	if (defined $_[0]) {
 	    grep { !defined $_ } @_ and croak ($self->SetDiag (1004));
-	    $cb = @_ == 1 && ref $_[0] eq "HASH" ? shift 
+	    $cb = @_ == 1 && ref $_[0] eq "HASH" ? shift
 	        : @_ % 2 == 0                    ? { @_ }
 	        : croak ($self->SetDiag (1004));
 	    foreach my $cbk (keys %$cb) {
@@ -788,7 +788,7 @@ my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 
 sub _csv_attr
 {
-    my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or die;
+    my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or croak;
 
     $attr{binary} = 1;
 
@@ -819,7 +819,7 @@ sub _csv_attr
 	$out or croak qq{for CSV source, "out" is required};
 	}
     elsif (ref $in eq "SCALAR") {
-	open $fh, "<", $in;
+	open $fh, "<", $in or croak "Cannot open from SCALAR usinng PerlIO";
 	$cls = 1;
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
@@ -1000,6 +1000,7 @@ L</parse> method, which is more complicated from the usual point of usage:
  while (<>) {		#  WRONG!
      $csv->parse ($_);
      my @fields = $csv->fields ();
+     }
 
 will break, as the while might read broken lines, as that does not care
 about the quoting. If you need to support embedded newlines, the way to go
@@ -1010,10 +1011,11 @@ C<\r\n> by default) and then
  open my $io, "<", $file or die "$file: $!";
  while (my $row = $csv->getline ($io)) {
      my @fields = @$row;
+     }
 
 The old(er) way of using global file handles is still supported
 
- while (my $row = $csv->getline (*ARGV)) {
+ while (my $row = $csv->getline (*ARGV)) { ... }
 
 =head2 Unicode
 
@@ -1340,7 +1342,7 @@ escaped as C<"0>.) By default this feature is off.
 If a string is marked UTF8, binary will be turned on automatically when
 binary characters other than CR or NL are encountered. Note that a simple
 string like C<"\x{00a0}"> might still be binary, but not marked UTF8, so
-setting C<{ binary => 1 }> is still a wise option.
+setting C<< { binary => 1 } >> is still a wise option.
 
 =item decode_utf8
 X<decode_utf8>
@@ -1374,9 +1376,8 @@ X<always_quote>
 By default the generated fields are quoted only if they need to be. For
 example, if they contain the separator character. If you set this attribute
 to a TRUE value, then all defined fields will be quoted. (C<undef> fields
-are not quoted, see L</blank_is_undef>)). This is typically easier to
-handle in external applications. (Poor creatures who are not using
-Text::CSV_XS. :-)
+are not quoted, see L</blank_is_undef>). This is typically easier to handle
+in external applications. (Poor creatures who are not using Text::CSV_XS. :)
 
 =item quote_space
 X<quote_space>
@@ -1469,7 +1470,7 @@ of the position of the error.
 X<callbacks>
 
 See the L</Callbacks> section below.
- 
+
 =back
 
 To sum it up,
@@ -2773,11 +2774,11 @@ L<perl>, L<IO::File>, L<IO::Handle>, L<IO::Wrap>, L<Text::CSV>,
 L<Text::CSV_PP>, L<Text::CSV::Encoded>, L<Text::CSV::Separator>, and
 L<Spreadsheet::Read>.
 
-=head1 AUTHORS and MAINTAINERS
+=head1 AUTHOR
 
 Alan Citterman F<E<lt>alan@mfgrtl.comE<gt>> wrote the original Perl module.
-Please don't send mail concerning Text::CSV_XS to Alan, as he's not
-involved in the C part that is now the main part of the module.
+Please don't send mail concerning Text::CSV_XS to Alan, as he is not
+involved in the C/XS part that is now the main part of the module.
 
 Jochen Wiedmann F<E<lt>joe@ispsoft.deE<gt>> rewrote the encoding and
 decoding in C by implementing a simple finite-state machine and added the
@@ -2786,8 +2787,8 @@ print and getline methods. See F<ChangeLog> releases 0.10 through 0.23.
 
 H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>> cleaned up the code, added
 the field flags methods, wrote the major part of the test suite, completed
-the documentation, fixed some RT bugs and added all the allow flags. See
-ChangeLog releases 0.25 and on.
+the documentation, fixed most RT bugs, added all the allow flags and the
+L</csv> function. See ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 
