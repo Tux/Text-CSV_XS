@@ -703,14 +703,15 @@ sub fragment
 {
     my ($self, $io, $spec) = @_;
 
-    my $qd = qr{\s* [0-9]+ \s* }x;
-    my $qr = qr{$qd (?: - (?: $qd | \s* \* \s* ))?}x;
-    my $qc = qr{$qr (?: ; $qr)*}x;
+    my $qd = qr{\s* [0-9]+ \s* }x;		# digit
+    my $qs = qr{\s* (?: [0-9]+ | \* ) \s*}x;	# digit or star
+    my $qr = qr{$qd (?: - $qs )?}x;		# range
+    my $qc = qr{$qr (?: ; $qr )*}x;		# list
     defined $spec && $spec =~ m{^ \s*
 	\x23 ? \s*			# optional leading #
 	( row | col | cell ) \s* =
 	( $qc				# for row and col
-	| $qd , $qd (?: - $qd , $qd)?	# for cell
+	| $qd , $qd (?: - $qs , $qs)?	# for cell
 	) \s* $}xi or croak ($self->SetDiag (2013));
     my ($type, $range) = (lc $1, $2);
 
@@ -720,24 +721,28 @@ sub fragment
     if ($type eq "cell") {
 	my ($tlr, $tlc, $brr, $brc) = ($range =~ m{
 	    ^ \s*
-		([0-9]+) \s* , \s* ([0-9]+)
+		([0-9]+     ) \s* , \s* ([0-9]+     )
 	    \s* (?: - \s*
-		([0-9]+) \s* , \s* ([0-9]+)
+		([0-9]+ | \*) \s* , \s* ([0-9]+ | \*)
 		)?
 	    \s* $}x) or croak ($self->SetDiag (2013));
 	defined $brr or ($brr, $brc) = ($tlr, $tlc);
-	$tlr <= 0 || $tlc <= 0 || $brr <= 0 || $brc <= 0 ||
-	    $brr < $tlr || $brc < $tlc and croak ($self->SetDiag (2013));
-	$_-- for $tlc, $brc;
+	$tlr == 0 || $tlc == 0 ||
+	    ($brr ne "*" && ($brr == 0 || $brr < $tlr)) ||
+	    ($brc ne "*" && ($brc == 0 || $brc < $tlc))
+		and croak ($self->SetDiag (2013));
+	$tlc--;
+	$brc-- unless $brc eq "*";
 	my $r = 0;
 	while (my $row = $self->getline ($io)) {
 	    ++$r <  $tlr and next;
-	    push @c, [ @{$row}[$tlc..$brc] ];
+	    my $rr = $brc eq "*" ? $#$row : $brc;
+	    push @c, [ @{$row}[$tlc..$rr] ];
 	    if (@h) {
 		my %h; @h{@h} = @{$c[-1]};
 		$c[-1] = \%h;
 		}
-	    $r >= $brr and last;
+	    $brr ne "*" && $r >= $brr and last;
 	    }
 	return \@c;
 	}
@@ -1732,6 +1737,12 @@ The range operator using cells can be used to define top-left and bottom-right
 cell location
 
  cell=3,1-4,6
+
+The C<*> is only allowed in the second part of a pair
+
+ cell=3,2-*,2    # row 3 till end, only column 2
+ cell=3,2-3,*    # column 2 till end, only row 3
+ cell=3,2-*,*    # strip row 1 and 2, and column 1
 
 =back
 
