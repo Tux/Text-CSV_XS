@@ -1583,8 +1583,9 @@ static void hook (pTHX_ HV *hv, char *cb_name, AV *av)
 static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
 {
     csv_t	csv;
+    int		state;
     SetupCsv (&csv, hv, self);
-    int state = c_xsParse (csv, hv, av, avf, src, useIO);
+    state = c_xsParse (csv, hv, av, avf, src, useIO);
     if (state && csv.has_hooks & HOOK_AFTER_PARSE)
 	hook (aTHX_ hv, "after_parse", av);
     return (state || !last_error);
