@@ -2528,15 +2528,14 @@ No guarantees, but this is what I had in mind some time ago:
 
 =item next
 
- - DIAGNOSTICS secttion in pod to *describe* the errors (see below)
- - croak / carp
+ - DIAGNOSTICS section in pod to *describe* the errors (see below)
 
 =back
 
 =head1 EBCDIC
 
 The hard-coding of characters and character ranges makes this module
-unusable on EBCDIC systems.
+unusable on EBCDIC systems. Recent work in perl-5.20 might change that.
 
 Opening EBCDIC encoded files on ASCII+ systems is likely to succeed
 using Encode's cp37, cp1047, or posix-bc:
@@ -2560,6 +2559,8 @@ C<$csv->error_diag> is automatically called upon error when the contractor
 was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect.
 When set to 1, this will cause a C<warn> with the error message, when set
 to 2, it will C<die>. C<2012 - EOF> is excluded from C<auto_diag> reports.
+
+Errors can be (individually) caught using the L</erro> callback.
 
 The errors as described below are available. I have tried to make the error
 itself explanatory enough, but more descriptions will be added. For most of
