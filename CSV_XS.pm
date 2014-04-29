@@ -2331,16 +2331,12 @@ with L</csv>, you could do
 
 =head3 The fast way: using L</print>
 
-An example for creating CSV files using the L</print> method, like in
-dumping the content of a database ($dbh) table ($tbl) to CSV:
+An example for creating CSV files using the L</print> method:
 
  my $csv = Text::CSV_XS->new ({ binary => 1, eol => $/ });
- open my $fh, ">", "$tbl.csv" or die "$tbl.csv: $!";
- my $sth = $dbh->prepare ("select * from $tbl");
- $sth->execute;
- $csv->print ($fh, $sth->{NAME_lc});
- while (my $row = $sth->fetch) {
-     $csv->print ($fh, $row) or $csv->error_diag;
+ open my $fh, ">", "foo.csv" or die "foo.csv: $!";
+ for (1 .. 10) {
+     $csv->print ($fh, [ $_, "$_" ]) or $csv->error_diag;
      }
  close $fh or die "$tbl.csv: $!";
 
@@ -2379,7 +2375,7 @@ Dumping a database table can be simple as this (TIMTOWTDI):
  my $sql = "select * from foo";
 
  # using your own loop
- opne my $fh, ">", "foo.csv" or die "foo.csv: $!\n";
+ open my $fh, ">", "foo.csv" or die "foo.csv: $!\n";
  my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\r\n" });
  my $sth = $dbh->prepare ($sql); $sth->execute;
  $csv->print ($fh, $sth->{NAME_lc});
