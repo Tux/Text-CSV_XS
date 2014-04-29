@@ -2371,6 +2371,30 @@ Rewrite a CSV file with C<;> as separator character to well-formed CSV:
  use Text::CSV_XS qw( csv );
  csv (in => csv (in => "bad.csv", sep_char => ";"), out => *STDOUT);
 
+=head2 Dumping database tables to CSV
+
+Dumping a database table can be simple as this (TIMTOWTDI):
+
+ my $dbh = DBI->connect (...);
+ my $sql = "select * from foo";
+
+ # using your own loop
+ opne my $fh, ">", "foo.csv" or die "foo.csv: $!\n";
+ my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\r\n" });
+ my $sth = $dbh->prepare ($sql); $sth->execute;
+ $csv->print ($fh, $sth->{NAME_lc});
+ while (my $row = $sth->fetch) {
+     $csv->print ($fh, $row);
+     }
+
+ # using the csv function, all in memory
+ csv (out => "foo.csv", in => $dbh->selectall_arrayref ($sql));
+
+ # using the csv function, streaming with callbacks
+ my $sth = $dbh->prepare ($sql); $sth->execute;
+ csv (out => "foo.csv", in => sub { $sth->fetch            });
+ csv (out => "foo.csv", in => sub { $sth->fetchrow_hashref });
+
 =head2 The examples folder
 
 For more extended examples, see the F<examples/> (1) sub-directory in the
