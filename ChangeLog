@@ -1,5 +1,5 @@
-1.08	- 2014-04-28, H.Merijn Brand
-    - 
+1.08	- 2014-04-29, H.Merijn Brand
+    - Documentation updates
 
 1.07	- 2014-04-28, H.Merijn Brand
     * Allow ref to scalar for csv (in => ...)
@@ -22,13 +22,13 @@
 1.04	- 2014-02-06, H.Merijn Brand
     * get_columns () with no argument now returns the empty list
       instead of undef when no columns defined
-    * fragments (rcf7111) now also support AoH (was AoA only)
+    * fragments (rfc7111) now also support AoH (was AoA only)
     * Error code conflict for fragments resolved to 2013
     * New function "csv" (not a method)
 
 1.03	- 2014-01-21, H.Merijn Brand
     * Update copyright to 2014
-    * Implement RCF7111
+    * Implement RFC7111
 
 1.02	- 2013-09-25, H.Merijn Brand
     * Add example for reading only a single column
