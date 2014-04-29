@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 180;
+ use Test::More tests => 201;
 #use Test::More "no_plan";
 
 my %err;
@@ -157,6 +157,13 @@ foreach my $spec (
 	"col=3-1",	# to >= from
 	"cell=4,1;1",	# cell has no ;
 	"cell=3,3-2,1",	# bottom-right should be right to and below top-left
+	"cell=1,*",	# * in single cell col
+	"cell=*,1",	# * in single cell row
+	"cell=*,*",	# * in single cell row and column
+	"cell=1,*-8,9",	# * in cell range top-left cell col
+	"cell=*,1-8,9",	# * in cell range top-left cell row
+	"cell=*,*-8,9",	# * in cell range top-left cell row and column
+	"cell=2,3;4,5",	# No support for combined cell(range)s
 	"row=/",	# illegal character
 	"col=4;row=3",	# cannot combine rows and columns
 	) {
