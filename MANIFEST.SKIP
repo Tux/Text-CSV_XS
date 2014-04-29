@@ -15,7 +15,7 @@ genMETA.pl
 Makefile
 MANIFEST.SKIP
 pm_to_blib
-xt/00_perlversion.t
+xt/
 ^xx
 META.yml
 valgrind.log

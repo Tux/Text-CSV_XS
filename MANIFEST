@@ -32,6 +32,7 @@ t/79_callbacks.t	Test callback features
 t/80_diag.t		Error diagnostics
 t/81_subclass.t		Subclassed
 t/90_csv.t		Function csv () checks
+t/91_csv_cb.t		Callbacks with csv function
 t/util.pl		Extra test utilities
 examples/csv2xls	Script to onvert CSV files to M$Excel
 examples/csv-check	Script to check a CSV file/stream
