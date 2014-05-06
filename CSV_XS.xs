@@ -92,7 +92,7 @@
 #define CSV_XS_SELF					\
     if (!self || !SvOK (self) || !SvROK (self) ||	\
 	 SvTYPE (SvRV (self)) != SVt_PVHV)		\
-        croak ("self is not a hash ref");		\
+	croak ("self is not a hash ref");		\
     hv = (HV *)SvRV (self)
 
 #define	byte	unsigned char
@@ -300,17 +300,17 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 
     /* boolean/numeric */
     if ( idx == CACHE_ID_binary			||
-         idx == CACHE_ID_keep_meta_info		||
-         idx == CACHE_ID_always_quote		||
-         idx == CACHE_ID_quote_space		||
-         idx == CACHE_ID_quote_null		||
-         idx == CACHE_ID_quote_binary		||
+	 idx == CACHE_ID_keep_meta_info		||
+	 idx == CACHE_ID_always_quote		||
+	 idx == CACHE_ID_quote_space		||
+	 idx == CACHE_ID_quote_null		||
+	 idx == CACHE_ID_quote_binary		||
 	 idx == CACHE_ID_decode_utf8		||
-         idx == CACHE_ID_allow_loose_escapes	||
-         idx == CACHE_ID_allow_loose_quotes	||
-         idx == CACHE_ID_allow_unquoted_escape	||
-         idx == CACHE_ID_allow_whitespace	||
-         idx == CACHE_ID_blank_is_undef		||
+	 idx == CACHE_ID_allow_loose_escapes	||
+	 idx == CACHE_ID_allow_loose_quotes	||
+	 idx == CACHE_ID_allow_unquoted_escape	||
+	 idx == CACHE_ID_allow_whitespace	||
+	 idx == CACHE_ID_blank_is_undef		||
 	 idx == CACHE_ID_empty_is_undef		||
 	 idx == CACHE_ID_verbatim		||
 	 idx == CACHE_ID_auto_diag		||
@@ -687,9 +687,9 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 
 #define CSV_PUT(csv,dst,c) {				\
     if ((csv)->used == sizeof ((csv)->buffer) - 1) {	\
-        unless (Print ((csv), (dst)))			\
+	unless (Print ((csv), (dst)))			\
 	    return FALSE;				\
-        }						\
+	}						\
     (csv)->buffer[(csv)->used++] = (c);			\
     }
 
