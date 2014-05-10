@@ -708,10 +708,11 @@ sub fragment
     my $qr = qr{$qd (?: - $qs )?}x;		# range
     my $qc = qr{$qr (?: ; $qr )*}x;		# list
     defined $spec && $spec =~ m{^ \s*
-	\x23 ? \s*			# optional leading #
+	\x23 ? \s*				# optional leading #
 	( row | col | cell ) \s* =
-	( $qc				# for row and col
-	| $qd , $qd (?: - $qs , $qs)?	# for cell
+	( $qc					# for row and col
+	| $qd , $qd (?: - $qs , $qs)?		# for cell (ranges)
+	  (?: ; $qd , $qd (?: - $qs , $qs)? )*	# and cell (range) lists
 	) \s* $}xi or croak ($self->SetDiag (2013));
     my ($type, $range) = (lc $1, $2);
 
@@ -719,30 +720,48 @@ sub fragment
 
     my @c;
     if ($type eq "cell") {
-	my ($tlr, $tlc, $brr, $brc) = ($range =~ m{
-	    ^ \s*
-		([0-9]+     ) \s* , \s* ([0-9]+     )
-	    \s* (?: - \s*
-		([0-9]+ | \*) \s* , \s* ([0-9]+ | \*)
-		)?
-	    \s* $}x) or croak ($self->SetDiag (2013));
-	defined $brr or ($brr, $brc) = ($tlr, $tlc);
-	$tlr == 0 || $tlc == 0 ||
-	    ($brr ne "*" && ($brr == 0 || $brr < $tlr)) ||
-	    ($brc ne "*" && ($brc == 0 || $brc < $tlc))
-		and croak ($self->SetDiag (2013));
-	$tlc--;
-	$brc-- unless $brc eq "*";
+	my @spec;
+	my $min_row;
+	my $max_row = 0;
+	for (split m/\s*;\s*/ => $range) {
+	    my ($tlr, $tlc, $brr, $brc) = (m{
+		^ \s*
+		    ([0-9]+     ) \s* , \s* ([0-9]+     )
+		\s* (?: - \s*
+		    ([0-9]+ | \*) \s* , \s* ([0-9]+ | \*)
+		    )?
+		\s* $}x) or croak ($self->SetDiag (2013));
+	    defined $brr or ($brr, $brc) = ($tlr, $tlc);
+	    $tlr == 0 || $tlc == 0 ||
+		($brr ne "*" && ($brr == 0 || $brr < $tlr)) ||
+		($brc ne "*" && ($brc == 0 || $brc < $tlc))
+		    and croak ($self->SetDiag (2013));
+	    $tlc--;
+	    $brc-- unless $brc eq "*";
+	    defined $min_row or $min_row = $tlr;
+	    $tlr < $min_row and $min_row = $tlr;
+	    $brr eq "*" || $brr > $max_row and
+		$max_row = $brr;
+	    push @spec, [ $tlr, $tlc, $brr, $brc ];
+	    }
 	my $r = 0;
 	while (my $row = $self->getline ($io)) {
-	    ++$r <  $tlr and next;
-	    my $rr = $brc eq "*" ? $#$row : $brc;
-	    push @c, [ @{$row}[$tlc..$rr] ];
+	    ++$r < $min_row and next;
+	    my @row;
+	    my $lc;
+	    foreach my $s (@spec) {
+		my ($tlr, $tlc, $brr, $brc) = @$s;
+		$r <  $tlr || ($brr ne "*" && $r > $brr) and next;
+		!defined $lc || $tlc < $lc and $lc = $tlc;
+		my $rr = $brc eq "*" ? $#$row : $brc;
+		$row[$_] = $row->[$_] for $tlc .. $rr;
+		}
+	    push @c, [ @row[$lc..$#row] ];
 	    if (@h) {
 		my %h; @h{@h} = @{$c[-1]};
 		$c[-1] = \%h;
 		}
-	    $brr ne "*" && $r >= $brr and last;
+	    $max_row ne "*" && $r == $max_row and last;
 	    }
 	return \@c;
 	}
@@ -2562,7 +2581,7 @@ was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect.
 When set to 1, this will cause a C<warn> with the error message, when set
 to 2, it will C<die>. C<2012 - EOF> is excluded from C<auto_diag> reports.
 
-Errors can be (individually) caught using the L</erro> callback.
+Errors can be (individually) caught using the L</error> callback.
 
 The errors as described below are available. I have tried to make the error
 itself explanatory enough, but more descriptions will be added. For most of

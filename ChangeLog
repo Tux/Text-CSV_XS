@@ -1,5 +1,6 @@
-1.08	- 2014-04-29, H.Merijn Brand
+1.08	- 2014-05-10, H.Merijn Brand
     - Documentation updates
+    - Allow disjunct CSV cell fragments
 
 1.07	- 2014-04-28, H.Merijn Brand
     * Allow ref to scalar for csv (in => ...)
