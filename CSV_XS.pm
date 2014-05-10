@@ -2501,6 +2501,12 @@ return flags. L</getline_all> returns all rows for an open stream, but this
 will not return flags either. L</fragment> can reduce the required rows I<or>
 columns, but cannot combine them.
 
+=item Cookbook
+
+Write a pod that has recipes for most known non-standard (and maybe some
+weird standard) CSV formats, including formats that use C<TAB>, semi-colon,
+or other non-comma separators.
+
 =back
 
 =head2 NOT TODO
