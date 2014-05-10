@@ -1719,11 +1719,12 @@ text/csv Media Type) - http://tools.ietf.org/html/rfc7111
 
 In specifications, C<*> is used to specify the I<last> item, a dash (C<->)
 to indicate a range. All indices are 1-based: the first row or column
-has index 1. Selections on row and column can be combined with the
-semi-colon (C<;>).
+has index 1. Selections can be combined with the semi-colon (C<;>).
 
 When using this method in combination with L</column_names>, the returned
-reference will point to a list of hashes instead of to a list of lists.
+reference will point to a list of hashes instead of to a list of lists. A
+disjunct cell-based selection  might return rows with different number of
+columns making the use of hashes unpredictable.
 
  $csv->column_names ("Name", "Age");
  my $AoH = $csv->fragment ($io, "col=3;8");
