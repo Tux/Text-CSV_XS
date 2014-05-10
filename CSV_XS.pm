@@ -1765,6 +1765,11 @@ The C<*> is only allowed in the second part of a pair
  cell=3,2-3,*    # column 2 till end, only row 3
  cell=3,2-*,*    # strip row 1 and 2, and column 1
 
+Cells and cell ranges may be combined, possibly resulting in rows with different
+number of columns
+
+ cell=1,1-2,2;3,3-4,4;1,4;4,1
+
 =back
 
 RFC7111 does not allow any combination of the three selection methods. Passing
