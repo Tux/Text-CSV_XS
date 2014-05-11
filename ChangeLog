@@ -1,6 +1,6 @@
 1.08	- 2014-05-11, H.Merijn Brand
     * Documentation updates
-    * Allow disjunct CSV cell fragment lists
+    * Allow disjointed CSV cell fragment lists
 
 1.07	- 2014-04-28, H.Merijn Brand
     * Allow ref to scalar for csv (in => ...)

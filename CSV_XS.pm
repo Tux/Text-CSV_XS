@@ -1720,8 +1720,8 @@ has index 1. Selections can be combined with the semi-colon (C<;>).
 
 When using this method in combination with L</column_names>, the returned
 reference will point to a list of hashes instead of to a list of lists. A
-disjunct cell-based selection  might return rows with different number of
-columns making the use of hashes unpredictable.
+disjointed cell-based combined selection might return rows with different
+number of columns making the use of hashes unpredictable.
 
  $csv->column_names ("Name", "Age");
  my $AoH = $csv->fragment ($io, "col=3;8");
