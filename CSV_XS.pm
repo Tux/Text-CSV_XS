@@ -1762,15 +1762,40 @@ The C<*> is only allowed in the second part of a pair
  cell=3,2-3,*    # column 2 till end, only row 3
  cell=3,2-*,*    # strip row 1 and 2, and column 1
 
-Cells and cell ranges may be combined, possibly resulting in rows with different
-number of columns
+Cells and cell ranges may be combined with C<;>, possibly resulting in rows
+with different number of columns
 
  cell=1,1-2,2;3,3-4,4;1,4;4,1
 
+Disjointed selections will only return selected cells.   The cells that are
+not specified will not be included in the returned set not even as C<undef>.
+As an example given a CSV like
+
+ 11,12,13,...19
+ 21,22,...28,29
+ :            :
+ 91,...97,98,99
+
+with C<cell=1,1-2,2;3,3-4,4;1,4;4,1> will return:
+
+ 11,12,14
+ 21,22
+ 33,34
+ 41,43,44
+
+Overlapping cell-specs will return those cells only once, So
+C<cell=1,1-3,3;2,2-4,4;2,3;4,2> will return:
+
+ 11,12,13
+ 21,22,23,24
+ 31,32,33,34
+ 42,43,44
+
 =back
 
-RFC7111 does not allow any combination of the three selection methods. Passing
-an invalid fragment specification will croak and set error 2013.
+L<RFC7111|http://tools.ietf.org/html/rfc7111> does  B<not>  allow different
+types of specs to be combined   (either C<row> I<or> C<col> I<or> C<cell>).
+Passing an invalid fragment specification will croak and set error 2013.
 
 =head2 column_names
 X<column_names>
