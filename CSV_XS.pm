@@ -725,12 +725,9 @@ sub fragment
 	my $max_row = 0;
 	for (split m/\s*;\s*/ => $range) {
 	    my ($tlr, $tlc, $brr, $brc) = (m{
-		^ \s*
-		    ([0-9]+     ) \s* , \s* ([0-9]+     )
-		\s* (?: - \s*
-		    ([0-9]+ | \*) \s* , \s* ([0-9]+ | \*)
-		    )?
-		\s* $}x) or croak ($self->SetDiag (2013));
+		    ^ \s* ([0-9]+     ) \s* , \s* ([0-9]+     ) \s*
+		(?: - \s* ([0-9]+ | \*) \s* , \s* ([0-9]+ | \*) \s* )?
+		    $}x) or croak ($self->SetDiag (2013));
 	    defined $brr or ($brr, $brc) = ($tlr, $tlc);
 	    $tlr == 0 || $tlc == 0 ||
 		($brr ne "*" && ($brr == 0 || $brr < $tlr)) ||
@@ -747,16 +744,16 @@ sub fragment
 	my $r = 0;
 	while (my $row = $self->getline ($io)) {
 	    ++$r < $min_row and next;
-	    my @row;
+	    my %row;
 	    my $lc;
 	    foreach my $s (@spec) {
 		my ($tlr, $tlc, $brr, $brc) = @$s;
 		$r <  $tlr || ($brr ne "*" && $r > $brr) and next;
 		!defined $lc || $tlc < $lc and $lc = $tlc;
 		my $rr = $brc eq "*" ? $#$row : $brc;
-		$row[$_] = $row->[$_] for $tlc .. $rr;
+		$row{$_} = $row->[$_] for $tlc .. $rr;
 		}
-	    push @c, [ @row[$lc..$#row] ];
+	    push @c, [ @row{sort { $a <=> $b } keys %row } ];
 	    if (@h) {
 		my %h; @h{@h} = @{$c[-1]};
 		$c[-1] = \%h;

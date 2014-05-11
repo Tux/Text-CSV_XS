@@ -22,7 +22,6 @@ BEGIN {
 use Text::CSV_XS;
 my $csv = Text::CSV_XS->new ();
 
-my $und;
 my @test = (
     "row=1"         => [[ 11,12,13,14,15,16,17,18,19 ]],
     "row=2-3"       => [[ 21,22,23,24,25,26,27,28,29 ],
@@ -70,18 +69,14 @@ my @test = (
 	[31,32,33,34],
 	   [42,43,44]],
     "cell=1,1-2,2;3,3-4,4;1,4;4,1"	=> [
-	[11,12,$und,14],
+	[11,12,     14],
 	[21,22],
 		[33,34],
-	[41,$und,43,44]],
+	[41,     43,44]],
     );
 my $todo = "";
 my $data = join "" => <DATA>;
 while (my ($spec, $expect) = splice @test, 0, 2) {
-    if ($spec eq "TODO") {
-	$todo = "# TODO: ";
-	next;
-	}
     open my $io, "<", \$data;
     my $aoa = $csv->fragment ($io, $spec);
     is_deeply ($aoa, $expect, "${todo}Fragment $spec");
