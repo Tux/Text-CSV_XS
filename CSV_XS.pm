@@ -1020,8 +1020,8 @@ L</parse> method, which is more complicated from the usual point of usage:
 
 this will break, as the while might read broken lines as that does not care
 about the quoting. If you need to support embedded newlines,  the way to go
-is to  B<not>  pass C<eol> in the parser  (it accepts C<\n>, C<\r>,  B<and>
-C<\r\n> by default) and then
+is to  B<not>  pass L<C<eol>|/eol> in the parser  (it accepts C<\n>, C<\r>,
+B<and> C<\r\n> by default) and then
 
  my $csv = Text::CSV_XS->new ({ binary => 1 });
  open my $io, "<", $file or die "$file: $!";
@@ -1189,10 +1189,10 @@ C<eol> on output is either C<$/> or C<\r\n>.
 
 Common values for C<eol> are C<"\012"> (C<\n> or Line Feed),  C<"\015\012">
 (C<\r\n> or Carriage Return, Line Feed),  and C<"\015">  (C<\r> or Carriage
-Return). The C<eol> attribute cannot exceed 7 (ASCII) characters.
+Return). The L<C<eol>|/eol> attribute cannot exceed 7 (ASCII) characters.
 
-If both C<$/> and C<eol> equal C<"\015">,  parsing lines that end on only a
-Carriage Return without Line Feed, will be L</parse>d correct.
+If both C<$/> and L<C<eol>/eol> equal C<"\015">,  parsing lines that end on
+only a Carriage Return without Line Feed, will be L</parse>d correct.
 
 =item sep_char
 X<sep_char>
@@ -1211,8 +1211,9 @@ X<allow_whitespace>
 
 When this option is set to true,  the whitespace  (C<TAB>'s and C<SPACE>'s)
 surrounding  the  separation character  is removed when parsing.  If either
-C<TAB>  or  C<SPACE>  is one of the  three  major  characters  C<sep_char>,
-C<quote_char>, or C<escape_char> it will not be considered whitespace.
+C<TAB> or C<SPACE> is one of the three characters L<C<sep_char>|/sep_char>,
+L<C<quote_char>|/quote_char>, or L<C<escape_char>|/escape_char> it will not
+be considered whitespace.
 
 Now lines like:
 
@@ -1245,9 +1246,9 @@ is read as
 
  ("1", "", "", " ", "2")
 
-When I<writing>  C<CSV> files with C<always_quote> set,  the unquoted empty
-field is the result of an undefined value. To make it possible to also make
-this distinction when I<reading> C<CSV> data,  the C<blank_is_undef> option
+When I<writing> C<CSV> files with L<C<always_quote>|/always_quote> set, the
+unquoted I<empty> field is the result of an undefined value. To enable this
+distinction when I<reading> C<CSV> data,  the  C<blank_is_undef>  attribute
 will cause unquoted empty fields to be set to  C<undef>,  causing the above
 to be parsed as
 
@@ -1256,8 +1257,8 @@ to be parsed as
 =item empty_is_undef
 X<empty_is_undef>
 
-Going one step further than C<blank_is_undef>,  this attribute converts all
-empty fields to C<undef>, so
+Going one  step  further  than  L<C<blank_is_undef>|/blank_is_undef>,  this
+attribute converts all empty fields to C<undef>, so
 
  1,"",," ",2
 
@@ -1281,8 +1282,8 @@ The quote character can not be equal to the separation character.
 =item allow_loose_quotes
 X<allow_loose_quotes>
 
-By default, parsing unquoted fields that contain C<quote_char> character(s)
-like
+By default, parsing unquoted fields containing L<C<quote_char>|/quote_char>
+characters like
 
  1,foo "bar" baz,42
 
