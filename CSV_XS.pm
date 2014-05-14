@@ -1040,7 +1040,7 @@ Unicode is only tested to work with perl-5.8.2 and up.
 On parsing (both for  L</getline> and  L</parse>),  if the source is marked
 being UTF8, then all fields that are marked binary will also be marked UTF8.
 
-For complete control over encoding, please use Text::CSV::Encoded:
+For complete control over encoding, please use L<Text::CSV::Encoded>:
 
  use Text::CSV::Encoded;
  my $csv = Text::CSV::Encoded->new ({
@@ -2175,7 +2175,8 @@ Combining all of them could give something like
 
 =head2 Callbacks
 
-Callbacks enable actions triggered from the I<inside> of  L</Text::CSV_XS>.
+Callbacks enable actions triggered from the I<inside> of Text::CSV_XS.
+
 While most of what this enables  can easily be done in an  unrolled loop as
 described in the L</SYNOPSIS> callbacks can be used to meet special demands
 or enhance the L</csv> function.
@@ -2491,7 +2492,7 @@ ANSI escape codes or HTML.
 
 =head1 CAVEATS
 
-C<Text::CSV_XS>  is not designed to detect the characters used to quote and
+Text::CSV_XS  is I<not> designed to detect the characters used to quote and
 separate fields.  The parsing is done using predefined  (default) settings.
 In the examples  sub-directory,  you can find scripts  that demonstrate how
 you can try to detect these characters yourself.
@@ -2559,6 +2560,9 @@ Write a document that has recipes for  most known  non-standard  (and maybe
 some standard)  C<CSV> formats,  including formats that use  C<TAB>,  C<;>,
 C<|>, or other non-comma separators.
 
+Examples could be taken from W3C's L<CSV on the Web: Use Cases and
+Requirements|http://w3c.github.io/csvw/use-cases-and-requirements/index.html>
+
 =back
 
 =head2 NOT TODO
@@ -2569,7 +2573,7 @@ C<|>, or other non-comma separators.
 
 Requests for adding means (methods) that combine L</combine> and L</string>
 in a single call will B<not> be honored (use L</print> instead).   Likewise
-for L</parse> and L</fields>  (use L</getline instead>), given the problems
+for L</parse> and L</fields>  (use L</getline> instead), given the problems
 with embedded newlines.
 
 =back
@@ -2600,18 +2604,19 @@ using Encode's C<cp37>, C<cp1047>, or C<posix-bc>:
 
 Still under construction ...
 
-If errors occur, C<$csv->error_diag> can be used to get more information on
-the cause of the failure.  Note that for speed reasons,  the internal value
+If an error occurs,  C<< $csv->error_diag >> can be used to get information
+on the cause of the failure. Note that for speed reasons the internal value
 is never cleared on success,  so using the value returned by L</error_diag>
 in normal cases - when no error occurred - may cause unexpected results.
 
 If the constructor failed, the cause can be found using L</error_diag> as a
-class method, like C<Text::CSV_XS->error_diag>.
+class method, like C<< Text::CSV_XS->error_diag >>.
 
-C<$csv->error_diag> is automatically called upon error  when the contractor
-was called with C<auto_diag> set to 1 or 2, or when C<autodie> is in effect.
-When set to 1, this will cause a  C<warn> with the error message,  when set
-to 2, it will C<die>. C<2012 - EOF> is excluded from C<auto_diag> reports.
+The C<< $csv->error_diag >> method is automatically invoked upon error when
+the contractor was called with  L<C<auto_diag>|/auto_diag>  set to  C<1> or
+C<2>, or when L<autodie> is in effect.  When set to C<1>, this will cause a
+C<warn> with the error message,  when set to C<2>, it will C<die>. C<2012 -
+EOF> is excluded from C<auto_diag> reports.
 
 Errors can be (individually) caught using the L</error> callback.
 
@@ -2666,15 +2671,17 @@ And below should be the complete list of error codes that can be returned:
 1001 "INI - sep_char is equal to quote_char or escape_char"
 X<1001>
 
-The separation character cannot be equal  to either the quotation character
-or the escape character, as that will invalidate all parsing rules.
+The  L<separation character|/sep_char>  cannot be equal to  L<the quotation
+character|/quote_char> or to L<the escape character|/escape_char>,  as that
+will invalidate all parsing rules.
 
 =item *
 1002 "INI - allow_whitespace with escape_char or quote_char SP or TAB"
 X<1002>
 
-Using C<allow_whitespace> when either  C<escape_char>  or  C<quote_char> is
-equal to C<SPACE> or C<TAB> is too ambiguous to allow.
+Using the  L<C<allow_whitespace>|/allow_whitespace>  attribute  when either
+L<C<quote_char>|/quote_char> or L<C<escape_char>|/escape_char>  is equal to
+C<SPACE> or C<TAB> is too ambiguous to allow.
 
 =item *
 1003 "INI - \r or \n in main attr not allowed"
@@ -2848,9 +2855,9 @@ X<3010>
 
 =head1 SEE ALSO
 
-L<perl>, L<IO::File>, L<IO::Handle>, L<IO::Wrap>, L<Text::CSV>,
-L<Text::CSV_PP>, L<Text::CSV::Encoded>, L<Text::CSV::Separator>, and
-L<Spreadsheet::Read>.
+L<IO::File>,  L<IO::Handle>,  L<IO::Wrap>,  L<Text::CSV>,  L<Text::CSV_PP>,
+L<Text::CSV::Encoded>,  L<Text::CSV::Separator>,   L<Spreadsheet::CSV>  and
+L<Spreadsheet::Read>, and of course L<perl>.
 
 =head1 AUTHOR
 
