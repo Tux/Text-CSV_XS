@@ -2532,6 +2532,9 @@ specify which fields are quoted in the L</combine>/L</string> combination.
  $csv->meta_info (0, 1, 1, 3, 0, 0);
  $csv->is_quoted (3, 1);
 
+L<Metadata Vocabulary for Tabular Data|http://w3c.github.io/csvw/metadata/>
+(a W3C editor's draft) could be an example for supporting more metadata.
+
 =item Parse the whole file at once
 
 Implement new methods or functions  that enable parsing of a  complete file
