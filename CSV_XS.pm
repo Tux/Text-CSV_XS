@@ -2698,7 +2698,8 @@ C<escape_char> is not allowed.
 1004 "INI - callbacks should be undef or a hashref"
 X<1004>
 
-The C<callbacks> attribute only allows to be C<undef> or a hash reference.
+The L<C<callbacks>|/Callbacks>  attribute only allows one to be C<undef> or
+a hash reference.
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
