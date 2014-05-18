@@ -1277,7 +1277,7 @@ the double quote character (C<">).  A value of undef suppresses quote chars
 (for simple cases only). Limited to a single-byte character, usually in the
 range from C<0x20> (space) to C<0x7E> (tilde).
 
-The quote character can not be equal to the separation character.
+C<quote_char> can not be equal to L<C<sep_char>|/sep_char>.
 
 =item allow_loose_quotes
 X<allow_loose_quotes>
@@ -1301,7 +1301,8 @@ or
 
 there is a way to get this data-line parsed and leave the quotes inside the
 quoted field as-is.  This can be achieved by setting  C<allow_loose_quotes>
-B<AND> making sure that the C<escape_char> is I<not> equal to C<quote_char>.
+B<AND> making sure that the L<C<escape_char>|/escape_char> is  I<not> equal
+to L<C<quote_char>|/quote_char>.
 
 =item escape_char
 X<escape_char>
@@ -1311,23 +1312,24 @@ limited to a  single-byte  character,  usually  in the  range from  C<0x20>
 (space) to C<0x7E> (tilde).
 
 The C<escape_char> defaults to being the double-quote mark (C<">). In other
-words, the same as the default C<quote_char>.  This means that doubling the
-quote mark in a field escapes it:
+words the same as the default L<C<quote_char>|/quote_char>. This means that
+doubling the quote mark in a field escapes it:
 
  "foo","bar","Escape ""quote mark"" with two ""quote marks""","baz"
 
-If you change the  C<quote_char> without changing the  C<escape_char>,  the
-C<escape_char> will still be the double-quote (C<">).   If instead you want
-to escape the C<quote_char> by doubling it you will need to also change the
-C<escape_char> to be the same as what you changed the C<quote_char> to.
+If  you  change  the   L<C<quote_char>|/quote_char>  without  changing  the
+C<escape_char>,  the  C<escape_char> will still be the double-quote (C<">).
+If instead you want to escape the  L<C<quote_char>|/quote_char> by doubling
+it you will need to also change the  C<escape_char>  to be the same as what
+you changed the L<C<quote_char>|/quote_char> to.
 
 The escape character can not be equal to the separation character.
 
 =item allow_loose_escapes
 X<allow_loose_escapes>
 
-By default,  parsing fields that have C<escape_char> characters that escape
-characters that do not need to be escaped, like:
+Parsing fields  that  have  L<C<escape_char>|/escape_char>  characters that
+escape characters that do not need to be escaped, like:
 
  my $csv = Text::CSV_XS->new ({ escape_char => "\\" });
  $csv->parse (qq{1,"my bar\'s",baz,42});
@@ -1339,10 +1341,11 @@ equal.
 =item allow_unquoted_escape
 X<allow_unquoted_escape>
 
-There is a backward compatibility issue in that the escape character,  when
-differing from the quotation character,  cannot be on the first position of
-a field.  e.g. with C<quote_char> equal to the default C<"> and  the escape
-character C<escape_char> set to C<\>, this would be illegal:
+A backward compatibility issue where L<C<escape_char>|/escape_char> differs
+from L<C<quote_char>|/quote_char>  prevents  L<C<escape_char>|/escape_char>
+to be on the first position of a field.  If L<C<quote_char>|/quote_char> is
+equal to the default C<"> and L<C<escape_char>|/escape_char> is set to C<\>,
+this would be illegal:
 
  1,\0,2
 
@@ -1696,7 +1699,7 @@ X<getline_hr_all>
  $arrayref = $csv->getline_hr_all ($io, $offset, $length);
 
 This will return a reference to a list of   L<getline_hr ($io)|/getline_hr>
-results.  In this call, C<keep_meta_info> is disabled.
+results.  In this call, L<C<keep_meta_info>|/keep_meta_info> is disabled.
 
 =head2 print_hr
 X<print_hr>
@@ -1948,9 +1951,9 @@ Where  C<$column_idx> is the  (zero-based)  index of the column in the last
 result of L</parse>.
 
 This returns a true value  if the data in the indicated column was enclosed
-in C<quote_char> quotes.   This might be important for fields where content
-C<,20070108,> is to be treated as a numeric value, and where C<,"20070108",>
-is explicitly marked as character string data.
+in L<C<quote_char>|/quote_char> quotes.  This might be important for fields
+where content C<,20070108,> is to be treated as a numeric value,  and where
+C<,"20070108",> is explicitly marked as character string data.
 
 =head2 is_binary
 X<is_binary>
@@ -1980,8 +1983,8 @@ When using  L</getline_hr>,  it is impossible to tell if the  parsed fields
 are C<undef> because they where not filled in the C<CSV> stream  or because
 they were not read at all, as B<all> the fields defined by L</column_names>
 are set in the hash-ref.    If you still need to know if all fields in each
-row are provided, you should enable C<keep_meta_info>  so you can check the
-flags.
+row are provided, you should enable L<C<keep_meta_info>|/keep_meta_info> so
+you can check the flags.
 
 =head2 status
 X<status>
@@ -2620,7 +2623,7 @@ The C<< $csv->error_diag >> method is automatically invoked upon error when
 the contractor was called with  L<C<auto_diag>|/auto_diag>  set to  C<1> or
 C<2>, or when L<autodie> is in effect.  When set to C<1>, this will cause a
 C<warn> with the error message,  when set to C<2>, it will C<die>. C<2012 -
-EOF> is excluded from C<auto_diag> reports.
+EOF> is excluded from L<C<auto_diag>|/auto_diag> reports.
 
 Errors can be (individually) caught using the L</error> callback.
 
