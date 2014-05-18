@@ -1018,7 +1018,7 @@ L</parse> method, which is more complicated from the usual point of usage:
      my @fields = $csv->fields ();
      }
 
-this will break, as the while might read broken lines as that does not care
+this will break, as the C<while> might read broken lines:  it does not care
 about the quoting. If you need to support embedded newlines,  the way to go
 is to  B<not>  pass L<C<eol>|/eol> in the parser  (it accepts C<\n>, C<\r>,
 B<and> C<\r\n> by default) and then
@@ -1060,9 +1060,9 @@ On combining (L</print>  and  L</combine>):  if any of the combining fields
 was marked UTF8, the resulting string will be marked as UTF8.  Note however
 that all fields  I<before>  the first field marked UTF8 and contained 8-bit
 characters that were not upgraded to UTF8,  these will be  C<bytes>  in the
-resulting string too possibly causing errors. If you pass data of different
-encoding, or you don't know if there is different encoding,  force it to be
-upgraded before you pass them on:
+resulting string too, possibly causing unexpected errors.  If you pass data
+of different encoding,  or you don't know if there is  different  encoding,
+force it to be upgraded before you pass them on:
 
  $csv->print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);
 
@@ -1112,7 +1112,7 @@ all characters are accepted, at least in quoted fields.
 
 =item *
 
-A field within C<CSV>  must be surrounded by double-quotes to contain a the
+A field within  C<CSV>  must be surrounded by  double-quotes to  contain  a
 separator character (comma).
 
 =back
@@ -1134,7 +1134,7 @@ this range may or may not work as expected.  Multibyte characters, like UTF
 C<U+060C> (ARABIC COMMA),   C<U+FF0C> (FULLWIDTH COMMA),  C<U+241B> (SYMBOL
 FOR ESCAPE), C<U+2424> (SYMBOL FOR NEWLINE), C<U+FF02> (FULLWIDTH QUOTATION
 MARK), and C<U+201C> (LEFT DOUBLE QUOTATION MARK) (to give some examples of
-what might look promising) are therefor not allowed.
+what might look promising) are therefore not allowed.
 
 If you use perl-5.8.2 or higher these three attributes are utf8-decoded, to
 increase the likelihood of success. This way C<U+00FE> will be allowed as a
@@ -1231,7 +1231,7 @@ will now be parsed as
 
  ("1", "2.0", "3", "ape", "monkey")
 
-even if the original line was perfectly sane C<CSV>.
+even if the original line was perfectly acceptable C<CSV>.
 
 =item blank_is_undef
 X<blank_is_undef>
@@ -1266,8 +1266,8 @@ is read as
 
  (1, undef, undef, " ", 2)
 
-Note that this effects only fields that are  really empty,  not fields that
-are empty after stripping allowed whitespace. YMMV.
+Note that this effects only fields that are  originally  empty,  not fields
+that are empty after stripping allowed whitespace. YMMV.
 
 =item quote_char
 X<quote_char>
@@ -1288,8 +1288,8 @@ characters like
  1,foo "bar" baz,42
 
 would result in parse error 2034.  Though it is still bad practice to allow
-this format,  we cannot help the fact some vendors  make their applications
-spit out lines styled that way.
+this format,  we  cannot  help  the  fact  that  some  vendors  make  their
+applications spit out lines styled this way.
 
 If there is B<really> bad C<CSV> data, like
 
@@ -1321,7 +1321,7 @@ If  you  change  the   L<C<quote_char>|/quote_char>  without  changing  the
 C<escape_char>,  the  C<escape_char> will still be the double-quote (C<">).
 If instead you want to escape the  L<C<quote_char>|/quote_char> by doubling
 it you will need to also change the  C<escape_char>  to be the same as what
-you changed the L<C<quote_char>|/quote_char> to.
+you have changed the L<C<quote_char>|/quote_char> to.
 
 The escape character can not be equal to the separation character.
 
@@ -1343,7 +1343,7 @@ X<allow_unquoted_escape>
 
 A backward compatibility issue where L<C<escape_char>|/escape_char> differs
 from L<C<quote_char>|/quote_char>  prevents  L<C<escape_char>|/escape_char>
-to be on the first position of a field.  If L<C<quote_char>|/quote_char> is
+to be in the first position of a field.  If L<C<quote_char>|/quote_char> is
 equal to the default C<"> and L<C<escape_char>|/escape_char> is set to C<\>,
 this would be illegal:
 
@@ -1396,8 +1396,8 @@ By default the generated fields are quoted only if they I<need> to be.  For
 example, if they contain the separator character. If you set this attribute
 to C<1> then I<all> defined fields will be quoted. (C<undef> fields are not
 quoted, see L</blank_is_undef>). This makes it quite often easier to handle
-exported data in external applications.   (Poor creatures who are not using
-Text::CSV_XS. :)
+exported data in external applications.   (Poor creatures who are better to
+use Text::CSV_XS. :)
 
 =item quote_space
 X<quote_space>
@@ -1442,8 +1442,8 @@ special characters newline (C<NL>) and Carriage Return (C<CR>)  will not be
 special when this flag is set,  and be dealt with  as being ordinary binary
 characters. This will ease working with data with embedded newlines.
 
-When C<verbatim> is used with  L</getline>,  L</getline> auto-chomp's every
-line.
+When  C<verbatim>  is used with  L</getline>,  L</getline>  auto-C<chomp>'s
+every line.
 
 Imagine a file format like
 
@@ -1451,7 +1451,7 @@ Imagine a file format like
 
 where, the line ending is a very specific C<"#\r\n">, and the sep_char is a
 C<^> (caret).   None of the fields is quoted,   but embedded binary data is
-likely to be present. With the specific line ending, that should not be too
+likely to be present. With the specific line ending, this should not be too
 hard to detect.
 
 By default,  Text::CSV_XS'  parse function is instructed to only know about
@@ -1462,7 +1462,7 @@ we tell L</parse> to parse the line as if C<"\n"> is just nothing more than
 a binary character.
 
 For L</parse> this means that the parser has no more idea about line ending
-and L</getline> chomps line endings on reading.
+and L</getline> C<chomp>s line endings on reading.
 
 =item auto_diag
 X<auto_diag>
@@ -1550,10 +1550,10 @@ X<print>
 
  $status = $csv->print ($io, $colref);
 
-Similar to L</combine> + L</string> + L</print>, but way more efficient. It
-expects an array ref as input  (not an array!)  and the resulting string is
-not really created, but immediately written to the C<$io> object, typically
-an IO handle or any other object that offers a L</print> method.
+Similar to  L</combine> + L</string> + L</print>,  but much more efficient.
+It expects an array ref as input  (not an array!)  and the resulting string
+is not really  created,  but  immediately  written  to the  C<$io>  object,
+typically an IO handle or any other object that offers a L</print> method.
 
 For performance reasons  C<print>  does not create a result string,  so all
 L</string>, L</status>, L</fields>, and L</error_input> methods will return
@@ -1726,7 +1726,7 @@ to indicate a range.   All indices are C<1>-based:  the first row or column
 has index C<1>. Selections can be combined with the semi-colon (C<;>).
 
 When using this method in combination with  L</column_names>,  the returned
-reference will point to a list of hashes  instead of to a list of lists.  A
+reference  will point to a  list of hashes  instead of a  list of lists.  A
 disjointed  cell-based combined selection  might return rows with different
 number of columns making the use of hashes unpredictable.
 
@@ -1775,8 +1775,8 @@ with different number of columns
  cell=1,1-2,2;3,3-4,4;1,4;4,1
 
 Disjointed selections will only return selected cells.   The cells that are
-not specified will not be included in the returned set not even as C<undef>.
-As an example given a CSV like
+not  specified  will  not  be  included  in the  returned set,  not even as
+C<undef>.  As an example given a C<CSV> like
 
  11,12,13,...19
  21,22,...28,29
@@ -1808,7 +1808,7 @@ Passing an invalid fragment specification will croak and set error 2013.
 X<column_names>
 
 Set the "keys" that will be used in the  L</getline_hr>  calls.  If no keys
-(column names) are passed, it'll return the current setting as a list.
+(column names) are passed, it will return the current setting as a list.
 
 L</column_names> accepts a list of scalars  (the column names)  or a single
 array_ref, so you can pass the return value from L</getline> too:
@@ -1865,9 +1865,9 @@ X<types>
 
  $csv->types (\@tref);
 
-This method is used to force that columns are of a given type. For example,
-if you have an integer column, two double columns and a string column, then
-you might do a
+This method is used to force that  (all)  columns are of a given type.  For
+example, if you have an integer column,  two  columns  with  doubles  and a
+string column, then you might do a
 
  $csv->types ([Text::CSV_XS::IV (),
                Text::CSV_XS::NV (),
@@ -1924,9 +1924,9 @@ This method returns the "flags" of the input to L</combine> or the flags of
 the resultant  decomposed fields of  L</parse>,   whichever was called more
 recently.
 
-For each field, a meta_info field will hold flags that tell something about
-the field returned by the  L</fields>  method or passed to the  L</combine>
-method. The flags are bit-wise-or'd like:
+For each field,  a meta_info field will hold  flags that  inform  something
+about  the  field  returned  by  the  L</fields>  method or  passed to  the
+L</combine> method. The flags are bit-wise-C<or>'d like:
 
 =over 2
 
@@ -2021,7 +2021,7 @@ associated error message to STDERR.
 If called in list context,  this will return  the error code  and the error
 message in that order.  If the last error was from parsing, the third value
 returned  is a best guess  at the location  within the line  that was being
-parsed.  Its value is 1-based.  The forth value represents the record count
+parsed.  Its value is 1-based. The fourth value represents the record count
 parsed by this csv instance. See F<examples/csv-check>  for how this can be
 used.
 
@@ -2154,7 +2154,8 @@ list of field headers and used to produce an array of hashes.
 
  my $aoh = csv (in => $fh, headers => "auto");
 
-If C<headers> is an anonymous list, it will be used instead
+If  C<headers>  is an anonymous list,  the entries in the list will be used
+instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
  csv (in => $aoa, out => $fh, headers => [qw( code description price }]);
@@ -2334,9 +2335,9 @@ wrapper.
 =back
 
 The arguments to these internal functions are deliberately not described or
-documented in order to enable the module authors changing it when they feel
-the need for it.  Using them is highly discouraged as the API may change in
-future releases.
+documented in order to enable the  module authors make changes it when they
+feel the need for it.  Using them is  highly  discouraged  as  the  API may
+change in future releases.
 
 =head1 EXAMPLES
 
@@ -2499,7 +2500,7 @@ ANSI escape codes or HTML.
 Text::CSV_XS  is I<not> designed to detect the characters used to quote and
 separate fields.  The parsing is done using predefined  (default) settings.
 In the examples  sub-directory,  you can find scripts  that demonstrate how
-you can try to detect these characters yourself.
+you could try to detect these characters yourself.
 
 =head2 Microsoft Excel
 
@@ -2518,7 +2519,7 @@ setting in it, so checking the locale is no solution.
 =item More Errors & Warnings
 
 New extensions ought to be  clear and concise  in reporting what  error has
-occurred where and why, and maybe also tell a remedy to the problem.
+occurred where and why, and maybe also offer a remedy to the problem.
 
 L</error_diag> is a (very) good start, but there is more work to be done in
 this area.
@@ -2679,8 +2680,8 @@ And below should be the complete list of error codes that can be returned:
 X<1001>
 
 The  L<separation character|/sep_char>  cannot be equal to  L<the quotation
-character|/quote_char> or to L<the escape character|/escape_char>,  as that
-will invalidate all parsing rules.
+character|/quote_char> or to L<the escape character|/escape_char>,  as this
+would invalidate all parsing rules.
 
 =item *
 1002 "INI - allow_whitespace with escape_char or quote_char SP or TAB"
@@ -2777,7 +2778,7 @@ L</allow_loose_escape>.
 X<2026>
 
 Binary characters are not allowed by default.    Exceptions are fields that
-contain valid UTF-8,  that will automatically be upgraded is the content is
+contain valid UTF-8,  that will automatically be upgraded if the content is
 valid UTF-8. Set L<C<binary>|/binary> to C<1> to accept binary data.
 
 =item *
