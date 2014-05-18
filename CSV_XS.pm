@@ -2694,8 +2694,9 @@ C<SPACE> or C<TAB> is too ambiguous to allow.
 1003 "INI - \r or \n in main attr not allowed"
 X<1003>
 
-Using default C<eol> characters in either  C<sep_char>,  C<quote_char>,  or
-C<escape_char> is not allowed.
+Using default L<C<eol>|/eol> characters in either L<C<sep_char>|/sep_char>,
+L<C<quote_char>|/quote_char>,   or  L<C<escape_char>|/escape_char>  is  not
+allowed.
 
 =item *
 1004 "INI - callbacks should be undef or a hashref"
@@ -2708,10 +2709,10 @@ a hash reference.
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 X<2010>
 
-When C<eol> has been set to anything but the default, like C<"\r\t\n">, and
-the C<"\r"> is following the B<second>  (closing) C<quote_char>,  where the
-characters following the C<"\r">  do not make up the C<eol> sequence,  this
-is an error.
+When  L<C<eol>|/eol>  has  been  set  to  anything  but the  default,  like
+C<"\r\t\n">,  and  the  C<"\r">  is  following  the   B<second>   (closing)
+L<C<quote_char>|/quote_char>, where the characters following the C<"\r"> do
+not make up the L<C<eol>|/eol> sequence, this is an error.
 
 =item *
 2011 "ECR - Characters after end of quoted field"
@@ -2727,7 +2728,7 @@ X<2012>
 
 Self-explaining. End-of-file while inside parsing a stream. Can happen only
 when reading from streams with L</getline>,  as using  L</parse> is done on
-strings that are not required to have a trailing C<eol>.
+strings that are not required to have a trailing L<C<eol>|/eol>.
 
 =item *
 2013 "INI - Specification error for fragments RFC7111"
@@ -2777,7 +2778,7 @@ X<2026>
 
 Binary characters are not allowed by default.    Exceptions are fields that
 contain valid UTF-8,  that will automatically be upgraded is the content is
-valid UTF-8. Pass C<1> to the C<binary> attribute to accept binary data.
+valid UTF-8. Set L<C<binary>|/binary> to C<1> to accept binary data.
 
 =item *
 2027 "EIQ - Quoted field not terminated"
