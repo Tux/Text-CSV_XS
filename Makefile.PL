@@ -25,6 +25,7 @@ my %wm = (
 			 CSV_XS.xs.gcov
 			 cover_db
 			 valgrind.log
+			 pod2htmd.tmp
 			 )
 		      },
 

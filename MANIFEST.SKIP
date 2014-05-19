@@ -7,6 +7,7 @@
 \.gcda$
 \.gcno$
 \.releaserc
+\.exrc$
 blib/
 cover_db/
 sandbox/
@@ -19,4 +20,5 @@ xt/
 ^xx
 META.yml
 valgrind.log
+pod2htmd.tmp
 \.aspell\.local\.pws
