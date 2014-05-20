@@ -24,7 +24,7 @@
     * Make subclassing safer
 
 1.04	- 2014-02-06, H.Merijn Brand
-    * get_columns () with no argument now returns the empty list
+    * column_names () with no argument now returns the empty list
       instead of undef when no columns defined
     * fragments (rfc7111) now also support AoH (was AoA only)
     * Error code conflict for fragments resolved to 2013
