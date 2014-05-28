@@ -483,7 +483,7 @@ code,name,price,description
 «43927» - Is bind_columns broken or am I using it wrong?
 1,2
 «44402» - Unexpected results parsing tab-separated spaces
-«x1000» - Detlev reported inconsisten behavior between XS and PP
+«x1000» - Detlev reported inconsistent behavior between XS and PP
 ï»¿B:033_02_	-drop, +drop	animal legs	@p 02-033.bmp	@p 02-033.bmp				\x{A}		1	:c/b01:!1	!	13	!6.!6			:b/b01:0						B:033_02_	R#012a	2	
 B:034_02c	diagonal, trac	-bound up	@p 02-034c.bmp	@p 02-034c.bmp			Found through e_sect2.pdf as U+F824 ( ,) and U+2E88 (âºˆ,) but won't display	\x{A}		1	:c/b01:!1	!	11	!10			:b/b01:0				2E88		B:034_02c	R#018b	2	
 B:035_02_	+drop, -drop	fission	ä¸·				Aufgrund folgender FÃ¤lle definiere ich einen neuen Baustein, der simp. mit "horns&" identisch ist.\x{A}éšŠé˜Ÿ (jap.: pinnacle, horns&sow)\x{A}æ›¾æ›¾ï€ å…Œå…‘\x{A}Ã¼ber "golden calf":\x{A}é€é€			1	:c/b01:!1	!	11	!10			:b/b01:0				4E37		B:035_02_		2	
