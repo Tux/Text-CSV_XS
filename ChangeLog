@@ -1,4 +1,4 @@
-1.09	- 2014-05-20, H.Merijn Brand
+1.09	- 2014-06-09, H.Merijn Brand
     * Missed defined-or need in csv2xls (RT#95787)
 
 1.08	- 2014-05-17, H.Merijn Brand
