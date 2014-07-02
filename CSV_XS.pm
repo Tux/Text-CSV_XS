@@ -28,7 +28,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.09";
+$VERSION   = "1.10";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -818,7 +818,7 @@ sub _csv_attr
     if ($out) {
 	$in or croak $csv_usage;	# No out without in
 	defined $attr{eol} or $attr{eol} = "\r\n";
-	if (ref $out or "GLOB" eq ref \$out) {
+	if ((ref $out and ref $out ne "SCALAR") or "GLOB" eq ref \$out) {
 	    $fh = $out;
 	    }
 	else {

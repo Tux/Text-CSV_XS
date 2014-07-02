@@ -2,9 +2,10 @@
 
 use strict;
 use warnings;
+use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 24;
+ use Test::More tests => 28;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -85,3 +86,17 @@ ok (csv (in => \&getrowh, out => $file), "out from CODE/HR (auto headers)");
 is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
 
 unlink $file;
+
+eval {
+    exists  $Config{useperlio} &&
+    defined $Config{useperlio} &&
+    $] >= 5.008                &&
+    $Config{useperlio} eq "define" or skip "No scalar ref in this perl", 4;
+    my $out = "";
+    open my $fh, ">", \$out;
+    ok (csv (in => [[ 1, 2, 3 ]], out => $fh), "out to fh to scalar ref");
+    is ($out, "1,2,3\r\n",	"Scalar out");
+    $out = "";
+    ok (csv (in => [[ 1, 2, 3 ]], out => \$out), "out to scalar ref");
+    is ($out, "1,2,3\r\n",	"Scalar out");
+    };
