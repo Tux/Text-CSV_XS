@@ -57,6 +57,7 @@ my %def_attr = (
     escape_char			=> '"',
     sep_char			=> ',',
     eol				=> '',
+    sep				=> undef,
     always_quote		=> 0,
     quote_space			=> 1,
     quote_null			=> 1,
@@ -165,6 +166,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     quote_char			=>  0,
     escape_char			=>  1,
     sep_char			=>  2,
+    sep				=> 37,	# 37 .. 44
     binary			=>  3,
     keep_meta_info		=>  4,
     always_quote		=>  5,
@@ -220,29 +222,35 @@ sub _set_attr_N
 sub quote_char
 {
     my $self = shift;
-    if (@_) {
-	my $qc = shift;
-	$self->_set_attr_C ("quote_char", $qc);
-	}
+    @_ and $self->_set_attr_C ("quote_char",  shift);
     $self->{quote_char};
     } # quote_char
 
 sub escape_char
 {
     my $self = shift;
-    if (@_) {
-	my $ec = shift;
-	$self->_set_attr_C ("escape_char", $ec);
-	}
+    @_ and $self->_set_attr_C ("escape_char", shift);
     $self->{escape_char};
     } # escape_char
 
 sub sep_char
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("sep_char", shift);
+    @_ and $self->_set_attr_C ("sep_char",    shift);
     $self->{sep_char};
     } # sep_char
+
+sub sep
+{
+    my $self = shift;
+    if (@_) {
+	my $sep = shift;
+	defined $sep or $sep = "";
+	$self->{sep} = $sep;
+	$self->_cache_set ($_cache_id{sep}, $sep);
+	}
+    $self->{sep};
+    } # sep
 
 sub eol
 {
@@ -856,11 +864,13 @@ sub _csv_attr
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
 
-    my $cbai = delete $attr{callbacks}{after_in}   ||
-	       delete $attr{after_in};
-    my $cbbo = delete $attr{callbacks}{before_out} ||
+    my $cbai = delete $attr{callbacks}{after_in}    ||
+	       delete $attr{after_in}               ||
+	       delete $attr{callbacks}{after_parse} ||
+	       delete $attr{after_parse};
+    my $cbbo = delete $attr{callbacks}{before_out}  ||
 	       delete $attr{before_out};
-    my $cboi = delete $attr{callbacks}{on_in}      ||
+    my $cboi = delete $attr{callbacks}{on_in}       ||
 	       delete $attr{on_in};
 
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
@@ -1199,10 +1209,19 @@ X<sep_char>
 
 The char used to separate fields, by default a comma. (C<,>).  Limited to a
 single-byte character, usually in the range from C<0x20> (space) to C<0x7E>
-(tilde).
+(tilde). When longer sequences are required, use L<C<sep>|sep>.
 
 The separation character can not be equal to the quote character  or to the
 escape character.
+
+See also L</CAVEATS>
+
+=item sep
+X<sep>
+
+The chars used to separate fields, by default undefined. Limited to 8 bytes.
+
+When set, overrules L<C<sep_char>|sep_char>.
 
 See also L</CAVEATS>
 
@@ -1505,6 +1524,7 @@ is equivalent to
      quote_char            => '"',
      escape_char           => '"',
      sep_char              => ',',
+     sep                   => undef,
      eol                   => $\,
      always_quote          => 0,
      quote_space           => 1,

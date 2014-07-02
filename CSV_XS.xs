@@ -29,7 +29,7 @@
 #define CSV_XS_TYPE_NV	2
 
 /* Keep in sync with .pm! */
-#define CACHE_SIZE			40
+#define CACHE_SIZE			48
 
 #define CACHE_ID_quote_char		0
 #define CACHE_ID_escape_char		1
@@ -42,6 +42,8 @@
 #define CACHE_ID_allow_unquoted_escape	8
 #define CACHE_ID_allow_whitespace	9
 #define CACHE_ID_blank_is_undef		10
+#define CACHE_ID_sep			37
+#define CACHE_ID_sep_len		45
 #define CACHE_ID_eol			11
 #define CACHE_ID_eol_len		19
 #define CACHE_ID_eol_is_cr		20
@@ -74,6 +76,7 @@
 #define CH_SPACE	'\040'
 #define CH_DEL		'\177'
 #define CH_EOLX		1215
+#define CH_SEPX		8888
 
 #define useIO_EOF	0x10
 
@@ -137,6 +140,8 @@ typedef struct {
 
     byte *	eol;
     STRLEN	eol_len;
+    byte *	sep;
+    STRLEN	sep_len;
     char *	types;
     STRLEN	types_len;
 
@@ -295,6 +300,9 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	 idx == CACHE_ID_escape_char	||
 	 idx == CACHE_ID_sep_char) {
 	cp[idx] = SvPOK (val) ? *(SvPVX (val)) : 0;
+
+	if (idx == CACHE_ID_sep_char)
+	    cp[CACHE_ID_sep_len]   = 0;
 	return;
 	}
 
@@ -342,6 +350,22 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	if (len > 0 && len < 8)
 	    memcpy (cp + CACHE_ID_eol, eol, len);
 	}
+
+    if (idx == CACHE_ID_sep) {
+	STRLEN len = 0;
+	char  *sep = SvPOK (val) ? SvPV (val, len) : "";
+
+	memset (cp + CACHE_ID_sep, 0, 8);
+	if (len == 1) {
+	    cp[CACHE_ID_sep_len]  = 0;
+	    cp[CACHE_ID_sep_char] = *sep;
+	    }
+	else
+	if (len > 1 && len < 8) {
+	    cp[CACHE_ID_sep_len] = len;
+	    memcpy (cp + CACHE_ID_sep, sep, len);
+	    }
+	}
     } /* cache_set */
 
 #define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
@@ -373,9 +397,9 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 
     cp = (byte *)SvPV_nolen (*svp);
     warn ("CACHE:\n");
-    _cache_show_char ("quote",			CACHE_ID_quote_char);
-    _cache_show_char ("escape",			CACHE_ID_escape_char);
-    _cache_show_char ("sep",			CACHE_ID_sep_char);
+    _cache_show_char ("quote_char",		CACHE_ID_quote_char);
+    _cache_show_char ("escap_chare",		CACHE_ID_escape_char);
+    _cache_show_char ("sep_char",		CACHE_ID_sep_char);
     _cache_show_byte ("binary",			CACHE_ID_binary);
     _cache_show_byte ("decode_utf8",		CACHE_ID_decode_utf8);
 
@@ -409,6 +433,9 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 	}
     else
 	_cache_show_str  ("eol", 8,		(byte *)"<broken>");
+    _cache_show_byte ("sep_len",		CACHE_ID_sep_len);
+    if (c > 1)
+	_cache_show_cstr ("sep", c,		CACHE_ID_sep);
 
     /* csv->is_bound			=
 	    (csv->cache[CACHE_ID__is_bound    ] << 24) |
@@ -481,6 +508,18 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		csv->eol_len = len;
 		}
 	    }
+	csv->sep_len			= csv->cache[CACHE_ID_sep_len		];
+	if (csv->sep_len < 8)
+	    csv->sep = &csv->cache[CACHE_ID_sep];
+	else {
+	    /* Was too long to cache. must re-fetch */
+	    csv->sep       = NULL;
+	    csv->sep_len   = 0;
+	    if ((svp = hv_fetchs (self, "sep",     FALSE)) && *svp && SvOK (*svp)) {
+		csv->sep = (byte *)SvPV (*svp, len);
+		csv->sep_len = len;
+		}
+	    }
 	csv->is_bound			=
 	    (csv->cache[CACHE_ID__is_bound    ] << 24) |
 	    (csv->cache[CACHE_ID__is_bound + 1] << 16) |
@@ -518,10 +557,22 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		csv->escape_char = (char)0;
 	    }
 	csv->sep_char = ',';
+	csv->sep       = (byte *)"";
+	csv->sep_len   = 0;
 	if ((svp = hv_fetchs (self, "sep_char",    FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = SvPV (*svp, len);
 	    if (len)
 		csv->sep_char = *ptr;
+	    }
+	if ((svp = hv_fetchs (self, "sep",         FALSE)) && *svp && SvOK (*svp)) {
+	    ptr = (byte *)SvPV (*svp, len);
+	    if (len == 1)
+		csv->sep_char = *ptr;
+	    else {
+		csv->sep      = ptr;
+		csv->sep_len  = len;
+		csv->sep_char = 0;
+		}
 	    }
 
 	csv->eol       = (byte *)"";
@@ -600,6 +651,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->cache[CACHE_ID_eol_len]			= csv->eol_len;
 	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
 	    memcpy ((char *)&csv->cache[CACHE_ID_eol], csv->eol, csv->eol_len);
+	csv->cache[CACHE_ID_sep_len]			= csv->sep_len;
+	if (csv->sep_len > 0 && csv->sep_len < 8 && csv->sep)
+	    memcpy ((char *)&csv->cache[CACHE_ID_sep], csv->sep, csv->sep_len);
 	csv->cache[CACHE_ID_has_types]			= csv->types ? 1 : 0;
 	csv->cache[CACHE_ID__has_ahead]			= csv->has_ahead = 0;
 	csv->cache[CACHE_ID__has_hooks]			= csv->has_hooks;
@@ -746,8 +800,15 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
     for (i = 0; i <= n; i++) {
 	SV    *sv;
 
-	if (i > 0)
-	    CSV_PUT (csv, dst, csv->sep_char);
+	if (i > 0) {
+	    if (csv->sep_len) {
+		int x;
+		for (x = 0; x < (int)csv->sep_len; x++)
+		    CSV_PUT (csv, dst, csv->sep[x]);
+		}
+	    else
+		CSV_PUT (csv, dst, csv->sep_char);
+	    }
 
 	if (bound)
 	    sv = bound_field (csv, i, 1);
@@ -929,11 +990,15 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 
 #if MAINT_DEBUG > 4
 #define PUT_RPT       fprintf (stderr, "# CSV_PUT  @ %4d: 0x%02x '%c'\n", __LINE__, c, isprint (c) ? c : '?')
+#define PUT_SEPX_RPT1 fprintf (stderr, "# PUT SEPX @ %4d\n", __LINE__)
+#define PUT_SEPX_RPT2 fprintf (stderr, "# Done putting SEPX\n")
 #define PUT_EOLX_RPT1 fprintf (stderr, "# PUT EOLX @ %4d\n", __LINE__)
 #define PUT_EOLX_RPT2 fprintf (stderr, "# Done putting EOLX\n")
 #define PUSH_RPT      fprintf (stderr, "# AV_PUSHd @ %4d\n", __LINE__); sv_dump (sv)
 #else
 #define PUT_RPT
+#define PUT_SEPX_RPT1
+#define PUT_SEPX_RPT2
 #define PUT_EOLX_RPT1
 #define PUT_EOLX_RPT2
 #define PUSH_RPT
@@ -954,6 +1019,13 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	    CSV_PUT_SV1 (csv->eol[x]);		\
 	csv->eol_pos = -1;			\
 	PUT_EOLX_RPT2;				\
+	}					\
+    else if (c == CH_SEPX) {			\
+	int x; PUT_SEPX_RPT1;			\
+	warn ("PUT SEPX\n");\
+	for (x = 0; x < (int)csv->sep_len; x++)	\
+	    CSV_PUT_SV1 (csv->sep[x]);		\
+	PUT_SEPX_RPT2;				\
 	}					\
     else					\
 	CSV_PUT_SV1 (c);			\
@@ -1006,9 +1078,8 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv)
     STRLEN len;
     char   *s = SvPV (sv, len);
     unless (s && len) return;
-    while (s[len - 1] == CH_SPACE || s[len - 1] == CH_TAB) {
+    while (s[len - 1] == CH_SPACE || s[len - 1] == CH_TAB)
 	s[--len] = (char)0;
-	}
     SvCUR_set (sv, len);
     } /* strip_trail_whitespace */
 
@@ -1025,6 +1096,14 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv)
 #if MAINT_DEBUG
 static char str_parsed[40];
 #endif
+
+#define is_SEPX(c) (\
+    csv->sep_len							&&\
+    csv->size - csv->used >= csv->sep_len				&&\
+    c == *csv->sep							&&\
+    !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
+    (csv->used += csv->sep_len - 1)					&&\
+    (c = CH_SEPX))
 
 #define Parse(csv,src,fields,fflags)	cx_Parse (aTHX_ csv, src, fields, fflags)
 static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
@@ -1055,7 +1134,7 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 	if (spl < 39) str_parsed[spl] = c;
 #endif
 restart:
-	if (c == csv->sep_char) {
+	if (c == csv->sep_char || is_SEPX (c)) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%02x pos %d = SEP '%c'\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
