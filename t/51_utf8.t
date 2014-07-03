@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use charnames ":full";
 
 use Test::More;
 
@@ -43,7 +44,7 @@ BEGIN {
 	[ "bytes up :encoding(UTF-8)", ":encoding(UTF-8)", $bytes_up,  "utf8",   "no warn", ],
 	);
 
-    plan tests => 11 + 3 + 6 * @tests;
+    plan tests => 11 + 6 * @tests + 8;
     }
 
 BEGIN {
@@ -135,9 +136,23 @@ for (@tests) {
 	}
     }
 
-is ($csv->sep ("\x{2063}"), "\x{2063}",   "sep (INVISIBLE SEPARATOR)");
+my $sep = "\N{INVISIBLE SEPARATOR}";
+is ($csv->sep ($sep), $sep,			"sep (INVISIBLE SEPARATOR)");
 
-open my $fh, ">", \(my $out = "");
-ok ($csv->print ($fh, [ 1, 2 ]),          "print with UTF8 sep");
-close $fh;
-is ($out, "1\x{e2}\x{81}\x{a3}2",         "output");
+foreach my $data ([ 1, 2 ]) {#, [ "\N{EURO SIGN}", "\N{SNOWMAN}" ]) {
+    open my $fh, ">", \(my $out = "");
+    ok ($csv->combine (@$data),			"combine");
+    is ($csv->string, join ($sep, @$data),	"string");
+
+    ok ($csv->print ($fh, $data),		"print with UTF8 sep");
+    close $fh;
+    use DP; diag DPeek $out;
+    is ($out, join ($sep, @$data),		"output");
+
+    ok ($csv->parse ($out),			"parse");
+    is_deeply ([ $csv->fields ], $data,		"fields");
+
+    open $fh, "<", \$out;
+    is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
+    close $fh;
+    }

@@ -686,9 +686,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		? 0
 		: 1
 	: 0;
-    /* Consider setting utf8 to TRUE is the separator is UTF8
+    /* Consider setting utf8 to TRUE is the separator is UTF8 */
     if (csv->sep_len && is_utf8_string ((U8 *)(csv->sep), strlen (csv->sep)))
-	csv->utf8 = 1; */
+	csv->utf8 = 1; /**/
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
@@ -704,13 +704,12 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	PUSHMARK (sp);
 	EXTEND (sp, 2);
 	PUSHs ((dst));
-	PUSHs (tmp);
-	PUTBACK;
 	if (csv->utf8) {
 	    STRLEN	 len;
 	    char	*ptr;
 	    int		 j, l;
 
+	    warn ("# print in UTF-8 %s\n", SvPV_nole/* n (tmp)); */
 	    ptr = SvPV (tmp, len);
 	    while (len > 0 && !is_utf8_sv (tmp) && keep < 16) {
 		ptr[--len] = (char)0;
@@ -721,6 +720,8 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 		csv->buffer[j] = csv->buffer[csv->used - keep + j];
 	    SvUTF8_on (tmp);
 	    }
+	PUSHs (tmp);
+	PUTBACK;
 	result = call_sv (m_print, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	if (result) {

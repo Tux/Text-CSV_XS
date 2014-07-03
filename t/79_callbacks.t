@@ -96,6 +96,7 @@ my $callbacks = {
     error        => \&ignore,
     after_parse  => sub {
 	my ($c, $av) = @_;
+	diag "# AP called";
 	# Just add a field
 	push @$av, "NEW";
 	},
@@ -142,8 +143,10 @@ close $fh;
 is_deeply (Text::CSV_XS::csv (in => $fn, callbacks => $callbacks),
     [[1,"foo","NEW"],[2,"bar","NEW"],[3,"","NEW"]], "using getline_all");
 
+$csv->_cache_diag ();
 # Test the non-IO interface
 ok ($csv->parse ("10,blah,33\n"),			"parse");
+$csv->_cache_diag ();
 is_deeply ([ $csv->fields ], [ 10, "blah", 33, "NEW" ],	"fields");
 
 ok ($csv->combine (11, "fri", 22, 18),			"combine - no hook");
