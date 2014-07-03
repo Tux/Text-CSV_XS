@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 141;
+use Test::More tests => 147;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -16,6 +16,7 @@ ok ($csv = Text::CSV_XS->new,				"new ()");
 is ($csv->quote_char,			'"',		"quote_char");
 is ($csv->escape_char,			'"',		"escape_char");
 is ($csv->sep_char,			',',		"sep_char");
+is ($csv->sep,				',',		"sep");
 is ($csv->eol,				'',		"eol");
 is ($csv->always_quote,			0,		"always_quote");
 is ($csv->binary,			0,		"binary");
@@ -42,6 +43,8 @@ is ($csv->string,
     qq{"txt =, ""Hi!""",Yes,,2,,1.09,"\r",},	"string");
 
 is ($csv->sep_char (";"),		';',		"sep_char (;)");
+is ($csv->sep (";"),			';',		"sep (;)");
+is ($csv->sep_char (),			';',		"sep_char ()");
 is ($csv->quote_char ("="),		'=',		"quote_char (=)");
 is ($csv->eol (undef),			"",		"eol (undef)");
 is ($csv->eol (""),			"",		"eol ('')");
@@ -83,6 +86,8 @@ is ($csv->quote_space (0),		0,		"quote_space (0)");
 is ($csv->quote_null (0),		0,		"quote_null (0)");
 is ($csv->quote_binary (0),		0,		"quote_binary (0)");
 is ($csv->decode_utf8 (0),		0,		"decode_utf8 (0)");
+is ($csv->sep ("--"),			"--",		"sep (\"--\")");
+is ($csv->sep_char (),			"\0",		"sep_char");
 
 # Funny settings, all three translate to \0 internally
 ok ($csv = Text::CSV_XS->new ({
@@ -91,6 +96,7 @@ ok ($csv = Text::CSV_XS->new ({
     escape_char	=> undef,
     }),						"new (undef ...)");
 is ($csv->sep_char,		undef,		"sep_char undef");
+is ($csv->sep,			undef,		"sep undef");
 is ($csv->quote_char,		undef,		"quote_char undef");
 is ($csv->escape_char,		undef,		"escape_char undef");
 ok ($csv->parse ("foo"),			"parse (foo)");

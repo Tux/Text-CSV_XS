@@ -246,10 +246,13 @@ sub sep
     if (@_) {
 	my $sep = shift;
 	defined $sep or $sep = "";
+	$] >= 5.008002 and utf8::decode ($sep);
 	$self->{sep} = $sep;
+	$self->{sep_char} = length ($sep) == 1 ? $sep : "\0";
 	$self->_cache_set ($_cache_id{sep}, $sep);
 	}
-    $self->{sep};
+    my $sep = $self->{sep};
+    length ($sep) ? $sep : $self->{sep_char};
     } # sep
 
 sub eol

@@ -686,6 +686,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		? 0
 		: 1
 	: 0;
+    /* Consider setting utf8 to TRUE is the separator is UTF8
+    if (csv->sep_len && is_utf8_string ((U8 *)(csv->sep), strlen (csv->sep)))
+	csv->utf8 = 1; */
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)

@@ -43,7 +43,7 @@ BEGIN {
 	[ "bytes up :encoding(UTF-8)", ":encoding(UTF-8)", $bytes_up,  "utf8",   "no warn", ],
 	);
 
-    plan tests => 11 + 6 * @tests;
+    plan tests => 11 + 3 + 6 * @tests;
     }
 
 BEGIN {
@@ -134,3 +134,10 @@ for (@tests) {
 	    [ "", "", 1, "", "", "", 1, "" ], "UTF8 flags");
 	}
     }
+
+is ($csv->sep ("\x{2063}"), "\x{2063}",   "sep (INVISIBLE SEPARATOR)");
+
+open my $fh, ">", \(my $out = "");
+ok ($csv->print ($fh, [ 1, 2 ]),          "print with UTF8 sep");
+close $fh;
+is ($out, "1\x{e2}\x{81}\x{a3}2",         "output");
