@@ -688,7 +688,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	: 0;
     /* Consider setting utf8 to TRUE is the separator is UTF8 */
     if (csv->sep_len && is_utf8_string ((U8 *)(csv->sep), strlen (csv->sep)))
-	csv->utf8 = 1; /**/
+	csv->utf8 = 1;
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
@@ -709,7 +709,6 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	    char	*ptr;
 	    int		 j, l;
 
-	    warn ("# print in UTF-8 %s\n", SvPV_nole/* n (tmp)); */
 	    ptr = SvPV (tmp, len);
 	    while (len > 0 && !is_utf8_sv (tmp) && keep < 16) {
 		ptr[--len] = (char)0;
@@ -1101,13 +1100,43 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv)
 static char str_parsed[40];
 #endif
 
-#define is_SEPX(c) (\
+#define __is_SEPX(c) (\
     csv->sep_len							&&\
     csv->size - csv->used >= csv->sep_len				&&\
     c == *csv->sep							&&\
     !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
     (csv->used += csv->sep_len - 1)					&&\
     (c = CH_SEPX))
+#if MAINT_DEBUG > 1
+static byte _is_SEPX (byte c, csv_t *csv, int line)
+{
+    byte b = __is_SEPX (c);
+    (void)fprintf (stderr, "# SEPX: %d\n", b);
+    if (csv->sep_len) {
+	(void)fprintf (stderr, "# %d: len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
+	    line, csv->sep_len, csv->size, csv->used, c, *csv->sep);
+	}
+    return b;
+    } /* _is_SEPX */
+#define is_SEPX(c) _is_SEPX (c, csv, __LINE__)
+#else
+#define is_SEPX(c) __is_SEPX (c)
+#endif
+
+#if MAINT_DEBUG > 1
+static char *_sep_string (csv_t *csv)
+{
+    char sep[64];
+    if (csv->sep_len) {
+	int x;
+	for (x = 0; x < csv->sep_len; x++)
+	    sprintf (sep + x * x, "%02x ", csv->sep[x]);
+	}
+    else
+	sprintf (sep, "'%c' (0x%02x)", csv->sep_char, csv->sep_char);
+    return sep;
+    } /* _sep_string */
+#endif
 
 #define Parse(csv,src,fields,fflags)	cx_Parse (aTHX_ csv, src, fields, fflags)
 static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
@@ -1140,8 +1169,8 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 restart:
 	if (c == csv->sep_char || is_SEPX (c)) {
 #if MAINT_DEBUG > 1
-	    fprintf (stderr, "# %d/%d/%02x pos %d = SEP '%c'\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
+	    fprintf (stderr, "# %d/%d/%02x pos %d = SEP %s\n",
+		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, _sep_string (csv));
 #endif
 	    if (waitingForField) {
 		if (csv->blank_is_undef || csv->empty_is_undef)
@@ -1294,7 +1323,7 @@ restart:
 			    c2 = CSV_GET;
 			}
 
-		    if (c2 == csv->sep_char) {
+		    if (c2 == csv->sep_char || is_SEPX (c2)) {
 			AV_PUSH;
 			continue;
 			}
@@ -1349,14 +1378,14 @@ restart:
 		    return TRUE;
 		    }
 
-		if (c2 == csv->sep_char) {
+		if (c2 == csv->sep_char || is_SEPX (c2)) {
 		    AV_PUSH;
 		    }
 		else
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if (c2 == csv->quote_char  ||  c2 == csv->sep_char)
+		if (c2 == csv->quote_char || c2 == csv->sep_char || is_SEPX (c2))
 		    CSV_PUT_SV (c2)
 		else
 		if (c2 == CH_NL || c2 == CH_EOLX) {
@@ -1433,7 +1462,7 @@ restart:
 		    if (c2 == '0')
 			CSV_PUT_SV (0)
 		    else
-		    if ( c2 == csv->quote_char  || c2 == csv->sep_char ||
+		    if ( c2 == csv->quote_char  || c2 == csv->sep_char || is_SEPX (c2) ||
 			 c2 == csv->escape_char || csv->allow_loose_escapes)
 			CSV_PUT_SV (c2)
 		    else {
@@ -1454,7 +1483,7 @@ restart:
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if ( c2 == csv->quote_char  || c2 == csv->sep_char ||
+		if ( c2 == csv->quote_char  || c2 == csv->sep_char || is_SEPX (c2) ||
 		     c2 == csv->escape_char || csv->allow_loose_escapes)
 		    CSV_PUT_SV (c2)
 		else {
