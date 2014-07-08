@@ -1671,11 +1671,15 @@ static void hook (pTHX_ HV *hv, char *cb_name, AV *av)
     SV **svp;
     HV *cb;
 
+#if MAINT_DEBUG > 1
+    fprintf (stderr, "# HOOK %s %x\n", cb_name, av);
+#endif
     unless ((svp = hv_fetchs (hv, "callbacks", FALSE)) && _is_hashref (*svp))
 	return;
 
-    cb = (HV *)SvRV (*svp);
-    unless ((svp = hv_fetch (cb, cb_name, strlen (cb_name), FALSE)) && _is_coderef (*svp))
+    cb  = (HV *)SvRV (*svp);
+    svp = hv_fetch (cb, cb_name, strlen (cb_name), FALSE);
+    unless (svp && _is_coderef (*svp))
 	return;
 
     {   dSP;
