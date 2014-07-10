@@ -49,7 +49,7 @@ BEGIN {
     binmode $builder->failure_output, ":encoding(utf8)";
     binmode $builder->todo_output,    ":encoding(utf8)";
 
-    plan tests => 11 + 6 * @tests + 22;
+    plan tests => 11 + 6 * @tests + 43;
     }
 
 BEGIN {
@@ -142,38 +142,47 @@ for (@tests) {
     }
 
 my $sep = "\N{INVISIBLE SEPARATOR}";
-is ($csv->sep ($sep), $sep,			"sep (INVISIBLE SEPARATOR)");
-ok ($csv->always_quote (1),			"Always quote");
+foreach my $new (0, 1) {
+    my $csv;
+    if ($new) {
+	$csv = Text::CSV_XS->new ({ binary => 1, sep => $sep });
+	}
+    else {
+	$csv = Text::CSV_XS->new ({ binary => 1 });
+	is ($csv->sep ($sep), $sep,		"sep (INVISIBLE SEPARATOR)");
+	}
+    ok ($csv->always_quote (1),			"Always quote");
 
-foreach my $data ([ 1, 2 ], [ "\N{EURO SIGN}", "\N{SNOWMAN}" ]) {
+    foreach my $data ([ 1, 2 ], [ "\N{EURO SIGN}", "\N{SNOWMAN}" ]) {
 
-    my $exp8 = join $sep => map { qq{"$_"} } @$data;
-    utf8::encode (my $expb = $exp8);
-    my @exp = ($expb, $exp8);
+	my $exp8 = join $sep => map { qq{"$_"} } @$data;
+	utf8::encode (my $expb = $exp8);
+	my @exp = ($expb, $exp8);
 
-    ok ($csv->combine (@$data),			"combine");
-    my $x = $csv->string;
-    is ($csv->string, $exp8,			"string");
+	ok ($csv->combine (@$data),		"combine");
+	my $x = $csv->string;
+	is ($csv->string, $exp8,		"string");
 
-    open my $fh, ">:encoding(utf8)", \(my $out = "");
-    ok ($csv->print ($fh, $data),		"print with UTF8 sep");
-    close $fh;
+	open my $fh, ">:encoding(utf8)", \(my $out = "");
+	ok ($csv->print ($fh, $data),		"print with UTF8 sep");
+	close $fh;
 
-    is ($out, $expb,				"output");
+	is ($out, $expb,			"output");
 
-    ok ($csv->parse ($expb),			"parse");
-    is_deeply ([ $csv->fields ],    $data,	"fields");
+	ok ($csv->parse ($expb),		"parse");
+	is_deeply ([ $csv->fields ],    $data,	"fields");
 
-    open $fh, "<", \$expb;
-    is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
-    close $fh;
+	open $fh, "<", \$expb;
+	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
+	close $fh;
 
-    $expb =~ tr/"//d;
+	$expb =~ tr/"//d;
 
-    ok ($csv->parse ($expb),			"parse");
-    is_deeply ([ $csv->fields ],    $data,	"fields");
+	ok ($csv->parse ($expb),		"parse");
+	is_deeply ([ $csv->fields ],    $data,	"fields");
 
-    open $fh, "<", \$expb;
-    is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
-    close $fh;
+	open $fh, "<", \$expb;
+	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
+	close $fh;
+	}
     }

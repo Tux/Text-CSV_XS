@@ -1122,6 +1122,7 @@ static byte _is_SEPX (byte c, csv_t *csv, int line)
 #else
 #define is_SEPX(c) __is_SEPX (c)
 #endif
+#define is_SEP(c)  (c == csv->sep_char || is_SEPX (c))
 
 #if MAINT_DEBUG > 1
 static char *_sep_string (csv_t *csv)
@@ -1167,7 +1168,7 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 	if (spl < 39) str_parsed[spl] = c;
 #endif
 restart:
-	if (c == csv->sep_char || is_SEPX (c)) {
+	if (is_SEP (c)) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%02x pos %d = SEP %s\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, _sep_string (csv));
@@ -1323,7 +1324,7 @@ restart:
 			    c2 = CSV_GET;
 			}
 
-		    if (c2 == csv->sep_char || is_SEPX (c2)) {
+		    if (is_SEP (c2)) {
 			AV_PUSH;
 			continue;
 			}
@@ -1378,14 +1379,14 @@ restart:
 		    return TRUE;
 		    }
 
-		if (c2 == csv->sep_char || is_SEPX (c2)) {
+		if (is_SEP (c2)) {
 		    AV_PUSH;
 		    }
 		else
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if (c2 == csv->quote_char || c2 == csv->sep_char || is_SEPX (c2))
+		if (c2 == csv->quote_char || is_SEP (c2))
 		    CSV_PUT_SV (c2)
 		else
 		if (c2 == CH_NL || c2 == CH_EOLX) {
@@ -1462,7 +1463,7 @@ restart:
 		    if (c2 == '0')
 			CSV_PUT_SV (0)
 		    else
-		    if ( c2 == csv->quote_char  || c2 == csv->sep_char || is_SEPX (c2) ||
+		    if ( c2 == csv->quote_char  || is_SEP (c2) ||
 			 c2 == csv->escape_char || csv->allow_loose_escapes)
 			CSV_PUT_SV (c2)
 		    else {
@@ -1483,7 +1484,7 @@ restart:
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if ( c2 == csv->quote_char  || c2 == csv->sep_char || is_SEPX (c2) ||
+		if ( c2 == csv->quote_char  || is_SEP (c2) ||
 		     c2 == csv->escape_char || csv->allow_loose_escapes)
 		    CSV_PUT_SV (c2)
 		else {

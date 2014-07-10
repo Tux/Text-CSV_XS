@@ -130,6 +130,11 @@ sub new
 	$k => $attr->{$_};
 	} keys %$attr;
 
+    my $sep_aliased = 0;
+    if (defined $attr{sep}) {
+	$attr{sep_char} = delete $attr{sep};
+	$sep_aliased = 1;
+	}
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
@@ -141,6 +146,16 @@ sub new
 	$last_new_err = Text::CSV_XS->SetDiag (1000, "INI - Unknown attribute '$_'");
 	$attr{auto_diag} and error_diag ();
 	return;
+	}
+    if ($sep_aliased) {
+	my @b = unpack "U0C*", $attr{sep_char};
+	if (@b > 1) {
+	    $attr{sep} = $attr{sep_char};
+	    $attr{sep_char} = "\0";
+	    }
+	else {
+	    $attr{sep} = undef;
+	    }
 	}
 
     my $self = { %def_attr, %attr };
@@ -247,8 +262,15 @@ sub sep
 	my $sep = shift;
 	defined $sep or $sep = "";
 	$] >= 5.008002 and utf8::decode ($sep);
+	my @b = unpack "U0C*", $sep;
+	if (@b > 1) {
+	    $self->sep_char ("\0");
+	    }
+	else {
+	    $self->sep_char ($sep);
+	    $sep = "";
+	    }
 	$self->{sep} = $sep;
-	$self->{sep_char} = length ($sep) == 1 ? $sep : "\0";
 	$self->_cache_set ($_cache_id{sep}, $sep);
 	}
     my $sep = $self->{sep};
