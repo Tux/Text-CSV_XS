@@ -251,7 +251,10 @@ sub escape_char
 sub sep_char
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("sep_char",    shift);
+    if (@_) {
+	$self->_set_attr_C ("sep_char", shift);
+	$self->_cache_set ($_cache_id{sep}, "");
+	}
     $self->{sep_char};
     } # sep_char
 
@@ -1226,7 +1229,7 @@ Common values for C<eol> are C<"\012"> (C<\n> or Line Feed),  C<"\015\012">
 (C<\r\n> or Carriage Return, Line Feed),  and C<"\015">  (C<\r> or Carriage
 Return). The L<C<eol>|/eol> attribute cannot exceed 7 (ASCII) characters.
 
-If both C<$/> and L<C<eol>/eol> equal C<"\015">,  parsing lines that end on
+If both C<$/> and L<C<eol>|/eol> equal C<"\015">, parsing lines that end on
 only a Carriage Return without Line Feed, will be L</parse>d correct.
 
 =item sep_char
@@ -1234,7 +1237,7 @@ X<sep_char>
 
 The char used to separate fields, by default a comma. (C<,>).  Limited to a
 single-byte character, usually in the range from C<0x20> (space) to C<0x7E>
-(tilde). When longer sequences are required, use L<C<sep>|sep>.
+(tilde). When longer sequences are required, use L<C<sep>|/sep>.
 
 The separation character can not be equal to the quote character  or to the
 escape character.
@@ -1246,7 +1249,8 @@ X<sep>
 
 The chars used to separate fields, by default undefined. Limited to 8 bytes.
 
-When set, overrules L<C<sep_char>|sep_char>.
+When set, overrules L<C<sep_char>|/sep_char>.  If its length is one byte it
+acts as an alias to L<C<sep_char>|/sep_char>.
 
 See also L</CAVEATS>
 
