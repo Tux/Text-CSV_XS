@@ -1,7 +1,8 @@
 use Text::CSV_XS qw( csv );
+use Data::Peek;
 
 BEGIN { *CSV:: = \%Text::CSV_XS::; }
-$VERSION = "0.01";
+$VERSION = "0.02";
 
 1;
 
@@ -12,10 +13,12 @@ CSV - Alias for Text::CSV_XS
 =head1 SYNOPSIS
 
   perl -MCSV -wle'csv (in => [[1,2]], out => *STDOUT)'
+  perl -MCSV -wle'DDumper (csv (in => \q{foo,"bar, foo",quux}))'
 
 =head1 DESCRIPTION
 
-See L<Text::CSV_XS>
+Wrapper for Text::CSV_XS with csv importing also Data::Peek
+See L<Text::CSV_XS>, L<Data::Peek>
 
 =head1 AUTHOR
 
