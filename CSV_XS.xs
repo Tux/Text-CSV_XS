@@ -139,11 +139,11 @@ typedef struct {
     SV *	bound;
 
     byte *	eol;
-    STRLEN	eol_len;
     byte *	sep;
-    STRLEN	sep_len;
     char *	types;
-    STRLEN	types_len;
+    byte	eol_len;
+    byte	sep_len;
+    byte	types_len;
 
     char *	bptr;
     SV *	tmp;
