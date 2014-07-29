@@ -845,6 +845,7 @@ sub _csv_attr
     $attr{binary} = 1;
 
     my $enc = delete $attr{encoding} || "";
+    $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 
     my $fh;
     my $cls = 0;	# If I open a file, I have to close it
@@ -858,7 +859,6 @@ sub _csv_attr
 	    $fh = $out;
 	    }
 	else {
-	    $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	    open $fh, ">$enc", $out or croak "$out: $!";
 	    $cls = 1;
 	    }
@@ -871,6 +871,8 @@ sub _csv_attr
 	$out or croak qq{for CSV source, "out" is required};
 	}
     elsif (ref $in eq "SCALAR") {
+	# Strings with code points over 0xFF may not be mapped into in-memory file handles
+	# "<$enc" does not change that :(
 	open $fh, "<", $in or croak "Cannot open from SCALAR using PerlIO";
 	$cls = 1;
 	}
@@ -883,7 +885,6 @@ sub _csv_attr
 	    }
 	}
     else {
-	$enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 	open $fh, "<$enc", $in or croak "$in: $!";
 	$cls = 1;
 	}
