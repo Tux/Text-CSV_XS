@@ -871,7 +871,7 @@ sub _csv_attr
 	$out or croak qq{for CSV source, "out" is required};
 	}
     elsif (ref $in eq "SCALAR") {
-	open $fh, "<", $in or croak "Cannot open from SCALAR usinng PerlIO";
+	open $fh, "<", $in or croak "Cannot open from SCALAR using PerlIO";
 	$cls = 1;
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
