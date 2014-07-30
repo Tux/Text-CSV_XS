@@ -29,7 +29,7 @@
 #define CSV_XS_TYPE_NV	2
 
 /* Keep in sync with .pm! */
-#define CACHE_SIZE			48
+#define CACHE_SIZE			64
 
 #define CACHE_ID_quote_char		0
 #define CACHE_ID_escape_char		1
@@ -42,8 +42,8 @@
 #define CACHE_ID_allow_unquoted_escape	8
 #define CACHE_ID_allow_whitespace	9
 #define CACHE_ID_blank_is_undef		10
-#define CACHE_ID_sep			37
-#define CACHE_ID_sep_len		45
+#define CACHE_ID_sep			38
+#define CACHE_ID_sep_len		37
 #define CACHE_ID_eol			11
 #define CACHE_ID_eol_len		19
 #define CACHE_ID_eol_is_cr		20
@@ -139,7 +139,7 @@ typedef struct {
     SV *	bound;
 
     byte *	eol;
-    byte *	sep;
+    byte	sep[16];
     char *	types;
     byte	eol_len;
     byte	sep_len;
@@ -510,16 +510,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    }
 	csv->sep_len			= csv->cache[CACHE_ID_sep_len		];
 	if (csv->sep_len < 8)
-	    csv->sep = &csv->cache[CACHE_ID_sep];
-	else {
-	    /* Was too long to cache. must re-fetch */
-	    csv->sep       = NULL;
-	    csv->sep_len   = 0;
-	    if ((svp = hv_fetchs (self, "sep",     FALSE)) && *svp && SvOK (*svp)) {
-		csv->sep = (byte *)SvPV (*svp, len);
-		csv->sep_len = len;
-		}
-	    }
+	    memcpy (csv->sep, &csv->cache[CACHE_ID_sep], csv->sep_len);
 	csv->is_bound			=
 	    (csv->cache[CACHE_ID__is_bound    ] << 24) |
 	    (csv->cache[CACHE_ID__is_bound + 1] << 16) |
@@ -557,7 +548,6 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		csv->escape_char = (char)0;
 	    }
 	csv->sep_char = ',';
-	csv->sep       = (byte *)"";
 	csv->sep_len   = 0;
 	if ((svp = hv_fetchs (self, "sep_char",    FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = SvPV (*svp, len);
@@ -568,8 +558,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    ptr = (byte *)SvPV (*svp, len);
 	    if (len == 1)
 		csv->sep_char = *ptr;
-	    else {
-		csv->sep      = ptr;
+	    else if (len < 16) {
+		memcpy (csv->sep, ptr, len);
 		csv->sep_len  = len;
 		csv->sep_char = 0;
 		}
@@ -652,7 +642,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
 	    memcpy ((char *)&csv->cache[CACHE_ID_eol], csv->eol, csv->eol_len);
 	csv->cache[CACHE_ID_sep_len]			= csv->sep_len;
-	if (csv->sep_len > 0 && csv->sep_len < 8 && csv->sep)
+	if (csv->sep_len > 0 && csv->sep_len < 8)
 	    memcpy ((char *)&csv->cache[CACHE_ID_sep], csv->sep, csv->sep_len);
 	csv->cache[CACHE_ID_has_types]			= csv->types ? 1 : 0;
 	csv->cache[CACHE_ID__has_ahead]			= csv->has_ahead = 0;
@@ -687,7 +677,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		: 1
 	: 0;
     /* Consider setting utf8 to TRUE is the separator is UTF8 */
-    if (csv->sep_len && is_utf8_string ((U8 *)(csv->sep), strlen (csv->sep)))
+    if (csv->sep_len && is_utf8_string ((U8 *)(csv->sep), csv->sep_len))
 	csv->utf8 = 1;
     } /* SetupCsv */
 
