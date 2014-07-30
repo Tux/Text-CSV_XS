@@ -29,8 +29,8 @@
 #define CSV_XS_TYPE_NV	2
 
 /* Keep in sync with .pm! */
-#define CACHE_SIZE			64
-#define MAX_SEP_LEN			16
+#define CACHE_SIZE			48
+#define MAX_SEP_LEN			8
 
 #define CACHE_ID_quote_char		0
 #define CACHE_ID_escape_char		1
@@ -140,8 +140,8 @@ typedef struct {
     SV *	bound;
 
     byte *	eol;
-    byte	sep[16];
     char *	types;
+    byte	sep[MAX_SEP_LEN];
     byte	eol_len;
     byte	sep_len;
     byte	types_len;
