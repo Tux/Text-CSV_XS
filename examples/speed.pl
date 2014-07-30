@@ -27,7 +27,7 @@ $csv->combine (@fields1  ); our $str1   = $csv->string;
 $csv->combine (@fields10 ); our $str10  = $csv->string;
 $csv->combine (@fields100); our $str100 = $csv->string;
 
-timethese (-1.2,{
+timethese (-1.5,{
 
     "combine   1"	=> q{ $csv->combine (@fields1  ) },
     "combine  10"	=> q{ $csv->combine (@fields10 ) },
