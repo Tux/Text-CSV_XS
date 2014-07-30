@@ -103,7 +103,7 @@
 typedef struct {
     byte	quote_char;
     byte	escape_char;
-    byte	sep_char;
+    byte	sep_char;	/* not used anymore */
     byte	binary;
 
     byte	keep_meta_info;
@@ -226,6 +226,28 @@ static int  io_handle_loaded = 0;
 static SV  *m_getline, *m_print, *m_read;
 static int  last_error = 0;
 
+#define CH_SEP *csv->sep
+#define __is_SEPX(c) (c == CH_SEP && (csv->sep_len == 0 || (\
+    csv->size - csv->used >= csv->sep_len				&&\
+    !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
+    (csv->used += csv->sep_len - 1)					&&\
+    (c = CH_SEPX))))
+#if MAINT_DEBUG > 1
+static byte _is_SEPX (byte c, csv_t *csv, int line)
+{
+    byte b = __is_SEPX (c);
+    (void)fprintf (stderr, "# SEPX: %d\n", b);
+    if (csv->sep_len) {
+	(void)fprintf (stderr, "# %d: len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
+	    line, csv->sep_len, csv->size, csv->used, c, CH_SEP);
+	}
+    return b;
+    } /* _is_SEPX */
+#define is_SEP(c)  _is_SEPX (c, csv, __LINE__)
+#else
+#define is_SEP(c) __is_SEPX (c)
+#endif
+
 #define require_IO_Handle \
     unless (io_handle_loaded) {\
 	ENTER;\
@@ -236,9 +258,9 @@ static int  last_error = 0;
 	}
 
 #define is_whitespace(ch) \
-    ( (ch) != *csv->sep         && \
-      (ch) !=  csv->quote_char  && \
-      (ch) !=  csv->escape_char && \
+    ( (ch) != CH_SEP           && \
+      (ch) != csv->quote_char  && \
+      (ch) != csv->escape_char && \
     ( (ch) == CH_SPACE || \
       (ch) == CH_TAB \
       ) \
@@ -544,10 +566,10 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    else
 		csv->escape_char = (char)0;
 	    }
-	*csv->sep = ',';
+	CH_SEP = ',';
 	csv->sep_len = 0;
 	if ((svp = hv_fetchs (self, "sep_char",    FALSE)) && *svp && SvOK (*svp))
-	    *csv->sep = *SvPV (*svp, len);
+	    CH_SEP = *SvPV (*svp, len);
 	if ((svp = hv_fetchs (self, "sep",         FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = (byte *)SvPV (*svp, len);
 	    if (len < MAX_SEP_LEN) {
@@ -610,7 +632,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->cache[CACHE_ID_quote_char]			= csv->quote_char;
 	csv->cache[CACHE_ID_escape_char]		= csv->escape_char;
-	csv->cache[CACHE_ID_sep_char]			=*csv->sep;
+	csv->cache[CACHE_ID_sep_char]			= CH_SEP;
 	csv->cache[CACHE_ID_binary]			= csv->binary;
 	csv->cache[CACHE_ID_decode_utf8]		= csv->decode_utf8;
 
@@ -770,7 +792,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 {
     int		i, n, bound = 0;
 
-    if (*csv->sep == csv->quote_char || *csv->sep == csv->escape_char) {
+    if (CH_SEP == csv->quote_char || CH_SEP == csv->escape_char) {
 	(void)SetDiag (csv, 1001);
 	return FALSE;
 	}
@@ -791,7 +813,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    CSV_PUT (csv, dst, csv->sep[x]);
 		}
 	    else
-		CSV_PUT (csv, dst, *csv->sep);
+		CSV_PUT (csv, dst, CH_SEP);
 	    }
 
 	if (bound)
@@ -829,7 +851,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    if (c < csv->first_safe_char ||
 		       (csv->quote_binary && c >= 0x7f && c <= 0xa0) ||
 		       (csv->quote_char   && c == csv->quote_char)   ||
-		       (*csv->sep         && c == *csv->sep)         ||
+		       (CH_SEP            && c == CH_SEP)            ||
 		       (csv->escape_char  && c == csv->escape_char)) {
 			/* Binary character */
 			break;
@@ -1081,27 +1103,6 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv)
 static char str_parsed[40];
 #endif
 
-#define __is_SEPX(c) (c == *csv->sep && (csv->sep_len == 0 || (\
-    csv->size - csv->used >= csv->sep_len				&&\
-    !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
-    (csv->used += csv->sep_len - 1)					&&\
-    (c = CH_SEPX))))
-#if MAINT_DEBUG > 1
-static byte _is_SEPX (byte c, csv_t *csv, int line)
-{
-    byte b = __is_SEPX (c);
-    (void)fprintf (stderr, "# SEPX: %d\n", b);
-    if (csv->sep_len) {
-	(void)fprintf (stderr, "# %d: len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
-	    line, csv->sep_len, csv->size, csv->used, c, *csv->sep);
-	}
-    return b;
-    } /* _is_SEPX */
-#define is_SEP(c)  _is_SEPX (c, csv, __LINE__)
-#else
-#define is_SEP(c) __is_SEPX (c)
-#endif
-
 #if MAINT_DEBUG > 1
 static char *_sep_string (csv_t *csv)
 {
@@ -1112,7 +1113,7 @@ static char *_sep_string (csv_t *csv)
 	    sprintf (sep + x * x, "%02x ", csv->sep[x]);
 	}
     else
-	sprintf (sep, "'%c' (0x%02x)", *csv->sep, *csv->sep);
+	sprintf (sep, "'%c' (0x%02x)", CH_SEP, CH_SEP);
     return sep;
     } /* _sep_string */
 #endif
@@ -1131,7 +1132,7 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
     memset (str_parsed, 0, 40);
 #endif
 
-    if (*csv->sep == csv->quote_char || *csv->sep == csv->escape_char) {
+    if (CH_SEP == csv->quote_char || CH_SEP == csv->escape_char) {
 	(void)SetDiag (csv, 1001);
 	return FALSE;
 	}
