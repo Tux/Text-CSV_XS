@@ -29,6 +29,7 @@
 #define CSV_XS_TYPE_NV	2
 
 #define MAX_SEP_LEN	16
+#define MAX_EOL_LEN	16
 
 #define CSV_FLAGS_QUO		0x0001
 #define CSV_FLAGS_BIN		0x0002
@@ -139,9 +140,7 @@ typedef struct {
     HV *	self;
     SV *	bound;
 
-    byte *	eol;
     char *	types;
-    byte	sep[MAX_SEP_LEN];
     byte	eol_len;
     byte	sep_len;
     byte	types_len;
@@ -154,6 +153,8 @@ typedef struct {
     int		eol_pos;
     STRLEN	size;
     STRLEN	used;
+    byte	eol[MAX_EOL_LEN];
+    byte	sep[MAX_SEP_LEN];
     char	buffer[BUFFER_SIZE];
     } csv_t;
 
@@ -374,9 +375,11 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	    break;
 
 	case CACHE_ID_eol:
-	    csv->eol       = cp;	/* dangerous? */
-	    csv->eol_len   = len;
-	    csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
+	    if (len < MAX_EOL_LEN) {
+		memcpy (csv->eol, cp, len);
+		csv->eol_len   = len;
+		csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
+		}
 	    break;
 	}
 
@@ -451,9 +454,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
 #define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
 static void cx_set_eol_is_cr (pTHX_ csv_t *csv)
 {
-    static byte eolcr[] = { CH_CR, 0 };
-
-    csv->eol       = eolcr;
+    csv->eol[0]    = CH_CR;
     csv->eol_is_cr = 1;
     csv->eol_len   = 1;
     memcpy (csv->cache, csv, sizeof (csv_t));
@@ -512,14 +513,17 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		}
 	    }
 
-	csv->eol       = (byte *)"";
+	csv->eol[0]    = 0;
 	csv->eol_is_cr = 0;
 	csv->eol_len   = 0;
 	if ((svp = hv_fetchs (self, "eol",            FALSE)) && *svp && SvOK (*svp)) {
-	    csv->eol = (byte *)SvPV (*svp, len);
-	    csv->eol_len = len;
-	    if (len == 1 && *csv->eol == CH_CR)
-		csv->eol_is_cr = 1;
+	    char *eol = (byte *)SvPV (*svp, len);
+	    if (len < MAX_EOL_LEN) {
+		memcpy (csv->eol, eol, len);
+		csv->eol_len = len;
+		if (len == 1 && *csv->eol == CH_CR)
+		    csv->eol_is_cr = 1;
+		}
 	    }
 
 	csv->types = NULL;
@@ -1667,7 +1671,7 @@ static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
     SetupCsv (&csv, hv, self);
     csv.useIO = useIO;
 #if (PERL_BCDVERSION >= 0x5008000)
-    if (csv.eol && *csv.eol)
+    if (*csv.eol)
 	PL_ors_sv = NULL;
 #endif
     if (useIO && csv.has_hooks & HOOK_BEFORE_PRINT)
