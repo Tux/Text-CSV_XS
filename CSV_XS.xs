@@ -28,10 +28,47 @@
 #define CSV_XS_TYPE_IV	1
 #define CSV_XS_TYPE_NV	2
 
-/* Keep in sync with .pm! */
-#define CACHE_SIZE			48
-#define MAX_SEP_LEN			8
+#define MAX_SEP_LEN	16
 
+#define CSV_FLAGS_QUO		0x0001
+#define CSV_FLAGS_BIN		0x0002
+#define CSV_FLAGS_EIF		0x0004
+#define CSV_FLAGS_MIS		0x0010
+
+#define HOOK_ERROR		0x0001
+#define HOOK_AFTER_PARSE	0x0002
+#define HOOK_BEFORE_PRINT	0x0004
+
+#define CH_TAB		'\011'
+#define CH_NL		'\012'
+#define CH_CR		'\015'
+#define CH_SPACE	'\040'
+#define CH_DEL		'\177'
+#define CH_EOLX		1215
+#define CH_SEPX		8888
+#define CH_SEP		*csv->sep
+
+#define useIO_EOF	0x10
+
+#define unless(expr)	if (!(expr))
+
+#define _is_arrayref(f) ( f && \
+     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
+      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVAV )
+#define _is_hashref(f) ( f && \
+     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
+      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVHV )
+#define _is_coderef(f) ( f && \
+     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
+      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVCV )
+
+#define CSV_XS_SELF					\
+    if (!self || !SvOK (self) || !SvROK (self) ||	\
+	 SvTYPE (SvRV (self)) != SVt_PVHV)		\
+	croak ("self is not a hash ref");		\
+    hv = (HV *)SvRV (self)
+
+/* Keep in sync with .pm! */
 #define CACHE_ID_quote_char		0
 #define CACHE_ID_escape_char		1
 #define CACHE_ID_sep_char		2
@@ -61,43 +98,6 @@
 #define CACHE_ID_has_error_input	34
 #define CACHE_ID_decode_utf8		35
 #define CACHE_ID__has_hooks		36
-
-#define CSV_FLAGS_QUO		0x0001
-#define CSV_FLAGS_BIN		0x0002
-#define CSV_FLAGS_EIF		0x0004
-#define CSV_FLAGS_MIS		0x0010
-
-#define HOOK_ERROR		0x0001
-#define HOOK_AFTER_PARSE	0x0002
-#define HOOK_BEFORE_PRINT	0x0004
-
-#define CH_TAB		'\011'
-#define CH_NL		'\012'
-#define CH_CR		'\015'
-#define CH_SPACE	'\040'
-#define CH_DEL		'\177'
-#define CH_EOLX		1215
-#define CH_SEPX		8888
-
-#define useIO_EOF	0x10
-
-#define unless(expr)	if (!(expr))
-
-#define _is_arrayref(f) ( f && \
-     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
-      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVAV )
-#define _is_hashref(f) ( f && \
-     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
-      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVHV )
-#define _is_coderef(f) ( f && \
-     (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
-      SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVCV )
-
-#define CSV_XS_SELF					\
-    if (!self || !SvOK (self) || !SvROK (self) ||	\
-	 SvTYPE (SvRV (self)) != SVt_PVHV)		\
-	croak ("self is not a hash ref");		\
-    hv = (HV *)SvRV (self)
 
 #define	byte	unsigned char
 typedef struct {
@@ -221,12 +221,10 @@ xs_error_t xs_errors[] =  {
     {    0, "" },
     };
 
-static char init_cache[CACHE_SIZE];
 static int  io_handle_loaded = 0;
 static SV  *m_getline, *m_print, *m_read;
 static int  last_error = 0;
 
-#define CH_SEP *csv->sep
 #define __is_SEPX(c) (c == CH_SEP && (csv->sep_len == 0 || (\
     csv->size - csv->used >= csv->sep_len				&&\
     !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
@@ -310,83 +308,80 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 #define xs_cache_set(hv,idx,val)	cx_xs_cache_set (aTHX_ hv, idx, val)
 static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 {
-    SV **svp;
-    byte *cp;
+    SV    **svp;
+    byte   *cache;
+
+    csv_t   csvs;
+    csv_t  *csv = &csvs;
+
+    IV      iv;
+    byte   *cp  = "\0";
+    STRLEN  len = 0;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp)
 	return;
 
-    cp = (byte *)SvPV_nolen (*svp);
+    cache = (byte *)SvPV_nolen (*svp);
+    memcpy (csv, cache, sizeof (csv_t));
 
-    /* single char/byte */
-    if ( idx == CACHE_ID_sep_char) {
-	cp[CACHE_ID_sep]     = SvPOK (val) ? *(SvPVX (val)) : 0;
-	cp[CACHE_ID_sep_len] = 0;
-	return;
+    if (SvPOK (val))
+	cp = SvPV (val, len);
+    if (SvIOK (val))
+	iv = SvIV (val);
+    else
+	iv = *cp;
+
+    switch (idx) {
+
+	/* single char/byte */
+	case CACHE_ID_sep_char:
+	    CH_SEP			= *cp;
+	    csv->sep_len		= 0;
+	    break;
+
+	case CACHE_ID_quote_char:            csv->quote_char            = *cp; break;
+	case CACHE_ID_escape_char:           csv->escape_char           = *cp; break;
+
+	/* boolean/numeric */
+	case CACHE_ID_binary:                csv->binary                = iv; break;
+	case CACHE_ID_keep_meta_info:        csv->keep_meta_info        = iv; break;
+	case CACHE_ID_always_quote:          csv->always_quote          = iv; break;
+	case CACHE_ID_quote_space:           csv->quote_space           = iv; break;
+	case CACHE_ID_quote_null:            csv->quote_null            = iv; break;
+	case CACHE_ID_quote_binary:          csv->quote_binary          = iv; break;
+	case CACHE_ID_decode_utf8:           csv->decode_utf8           = iv; break;
+	case CACHE_ID_allow_loose_escapes:   csv->allow_loose_escapes   = iv; break;
+	case CACHE_ID_allow_loose_quotes:    csv->allow_loose_quotes    = iv; break;
+	case CACHE_ID_allow_unquoted_escape: csv->allow_unquoted_escape = iv; break;
+	case CACHE_ID_allow_whitespace:      csv->allow_whitespace      = iv; break;
+	case CACHE_ID_blank_is_undef:        csv->blank_is_undef        = iv; break;
+	case CACHE_ID_empty_is_undef:        csv->empty_is_undef        = iv; break;
+	case CACHE_ID_verbatim:              csv->verbatim              = iv; break;
+	case CACHE_ID_auto_diag:             csv->auto_diag             = iv; break;
+	case CACHE_ID_diag_verbose:          csv->diag_verbose          = iv; break;
+	case CACHE_ID__has_hooks:            csv->has_hooks             = iv; break;
+	case CACHE_ID_has_error_input:       csv->has_error_input       = iv; break;
+
+	/* a 4-byte IV */
+	case CACHE_ID__is_bound:             csv->is_bound              = iv; break;
+
+	/* string */
+	case CACHE_ID_sep:
+	    if (len < MAX_SEP_LEN) {
+		memcpy (csv->sep, cp, len);
+		csv->sep_len = len == 1 ? 0 : len;
+		}
+	    break;
+
+	case CACHE_ID_eol:
+	    csv->eol       = cp;	/* dangerous? */
+	    csv->eol_len   = len;
+	    csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
+	    break;
 	}
-    if ( idx == CACHE_ID_quote_char	||
-	 idx == CACHE_ID_escape_char) {
-	cp[idx] = SvPOK (val) ? *(SvPVX (val)) : 0;
-	return;
-	}
 
-    /* boolean/numeric */
-    if ( idx == CACHE_ID_binary			||
-	 idx == CACHE_ID_keep_meta_info		||
-	 idx == CACHE_ID_always_quote		||
-	 idx == CACHE_ID_quote_space		||
-	 idx == CACHE_ID_quote_null		||
-	 idx == CACHE_ID_quote_binary		||
-	 idx == CACHE_ID_decode_utf8		||
-	 idx == CACHE_ID_allow_loose_escapes	||
-	 idx == CACHE_ID_allow_loose_quotes	||
-	 idx == CACHE_ID_allow_unquoted_escape	||
-	 idx == CACHE_ID_allow_whitespace	||
-	 idx == CACHE_ID_blank_is_undef		||
-	 idx == CACHE_ID_empty_is_undef		||
-	 idx == CACHE_ID_verbatim		||
-	 idx == CACHE_ID_auto_diag		||
-	 idx == CACHE_ID_diag_verbose		||
-	 idx == CACHE_ID__has_hooks		||
-	 idx == CACHE_ID_has_error_input) {
-	cp[idx] = (byte)SvIV (val);
-	return;
-	}
-
-    /* a 4-byte IV */
-    if (idx == CACHE_ID__is_bound) {
-	long v = SvIV (val);
-
-	cp[idx    ] = (v & 0xFF000000) >> 24;
-	cp[idx + 1] = (v & 0x00FF0000) >> 16;
-	cp[idx + 2] = (v & 0x0000FF00) >>  8;
-	cp[idx + 3] = (v & 0x000000FF);
-	return;
-	}
-
-    if (idx == CACHE_ID_eol) {
-	STRLEN len = 0;
-	char  *eol = SvPOK (val) ? SvPV (val, len) : "";
-
-	memset (cp + CACHE_ID_eol, 0, 8);
-	cp[CACHE_ID_eol_len]   = len;
-	cp[CACHE_ID_eol_is_cr] = len == 1 && *eol == CH_CR ? 1 : 0;
-	if (len > 0 && len < 8)
-	    memcpy (cp + CACHE_ID_eol, eol, len);
-	}
-
-    if (idx == CACHE_ID_sep) {
-	STRLEN len = 0;
-	char  *sep = SvPOK (val) ? SvPV (val, len) : "";
-
-	if (len < MAX_SEP_LEN) {
-	    memcpy (cp + CACHE_ID_sep, sep, len);
-	    if (len == 1)
-		cp[CACHE_ID_sep_len] = 0;
-	    else
-		cp[CACHE_ID_sep_len] = len;
-	    }
-	}
+    csv->cache = cache;
+    memcpy (cache, csv, sizeof (csv_t));
     } /* cache_set */
 
 #define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
@@ -397,83 +392,72 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
 	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
     } /* _pretty_str */
 
-#define _cache_show_byte(trim,idx) \
-    c = cp[idx]; warn ("  %-21s %02x:%3d\n", trim, c, c)
-#define _cache_show_char(trim,idx) \
-    c = cp[idx]; warn ("  %-21s %02x:%s\n",  trim, c, _pretty_str (&c, 1))
+#define _cache_show_byte(trim,c) \
+    warn ("  %-21s %02x:%3d\n", trim, c, c)
+#define _cache_show_char(trim,c) \
+    warn ("  %-21s %02x:%s\n",  trim, c, _pretty_str (&c, 1))
 #define _cache_show_str(trim,l,str) \
     warn ("  %-21s %02d:%s\n",  trim, l, _pretty_str (str, l))
-#define _cache_show_cstr(trim,l,idx) _cache_show_str (trim, l, cp + idx)
 
 #define xs_cache_diag(hv)	cx_xs_cache_diag (aTHX_ hv)
 static void cx_xs_cache_diag (pTHX_ HV *hv)
 {
-    SV **svp;
-    byte *cp, c;
+    SV   **svp;
+    byte  *cache, c;
+    csv_t  csvs;
+    csv_t *csv = &csvs;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp) {
 	warn ("CACHE: invalid\n");
 	return;
 	}
 
-    cp = (byte *)SvPV_nolen (*svp);
+    cache = (byte *)SvPV_nolen (*svp);
+    memcpy (csv, cache, sizeof (csv_t));
     warn ("CACHE:\n");
-    _cache_show_char ("quote_char",		CACHE_ID_quote_char);
-    _cache_show_char ("escap_chare",		CACHE_ID_escape_char);
-    _cache_show_char ("sep_char",		CACHE_ID_sep_char);
-    _cache_show_byte ("binary",			CACHE_ID_binary);
-    _cache_show_byte ("decode_utf8",		CACHE_ID_decode_utf8);
+    _cache_show_char ("quote_char",		csv->quote_char);
+    _cache_show_char ("escap_chare",		csv->escape_char);
+    _cache_show_char ("sep_char",		CH_SEP);
+    _cache_show_byte ("binary",			csv->binary);
+    _cache_show_byte ("decode_utf8",		csv->decode_utf8);
 
-    _cache_show_byte ("allow_loose_escapes",	CACHE_ID_allow_loose_escapes);
-    _cache_show_byte ("allow_loose_quotes",	CACHE_ID_allow_loose_quotes);
-    _cache_show_byte ("allow_unquoted_escape",	CACHE_ID_allow_unquoted_escape);
-    _cache_show_byte ("allow_whitespace",	CACHE_ID_allow_whitespace);
-    _cache_show_byte ("always_quote",		CACHE_ID_always_quote);
-    _cache_show_byte ("quote_space",		CACHE_ID_quote_space);
-    _cache_show_byte ("quote_null",		CACHE_ID_quote_null);
-    _cache_show_byte ("quote_binary",		CACHE_ID_quote_binary);
-    _cache_show_byte ("auto_diag",		CACHE_ID_auto_diag);
-    _cache_show_byte ("diag_verbose",		CACHE_ID_diag_verbose);
-    _cache_show_byte ("has_error_input",	CACHE_ID_has_error_input);
-    _cache_show_byte ("blank_is_undef",		CACHE_ID_blank_is_undef);
-    _cache_show_byte ("empty_is_undef",		CACHE_ID_empty_is_undef);
-    _cache_show_byte ("has_ahead",		CACHE_ID__has_ahead);
-    _cache_show_byte ("has_types",		CACHE_ID_has_types);
-    _cache_show_byte ("keep_meta_info",		CACHE_ID_keep_meta_info);
-    _cache_show_byte ("verbatim",		CACHE_ID_verbatim);
+    _cache_show_byte ("allow_loose_escapes",	csv->allow_loose_escapes);
+    _cache_show_byte ("allow_loose_quotes",	csv->allow_loose_quotes);
+    _cache_show_byte ("allow_unquoted_escape",	csv->allow_unquoted_escape);
+    _cache_show_byte ("allow_whitespace",	csv->allow_whitespace);
+    _cache_show_byte ("always_quote",		csv->always_quote);
+    _cache_show_byte ("quote_space",		csv->quote_space);
+    _cache_show_byte ("quote_null",		csv->quote_null);
+    _cache_show_byte ("quote_binary",		csv->quote_binary);
+    _cache_show_byte ("auto_diag",		csv->auto_diag);
+    _cache_show_byte ("diag_verbose",		csv->diag_verbose);
+    _cache_show_byte ("has_error_input",	csv->has_error_input);
+    _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
+    _cache_show_byte ("empty_is_undef",		csv->empty_is_undef);
+    _cache_show_byte ("has_ahead",		csv->has_ahead);
+    //_cache_show_byte ("has_types",		csv->has_types);
+    _cache_show_byte ("keep_meta_info",		csv->keep_meta_info);
+    _cache_show_byte ("verbatim",		csv->verbatim);
 
-    _cache_show_byte ("has_hooks",		CACHE_ID__has_hooks);
-    _cache_show_byte ("eol_is_cr",		CACHE_ID_eol_is_cr);
-    _cache_show_byte ("eol_len",		CACHE_ID_eol_len);
-    if (c < 8)
-	_cache_show_cstr ("eol", c,		CACHE_ID_eol);
-    else if ((svp = hv_fetchs (hv, "eol", FALSE)) && *svp && SvOK (*svp)) {
-	STRLEN len;
-	byte *eol = (byte *)SvPV (*svp, len);
-	_cache_show_str  ("eol", (int)len,	eol);
-	}
-    else
-	_cache_show_str  ("eol", 8,		(byte *)"<broken>");
-    _cache_show_byte ("sep_len",		CACHE_ID_sep_len);
-    if (c > 1)
-	_cache_show_cstr ("sep", c,		CACHE_ID_sep);
-
-    /* csv->is_bound			=
-	    (csv->cache[CACHE_ID__is_bound    ] << 24) |
-	    (csv->cache[CACHE_ID__is_bound + 1] << 16) |
-	    (csv->cache[CACHE_ID__is_bound + 2] <<  8) |
-	    (csv->cache[CACHE_ID__is_bound + 3]);
-    */
+    _cache_show_byte ("has_hooks",		csv->has_hooks);
+    _cache_show_byte ("eol_is_cr",		csv->eol_is_cr);
+    _cache_show_byte ("eol_len",		csv->eol_len);
+    _cache_show_str  ("eol", csv->eol_len,	csv->eol);
+    _cache_show_byte ("sep_len",		csv->sep_len);
+    if (csv->sep_len > 1)
+	_cache_show_str ("sep", csv->sep_len,	csv->sep);
     } /* xs_cache_diag */
 
 #define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
 static void cx_set_eol_is_cr (pTHX_ csv_t *csv)
 {
-		      csv->cache[CACHE_ID_eol    ]   = CH_CR;
-		      csv->cache[CACHE_ID_eol + 1]   = 0;
-    csv->eol_is_cr =  csv->cache[CACHE_ID_eol_is_cr] = 1;
-    csv->eol_len   =  csv->cache[CACHE_ID_eol_len]   = 1;
-    csv->eol       = &csv->cache[CACHE_ID_eol];
+    static byte eolcr[] = { CH_CR, 0 };
+
+    csv->eol       = eolcr;
+    csv->eol_is_cr = 1;
+    csv->eol_len   = 1;
+    memcpy (csv->cache, csv, sizeof (csv_t));
+
     (void)hv_store (csv->self, "eol",  3, newSVpvn ((char *)csv->eol, 1), 0);
     } /* set_eol_is_cr */
 
@@ -485,70 +469,19 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     char	*ptr;
 
     last_error = 0;
-    csv->self  = self;
-    csv->pself = pself;
 
     if ((svp = hv_fetchs (self, "_CACHE", FALSE)) && *svp) {
-	csv->cache = (byte *)SvPVX (*svp);
-
-	csv->quote_char			= csv->cache[CACHE_ID_quote_char	];
-	csv->escape_char		= csv->cache[CACHE_ID_escape_char	];
-	csv->binary			= csv->cache[CACHE_ID_binary		];
-	csv->decode_utf8		= csv->cache[CACHE_ID_decode_utf8	];
-
-	csv->keep_meta_info		= csv->cache[CACHE_ID_keep_meta_info	];
-	csv->always_quote		= csv->cache[CACHE_ID_always_quote	];
-	csv->auto_diag			= csv->cache[CACHE_ID_auto_diag		];
-	csv->diag_verbose		= csv->cache[CACHE_ID_diag_verbose	];
-	csv->has_error_input		= csv->cache[CACHE_ID_has_error_input	];
-	csv->quote_space		= csv->cache[CACHE_ID_quote_space	];
-	csv->quote_null			= csv->cache[CACHE_ID_quote_null	];
-	csv->quote_binary		= csv->cache[CACHE_ID_quote_binary	];
-
-	csv->allow_loose_quotes		= csv->cache[CACHE_ID_allow_loose_quotes];
-	csv->allow_loose_escapes	= csv->cache[CACHE_ID_allow_loose_escapes];
-	csv->allow_unquoted_escape	= csv->cache[CACHE_ID_allow_unquoted_escape];
-	csv->allow_whitespace		= csv->cache[CACHE_ID_allow_whitespace	];
-	csv->blank_is_undef		= csv->cache[CACHE_ID_blank_is_undef	];
-	csv->empty_is_undef		= csv->cache[CACHE_ID_empty_is_undef	];
-	csv->verbatim			= csv->cache[CACHE_ID_verbatim		];
-	csv->has_ahead			= csv->cache[CACHE_ID__has_ahead	];
-	csv->has_hooks			= csv->cache[CACHE_ID__has_hooks	];
-	csv->eol_is_cr			= csv->cache[CACHE_ID_eol_is_cr		];
-	csv->eol_len			= csv->cache[CACHE_ID_eol_len		];
-	if (csv->eol_len < 8)
-	    csv->eol = &csv->cache[CACHE_ID_eol];
-	else {
-	    /* Was too long to cache. must re-fetch */
-	    csv->eol       = NULL;
-	    csv->eol_is_cr = 0;
-	    csv->eol_len   = 0;
-	    if ((svp = hv_fetchs (self, "eol",     FALSE)) && *svp && SvOK (*svp)) {
-		csv->eol = (byte *)SvPV (*svp, len);
-		csv->eol_len = len;
-		}
-	    }
-	memcpy (csv->sep, &csv->cache[CACHE_ID_sep], MAX_SEP_LEN);
-	csv->sep_len			= csv->cache[CACHE_ID_sep_len		];
-	csv->is_bound			=
-	    (csv->cache[CACHE_ID__is_bound    ] << 24) |
-	    (csv->cache[CACHE_ID__is_bound + 1] << 16) |
-	    (csv->cache[CACHE_ID__is_bound + 2] <<  8) |
-	    (csv->cache[CACHE_ID__is_bound + 3]);
-
-	csv->types = NULL;
-	if (csv->cache[CACHE_ID_has_types]) {
-	    if ((svp = hv_fetchs (self, "_types",  FALSE)) && *svp && SvOK (*svp)) {
-		csv->types = SvPV (*svp, len);
-		csv->types_len = len;
-		}
-	    }
+	byte *cache = (byte *)SvPVX (*svp);
+	memcpy (csv, cache, sizeof (csv_t));
 	}
     else {
 	SV *sv_cache;
 
+	csv->self  = self;
+	csv->pself = pself;
+
 	csv->quote_char = '"';
-	if ((svp = hv_fetchs (self, "quote_char",  FALSE)) && *svp) {
+	if ((svp = hv_fetchs (self, "quote_char",     FALSE)) && *svp) {
 	    if (SvOK (*svp)) {
 		ptr = SvPV (*svp, len);
 		csv->quote_char = len ? *ptr : (char)0;
@@ -558,7 +491,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    }
 
 	csv->escape_char = '"';
-	if ((svp = hv_fetchs (self, "escape_char", FALSE)) && *svp) {
+	if ((svp = hv_fetchs (self, "escape_char",    FALSE)) && *svp) {
 	    if (SvOK (*svp)) {
 		ptr = SvPV (*svp, len);
 		csv->escape_char = len ? *ptr : (char)0;
@@ -568,9 +501,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    }
 	CH_SEP = ',';
 	csv->sep_len = 0;
-	if ((svp = hv_fetchs (self, "sep_char",    FALSE)) && *svp && SvOK (*svp))
+	if ((svp = hv_fetchs (self, "sep_char",       FALSE)) && *svp && SvOK (*svp))
 	    CH_SEP = *SvPV (*svp, len);
-	if ((svp = hv_fetchs (self, "sep",         FALSE)) && *svp && SvOK (*svp)) {
+	if ((svp = hv_fetchs (self, "sep",            FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = (byte *)SvPV (*svp, len);
 	    if (len < MAX_SEP_LEN) {
 		memcpy (csv->sep, ptr, len);
@@ -582,7 +515,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->eol       = (byte *)"";
 	csv->eol_is_cr = 0;
 	csv->eol_len   = 0;
-	if ((svp = hv_fetchs (self, "eol",         FALSE)) && *svp && SvOK (*svp)) {
+	if ((svp = hv_fetchs (self, "eol",            FALSE)) && *svp && SvOK (*svp)) {
 	    csv->eol = (byte *)SvPV (*svp, len);
 	    csv->eol_len = len;
 	    if (len == 1 && *csv->eol == CH_CR)
@@ -590,16 +523,16 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    }
 
 	csv->types = NULL;
-	if ((svp = hv_fetchs (self, "_types", FALSE)) && *svp && SvOK (*svp)) {
+	if ((svp = hv_fetchs (self, "_types",         FALSE)) && *svp && SvOK (*svp)) {
 	    csv->types = SvPV (*svp, len);
 	    csv->types_len = len;
 	    }
 
 	csv->is_bound = 0;
-	if ((svp = hv_fetchs (self, "_is_bound", FALSE)) && *svp && SvOK (*svp))
+	if ((svp = hv_fetchs (self, "_is_bound",      FALSE)) && *svp && SvOK (*svp))
 	    csv->is_bound = SvIV(*svp);
 	csv->has_hooks = 0;
-	if ((svp = hv_fetchs (self, "callbacks", FALSE)) && _is_hashref (*svp)) {
+	if ((svp = hv_fetchs (self, "callbacks",      FALSE)) && _is_hashref (*svp)) {
 	    HV *cb = (HV *)SvRV (*svp);
 	    if ((svp = hv_fetchs (cb, "after_parse",  FALSE)) && _is_coderef (*svp))
 		csv->has_hooks |= HOOK_AFTER_PARSE;
@@ -626,44 +559,11 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->diag_verbose		= num_opt ("diag_verbose");
 	csv->has_error_input		= 0;
 
-	sv_cache = newSVpvn (init_cache, CACHE_SIZE);
+	sv_cache = newSVpvn ("", sizeof (csv_t));
 	csv->cache = (byte *)SvPVX (sv_cache);
 	SvREADONLY_on (sv_cache);
 
-	csv->cache[CACHE_ID_quote_char]			= csv->quote_char;
-	csv->cache[CACHE_ID_escape_char]		= csv->escape_char;
-	csv->cache[CACHE_ID_sep_char]			= CH_SEP;
-	csv->cache[CACHE_ID_binary]			= csv->binary;
-	csv->cache[CACHE_ID_decode_utf8]		= csv->decode_utf8;
-
-	csv->cache[CACHE_ID_keep_meta_info]		= csv->keep_meta_info;
-	csv->cache[CACHE_ID_always_quote]		= csv->always_quote;
-	csv->cache[CACHE_ID_quote_space]		= csv->quote_space;
-	csv->cache[CACHE_ID_quote_null]			= csv->quote_null;
-	csv->cache[CACHE_ID_quote_binary]		= csv->quote_binary;
-
-	csv->cache[CACHE_ID_allow_loose_quotes]		= csv->allow_loose_quotes;
-	csv->cache[CACHE_ID_allow_loose_escapes]	= csv->allow_loose_escapes;
-	csv->cache[CACHE_ID_allow_unquoted_escape]	= csv->allow_unquoted_escape;
-	csv->cache[CACHE_ID_allow_whitespace]		= csv->allow_whitespace;
-	csv->cache[CACHE_ID_blank_is_undef]		= csv->blank_is_undef;
-	csv->cache[CACHE_ID_empty_is_undef]		= csv->empty_is_undef;
-	csv->cache[CACHE_ID_verbatim]			= csv->verbatim;
-	csv->cache[CACHE_ID_auto_diag]			= csv->auto_diag;
-	csv->cache[CACHE_ID_diag_verbose]		= csv->diag_verbose;
-	csv->cache[CACHE_ID_eol_is_cr]			= csv->eol_is_cr;
-	csv->cache[CACHE_ID_eol_len]			= csv->eol_len;
-	if (csv->eol_len > 0 && csv->eol_len < 8 && csv->eol)
-	    memcpy ((char *)&csv->cache[CACHE_ID_eol], csv->eol, csv->eol_len);
-	csv->cache[CACHE_ID_sep_len]			= csv->sep_len;
-	memcpy ((char *)&csv->cache[CACHE_ID_sep], csv->sep, MAX_SEP_LEN);
-	csv->cache[CACHE_ID_has_types]			= csv->types ? 1 : 0;
-	csv->cache[CACHE_ID__has_ahead]			= csv->has_ahead = 0;
-	csv->cache[CACHE_ID__has_hooks]			= csv->has_hooks;
-	csv->cache[CACHE_ID__is_bound    ] = (csv->is_bound & 0xFF000000) >> 24;
-	csv->cache[CACHE_ID__is_bound + 1] = (csv->is_bound & 0x00FF0000) >> 16;
-	csv->cache[CACHE_ID__is_bound + 2] = (csv->is_bound & 0x0000FF00) >>  8;
-	csv->cache[CACHE_ID__is_bound + 3] = (csv->is_bound & 0x000000FF);
+	memcpy (csv->cache, csv, sizeof (csv_t));
 
 	(void)hv_store (self, "_CACHE", 6, sv_cache, 0);
 	}
@@ -1606,7 +1506,8 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	    if (csv.useIO & useIO_EOF)
 		(void)hv_store (hv, "_EOF", 4, &PL_sv_yes, 0);
 	    }
-	csv.cache[CACHE_ID__has_ahead] = csv.has_ahead;
+	/* csv.cache[CACHE_ID__has_ahead] = csv.has_ahead; */
+	memcpy (csv.cache, &csv, sizeof (csv_t));
 
 	if (avf) {
 	    if (csv.keep_meta_info) {
