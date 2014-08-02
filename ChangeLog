@@ -1,6 +1,7 @@
-1.10	- 2014-07-08, H.Merijn Brand
+1.10	- 2014-08-02, H.Merijn Brand
     * Support for scalar ref in out: csv (out => \(my $x = ""), ...)
     * Support for multi-byte sep_char
+    * Simplified the cache coding
 
 1.09	- 2014-06-09, H.Merijn Brand
     * Missed defined-or need in csv2xls (RT#95787)
