@@ -316,7 +316,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
     csv_t  *csv = &csvs;
 
     IV      iv;
-    byte   *cp  = "\0";
+    char   *cp  = "\0";
     STRLEN  len = 0;
 
     unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp)
@@ -406,7 +406,7 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
 static void cx_xs_cache_diag (pTHX_ HV *hv)
 {
     SV   **svp;
-    byte  *cache, c;
+    byte  *cache;
     csv_t  csvs;
     csv_t *csv = &csvs;
 
@@ -507,7 +507,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	if ((svp = hv_fetchs (self, "sep_char",       FALSE)) && *svp && SvOK (*svp))
 	    CH_SEP = *SvPV (*svp, len);
 	if ((svp = hv_fetchs (self, "sep",            FALSE)) && *svp && SvOK (*svp)) {
-	    ptr = (byte *)SvPV (*svp, len);
+	    ptr = SvPV (*svp, len);
 	    if (len < MAX_SEP_LEN) {
 		memcpy (csv->sep, ptr, len);
 		if (len > 1)
@@ -516,7 +516,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    }
 
 	if ((svp = hv_fetchs (self, "eol",            FALSE)) && *svp && SvOK (*svp)) {
-	    char *eol = (byte *)SvPV (*svp, len);
+	    char *eol = SvPV (*svp, len);
 	    if (len < MAX_EOL_LEN) {
 		memcpy (csv->eol, eol, len);
 		csv->eol_len = len;
@@ -609,7 +609,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	if (csv->utf8) {
 	    STRLEN	 len;
 	    char	*ptr;
-	    int		 j, l;
+	    int		 j;
 
 	    ptr = SvPV (tmp, len);
 	    while (len > 0 && !is_utf8_sv (tmp) && keep < 16) {
@@ -1594,13 +1594,6 @@ static void cx_av_empty (pTHX_ AV *av)
 	sv_free (av_pop (av));
     } /* av_empty */
 
-#define av_free(av)	cx_av_free (aTHX_ av)
-static void cx_av_free (pTHX_ AV *av)
-{
-    av_empty (av);
-    sv_free ((SV *)av);
-    } /* av_free */
-
 #define xsParse_all(self,hv,io,off,len)		cx_xsParse_all (aTHX_ self, hv, io, off, len)
 static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 {
@@ -1719,8 +1712,6 @@ error_input (self)
     SV		*self
 
   PPCODE:
-    HV		*hv;
-
     if (self && SvOK (self) && SvROK (self) && SvTYPE (SvRV (self)) == SVt_PVHV) {
 	HV  *hv = (HV *)SvRV (self);
 	SV **sv = hv_fetchs (hv, "_ERROR_INPUT", FALSE);
