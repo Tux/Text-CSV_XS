@@ -478,6 +478,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     else {
 	SV *sv_cache;
 
+	memset (csv, 0, sizeof (csv_t)); /* Reset everything */
+
 	csv->self  = self;
 	csv->pself = pself;
 
@@ -513,9 +515,6 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		}
 	    }
 
-	csv->eol[0]    = 0;
-	csv->eol_is_cr = 0;
-	csv->eol_len   = 0;
 	if ((svp = hv_fetchs (self, "eol",            FALSE)) && *svp && SvOK (*svp)) {
 	    char *eol = (byte *)SvPV (*svp, len);
 	    if (len < MAX_EOL_LEN) {
@@ -526,16 +525,13 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 		}
 	    }
 
-	csv->types = NULL;
 	if ((svp = hv_fetchs (self, "_types",         FALSE)) && *svp && SvOK (*svp)) {
 	    csv->types = SvPV (*svp, len);
 	    csv->types_len = len;
 	    }
 
-	csv->is_bound = 0;
 	if ((svp = hv_fetchs (self, "_is_bound",      FALSE)) && *svp && SvOK (*svp))
 	    csv->is_bound = SvIV(*svp);
-	csv->has_hooks = 0;
 	if ((svp = hv_fetchs (self, "callbacks",      FALSE)) && _is_hashref (*svp)) {
 	    HV *cb = (HV *)SvRV (*svp);
 	    if ((svp = hv_fetchs (cb, "after_parse",  FALSE)) && _is_coderef (*svp))
@@ -561,8 +557,6 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->auto_diag			= num_opt ("auto_diag");
 	csv->diag_verbose		= num_opt ("diag_verbose");
-	csv->has_error_input		= 0;
-	csv->has_ahead			= 0;
 
 	sv_cache = newSVpvn ("", sizeof (csv_t));
 	csv->cache = (byte *)SvPVX (sv_cache);
