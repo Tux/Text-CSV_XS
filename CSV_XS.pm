@@ -2566,6 +2566,11 @@ setting in it, so checking the locale is no solution.
 
 =over 2
 
+=item Multibyte quotation
+
+Currently L<C<quote_char>|/quote_char> is restricted to a single byte. Like
+L<C<sep>|/sep> it ought to support multi-byte and UTF-8 quotation.
+
 =item More Errors & Warnings
 
 New extensions ought to be  clear and concise  in reporting what  error has
@@ -2642,9 +2647,13 @@ No guarantees, but this is what I had in mind some time ago:
 
 =over 2
 
-=item next
+=item *
 
- - DIAGNOSTICS section in pod to *describe* the errors (see below)
+DIAGNOSTICS section in pod to *describe* the errors (see below)
+
+=item *
+
+Multi-byte quotation support
 
 =back
 
