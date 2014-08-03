@@ -1466,7 +1466,6 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	}
 
     if ((csv.useIO = useIO)) {
-	dSP;
 	require_IO_Handle;
 
 	csv.tmp = NULL;
