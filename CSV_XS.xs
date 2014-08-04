@@ -330,7 +330,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
     if (SvIOK (val))
 	iv = SvIV (val);
     else if (SvNOK (val))	/* Needed for 5.6.x but safe for 5.8.x+ */
-	iv = (int)SvNV (val);
+	iv = (IV)SvNV (val);
     else
 	iv = *cp;
 
@@ -383,6 +383,9 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 		csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
 		}
 	    break;
+
+	default:
+	    warn ("Unknown cache index %d ignored\n", idx);
 	}
 
     csv->cache = cache;
