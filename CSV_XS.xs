@@ -86,7 +86,6 @@
 #define CACHE_ID_eol			11
 #define CACHE_ID_eol_len		19
 #define CACHE_ID_eol_is_cr		20
-#define CACHE_ID_has_types		21
 #define CACHE_ID_verbatim		22
 #define CACHE_ID_empty_is_undef		23
 #define CACHE_ID_auto_diag		24
@@ -443,7 +442,6 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
     _cache_show_byte ("empty_is_undef",		csv->empty_is_undef);
     _cache_show_byte ("has_ahead",		csv->has_ahead);
-    //_cache_show_byte ("has_types",		csv->has_types);
     _cache_show_byte ("keep_meta_info",		csv->keep_meta_info);
     _cache_show_byte ("verbatim",		csv->verbatim);
 
