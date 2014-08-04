@@ -277,7 +277,7 @@ sub sep
 	$self->_cache_set ($_cache_id{sep}, $sep);
 	}
     my $sep = $self->{sep};
-    length ($sep) ? $sep : $self->{sep_char};
+    defined $sep && length ($sep) ? $sep : $self->{sep_char};
     } # sep
 
 sub eol

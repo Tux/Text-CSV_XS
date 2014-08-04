@@ -329,6 +329,8 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	cp = SvPV (val, len);
     if (SvIOK (val))
 	iv = SvIV (val);
+    else if (SvNOK (val))	/* Needed for 5.6.x but safe for 5.8.x+ */
+	iv = (int)SvNV (val);
     else
 	iv = *cp;
 
@@ -419,7 +421,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     memcpy (csv, cache, sizeof (csv_t));
     warn ("CACHE:\n");
     _cache_show_char ("quote_char",		csv->quote_char);
-    _cache_show_char ("escap_chare",		csv->escape_char);
+    _cache_show_char ("escape_char",		csv->escape_char);
     _cache_show_char ("sep_char",		CH_SEP);
     _cache_show_byte ("binary",			csv->binary);
     _cache_show_byte ("decode_utf8",		csv->decode_utf8);
