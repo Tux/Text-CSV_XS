@@ -297,6 +297,8 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 	(void)hv_store (csv->self, "_ERROR_INPUT", 12, &PL_sv_undef, 0);
 	csv->has_error_input = 0;
 	}
+    if (xse == 2012) /* EOF */
+	(void)hv_store (csv->self, "_EOF",          4, &PL_sv_yes,   0);
     if (csv->pself && csv->auto_diag) {
 	ENTER;
 	SAVETMPS;

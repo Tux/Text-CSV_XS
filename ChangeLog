@@ -1,5 +1,5 @@
 1.11	- 2014-08-04, H.Merijn Brand
-    - 
+    - Fixed eof (RT#97742)
 
 1.10	- 2014-08-04, H.Merijn Brand
     * Support for scalar ref in out: csv (out => \(my $x = ""), ...)
