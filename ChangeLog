@@ -1,4 +1,7 @@
-1.10	- 2014-08-02, H.Merijn Brand
+1.11	- 2014-08-04, H.Merijn Brand
+    - 
+
+1.10	- 2014-08-04, H.Merijn Brand
     * Support for scalar ref in out: csv (out => \(my $x = ""), ...)
     * Support for multi-byte sep_char
     * Simplified the cache coding
