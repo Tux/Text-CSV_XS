@@ -563,7 +563,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->auto_diag			= num_opt ("auto_diag");
 	csv->diag_verbose		= num_opt ("diag_verbose");
 
-	sv_cache = newSVpvn ("", sizeof (csv_t));
+	sv_cache = newSVpvn ((char *)csv, sizeof (csv_t));
 	csv->cache = (byte *)SvPVX (sv_cache);
 	SvREADONLY_on (sv_cache);
 
