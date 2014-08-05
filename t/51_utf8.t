@@ -49,7 +49,7 @@ BEGIN {
     binmode $builder->failure_output, ":encoding(utf8)";
     binmode $builder->todo_output,    ":encoding(utf8)";
 
-    plan tests => 11 + 6 * @tests + 43;
+    plan tests => 11 + 6 * @tests + 44;
     }
 
 BEGIN {
@@ -142,20 +142,25 @@ for (@tests) {
     }
 
 my $sep = "\N{INVISIBLE SEPARATOR}";
+my $quo = "\N{FULLWIDTH QUOTATION MARK}";
 foreach my $new (0, 1) {
-    my $csv;
-    if ($new) {
-	$csv = Text::CSV_XS->new ({ binary => 1, sep => $sep });
-	}
-    else {
-	$csv = Text::CSV_XS->new ({ binary => 1 });
-	is ($csv->sep ($sep), $sep,		"sep (INVISIBLE SEPARATOR)");
-	}
-    ok ($csv->always_quote (1),			"Always quote");
+    my %attr = (
+	binary       => 1,
+	always_quote => 1,
+	);;
+    $new & 1 and $attr{sep}   = $sep;
+    $new & 2 and $attr{quote} = $quo;
+    my $csv = Text::CSV_XS->new (\%attr);
+
+    my $s = $attr{sep} || ',';
+    my $q = $attr{quo} || '"';
+
+    is ($csv->sep,   $s, "sep");
+    is ($csv->quote, $q, "quote");
 
     foreach my $data ([ 1, 2 ], [ "\N{EURO SIGN}", "\N{SNOWMAN}" ]) {
 
-	my $exp8 = join $sep => map { qq{"$_"} } @$data;
+	my $exp8 = join $s => map { qq{$q$_$q} } @$data;
 	utf8::encode (my $expb = $exp8);
 	my @exp = ($expb, $exp8);
 
@@ -168,6 +173,8 @@ foreach my $new (0, 1) {
 	close $fh;
 
 	is ($out, $expb,			"output");
+
+	$attr{quo} and next; # NYI
 
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
