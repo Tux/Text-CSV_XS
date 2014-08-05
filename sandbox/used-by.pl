@@ -16,6 +16,8 @@ my $tm = shift // do {
     (my $d = getcwd) =~ s{.*CPAN/([^/]+)(?:/.*)?}{$1};
     $d;
     } or die "No module to check\n";
+
+diag ("Testing used-by for $tm\n");
 my %tm = map { $_ => 1 } qw( );
 
 $| = 1;
@@ -51,6 +53,7 @@ foreach my $a ($tree->look_down (_tag => "a", href => qr{/dist/})) {
     $tm{$m} = 1;
     }
 unless (keys %tm) {
+    diag ("$url might be rebuilding");
     ok (1, "No dependents found");
     done_testing;
     exit 0;
