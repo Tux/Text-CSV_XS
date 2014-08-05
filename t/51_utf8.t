@@ -49,7 +49,7 @@ BEGIN {
     binmode $builder->failure_output, ":encoding(utf8)";
     binmode $builder->todo_output,    ":encoding(utf8)";
 
-    plan tests => 11 + 6 * @tests + 44;
+    plan tests => 11 + 6 * @tests + 4 * 17;
     }
 
 BEGIN {
@@ -141,9 +141,9 @@ for (@tests) {
 	}
     }
 
-my $sep = "\N{INVISIBLE SEPARATOR}";
-my $quo = "\N{FULLWIDTH QUOTATION MARK}";
-foreach my $new (0, 1) {
+my $sep = "\x{2665}";#"\N{INVISIBLE SEPARATOR}";
+my $quo = "\x{2661}";#"\N{FULLWIDTH QUOTATION MARK}";
+foreach my $new (0, 1, 2, 3) {
     my %attr = (
 	binary       => 1,
 	always_quote => 1,
@@ -152,9 +152,10 @@ foreach my $new (0, 1) {
     $new & 2 and $attr{quote} = $quo;
     my $csv = Text::CSV_XS->new (\%attr);
 
-    my $s = $attr{sep} || ',';
-    my $q = $attr{quo} || '"';
+    my $s = $attr{sep}   || ',';
+    my $q = $attr{quote} || '"';
 
+    ok (1, "Test SEP: '$s', QUO: '$q'");
     is ($csv->sep,   $s, "sep");
     is ($csv->quote, $q, "quote");
 
@@ -174,7 +175,7 @@ foreach my $new (0, 1) {
 
 	is ($out, $expb,			"output");
 
-	$attr{quo} and next; # NYI
+	$attr{quote} and next; # NYI
 
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
