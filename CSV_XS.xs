@@ -752,11 +752,6 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 {
     int		i, n, bound = 0;
 
-    if (CH_SEP == CH_QUOTE || CH_SEP == csv->escape_char) {
-	(void)SetDiag (csv, 1001);
-	return FALSE;
-	}
-
     n = av_len (fields);
     if (n < 0 && csv->is_bound) {
 	n = csv->is_bound - 1;
@@ -1091,11 +1086,6 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 #if MAINT_DEBUG
     memset (str_parsed, 0, 40);
 #endif
-
-    if (CH_SEP == CH_QUOTE || CH_SEP == csv->escape_char) {
-	(void)SetDiag (csv, 1001);
-	return FALSE;
-	}
 
     while ((c = CSV_GET) != EOF) {
 

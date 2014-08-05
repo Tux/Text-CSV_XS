@@ -98,20 +98,37 @@ my $last_new_err = Text::CSV_XS->SetDiag (0);
 sub _unhealthy_whitespace
 {
     my $self = shift;
-    $_[0] and
-      (defined $self->{quote_char}  && $self->{quote_char}  =~ m/^[ \t]$/) ||
-      (defined $self->{escape_char} && $self->{escape_char} =~ m/^[ \t]$/) and
+    $_[0] or return 0; # no checks needed without allow_whitespace
+
+    my $quo = $self->{quote};
+    defined $quo && length ($quo) or $quo = $self->{quote_char};
+    my $esc = $self->{escape_char};
+
+    (defined $quo && $quo =~ m/^[ \t]/) || (defined $esc && $esc =~ m/^[ \t]/) and
 	return 1002;
+
     return 0;
     } # _sane_whitespace
 
 sub _check_sanity
 {
     my $self = shift;
-    for (qw( sep_char quote_char escape_char )) {
-	defined $self->{$_} && $self->{$_} =~ m/[\r\n]/ and
-	    return 1003;
-	}
+
+    my $sep = $self->{sep};
+    defined $sep && length ($sep) or $sep = $self->{sep_char};
+    my $quo = $self->{quote};
+    defined $quo && length ($quo) or $quo = $self->{quote_char};
+    my $esc = $self->{escape_char};
+
+#    use DP;::diag ("SEP: '", DPeek ($sep),
+#	        "', QUO: '", DPeek ($quo),
+#	        "', ESC: '", DPeek ($esc),"'");
+    # sep_char cannot be undefined
+    defined $quo && $quo eq $sep  and return 1001;
+    defined $esc && $esc eq $sep  and return 1001;
+
+    defined $_ && $_ =~ m/[\r\n]/ and return 1003 for $sep, $quo, $esc;
+
     return _unhealthy_whitespace ($self, $self->{allow_whitespace});
     } # _check_sanity
 
@@ -261,6 +278,10 @@ sub quote
 	    $quote = "";
 	    }
 	$self->{quote} = $quote;
+
+	my $ec = _check_sanity ($self);
+	$ec and croak ($self->SetDiag ($ec));
+
 	$self->_cache_set ($_cache_id{quote}, $quote);
 	}
     my $quote = $self->{quote};
@@ -300,6 +321,10 @@ sub sep
 	    $sep = "";
 	    }
 	$self->{sep} = $sep;
+
+	my $ec = _check_sanity ($self);
+	$ec and croak ($self->SetDiag ($ec));
+
 	$self->_cache_set ($_cache_id{sep}, $sep);
 	}
     my $sep = $self->{sep};

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9074;
+use Test::More tests => 25102;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -29,20 +29,50 @@ sub combi
     my $combi = join " ", "--",
 	map { sprintf "%6s", _readable $attr{$_} } @attrib, "always_quote";
     ok (1, $combi);
+
+    # use legal non-special characters
+    is ($csv->allow_whitespace (0), 0, "Reset allow WS");
+    is ($csv->sep_char    ("\x03"), "\x03", "Reset sep");
+    is ($csv->quote_char  ("\x04"), "\x04", "Reset quo");
+    is ($csv->escape_char ("\x05"), "\x05", "Reset esc");
+
+    # Set the attributes and check failure
+    my %state;
     foreach my $attr (sort keys %attr) {
-	$csv->$attr ($attr{$attr});
-	is ($csv->$attr (), $attr{$attr},  "check $attr");
+	eval { $csv->$attr ($attr{$attr}); };
+	$@ or next;
+	$state{0 + $csv->error_diag} ||= $@;
 	}
-
-    my $ret = $csv->combine (@input);
-
     if ($attr{sep_char} eq $attr{quote_char} ||
 	$attr{sep_char} eq $attr{escape_char}) {
-	is ($ret, undef, "Illegal combo for combine");
-
-	ok (!$csv->parse ("foo"), "illegal combo for parse");
-	return;
+	ok (exists $state{1001}, "Illegal combo");
+	like ($state{1001}, qr{sep_char is equal to}, "Illegal combo");
 	}
+    else {
+	ok (!exists $state{1001}, "No char conflict");
+	}
+    if (!exists $state{1001} and
+	    $attr{sep_char}    =~ m/[\r\n]/ ||
+	    $attr{quote_char}  =~ m/[\r\n]/ ||
+	    $attr{escape_char} =~ m/[\r\n]/
+	    ) {
+	ok (exists $state{1003}, "Special contains eol");
+	like ($state{1003}, qr{in main attr not}, "Illegal combo");
+	}
+    if ($attr{allow_whitespace} and
+	    $attr{quote_char}  =~ m/^[ \t]/ ||
+	    $attr{escape_char} =~ m/^[ \t]/
+	    ) {
+	#diag (join " -> ** " => $combi, join ", " => sort %state);
+	ok (exists $state{1002}, "Illegal combo under allow_whitespace");
+	like ($state{1002}, qr{allow_whitespace with}, "Illegal combo");
+	}
+    %state and return;
+
+    # Check success
+    is ($csv->$_ (), $attr{$_},  "check $_") for sort keys %attr;
+
+    my $ret = $csv->combine (@input);
 
     ok ($ret, "combine");
     ok (my $str = $csv->string, "string");
@@ -71,16 +101,19 @@ sub combi
 	}
     } # combi
 
+foreach my $aw (0, 1) {
 foreach my $aq (0, 1) {
 foreach my $qc (@special) {
 foreach my $ec (@special, "+") {
 foreach my $sc (@special, "\0") {
     combi (
-	quote_char	=> $qc,
-	escape_char	=> $ec,
-	sep_char	=> $sc,
-	always_quote	=> $aq,
+	sep_char         => $sc,
+	quote_char       => $qc,
+	escape_char      => $ec,
+	always_quote     => $aq,
+	allow_whitespace => $aw,
 	);
+     }
     }
    }
   }
