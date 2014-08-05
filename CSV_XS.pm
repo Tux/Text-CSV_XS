@@ -917,6 +917,8 @@ sub _csv_attr
     my $in  = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
     my $out = delete $attr{out} || delete $attr{file};
 
+    ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
+
     if ($out) {
 	$in or croak $csv_usage;	# No out without in
 	defined $attr{eol} or $attr{eol} = "\r\n";
@@ -929,11 +931,8 @@ sub _csv_attr
 	    }
 	}
 
-    if (   ref $in eq "CODE") {		# we need an out
-	$out or croak qq{for CSV source, "out" is required};
-	}
-    elsif (ref $in eq "ARRAY") {	# we need an out
-	$out or croak qq{for CSV source, "out" is required};
+    if (   ref $in eq "CODE" or ref $in eq "ARRAY") {
+	# All done
 	}
     elsif (ref $in eq "SCALAR") {
 	# Strings with code points over 0xFF may not be mapped into in-memory file handles
