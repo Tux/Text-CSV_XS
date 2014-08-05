@@ -190,7 +190,8 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     allow_unquoted_escape	=>  8,
     allow_whitespace		=>  9,
     blank_is_undef		=> 10,
-    eol				=> 11,	# 11 .. 18
+    eol				=> 11,
+    quote			=> 15,
     verbatim			=> 22,
     empty_is_undef		=> 23,
     auto_diag			=> 24,
@@ -237,9 +238,34 @@ sub _set_attr_N
 sub quote_char
 {
     my $self = shift;
-    @_ and $self->_set_attr_C ("quote_char",  shift);
+    if (@_) {
+	$self->_set_attr_C ("quote_char", shift);
+	$self->_cache_set ($_cache_id{quote}, "");
+	}
     $self->{quote_char};
     } # quote_char
+
+sub quote
+{
+    my $self = shift;
+    if (@_) {
+	my $quote = shift;
+	defined $quote or $quote = "";
+	$] >= 5.008002 and utf8::decode ($quote);
+	my @b = unpack "U0C*", $quote;
+	if (@b > 1) {
+	    $self->quote_char ("\0");
+	    }
+	else {
+	    $self->quote_char ($quote);
+	    $quote = "";
+	    }
+	$self->{quote} = $quote;
+	$self->_cache_set ($_cache_id{quote}, $quote);
+	}
+    my $quote = $self->{quote};
+    defined $quote && length ($quote) ? $quote : $self->{quote_char};
+    } # quote
 
 sub escape_char
 {

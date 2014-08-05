@@ -86,8 +86,10 @@
 #define CACHE_ID_sep			38
 #define CACHE_ID_sep_len		37
 #define CACHE_ID_eol			11
-#define CACHE_ID_eol_len		19
-#define CACHE_ID_eol_is_cr		20
+#define CACHE_ID_eol_len		12
+#define CACHE_ID_eol_is_cr		13
+#define CACHE_ID_quo			15
+#define CACHE_ID_quo_len		16
 #define CACHE_ID_verbatim		22
 #define CACHE_ID_empty_is_undef		23
 #define CACHE_ID_auto_diag		24
@@ -383,6 +385,13 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	    if (len < MAX_SEP_LEN) {
 		memcpy (csv->sep, cp, len);
 		csv->sep_len = len == 1 ? 0 : len;
+		}
+	    break;
+
+	case CACHE_ID_quo:
+	    if (len < MAX_QUO_LEN) {
+		memcpy (csv->quo, cp, len);
+		csv->quo_len = len == 1 ? 0 : len;
 		}
 	    break;
 
