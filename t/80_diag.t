@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 200;
+ use Test::More tests => 201;
 #use Test::More "no_plan";
 
 my %err;
