@@ -53,27 +53,26 @@ sub version
 #   a newly created Text::CSV object.
 
 my %def_attr = (
+    eol				=> '',
+    sep_char			=> ',',
     quote_char			=> '"',
     escape_char			=> '"',
-    sep_char			=> ',',
-    eol				=> '',
-    sep				=> undef,
+    binary			=> 0,
+    decode_utf8			=> 1,
+    auto_diag			=> 0,
+    diag_verbose		=> 0,
+    blank_is_undef		=> 0,
+    empty_is_undef		=> 0,
+    allow_whitespace		=> 0,
+    allow_loose_quotes		=> 0,
+    allow_loose_escapes		=> 0,
+    allow_unquoted_escape	=> 0,
     always_quote		=> 0,
     quote_space			=> 1,
     quote_null			=> 1,
     quote_binary		=> 1,
-    binary			=> 0,
-    decode_utf8			=> 1,
     keep_meta_info		=> 0,
-    allow_loose_quotes		=> 0,
-    allow_loose_escapes		=> 0,
-    allow_unquoted_escape	=> 0,
-    allow_whitespace		=> 0,
-    blank_is_undef		=> 0,
-    empty_is_undef		=> 0,
     verbatim			=> 0,
-    auto_diag			=> 0,
-    diag_verbose		=> 0,
     types			=> undef,
     callbacks			=> undef,
 
@@ -152,6 +151,11 @@ sub new
 	$attr{sep_char} = delete $attr{sep};
 	$sep_aliased = 1;
 	}
+    my $quote_aliased = 0;
+    if (defined $attr{quote}) {
+	$attr{quote_char} = delete $attr{quote};
+	$quote_aliased = 1;
+	}
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
@@ -172,6 +176,16 @@ sub new
 	    }
 	else {
 	    $attr{sep} = undef;
+	    }
+	}
+    if ($quote_aliased) {
+	my @b = unpack "U0C*", $attr{quote_char};
+	if (@b > 1) {
+	    $attr{quote} = $attr{quote_char};
+	    $attr{quote_char} = "\0";
+	    }
+	else {
+	    $attr{quote} = undef;
 	    }
 	}
 

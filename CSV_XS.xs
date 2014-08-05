@@ -243,10 +243,10 @@ static byte _is_SEPX (byte c, csv_t *csv, int line)
 {
     byte b = __is_SEPX (c);
     (void)fprintf (stderr, "# SEPX: %d\n", b);
-    if (csv->sep_len) {
-	(void)fprintf (stderr, "# %d: len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
+    if (csv->sep_len)
+	(void)fprintf (stderr,
+	    "# %d: len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
 	    line, csv->sep_len, csv->size, csv->used, c, CH_SEP);
-	}
     return b;
     } /* _is_SEPX */
 #define is_SEP(c)  _is_SEPX (c, csv, __LINE__)
@@ -264,10 +264,10 @@ static byte _is_QUOTEX (byte c, csv_t *csv, int line)
 {
     byte b = __is_QUOTEX (c);
     (void)fprintf (stderr, "# QUOTEX: %d\n", b);
-    if (csv->quo_len) {
-	(void)fprintf (stderr, "# %d: len: %d, siz: %d, usd: %d, c: %02x, *quo: %02x\n",
+    if (csv->quo_len)
+	(void)fprintf (stderr,
+	    "# %d: len: %d, siz: %d, usd: %d, c: %02x, *quo: %02x\n",
 	    line, csv->quo_len, csv->size, csv->used, c, CH_QUOTE);
-	}
     return b;
     } /* _is_QUOTEX */
 #define is_QUOTE(c)  _is_QUOTEX (c, csv, __LINE__)
@@ -762,13 +762,12 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 	SV    *sv;
 
 	if (i > 0) {
+	    CSV_PUT (csv, dst, CH_SEP);
 	    if (csv->sep_len) {
 		int x;
-		for (x = 0; x < (int)csv->sep_len; x++)
+		for (x = 1; x < (int)csv->sep_len; x++)
 		    CSV_PUT (csv, dst, csv->sep[x]);
 		}
-	    else
-		CSV_PUT (csv, dst, CH_SEP);
 	    }
 
 	if (bound)
@@ -814,8 +813,14 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    }
 		quoteMe = (l > 0);
 		}
-	    if (quoteMe)
+	    if (quoteMe) {
 		CSV_PUT (csv, dst, CH_QUOTE);
+		if (csv->quo_len) {
+		    int x;
+		    for (x = 1; x < (int)csv->quo_len; x++)
+			CSV_PUT (csv, dst, csv->quo[x]);
+		    }
+		}
 	    while (len-- > 0) {
 		char	c = *ptr++;
 		int	e = 0;
@@ -842,8 +847,14 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    CSV_PUT (csv, dst, csv->escape_char);
 		CSV_PUT (csv, dst, c);
 		}
-	    if (quoteMe)
+	    if (quoteMe) {
 		CSV_PUT (csv, dst, CH_QUOTE);
+		if (csv->quo_len) {
+		    int x;
+		    for (x = 1; x < (int)csv->quo_len; x++)
+			CSV_PUT (csv, dst, csv->quo[x]);
+		    }
+		}
 	    }
 	}
     if (csv->eol_len) {
