@@ -234,19 +234,19 @@ static SV  *m_getline, *m_print, *m_read;
 static int  last_error = 0;
 
 #define __is_SEPX(c) (c == CH_SEP && (csv->sep_len == 0 || (\
-    csv->size - csv->used >= csv->sep_len				&&\
+    csv->size - csv->used >= csv->sep_len - 1				&&\
     !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
     (csv->used += csv->sep_len - 1)					&&\
     (c = CH_SEPX))))
 #if MAINT_DEBUG > 1
-static byte _is_SEPX (byte c, csv_t *csv, int line)
+static byte _is_SEPX (unsigned int c, csv_t *csv, int line)
 {
-    byte b = __is_SEPX (c);
-    (void)fprintf (stderr, "# SEPX: %d\n", b);
+    unsigned int b = __is_SEPX (c);
+    (void)fprintf (stderr, "# %4d - is_SEPX:\t%d (%d)\n", line, b, csv->sep_len);
     if (csv->sep_len)
 	(void)fprintf (stderr,
-	    "# %d: len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
-	    line, csv->sep_len, csv->size, csv->used, c, CH_SEP);
+	    "# len: %d, siz: %d, usd: %d, c: %02x, *sep: %02x\n",
+	    csv->sep_len, csv->size, csv->used, c, CH_SEP);
     return b;
     } /* _is_SEPX */
 #define is_SEP(c)  _is_SEPX (c, csv, __LINE__)
@@ -254,20 +254,21 @@ static byte _is_SEPX (byte c, csv_t *csv, int line)
 #define is_SEP(c) __is_SEPX (c)
 #endif
 
-#define __is_QUOTEX(c) (c == CH_QUOTE && (csv->quo_len == 0 || (\
-    csv->size - csv->used >= csv->quo_len				&&\
+#define __is_QUOTEX(c) (CH_QUOTE && c == CH_QUOTE && (csv->quo_len == 0 || (\
+    csv->size - csv->used >= csv->quo_len - 1				&&\
     !memcmp (csv->bptr + csv->used, csv->quo + 1, csv->quo_len - 1)	&&\
     (csv->used += csv->quo_len - 1)					&&\
     (c = CH_QUOTEX))))
 #if MAINT_DEBUG > 1
-static byte _is_QUOTEX (byte c, csv_t *csv, int line)
+static byte _is_QUOTEX (unsigned int c, csv_t *csv, int line)
 {
-    byte b = __is_QUOTEX (c);
-    (void)fprintf (stderr, "# QUOTEX: %d\n", b);
+    unsigned int b = __is_QUOTEX (c);
+    (void)fprintf (stderr, "# %4d - is_QUOTEX:\t%d (%d)\n", line, b, csv->quo_len);
+
     if (csv->quo_len)
 	(void)fprintf (stderr,
-	    "# %d: len: %d, siz: %d, usd: %d, c: %02x, *quo: %02x\n",
-	    line, csv->quo_len, csv->size, csv->used, c, CH_QUOTE);
+	    "# len: %d, siz: %d, usd: %d, c: %02x, *quo: %02x\n",
+	    csv->quo_len, csv->size, csv->used, c, CH_QUOTE);
     return b;
     } /* _is_QUOTEX */
 #define is_QUOTE(c)  _is_QUOTEX (c, csv, __LINE__)
@@ -833,6 +834,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    (void)SetDiag (csv, 2110);
 		    return FALSE;
 		    }
+		/* TODO: This should probably extend to is_QUOTEX */
 		if (c == CH_QUOTE         && CH_QUOTE)
 		    e = 1;
 		else
@@ -964,6 +966,8 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 #define PUT_RPT       fprintf (stderr, "# CSV_PUT  @ %4d: 0x%02x '%c'\n", __LINE__, c, isprint (c) ? c : '?')
 #define PUT_SEPX_RPT1 fprintf (stderr, "# PUT SEPX @ %4d\n", __LINE__)
 #define PUT_SEPX_RPT2 fprintf (stderr, "# Done putting SEPX\n")
+#define PUT_QUOX_RPT1 fprintf (stderr, "# PUT QUOX @ %4d\n", __LINE__)
+#define PUT_QUOX_RPT2 fprintf (stderr, "# Done putting QUOX\n")
 #define PUT_EOLX_RPT1 fprintf (stderr, "# PUT EOLX @ %4d\n", __LINE__)
 #define PUT_EOLX_RPT2 fprintf (stderr, "# Done putting EOLX\n")
 #define PUSH_RPT      fprintf (stderr, "# AV_PUSHd @ %4d\n", __LINE__); sv_dump (sv)
@@ -971,6 +975,8 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 #define PUT_RPT
 #define PUT_SEPX_RPT1
 #define PUT_SEPX_RPT2
+#define PUT_QUOX_RPT1
+#define PUT_QUOX_RPT2
 #define PUT_EOLX_RPT1
 #define PUT_EOLX_RPT2
 #define PUSH_RPT
@@ -994,10 +1000,15 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	}					\
     else if (c == CH_SEPX) {			\
 	int x; PUT_SEPX_RPT1;			\
-	warn ("PUT SEPX\n");\
 	for (x = 0; x < (int)csv->sep_len; x++)	\
 	    CSV_PUT_SV1 (csv->sep[x]);		\
 	PUT_SEPX_RPT2;				\
+	}					\
+    else if (c == CH_QUOTEX) {			\
+	int x; PUT_QUOX_RPT1;			\
+	for (x = 0; x < (int)csv->quo_len; x++)	\
+	    CSV_PUT_SV1 (csv->quo[x]);		\
+	PUT_QUOX_RPT2;				\
 	}					\
     else					\
 	CSV_PUT_SV1 (c);			\
@@ -1242,7 +1253,7 @@ restart:
 		}
 	    } /* CH_CR */
 	else
-	if (c == CH_QUOTE && CH_QUOTE) {
+	if (is_QUOTE (c)) {
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%02x pos %d = QUO '%c'\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
@@ -1326,7 +1337,7 @@ restart:
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if (c2 == CH_QUOTE || is_SEP (c2))
+		if (is_QUOTE (c2))
 		    CSV_PUT_SV (c2)
 		else
 		if (c2 == CH_NL    || c2 == CH_EOLX) {
@@ -1403,7 +1414,7 @@ restart:
 		    if (c2 == '0')
 			CSV_PUT_SV (0)
 		    else
-		    if ( c2 == CH_QUOTE || is_SEP (c2) ||
+		    if ( is_QUOTE (c2) || is_SEP (c2) ||
 			 c2 == csv->escape_char || csv->allow_loose_escapes)
 			CSV_PUT_SV (c2)
 		    else {
@@ -1424,7 +1435,7 @@ restart:
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if ( c2 == CH_QUOTE || is_SEP (c2) ||
+		if ( is_QUOTE (c2) || is_SEP (c2) ||
 		     c2 == csv->escape_char || csv->allow_loose_escapes)
 		    CSV_PUT_SV (c2)
 		else {

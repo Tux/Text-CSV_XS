@@ -1,7 +1,8 @@
-1.11	- 2014-08-05, H.Merijn Brand
+1.11	- 2014-08-06, H.Merijn Brand
     - Fixed eof (RT#97742)
     - Check for attribute conflicts early
     - csv (in => [..]) now defaults to *STDOUT for out
+    - Support for multi-byte quote_char
 
 1.10	- 2014-08-04, H.Merijn Brand
     * Support for scalar ref in out: csv (out => \(my $x = ""), ...)

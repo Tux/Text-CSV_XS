@@ -4,10 +4,12 @@ use strict;
 use warnings;
 use charnames ":full";
 
+$| = 1;
 use Test::More;
+$| = 1;
 
 BEGIN {
-    $] < 5.008001 and
+    $] < 5.008002 and
 	plan skip_all => "UTF8 tests useless in this ancient perl version";
     }
 
@@ -49,11 +51,11 @@ BEGIN {
     binmode $builder->failure_output, ":encoding(utf8)";
     binmode $builder->todo_output,    ":encoding(utf8)";
 
-    plan tests => 11 + 6 * @tests + 4 * 17;
+    plan tests => 11 + 6 * @tests + 4 * 22 + 1;
     }
 
 BEGIN {
-    require_ok "Text::CSV_XS";
+    use_ok "Text::CSV_XS", ("csv");
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     require "t/util.pl";
     }
@@ -155,11 +157,15 @@ foreach my $new (0, 1, 2, 3) {
     my $s = $attr{sep}   || ',';
     my $q = $attr{quote} || '"';
 
-    ok (1, "Test SEP: '$s', QUO: '$q'");
+    note ("Test SEP: '$s', QUO: '$q'");
     is ($csv->sep,   $s, "sep");
     is ($csv->quote, $q, "quote");
 
-    foreach my $data ([ 1, 2 ], [ "\N{EURO SIGN}", "\N{SNOWMAN}" ]) {
+    foreach my $data (
+	    [ 1,		2		],
+	    [ "\N{EURO SIGN}",	"\N{SNOWMAN}"	],
+#	    [ $sep,		$quo		],
+	    ) {
 
 	my $exp8 = join $s => map { qq{$q$_$q} } @$data;
 	utf8::encode (my $expb = $exp8);
@@ -174,8 +180,6 @@ foreach my $new (0, 1, 2, 3) {
 	close $fh;
 
 	is ($out, $expb,			"output");
-
-	$attr{quote} and next; # NYI
 
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
@@ -193,4 +197,12 @@ foreach my $new (0, 1, 2, 3) {
 	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
 	close $fh;
 	}
+    }
+
+{   my $h = "\N{WHITE HEART SUIT}";
+    my $H = "\N{BLACK HEART SUIT}";
+    my $str = "${h}I$h$H${h}L\"${h}ve$h$H${h}Perl$h";
+    utf8::encode ($str);
+    is_deeply (csv (in => \$str, sep => $H, quote => $h),
+	[[ "I", "L${h}ve", "Perl"]],		"I $H Perl");
     }

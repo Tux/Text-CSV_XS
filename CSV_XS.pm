@@ -1349,8 +1349,6 @@ C<quote_char> can not be equal to L<C<sep_char>|/sep_char>.
 =item quote
 X<quote>
 
-WORK IN PROGRESS - alpha feature. YMMV
-
  my $csv = Text::CSV_XS->new ({ quote => "\N{FULLWIDTH QUOTATION MARK}" });
              $csv->quote ("'");
  my $quote = $csv->quote;
@@ -2731,11 +2729,6 @@ setting in it, so checking the locale is no solution.
 =head1 TODO
 
 =over 2
-
-=item Multibyte quotation
-
-Currently L<C<quote_char>|/quote_char> is restricted to a single byte. Like
-L<C<sep>|/sep> it ought to support multi-byte and UTF-8 quotation.
 
 =item More Errors & Warnings
 
