@@ -553,17 +553,13 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    else
 		CH_QUOTE = (char)0;
 	    }
-	if ((svp = hv_fetchs (self, "quote",          FALSE)) && *svp) {
-	    if (SvOK (*svp)) {
-		ptr = SvPV (*svp, len);
-		if (len < MAX_QUO_LEN) {
-		    memcpy (csv->quo, ptr, len);
-		    if (len > 1)
-			csv->quo_len = len;
-		    }
+	if ((svp = hv_fetchs (self, "quote",          FALSE)) && *svp && SvOK (*svp)) {
+	    ptr = SvPV (*svp, len);
+	    if (len < MAX_QUO_LEN) {
+		memcpy (csv->quo, ptr, len);
+		if (len > 1)
+		    csv->quo_len = len;
 		}
-	    else
-		CH_QUOTE = (char)0;
 	    }
 
 	csv->escape_char = '"';
