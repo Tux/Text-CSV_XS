@@ -51,7 +51,7 @@ BEGIN {
     binmode $builder->failure_output, ":encoding(utf8)";
     binmode $builder->todo_output,    ":encoding(utf8)";
 
-    plan tests => 11 + 6 * @tests + 4 * 22 + 1;
+    plan tests => 11 + 6 * @tests + 4 * 22 + 6;
     }
 
 BEGIN {
@@ -203,6 +203,13 @@ foreach my $new (0, 1, 2, 3) {
     my $H = "\N{BLACK HEART SUIT}";
     my $str = "${h}I$h$H${h}L\"${h}ve$h$H${h}Perl$h";
     utf8::encode ($str);
-    is_deeply (csv (in => \$str, sep => $H, quote => $h),
-	[[ "I", "L${h}ve", "Perl"]],		"I $H Perl");
+    ok (my $aoa = csv (in => \$str, sep => $H, quote => $h),	"Hearts");
+    is_deeply ($aoa, [[ "I", "L${h}ve", "Perl"]],		"I $H Perl");
+
+    ok (my $csv = Text::CSV_XS->new ({
+			binary => 1, sep => $H, quote => $h }),	"new hearts");
+    ok ($csv->combine (@{$aoa->[0]}),				"combine");
+    ok ($str = $csv->string,					"string");
+    utf8::decode ($str);
+    is ($str, "I${H}${h}L\"${h}ve${h}${H}Perl", "Correct quotation");
     }

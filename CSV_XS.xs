@@ -1337,8 +1337,11 @@ restart:
 		if (c2 == '0')
 		    CSV_PUT_SV (0)
 		else
-		if (is_QUOTE (c2))
+		if (is_QUOTE (c2)) {
+		    if (csv->utf8)
+			f |= CSV_FLAGS_BIN;
 		    CSV_PUT_SV (c2)
+		    }
 		else
 		if (c2 == CH_NL    || c2 == CH_EOLX) {
 		    AV_PUSH;
@@ -1415,8 +1418,11 @@ restart:
 			CSV_PUT_SV (0)
 		    else
 		    if ( is_QUOTE (c2) || is_SEP (c2) ||
-			 c2 == csv->escape_char || csv->allow_loose_escapes)
+			 c2 == csv->escape_char || csv->allow_loose_escapes) {
+			if (csv->utf8)
+			    f |= CSV_FLAGS_BIN;
 			CSV_PUT_SV (c2)
+			}
 		    else {
 			csv->used--;
 			ERROR_INSIDE_QUOTES (2025);
@@ -1436,8 +1442,11 @@ restart:
 		    CSV_PUT_SV (0)
 		else
 		if ( is_QUOTE (c2) || is_SEP (c2) ||
-		     c2 == csv->escape_char || csv->allow_loose_escapes)
+		     c2 == csv->escape_char || csv->allow_loose_escapes) {
+		    if (csv->utf8)
+			f |= CSV_FLAGS_BIN;
 		    CSV_PUT_SV (c2)
+		    }
 		else {
 		    csv->used--;
 		    ERROR_INSIDE_QUOTES (2025);
