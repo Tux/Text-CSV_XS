@@ -834,8 +834,8 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    (void)SetDiag (csv, 2110);
 		    return FALSE;
 		    }
-		/* TODO: This should probably extend to is_QUOTEX */
-		if (c == CH_QUOTE         && CH_QUOTE)
+		if (CH_QUOTE && (byte)c == CH_QUOTE && (csv->quo_len == 0 ||
+			 memcmp (ptr, csv->quo +1, csv->quo_len - 1) == 0))
 		    e = 1;
 		else
 		if (c == csv->escape_char && csv->escape_char)
