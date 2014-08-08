@@ -2380,6 +2380,43 @@ instead
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
  csv (in => $aoa, out => $fh, headers => [qw( code description price }]);
 
+=head3 key
+X<key>
+
+If passed,  will default  L<C<headers>|/headers>  to C<"auto"> and return a
+hashref instead of an array of hashes.
+
+ my $ref = csv (in => "test.csv", key => "code");
+
+with test.csv like
+
+ code,product,price,color
+ 1,pc,850,gray
+ 2,keyboard,12,white
+ 3,mouse,5,black
+
+will return
+
+  { 1   => {
+        code    => 1,
+        color   => 'gray',
+        price   => 850,
+        product => 'pc'
+        },
+    2   => {
+        code    => 2,
+        color   => 'white',
+        price   => 12,
+        product => 'keyboard'
+        },
+    3   => {
+        code    => 3,
+        color   => 'black',
+        price   => 5,
+        product => 'mouse'
+        }
+    }
+
 =head3 fragment
 X<fragment>
 

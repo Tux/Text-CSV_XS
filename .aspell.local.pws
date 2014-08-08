@@ -7,6 +7,8 @@ bc
 ChangeLog
 Citterman
 csvdiff
+dcsv
+DDumper
 EBCDIC
 ECB
 ECR
@@ -22,6 +24,7 @@ getline
 hashrefs
 IANA
 INI
+jcsv
 Jochen
 multi
 NL
