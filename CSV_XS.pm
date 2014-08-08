@@ -956,6 +956,7 @@ sub _csv_attr
 
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
+    my $key  = delete $attr{key};
 
     my $cbai = delete $attr{callbacks}{after_in}    ||
 	       delete $attr{after_in}               ||
@@ -976,6 +977,7 @@ sub _csv_attr
 	in   => $in,
 	out  => $out,
 	hdrs => $hdrs,
+	key  => $key,
 	frag => $frag,
 	cbai => $cbai,
 	cbbo => $cbbo,
@@ -1035,6 +1037,7 @@ sub csv
 
     ref $in eq "CODE" and croak "CODE only valid fro in when using out";
 
+    my $key = $c->{key} and $hdrs ||= "auto";
     if (defined $hdrs && !ref $hdrs) {
 	$hdrs eq "skip" and         $csv->getline ($fh);
 	$hdrs eq "auto" and $hdrs = $csv->getline ($fh);
@@ -1045,10 +1048,13 @@ sub csv
 	? # aoh
 	  do {
 	    $csv->column_names ($hdrs);
-	    $frag ? $csv->fragment ($fh, $frag) : $csv->getline_hr_all ($fh);
+	    $frag ? $csv->fragment ($fh, $frag) :
+	    $key  ? { map { $_->{$key} => $_ } @{$csv->getline_hr_all ($fh)} }
+		  : $csv->getline_hr_all ($fh);
 	    }
 	: # aoa
-	    $frag ? $csv->fragment ($fh, $frag) : $csv->getline_all ($fh);
+	    $frag ? $csv->fragment ($fh, $frag)
+		  : $csv->getline_all ($fh);
     $ref or Text::CSV_XS->auto_diag;
     $c->{cls} and close $fh;
     if ($ref and $c->{cbai} || $c->{cboi}) {
