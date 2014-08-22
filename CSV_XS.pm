@@ -3127,8 +3127,8 @@ X<3010>
 =head1 SEE ALSO
 
 L<IO::File>,  L<IO::Handle>,  L<IO::Wrap>,  L<Text::CSV>,  L<Text::CSV_PP>,
-L<Text::CSV::Encoded>,  L<Text::CSV::Separator>,   L<Spreadsheet::CSV>  and
-L<Spreadsheet::Read>, and of course L<perl>.
+L<Text::CSV::Encoded>,     L<Text::CSV::Separator>,    L<Text::CSV::Slurp>,
+L<Spreadsheet::CSV> and L<Spreadsheet::Read>, and of course L<perl>.
 
 =head1 AUTHOR
 
