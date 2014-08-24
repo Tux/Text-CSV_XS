@@ -108,7 +108,7 @@
 typedef struct {
     byte	quote_char;
     byte	escape_char;
-    byte	sep_char;	/* not used anymore */
+    byte	fld_idx;
     byte	binary;
 
     byte	keep_meta_info;
@@ -319,6 +319,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
 	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
+	(void)hv_store (csv->self, "_ERROR_FLD",   10, newSViv  (0), 0);
 	(void)hv_store (csv->self, "_ERROR_INPUT", 12, &PL_sv_undef, 0);
 	csv->has_error_input = 0;
 	}
@@ -871,6 +872,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos)
 {
     (void)hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
+    (void)hv_store (csv->self, "_ERROR_FLD", 10, newSViv (csv->fld_idx), 0);
     if (csv->tmp) {
 	csv->has_error_input = 1;
 	if (hv_store (csv->self, "_ERROR_INPUT", 12, csv->tmp, 0))
@@ -1069,7 +1071,7 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv)
 	else					\
 	    sv = newSVpvs ("");			\
 	unless (sv) return FALSE;		\
-	f = 0;					\
+	f = 0; csv->fld_idx++;			\
 	}
 
 #if MAINT_DEBUG
@@ -1104,6 +1106,8 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
 #if MAINT_DEBUG
     memset (str_parsed, 0, 40);
 #endif
+
+    csv->fld_idx = 0;
 
     while ((c = CSV_GET) != EOF) {
 
@@ -1505,7 +1509,7 @@ restart:
 
     if (waitingForField) {
 	if (seenSomething || !csv->useIO) {
-	    unless (sv) NewField;
+	    NewField;
 	    if (csv->blank_is_undef || csv->empty_is_undef)
 		sv_setpvn (sv, NULL, 0);
 	    else

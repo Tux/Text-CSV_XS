@@ -557,7 +557,7 @@ sub callbacks
 sub error_diag
 {
     my $self = shift;
-    my @diag = (0 + $last_new_err, $last_new_err, 0, 0);
+    my @diag = (0 + $last_new_err, $last_new_err, 0, 0, 0);
 
     if ($self && ref $self && # Not a class method or direct call
 	 $self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
@@ -565,6 +565,7 @@ sub error_diag
 	$diag[1] =     $self->{_ERROR_DIAG};
 	$diag[2] = 1 + $self->{_ERROR_POS} if exists $self->{_ERROR_POS};
 	$diag[3] =     $self->{_RECNO};
+	$diag[4] =     $self->{_ERROR_FLD} if exists $self->{_ERROR_FLD};
 
 	$diag[0] && $self && $self->{callbacks} && $self->{callbacks}{error} and
 	    return $self->{callbacks}{error}->(@diag);
@@ -574,6 +575,7 @@ sub error_diag
     unless (defined $context) {	# Void context, auto-diag
 	if ($diag[0] && $diag[0] != 2012) {
 	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1] \@ rec $diag[3] pos $diag[2]\n";
+	    $diag[4] and $msg =~ s/$/ field $diag[4]/;
 	    if ($self && ref $self) {	# auto_diag
 		if ($self->{diag_verbose} and $self->{_ERROR_INPUT}) {
 		    $msg .= "$self->{_ERROR_INPUT}'\n";
@@ -2228,9 +2230,9 @@ X<error_diag>
 
  Text::CSV_XS->error_diag ();
  $csv->error_diag ();
- $error_code           = 0  + $csv->error_diag ();
- $error_str            = "" . $csv->error_diag ();
- ($cde, $str, $pos, $recno) = $csv->error_diag ();
+ $error_code               = 0  + $csv->error_diag ();
+ $error_str                = "" . $csv->error_diag ();
+ ($cde, $str, $pos, $rec, $fld) = $csv->error_diag ();
 
 If (and only if) an error occurred,  this function returns  the diagnostics
 of that error.
@@ -2239,11 +2241,14 @@ If called in void context,  this will print the internal error code and the
 associated error message to STDERR.
 
 If called in list context,  this will return  the error code  and the error
-message in that order.  If the last error was from parsing, the third value
-returned  is a best guess  at the location  within the line  that was being
-parsed.  Its value is 1-based. The fourth value represents the record count
-parsed by this csv instance. See F<examples/csv-check>  for how this can be
-used.
+message in that order.  If the last error was from parsing, the rest of the
+values returned are a best guess at the location  within the line  that was
+being parsed. Their values are 1-based.  The position currently is index of
+the byte at which the parsing failed in the current record. It might change
+to be the index of the current character in a later release. The records is
+is the index of the record parsed by the csv instance.  The field number is
+the index of the field the parser thinks it is currently  trying to  parse.
+See F<examples/csv-check> for how this can be used.
 
 If called in  scalar context,  it will return  the diagnostics  in a single
 scalar, a-la C<$!>.  It will contain the error code in numeric context, and
@@ -2458,11 +2463,11 @@ returned by L</error_diag>:
 
  sub ignore3006
  {
-     my ($err, $msg, $pos, $recno) = @_;
+     my ($err, $msg, $pos, $recno, $fldno) = @_;
      if ($err == 3006) {
          # ignore this error
          ($c, $s) = (undef, undef);
-         SetDiag (0);
+         Text::CSV_XS->SetDiag (0);
          }
      # Any other error
      return;
