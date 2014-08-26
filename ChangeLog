@@ -1,5 +1,5 @@
-1.12	- 2014-08-17, H.Merijn Brand
-    - 
+1.12	- 2014-08-26, H.Merijn Brand
+    - Add field number to error_diag
 
 1.11	- 2014-08-16, H.Merijn Brand
     * Fixed eof (RT#97742)

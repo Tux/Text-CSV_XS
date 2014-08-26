@@ -2246,9 +2246,9 @@ values returned are a best guess at the location  within the line  that was
 being parsed. Their values are 1-based.  The position currently is index of
 the byte at which the parsing failed in the current record. It might change
 to be the index of the current character in a later release. The records is
-is the index of the record parsed by the csv instance.  The field number is
-the index of the field the parser thinks it is currently  trying to  parse.
-See F<examples/csv-check> for how this can be used.
+the index of the record parsed by the csv instance. The field number is the
+index of the field the parser thinks it is currently  trying to  parse. See
+F<examples/csv-check> for how this can be used.
 
 If called in  scalar context,  it will return  the diagnostics  in a single
 scalar, a-la C<$!>.  It will contain the error code in numeric context, and
