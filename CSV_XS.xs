@@ -1303,7 +1303,7 @@ restart:
 			return FALSE;
 			}
 
-		    if (c2 == CH_NL) {
+		    if (c2 == CH_NL || c2 == CH_EOLX) {
 			AV_PUSH;
 			return TRUE;
 			}
