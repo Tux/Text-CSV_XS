@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1065;
+use Test::More tests => 1076;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -252,6 +252,28 @@ $/ = $def_rs;
     is (scalar @$row, 15,		"field count");
     is ($row->[0], "",			"field 1");
     close $fh;
+    }
+
+{   ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, binary => 1 }), "new csv");
+    ok ($csv->eol ("--"), "eol = --");
+    ok ($csv->parse (qq{1,"2--3",4}),			"no eol");
+    is_deeply ([$csv->fields], [ "1", "2--3", 4 ],	"parse");
+    ok ($csv->parse (qq{1,"2--3",4--}),			"eol");
+    is_deeply ([$csv->fields], [ "1", "2--3", 4 ],	"parse");
+    ok ($csv->parse (qq{1,"2--3",4,--}),		",eol");
+    is_deeply ([$csv->fields], [ "1", "2--3", 4, "" ],	"parse");
+
+    open  my $fh, ">", "_eol.csv";
+    print $fh qq{1,"2--3",4--};
+    print $fh qq{1,"2--3",4,--};
+    print $fh qq{1,"2--3",4};
+    close $fh;
+    open $fh, "<", "_eol.csv";
+    is_deeply ($csv->getline ($fh), [ "1", "2--3", 4 ],		"getline eol");
+    is_deeply ($csv->getline ($fh), [ "1", "2--3", 4, "" ],	"getline ,eol");
+    is_deeply ($csv->getline ($fh), [ "1", "2--3", 4 ],		"getline eof");
+    close $fh;
+    unlink "_eol.csv";
     }
 
 1;

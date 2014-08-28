@@ -1,6 +1,7 @@
-1.12	- 2014-08-26, H.Merijn Brand
-    - Add field number to error_diag
-    - Fixed a possible missed multi-byte EOL
+1.12	- 2014-08-28, H.Merijn Brand
+    * Add field number to error_diag
+    * Fixed non-IO parsing multi-byte EOL
+    * Fixed a possible missed multi-byte EOL
 
 1.11	- 2014-08-16, H.Merijn Brand
     * Fixed eof (RT#97742)
