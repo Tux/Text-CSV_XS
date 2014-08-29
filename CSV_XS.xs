@@ -889,7 +889,6 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 {
     if (csv->used < csv->size) {
 	byte c = (byte)csv->bptr[csv->used++];
-	//fprintf(stderr,"###### GET (%d/%d, 0x%02x, '%s')\n", csv->used, csv->size, c, csv->bptr + csv->used);
 	if (c == CH_EOL && csv->eolx
 	    && csv->size - csv->used >= csv->eol_len - 1
 	    && !memcmp (csv->bptr + csv->used, csv->eol + 1, csv->eol_len - 1)

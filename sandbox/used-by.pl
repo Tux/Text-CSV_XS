@@ -11,6 +11,7 @@ use CPAN;
 use Capture::Tiny qw( :all );
 use Term::ANSIColor qw(:constants :constants256);
 use Test::More;
+use XML::Simple;
 
 my $tm = shift // do {
     (my $d = getcwd) =~ s{.*CPAN/([^/]+)(?:/.*)?}{$1};
@@ -36,14 +37,47 @@ my %skip = map { $_ => 1 } @{{
                           Tripletail chart dbMan hwd xDash xls2csv	)],
     }->{$tm} // []};
 
-my $url = "http://cpants.cpanauthors.org/dist/$tm/used_by";
 my $ua  = LWP::UserAgent->new (agent => "Opera/12.15");
-my $rsp = $ua->request (HTTP::Request->new (GET => $url));
-   $rsp->is_success     or die "get failed: ", $rsp->status_line, "\n";
-my $tree = HTML::TreeBuilder->new;
-   $tree->parse_content ($rsp->content);
-foreach my $a ($tree->look_down (_tag => "a", href => qr{/dist/})) {
-    (my $h = $a->attr ("href")) =~ s{.*dist/}{};
+
+sub get_from_cpantesters
+{
+    my $url = "http://deps.cpantesters.org/depended-on-by.pl?dist=$tm";
+    my $rsp = $ua->request (HTTP::Request->new (GET => $url));
+    unless ($rsp->is_success) {
+	warn "deps failed: ", $rsp->status_line, "\n";
+	return;
+	}
+    my $tree = HTML::TreeBuilder->new;
+       $tree->parse_content ($rsp->content);
+    my @h;
+    foreach my $a ($tree->look_down (_tag => "a", href => qr{query=})) {
+	(my $h = $a->attr ("href")) =~ s{.*=}{};
+	push @h, $h;
+	}
+    return @h;
+    } # get_from_cpantesters
+
+sub get_from_cpants
+{
+    my $url = "http://cpants.cpanauthors.org/dist/$tm/used_by";
+    my $rsp = $ua->request (HTTP::Request->new (GET => $url));
+    unless ($rsp->is_success) {
+	warn "cpants failed: ", $rsp->status_line, "\n";
+	return;
+	}
+    my $tree = HTML::TreeBuilder->new;
+       $tree->parse_content ($rsp->content);
+    my @h;
+    foreach my $a ($tree->look_down (_tag => "a", href => qr{/dist/})) {
+	(my $h = $a->attr ("href")) =~ s{.*dist/}{};
+	$h =~ m{^$tm\b} and next;
+	push @h, $h;
+	}
+    @h or diag ("$url might be rebuilding");
+    return @h;
+    } # get_from_cpants
+
+foreach my $h (get_from_cpants (), get_from_cpantesters ()) {
     exists $skip{$h} || $h =~ m{^( $tm (?: $ | / )
 				 | Task-
 				 | Bundle-
@@ -52,8 +86,8 @@ foreach my $a ($tree->look_down (_tag => "a", href => qr{/dist/})) {
     (my $m = $h) =~ s/-/::/g;
     $tm{$m} = 1;
     }
+
 unless (keys %tm) {
-    diag ("$url might be rebuilding");
     ok (1, "No dependents found");
     done_testing;
     exit 0;
