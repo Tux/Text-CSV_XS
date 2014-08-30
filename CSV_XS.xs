@@ -887,16 +887,6 @@ static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos)
 #define CsvGet(csv,src)		cx_CsvGet (aTHX_ csv, src)
 static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 {
-    if (csv->used < csv->size) {
-	byte c = (byte)csv->bptr[csv->used++];
-	if (c == CH_EOL && csv->eolx
-	    && csv->size - csv->used >= csv->eol_len - 1
-	    && !memcmp (csv->bptr + csv->used, csv->eol + 1, csv->eol_len - 1)
-	    && (csv->used += csv->eol_len - 1))
-	    return CH_EOLX;
-	return c;
-	}
-
     unless (csv->useIO)
 	return EOF;
 
@@ -1025,7 +1015,9 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
 	CSV_PUT_SV1 (c);			\
     }
 
-#define CSV_GET1 CsvGet (csv, src)
+#define CSV_GET1 \
+    (csv->used < csv->size ? (byte)csv->bptr[csv->used++] : CsvGet (csv, src))
+
 #if MAINT_DEBUG > 3
 int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l)
 {
@@ -1154,6 +1146,7 @@ restart:
 	    } /* SEP char */
 	else
 	if (c == CH_NL || is_EOL (c)) {
+EOLX:
 #if MAINT_DEBUG > 1
 	    fprintf (stderr, "# %d/%d/%03x pos %d = NL\t'%s'\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
@@ -1486,6 +1479,15 @@ restart:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
 		csv->bptr + csv->used);
 #endif
+	    /* Needed for non-IO parse, where EOL is not set during read */
+	    if (csv->eolx && c == CH_EOL &&
+		 csv->size - csv->used >= csv->eol_len - 1 &&
+		 !memcmp (csv->bptr + csv->used, csv->eol + 1, csv->eol_len - 1) &&
+		 (csv->used += csv->eol_len - 1)) {
+		c = CH_EOLX;
+		goto EOLX;
+		}
+
 	    if (waitingForField) {
 		if (csv->allow_whitespace && is_whitespace (c)) {
 		    do {
