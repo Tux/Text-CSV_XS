@@ -1128,6 +1128,9 @@ restart:
 		_sep_string (csv), csv->bptr + csv->used);
 #endif
 	    if (waitingForField) {
+		/* ,1,"foo, 3",,bar,
+		 * ^           ^
+		 */
 		if (csv->blank_is_undef || csv->empty_is_undef)
 		    sv_setpvn (sv, NULL, 0);
 		else
@@ -1139,10 +1142,18 @@ restart:
 		    av_push (fflags, newSViv (f));
 		}
 	    else
-	    if (f & CSV_FLAGS_QUO)
+	    if (f & CSV_FLAGS_QUO) {
+		/* ,1,"foo, 3",,bar,
+		 *        ^
+		 */
 		CSV_PUT_SV (c)
-	    else
+		}
+	    else {
+		/* ,1,"foo, 3",,bar,
+		 *   ^        ^    ^
+		 */
 		AV_PUSH;
+		}
 	    } /* SEP char */
 	else
 	if (c == CH_NL || is_EOL (c)) {
@@ -1153,6 +1164,9 @@ EOLX:
 		csv->bptr + csv->used);
 #endif
 	    if (waitingForField) {
+		/* ,1,"foo, 3",,bar,
+		 *                  ^
+		 */
 		if (csv->blank_is_undef || csv->empty_is_undef)
 		    sv_setpvn (sv, NULL, 0);
 		else
@@ -1165,6 +1179,9 @@ EOLX:
 		}
 
 	    if (f & CSV_FLAGS_QUO) {
+		/* ,1,"foo\n 3",,bar,
+		 *        ^
+		 */
 		f |= CSV_FLAGS_BIN;
 		unless (csv->binary)
 		    ERROR_INSIDE_QUOTES (2021);
@@ -1173,6 +1190,8 @@ EOLX:
 		}
 	    else
 	    if (csv->verbatim) {
+		/* ,1,foo\n 3,,bar,
+		 */
 		f |= CSV_FLAGS_BIN;
 		unless (csv->binary)
 		    ERROR_INSIDE_FIELD (2030);
@@ -1180,6 +1199,9 @@ EOLX:
 		CSV_PUT_SV (c);
 		}
 	    else {
+		/* ,1,"foo\n 3",,bar
+		 *                  ^
+		 */
 		AV_PUSH;
 		return TRUE;
 		}
@@ -1265,6 +1287,9 @@ EOLX:
 		csv->bptr + csv->used);
 #endif
 	    if (waitingForField) {
+		/* ,1,"foo, 3",,bar,\r\n
+		 *    ^
+		 */
 		f |= CSV_FLAGS_QUO;
 		waitingForField = 0;
 		}
@@ -1273,7 +1298,10 @@ EOLX:
 		int	c2;
 
 		if (!csv->escape_char || c != csv->escape_char) {
-		    /* Field is terminated */
+		    /* Field is terminated, no ESC set */
+		    /* ,1,"foo, 3",,bar,\r\n
+		     *           ^
+		     */
 		    c2 = CSV_GET;
 
 		    if (csv->allow_whitespace) {
