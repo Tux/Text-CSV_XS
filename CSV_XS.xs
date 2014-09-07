@@ -1325,157 +1325,142 @@ EOLX:
 		 */
 		f |= CSV_FLAGS_QUO;
 		waitingForField = 0;
+		continue;
 		}
-	    else
+
 	    if (f & CSV_FLAGS_QUO) {
-		int	c2;
 
-		if (!csv->escape_char || c != csv->escape_char) {
-		    /* Field is terminated, no ESC set
-		     * This is an unlikely branch for the default settings
-		     * where both escape and quote are "
-		     */
+		/* ,1,"foo, 3",,bar,\r\n
+		 *           ^
+		 */
 
-		    /* ,1,"foo, 3",,bar,\r\n
-		     *           ^
-		     */
-		    c2 = CSV_GET;
-
-		    if (csv->allow_whitespace) {
-			/* , 1 , "foo, 3" , , bar , \r\n
-			 *               ^
-			 */
-			while (is_whitespace (c2))
-			    c2 = CSV_GET;
-			}
-
-		    if (is_SEP (c2)) {
-			/* ,1,"foo, 3",,bar,\r\n
-			 *            ^
-			 */
-			AV_PUSH;
-			continue;
-			}
-
-		    if (c2 == EOF) {
-			/* ,1,"foo, 3"
-			 *            ^
-			 */
-			AV_PUSH;
-			return TRUE;
-			}
-
-		    if (c2 == CH_CR) {
-			int	c3;
-
-			if (csv->eol_is_cr) {
-			    /* ,1,"foo, 3"\r
-			     *            ^
-			     */
-			    AV_PUSH;
-			    return TRUE;
-			    }
-
-			c3 = CSV_GET;
-			if (c3 == CH_NL) { /* \r is not optional before EOLX! */
-			    /* ,1,"foo, 3"\r\n
-			     *              ^
-			     */
-			    AV_PUSH;
-			    return TRUE;
-			    }
-
-			ParseError (csv, 2010, csv->used - 2);
-			return FALSE;
-			}
-
-		    if (c2 == CH_NL || c2 == CH_EOLX) {
-			/* ,1,"foo, 3"\n
-			 *            ^
-			 */
-			AV_PUSH;
-			return TRUE;
-			}
-
-		    if (csv->allow_loose_quotes) {
-			/* ,1,"foo, 3"456",,bar,\r\n
-			 *           ^
-			 */
-			CSV_PUT_SV (c);
-			c = c2;
-			goto restart;
-			}
-
-		    ParseError (csv, 2011, csv->used - 1);
-		    return FALSE;
-		    }
-
-		c2 = CSV_GET;
+		int quoesc = 0;
+		int c2 = CSV_GET;
 
 		if (csv->allow_whitespace) {
+		    /* , 1 , "foo, 3" , , bar , \r\n
+		     *               ^
+		     */
 		    while (is_whitespace (c2))
 			c2 = CSV_GET;
 		    }
 
 		if (c2 == EOF) {
+		    /* ,1,"foo, 3"
+		     *            ^
+		     */
 		    AV_PUSH;
 		    return TRUE;
 		    }
 
 		if (is_SEP (c2)) {
+		    /* ,1,"foo, 3",,bar,\r\n
+		     *            ^
+		     */
 		    AV_PUSH;
+		    continue;
 		    }
-		else
-		if (c2 == '0')
-		    CSV_PUT_SV (0)
-		else
-		if (is_QUOTE (c2)) {
-		    if (csv->utf8)
-			f |= CSV_FLAGS_BIN;
-		    CSV_PUT_SV (c2)
-		    }
-		else
+
 		if (c2 == CH_NL || c2 == CH_EOLX) {
+		    /* ,1,"foo, 3",,bar,\n
+		     *                  ^
+		     */
 		    AV_PUSH;
 		    return TRUE;
 		    }
 
-		else {
-		    if (c2 == CH_CR) {
-			int	c3;
+		/* ---
+		 * if      QUOTE eq ESCAPE
+		 *    AND (    c2  eq QUOTE	1,"abc""def",2
+		 *         OR  c2  eq ESCAPE	1,"abc""def",2 (QUO eq ESC)
+		 *         OR  c2  eq NULL )	1,"abc"0def",2
+		 * ---
+		 */
+		if (csv->escape_char && c == csv->escape_char) {
 
-			if (csv->eol_is_cr) {
-			    AV_PUSH;
-			    return TRUE;
-			    }
-
-			c3 = CSV_GET;
-
-			if (c3 == CH_NL || c3 == CH_EOLX) {
-			    AV_PUSH;
-			    return TRUE;
-			    }
-
-			if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c3)) {
-			    set_eol_is_cr (csv);
-			    csv->used--;
-			    csv->has_ahead++;
-			    AV_PUSH;
-			    return TRUE;
-			    }
+		    quoesc = 1;
+		    if (c2 == '0') {
+			/* ,1,"foo, 3"056",,bar,\r\n
+			 *            ^
+			 */
+			CSV_PUT_SV (0)
+			continue;
 			}
 
-		    if (csv->allow_loose_escapes && csv->escape_char == CH_QUOTE) {
+		    if (is_QUOTE (c2)) {
+			/* ,1,"foo, 3""56",,bar,\r\n
+			 *            ^
+			 */
+			if (csv->utf8)
+			    f |= CSV_FLAGS_BIN;
+			CSV_PUT_SV (c2)
+			continue;
+			}
+
+		    if (csv->allow_loose_escapes) {
 			CSV_PUT_SV (c);
 			c = c2;
 			goto restart;
 			}
+		    }
 
+		if (c2 == CH_CR) {
+		    int	c3;
+
+		    if (csv->eol_is_cr) {
+			/* ,1,"foo, 3"\r
+			 *            ^
+			 */
+			AV_PUSH;
+			return TRUE;
+			}
+
+		    c3 = CSV_GET;
+
+		    if (c3 == CH_NL) { /* \r is not optional before EOLX! */
+			/* ,1,"foo, 3"\r\n
+			 *              ^
+			 */
+			AV_PUSH;
+			return TRUE;
+			}
+
+		    if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c3)) {
+			/* ,1,"foo\n 3",,"bar"\r
+			 * baz,4
+			 * ^
+			 */
+			set_eol_is_cr (csv);
+			csv->used--;
+			csv->has_ahead++;
+			AV_PUSH;
+			return TRUE;
+			}
+
+		    ParseError (csv, quoesc ? 2023 : 2010, csv->used - 2);
+		    return FALSE;
+		    }
+
+		if (csv->allow_loose_quotes && !quoesc) {
+		    /* ,1,"foo, 3"456",,bar,\r\n
+		     *           ^
+		     */
+		    CSV_PUT_SV (c);
+		    c = c2;
+		    goto restart;
+		    }
+
+		/* 1,"12" ",3'
+		 *       ^
+		 */
+		if (quoesc) {
 		    csv->used--;
 		    ERROR_INSIDE_QUOTES (2023);
 		    }
+
+		ERROR_INSIDE_QUOTES (2011);
 		}
-	    else
+
 	    /* !waitingForField, !InsideQuotes */
 	    if (csv->allow_loose_quotes) { /* 1,foo "boo" d'uh,1 */
 		f |= CSV_FLAGS_EIF;	/* Mark as error-in-field */
@@ -1628,10 +1613,9 @@ EOLX:
 	return FALSE;
 	}
 
-    if (f & CSV_FLAGS_QUO) {
+    if (f & CSV_FLAGS_QUO)
 	ERROR_INSIDE_QUOTES (2027);
-	}
-    else
+
     if (sv)
 	AV_PUSH;
     return TRUE;
