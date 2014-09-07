@@ -1191,6 +1191,7 @@ EOLX:
 	    else
 	    if (csv->verbatim) {
 		/* ,1,foo\n 3,,bar,
+		 * This feature should be deprecated
 		 */
 		f |= CSV_FLAGS_BIN;
 		unless (csv->binary)
@@ -1218,6 +1219,9 @@ EOLX:
 		waitingForField = 0;
 
 		if (csv->eol_is_cr) {
+		    /* ,1,"foo\n 3",,bar,\r
+		     *                   ^
+		     */
 		    c = CH_NL;
 		    goto restart;
 		    }
@@ -1225,16 +1229,26 @@ EOLX:
 		c2 = CSV_GET;
 
 		if (c2 == EOF) {
+		    /* ,1,"foo\n 3",,bar,\r
+		     *                     ^
+		     */
 		    c = EOF;
 		    goto restart;
 		    }
 
-		if (c2 == CH_NL) { /* \r$eol is not supported for long $eol */
+		if (c2 == CH_NL) { /* \r is not optional before EOLX! */
+		    /* ,1,"foo\n 3",,bar,\r\n
+		     *                     ^
+		     */
 		    c = c2;
 		    goto restart;
 		    }
 
 		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
+		    /* ,1,"foo\n 3",,bar,\r
+		     * baz,4
+		     * ^
+		     */
 		    set_eol_is_cr (csv);
 		    csv->used--;
 		    csv->has_ahead++;
@@ -1242,11 +1256,17 @@ EOLX:
 		    return TRUE;
 		    }
 
+		/* ,1,"foo\n 3",,bar,\r\t
+		 *                     ^
+		 */
 		csv->used--;
 		ERROR_INSIDE_FIELD (2031);
 		}
 
 	    if (f & CSV_FLAGS_QUO) {
+		/* ,1,"foo\r 3",,bar,\r\t
+		 *        ^
+		 */
 		f |= CSV_FLAGS_BIN;
 		unless (csv->binary)
 		    ERROR_INSIDE_QUOTES (2022);
@@ -1257,18 +1277,28 @@ EOLX:
 		int	c2;
 
 		if (csv->eol_is_cr) {
+		    /* ,1,"foo\n 3",,bar\r
+		     *                  ^
+		     */
 		    AV_PUSH;
 		    return TRUE;
 		    }
 
 		c2 = CSV_GET;
 
-		if (c2 == CH_NL || c2 == CH_EOLX) {
+		if (c2 == CH_NL) { /* \r is not optional before EOLX! */
+		    /* ,1,"foo\n 3",,bar\r\n
+		     *                    ^
+		     */
 		    AV_PUSH;
 		    return TRUE;
 		    }
 
 		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
+		    /* ,1,"foo\n 3",,bar\r
+		     * baz,4
+		     * ^
+		     */
 		    set_eol_is_cr (csv);
 		    csv->used--;
 		    csv->has_ahead++;
@@ -1276,6 +1306,9 @@ EOLX:
 		    return TRUE;
 		    }
 
+		/* ,1,"foo\n 3",,bar\r\t
+		 *                    ^
+		 */
 		ERROR_INSIDE_FIELD (2032);
 		}
 	    } /* CH_CR */
@@ -1298,23 +1331,36 @@ EOLX:
 		int	c2;
 
 		if (!csv->escape_char || c != csv->escape_char) {
-		    /* Field is terminated, no ESC set */
+		    /* Field is terminated, no ESC set
+		     * This is an unlikely branch for the default settings
+		     * where both escape and quote are "
+		     */
+
 		    /* ,1,"foo, 3",,bar,\r\n
 		     *           ^
 		     */
 		    c2 = CSV_GET;
 
 		    if (csv->allow_whitespace) {
+			/* , 1 , "foo, 3" , , bar , \r\n
+			 *               ^
+			 */
 			while (is_whitespace (c2))
 			    c2 = CSV_GET;
 			}
 
 		    if (is_SEP (c2)) {
+			/* ,1,"foo, 3",,bar,\r\n
+			 *            ^
+			 */
 			AV_PUSH;
 			continue;
 			}
 
 		    if (c2 == EOF) {
+			/* ,1,"foo, 3"
+			 *            ^
+			 */
 			AV_PUSH;
 			return TRUE;
 			}
@@ -1323,12 +1369,18 @@ EOLX:
 			int	c3;
 
 			if (csv->eol_is_cr) {
+			    /* ,1,"foo, 3"\r
+			     *            ^
+			     */
 			    AV_PUSH;
 			    return TRUE;
 			    }
 
 			c3 = CSV_GET;
-			if (c3 == CH_NL || c3 == CH_EOLX) {
+			if (c3 == CH_NL) { /* \r is not optional before EOLX! */
+			    /* ,1,"foo, 3"\r\n
+			     *              ^
+			     */
 			    AV_PUSH;
 			    return TRUE;
 			    }
@@ -1338,11 +1390,17 @@ EOLX:
 			}
 
 		    if (c2 == CH_NL || c2 == CH_EOLX) {
+			/* ,1,"foo, 3"\n
+			 *            ^
+			 */
 			AV_PUSH;
 			return TRUE;
 			}
 
 		    if (csv->allow_loose_quotes) {
+			/* ,1,"foo, 3"456",,bar,\r\n
+			 *           ^
+			 */
 			CSV_PUT_SV (c);
 			c = c2;
 			goto restart;
