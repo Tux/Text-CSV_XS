@@ -1354,8 +1354,8 @@ EOLX:
 		    }
 
 		if (c2 == CH_NL || c2 == CH_EOLX) {
-		    /* ,1,"foo, 3",,bar,\n
-		     *                  ^
+		    /* ,1,"foo, 3",,"bar"\n
+		     *                   ^
 		     */
 		    AV_PUSH;
 		    return TRUE;
@@ -1390,6 +1390,9 @@ EOLX:
 			}
 
 		    if (csv->allow_loose_escapes) {
+			/* ,1,"foo, 3"56",,bar,\r\n
+			 *            ^
+			 */
 			CSV_PUT_SV (c);
 			c = c2;
 			goto restart;
@@ -1443,7 +1446,7 @@ EOLX:
 
 		if (csv->allow_loose_quotes && !quoesc) {
 		    /* ,1,"foo, 3"456",,bar,\r\n
-		     *           ^
+		     *            ^
 		     */
 		    CSV_PUT_SV (c);
 		    c = c2;
