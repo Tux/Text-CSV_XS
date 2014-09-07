@@ -1345,14 +1345,6 @@ EOLX:
 			c2 = CSV_GET;
 		    }
 
-		if (c2 == EOF) {
-		    /* ,1,"foo, 3"
-		     *            ^
-		     */
-		    AV_PUSH;
-		    return TRUE;
-		    }
-
 		if (is_SEP (c2)) {
 		    /* ,1,"foo, 3",,bar,\r\n
 		     *            ^
@@ -1439,6 +1431,14 @@ EOLX:
 
 		    ParseError (csv, quoesc ? 2023 : 2010, csv->used - 2);
 		    return FALSE;
+		    }
+
+		if (c2 == EOF) {
+		    /* ,1,"foo, 3"
+		     *            ^
+		     */
+		    AV_PUSH;
+		    return TRUE;
 		    }
 
 		if (csv->allow_loose_quotes && !quoesc) {
