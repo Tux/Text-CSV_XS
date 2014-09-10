@@ -2833,6 +2833,11 @@ C<|>, or other non-comma separators.
 Examples could be taken from W3C's L<CSV on the Web: Use Cases and
 Requirements|http://w3c.github.io/csvw/use-cases-and-requirements/index.html>
 
+=item Steal
+
+Steal good new ideas and features from L<PapaParse|http://papaparse.com> or
+L<csvkit|http://csvkit.readthedocs.org>.
+
 =back
 
 =head2 NOT TODO
@@ -3134,6 +3139,13 @@ X<3010>
 L<IO::File>,  L<IO::Handle>,  L<IO::Wrap>,  L<Text::CSV>,  L<Text::CSV_PP>,
 L<Text::CSV::Encoded>,     L<Text::CSV::Separator>,    L<Text::CSV::Slurp>,
 L<Spreadsheet::CSV> and L<Spreadsheet::Read>, and of course L<perl>.
+
+=head3 non-perl
+
+A CSV parser in JavaScript,  also used by L<W3C|http://www.w3.org>,  is the
+multi-threaded in-browser L<PapaParse|http://papaparse.com/>.
+
+L<csvkit|http://csvkit.readthedocs.org> is a python CSV parsing toolkit.
 
 =head1 AUTHOR
 
