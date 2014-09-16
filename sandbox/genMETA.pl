@@ -39,7 +39,7 @@ name:                    Text-CSV_XS
 version:                 VERSION
 abstract:                Comma-Separated Values manipulation routines
 license:                 perl
-author:              
+author:
     - H.Merijn Brand <h.m.brand@xs4all.nl>
 generated_by:            Author
 distribution_type:       module
@@ -47,11 +47,11 @@ provides:
     Text::CSV_XS:
         file:            CSV_XS.pm
         version:         VERSION
-requires:     
+requires:
     perl:                5.006001
     DynaLoader:          0
     IO::Handle:          0
-recommends:     
+recommends:
     perl:                5.020000
     Encode:              2.62
 configure_requires:
@@ -64,6 +64,9 @@ test_requires:
 resources:
     license:             http://dev.perl.org/licenses/
     repository:          http://repo.or.cz/w/Text-CSV_XS.git
+    homepage:            https://metacpan.org/pod/Text::CSV_XS
+    bugtracker:          http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-CSV_XS
+    IRC:                 irc://irc.perl.org/#csv
 meta-spec:
     version:             1.4
     url:                 http://module-build.sourceforge.net/META-spec-v1.4.html
