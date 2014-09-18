@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 28;
+ use Test::More tests => 29;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -46,6 +46,11 @@ SKIP: for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$d
     is_deeply (csv (in => $io->[0], headers => "auto"), $aoh, "AOH $io->[1]");
     close FH;
     }
+
+is_deeply (csv (in => $file, headers => { bar => "tender" }), [
+    { foo => 1, tender => 2,     baz => 3 },
+    { foo => 2, tender => "a b", baz => "" },
+    ], "AOH with header map");
 
 my @aoa = @{$aoa}[1,2];
 is_deeply (csv (file => $file, headers  => "skip"),    \@aoa, "AOA skip");

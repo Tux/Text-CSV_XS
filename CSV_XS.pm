@@ -995,6 +995,11 @@ sub csv
     my $c = _csv_attr (@_);
 
     my ($csv, $in, $fh, $hdrs) = @{$c}{"csv", "in", "fh", "hdrs"};
+    my %hdr;
+    if (ref $hdrs eq "HASH") {
+	%hdr  = %$hdrs;
+	$hdrs = "auto";
+	}
 
     if ($c->{out}) {
 	if (ref $in eq "CODE") {
@@ -1006,7 +1011,7 @@ sub csv
 		    }
 		if (ref $row eq "HASH") {
 		    if ($hdr) {
-			$hdrs ||= [ keys %$row ];
+			$hdrs ||= [ map { $hdr{$_} || $_ } keys %$row ];
 			$csv->print ($fh, $hdrs);
 			$hdr = 0;
 			}
@@ -1023,7 +1028,8 @@ sub csv
 		}
 	    }
 	else { # aoh
-	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$in->[0]};
+	    my @hdrs = ref $hdrs ? @{$hdrs}
+				 : map { $hdr{$_} || $_ } keys %{$in->[0]};
 	    defined $hdrs or $hdrs = "auto";
 	    ref $hdrs || $hdrs eq "auto" and $csv->print ($fh, \@hdrs);
 	    for (@{$in}) {
@@ -1041,8 +1047,13 @@ sub csv
 
     my $key = $c->{key} and $hdrs ||= "auto";
     if (defined $hdrs && !ref $hdrs) {
-	$hdrs eq "skip" and         $csv->getline ($fh);
-	$hdrs eq "auto" and $hdrs = $csv->getline ($fh);
+	if ($hdrs eq "skip") {
+	    $csv->getline ($fh); # discard;
+	    }
+	elsif ($hdrs eq "auto") {
+	    my $h = $csv->getline ($fh) or return;
+	    $hdrs = [ map { $hdr{$_} || $_ } @$h ];
+	    }
 	}
 
     my $frag = $c->{frag};
@@ -2369,8 +2380,8 @@ If this attribute is not given, the default behavior is to produce an array
 of arrays.
 
 If C<headers> is supplied,  it should be either an anonymous list of column
-names or a flag:  C<auto> or C<skip>. When C<skip> is used, the header will
-not be included in the output.
+names, an anonymous hashref or a flag:  C<auto> or C<skip>. When C<skip> is
+used, the header will not be included in the output.
 
  my $aoa = csv (in => $fh, headers => "skip");
 
@@ -2384,6 +2395,26 @@ instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
  csv (in => $aoa, out => $fh, headers => [qw( code description price }]);
+
+If C<headers> is an hash reference, this implies C<auto>, but header fields
+for that exist as key in the hashref will be replaced by the value for that
+key. Given a CSV file like
+
+ post-kode,city,name,id number,fubble
+ 1234AA,Duckstad,Donald,13,"X313DF"
+
+using
+
+ csv (headers => { "post-kode" => "pc", "id number" => "ID" }, ...
+
+will return an entry like
+
+ { pc       => "1234AA",
+   city     => "Duckstad",
+   name     => "Donald",
+   ID       => "13",
+   fubble => "X313DF",
+   }
 
 =head3 key
 X<key>
