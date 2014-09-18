@@ -928,9 +928,10 @@ sub _csv_attr
 	    $fh = $out;
 	    }
 	else {
-	    open $fh, ">$enc", $out or croak "$out: $!";
+	    open $fh, ">", $out or croak "$out: $!";
 	    $cls = 1;
 	    }
+	$enc and binmode $fh, $enc;
 	}
 
     if (   ref $in eq "CODE" or ref $in eq "ARRAY") {

@@ -3,6 +3,7 @@
     * Fixed non-IO parsing multi-byte EOL
     * Fixed a possible missed multi-byte EOL
     * Allow hashref for csv ()'s headers attribute
+    * Allow encoding on all output handles in csv ()
 
 1.11	- 2014-08-16, H.Merijn Brand
     * Fixed eof (RT#97742)
