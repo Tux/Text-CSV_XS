@@ -2225,8 +2225,8 @@ X<status>
 
  $status = $csv->status ();
 
-This method returns success (or failure) of the last invoked L</combine> or
-L</parse> call.
+This method returns the status of the last invoked L</combine> or L</parse>
+call. Status is success (true: C<1>) or failure (false: C<undef> or C<0>).
 
 =head2 error_input
 X<error_input>
