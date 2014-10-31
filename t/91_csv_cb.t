@@ -12,12 +12,12 @@ BEGIN {
     require "t/util.pl";
     }
 
-my $file = "_90test.csv"; END { -f $file and unlink $file }
+my $file = "_91test.csv"; END { -f $file and unlink $file }
 my $data =
     "foo,bar,baz\n".
     "1,2,3\n".
     "2,a b,\n";
-open  FH, ">", $file or die "_90test.csv: $!";
+open  FH, ">", $file or die "$file: $!";
 print FH $data;
 close FH;
 
