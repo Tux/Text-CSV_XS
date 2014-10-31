@@ -72,6 +72,12 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 #	"xls2csv",
 	],
     }->{$tm} // []};
+my %add = (
+    "Text-CSV_XS"  => [				# Using Text::CSV, thus
+	"Text-CSV-Auto",			# optionally _XS
+	"Text-CSV-R",
+	],
+    );
 
 my $ua  = LWP::UserAgent->new (agent => "Opera/12.15");
 
@@ -136,6 +142,7 @@ sub get_from_meta
 foreach my $h ( get_from_cpants (),
 		get_from_cpantesters (),
 		get_from_meta (),
+		@{$add{$tm} || []},
 		) {
     exists $skip{$h} || $h =~ m{^( $tm (?: $ | / )
 				 | Task-
