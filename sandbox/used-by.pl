@@ -76,6 +76,7 @@ my %add = (
     "Text-CSV_XS"  => [				# Using Text::CSV, thus
 	"Text-CSV-Auto",			# optionally _XS
 	"Text-CSV-R",
+	"Text-CSV-Slurp",
 	],
     );
 
