@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 203;
+use Test::More tests => 212;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -112,6 +112,25 @@ sub crnlsp
     is (($csv->meta_info ())[1], 1,			"Hi! - meta_info () - field 2");
     is (($csv->fields ())[2], "",			"Hi! - fields () - field 3");
     is (($csv->meta_info ())[2], 0,			"Hi! - meta_info () - field 3");
+    }
+
+{   my $csv = Text::CSV_XS->new ({
+	keep_meta_info => 1,
+	binary         => 1,
+	quote_space    => 0,
+	});
+    ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"}), "Parse");
+    ok (my @f = $csv->fields,				"fields");
+    is_deeply (\@f, [ 1, "", "", " ", " ", "f", "g", "h\"h",
+	"h\xe9lp", "h\xeblp" ],				"fields content");
+    ok ($csv->combine (@f),				"combine");
+    is ($csv->string,
+	qq{1,,, , ,f,g,"h""h",h\xe9lp,h\xeblp},		"string 1");
+    ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"}), "Parse");
+    ok ($csv->keep_meta_info (11),			"keep meta on out");
+    ok ($csv->combine (@f),				"combine");
+    is ($csv->string,
+	qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"},	"string 11");
     }
 
 {   my $csv = Text::CSV_XS->new ({ keep_meta_info => 1, eol => "\r" });

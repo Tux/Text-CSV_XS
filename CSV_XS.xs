@@ -745,18 +745,36 @@ static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep)
     return (NULL);
     } /* bound_field */
 
+static int was_quoted (pTHX_ AV *mf, int idx)
+{
+    SV **x = av_fetch (mf, idx, FALSE);
+    return (x && SvIOK (*x) && SvIV (*x) & CSV_FLAGS_QUO ? 1 : 0);
+    } /* was_quoted */
+
 /* Should be extended for EBCDIC ? */
 #define is_csv_binary(ch) ((ch < CH_SPACE || ch >= CH_DEL) && ch != CH_TAB)
 
 #define Combine(csv,dst,fields)	cx_Combine (aTHX_ csv, dst, fields)
 static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 {
-    int		i, n, bound = 0;
+    int  i, n, bound = 0;
+    int  aq  = (int)csv->always_quote;
+    int  kmi = (int)csv->keep_meta_info;
+    AV  *qm = NULL;
 
     n = av_len (fields);
     if (n < 0 && csv->is_bound) {
 	n = csv->is_bound - 1;
 	bound = 1;
+	}
+
+    if (kmi >= 10) {
+	SV **svp;
+	if ((svp = hv_fetchs (csv->self, "_FFLAGS", FALSE)) && *svp) {
+	    AV *avp = (AV *)SvRV (*svp);
+	    if (avp && av_len (avp) >= n)
+		qm = avp;
+	    }
 	}
 
     for (i = 0; i <= n; i++) {
@@ -779,9 +797,9 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 	    }
 
 	if (sv) {
-	    STRLEN	 len;
-	    char	*ptr;
-	    int		 quoteMe = csv->always_quote;
+	    STRLEN  len;
+	    char   *ptr;
+	    int	    quoteMe = aq ? 1 : qm ? was_quoted (aTHX_ qm, i) : 0;
 
 	    unless ((SvOK (sv) || (
 		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
@@ -1680,9 +1698,8 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	memcpy (csv.cache, &csv, sizeof (csv_t));
 
 	if (avf) {
-	    if (csv.keep_meta_info) {
+	    if (csv.keep_meta_info)
 		(void)hv_store  (hv, "_FFLAGS", 7, newRV_noinc ((SV *)avf), 0);
-		}
 	    else {
 		av_undef (avf);
 		sv_free ((SV *)avf);

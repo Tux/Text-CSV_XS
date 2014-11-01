@@ -693,7 +693,6 @@ sub combine
     my $self = shift;
     my $str  = "";
     $self->{_FIELDS} = \@_;
-    $self->{_FFLAGS} = undef;
     $self->{_STATUS} = (@_ > 0) && $self->Combine (\$str, \@_, 0);
     $self->{_STRING} = \$str;
     $self->{_STATUS};
@@ -1085,6 +1084,8 @@ sub csv
 1;
 
 __END__
+
+=encoding iso-8859-1
 
 =head1 NAME
 
@@ -1679,6 +1680,24 @@ However,  some parsing information - like quotation of the original field -
 is lost in that process.  Setting this flag to true enables retrieving that
 information after parsing with  the methods  L</meta_info>,  L</is_quoted>,
 and L</is_binary> described below.  Default is false for performance.
+
+If you set this attribute to a value greater than 9,   than you can control
+output quotation style like it was used in the input of the the last parsed
+record (unless quotation was added because of other reasons).
+
+ my $csv = Text::CSV_XS->new ({
+    binary         => 1,
+    keep_meta_info => 1,
+    quote_space    => 0,
+    });
+
+ my $row = $csv->parse (q{1,,"", ," ",f,"g","h""h",hëlp,"hélp"});
+
+ $csv->print (*STDOUT, \@row);
+ # 1,,, , ,f,g,"h""h",h?lp,h?lp
+ $csv->keep_meta_info (11);
+ $csv->print (*STDOUT, \@row);
+ # 1,,"", ," ",f,"g","h""h",h?lp,"h?lp"
 
 =item verbatim
 X<verbatim>
