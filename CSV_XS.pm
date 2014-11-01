@@ -990,8 +990,8 @@ sub _csv_attr
 
 sub csv
 {
-    # This is a function, not a method
-    @_ && ref $_[0] ne __PACKAGE__ or croak $csv_usage;
+    @_ && ref $_[0] eq __PACKAGE__ and shift @_;
+    @_ or croak $csv_usage;
 
     my $c = _csv_attr (@_);
 
@@ -2310,6 +2310,13 @@ can get to the error using the class call to L</error_diag>
 
  my $aoa = csv (in => "test.csv") or
      die Text::CSV_XS->error_diag;
+
+Alternative invocations:
+
+ my $aoa = Text::CSV_XS::csv (in => "file.csv");
+
+ my $csv = Text::CSV_XS->new ();
+ my $aoa = $csv->csv (in => "file.csv"); # ignore object attributes
 
 This function takes the arguments as key-value pairs. This can be passed as
 a list or as an anonymous hash:

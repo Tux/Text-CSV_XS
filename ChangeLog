@@ -1,4 +1,4 @@
-1.12	- 2014-10-31, H.Merijn Brand
+1.12	- 2014-11-01, H.Merijn Brand
     * Add field number to error_diag
     * Fixed non-IO parsing multi-byte EOL
     * Fixed a possible missed multi-byte EOL
@@ -6,6 +6,7 @@
     * Allow encoding on all output handles in csv ()
     * Include doc changes as ticketed in the Text::CSV queue
     * Fix parallel testing issue
+    * Allow csv as method call (not using the object)
 
 1.11	- 2014-08-16, H.Merijn Brand
     * Fixed eof (RT#97742)
