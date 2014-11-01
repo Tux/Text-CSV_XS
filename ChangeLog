@@ -7,6 +7,7 @@
     * Include doc changes as ticketed in the Text::CSV queue
     * Fix parallel testing issue
     * Allow csv as method call (not using the object)
+    * Rename quote_null to escape_null
 
 1.11	- 2014-08-16, H.Merijn Brand
     * Fixed eof (RT#97742)

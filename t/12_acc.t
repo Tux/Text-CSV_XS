@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 152;
+use Test::More tests => 155;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -32,6 +32,7 @@ is ($csv->auto_diag,			0,		"auto_diag");
 is ($csv->diag_verbose,			0,		"diag_verbose");
 is ($csv->verbatim,			0,		"verbatim");
 is ($csv->quote_space,			1,		"quote_space");
+is ($csv->escape_null,			1,		"escape_null");
 is ($csv->quote_null,			1,		"quote_null");
 is ($csv->quote_binary,			1,		"quote_binary");
 is ($csv->record_number,		0,		"record_number");
@@ -76,6 +77,7 @@ is ($csv->diag_verbose (undef),		0,		"diag_verbose (undef)");
 is ($csv->diag_verbose (""),		0,		"diag_verbose (\"\")");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
 is ($csv->quote_space (1),		1,		"quote_space (1)");
+is ($csv->escape_null (1),		1,		"escape_null (1)");
 is ($csv->quote_null (1),		1,		"quote_null (1)");
 is ($csv->quote_binary (1),		1,		"quote_binary (1)");
 is ($csv->escape_char ("\\"),		"\\",		"escape_char (\\)");
@@ -85,6 +87,7 @@ is ($csv->string,
 
 is ($csv->allow_whitespace (0),		0,		"allow_whitespace (0)");
 is ($csv->quote_space (0),		0,		"quote_space (0)");
+is ($csv->escape_null (0),		0,		"escape_null (0)");
 is ($csv->quote_null (0),		0,		"quote_null (0)");
 is ($csv->quote_binary (0),		0,		"quote_binary (0)");
 is ($csv->decode_utf8 (0),		0,		"decode_utf8 (0)");

@@ -69,7 +69,7 @@ my %def_attr = (
     allow_unquoted_escape	=> 0,
     always_quote		=> 0,
     quote_space			=> 1,
-    quote_null			=> 1,
+    escape_null			=> 1,
     quote_binary		=> 1,
     keep_meta_info		=> 0,
     verbatim			=> 0,
@@ -90,6 +90,7 @@ my %def_attr = (
 my %attr_alias = (
     quote_always		=> "always_quote",
     verbose_diag		=> "diag_verbose",
+    quote_null			=> "escape_null",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
@@ -228,7 +229,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     auto_diag			=> 24,
     diag_verbose		=> 33,
     quote_space			=> 25,
-    quote_null			=> 31,
+    escape_null			=> 31,
     quote_binary		=> 32,
     decode_utf8			=> 35,
     _has_hooks			=> 36,
@@ -371,12 +372,13 @@ sub quote_space
     $self->{quote_space};
     } # quote_space
 
-sub quote_null
+sub escape_null
 {
     my $self = shift;
-    @_ and $self->_set_attr_X ("quote_null", shift);
-    $self->{quote_null};
-    } # quote_null
+    @_ and $self->_set_attr_X ("escape_null", shift);
+    $self->{escape_null};
+    } # escape_null
+sub quote_null { goto &escape_null; }
 
 sub quote_binary
 {
@@ -1641,12 +1643,13 @@ this to be forced in C<CSV>,  nor any for the opposite, the default is true
 for safety.   You can exclude the space  from this trigger  by setting this
 attribute to 0.
 
-=item quote_null
+=item escape_null or quote_null (deprecated)
+X<escape_null>
 X<quote_null>
 
- my $csv = Text::CSV_XS->new ({ quote_null => 1 });
-         $csv->quote_null (0);
- my $f = $csv->quote_null;
+ my $csv = Text::CSV_XS->new ({ escape_null => 1 });
+         $csv->escape_null (0);
+ my $f = $csv->escape_null;
 
 By default, a C<NULL> byte in a field would be escaped. This option enables
 you to treat the  C<NULL>  byte as a simple binary character in binary mode
@@ -1751,7 +1754,7 @@ is equivalent to
      allow_unquoted_escape => 0,
      always_quote          => 0,
      quote_space           => 1,
-     quote_null	           => 1,
+     escape_null           => 1,
      quote_binary          => 1,
      keep_meta_info        => 0,
      verbatim              => 0,
