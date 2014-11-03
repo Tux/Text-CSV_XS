@@ -16,3 +16,11 @@
                # second foo will map to foo000
            },
        }
+
+# validate
+
+csv (in        => "foo.csv",
+     validate  => sub { ($_->[1][3] // "") =~ m/^[0-9]+$/ ? 1 : 0 },
+     );
+
+what would that add over "after_parse" ?
