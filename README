@@ -27,6 +27,12 @@ Copying:
 
 Prerequisites:
     perl 5.6.1 or up.
+
+    You can have working Test::More for 5.6.1 by requiring version
+    Test::Harness-2.64 and Test::Simple-0.90
+
+    I found no easy way to get Test::More working on 5.6.0
+
     examples/csv-check requires perl with defined-or and PerlIO, and
     making that work on other versions is left as an exercise to the
     reader. Other examples are checked against 5.8.4. For Unicode to
@@ -45,7 +51,8 @@ Author:
     Interface design by Alan Citterman <alan@mfgrtl.com>
 
     A pure-perl version is being maintained by Makamaka Hannyaharamitu
-    as Text::CSV_PP, which tries to follow Text::CSV_XS very closely.
+    as Text::CSV_PP, which tries to follow Text::CSV_XS. It is not worth
+    filing bugs to Text::CSV_XS when Text::CSV is not in sync.
 
     Text::CSV_PP is bundled in Text::CSV, which now is a wrapper module
     over Text::CSV_XS and Text::CSV_PP that will select Text::CSV_XS if
