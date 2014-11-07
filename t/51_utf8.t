@@ -157,7 +157,7 @@ foreach my $new (0, 1, 2, 3) {
     my $s = $attr{sep}   || ',';
     my $q = $attr{quote} || '"';
 
-    note ("Test SEP: '$s', QUO: '$q'");
+    note ("Test SEP: '$s', QUO: '$q'") if $Test::More::VERSION > 0.81;
     is ($csv->sep,   $s, "sep");
     is ($csv->quote, $q, "quote");
 
