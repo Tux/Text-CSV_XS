@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 29;
+ use Test::More tests => 34;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -91,6 +91,29 @@ ok (csv (in => \&getrowh, out => $file), "out from CODE/HR (auto headers)");
 is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
 
 unlink $file;
+
+# check internal defaults
+{
+    sub check
+    {
+	my ($csv, $ar) = @_;
+	is ($csv->auto_diag,	1,	"default auto_diag");
+	is ($csv->binary,	1,	"default binary");
+	is ($csv->eol,		"\r\n",	"default eol");
+	} # check
+
+    open my $fh, ">", \my $out;
+    csv (in => [[1,2]], out => $fh, on_in => \&check);
+    }
+
+# errors
+{   my $err;
+    local $SIG{__DIE__} = sub { $err = shift; };
+    my $r = eval { csv (in => undef); };
+    is ($r, undef, "csv needs in or file");
+    like ($err, qr{^usage:}, "error");
+    undef $err;
+    }
 
 eval {
     exists  $Config{useperlio} &&
