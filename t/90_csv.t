@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 34;
+ use Test::More tests => 37;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -94,16 +94,22 @@ unlink $file;
 
 # check internal defaults
 {
+    my $ad = 1;
+
     sub check
     {
 	my ($csv, $ar) = @_;
-	is ($csv->auto_diag,	1,	"default auto_diag");
+	is ($csv->auto_diag,	$ad,	"default auto_diag ($ad)");
 	is ($csv->binary,	1,	"default binary");
 	is ($csv->eol,		"\r\n",	"default eol");
 	} # check
 
     open my $fh, ">", \my $out;
     csv (in => [[1,2]], out => $fh, on_in => \&check);
+
+    # Check that I can overrule auto_diag
+    $ad = 0;
+    csv (in => [[1,2]], out => $fh, on_in => \&check, auto_diag => 0);
     }
 
 # errors
