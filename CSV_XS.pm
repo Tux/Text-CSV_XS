@@ -1044,8 +1044,6 @@ sub csv
 	return 1;
 	}
 
-    ref $in eq "CODE" and croak "CODE only valid fro in when using out";
-
     my $key = $c->{key} and $hdrs ||= "auto";
     if (defined $hdrs && !ref $hdrs) {
 	if ($hdrs eq "skip") {
