@@ -1,3 +1,6 @@
+1.13	- 2014-12-01, H.Merijn Brand
+    - Simplify code path for old perl
+
 1.12	- 2014-11-01, H.Merijn Brand
     * Add field number to error_diag
     * Fixed non-IO parsing multi-byte EOL

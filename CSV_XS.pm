@@ -9,14 +9,12 @@ package Text::CSV_XS;
 
 # HISTORY
 #
-# Written by:
-#    Jochen Wiedmann <joe@ispsoft.de>
-#
-# Based on Text::CSV by:
-#    Alan Citterman <alan@mfgrtl.com>
-#
-# Extended and Remodelled by:
+# 0.24 -
 #    H.Merijn Brand (h.m.brand@xs4all.nl)
+# 0.10 - 0.23
+#    Jochen Wiedmann <joe@ispsoft.de>
+# Based on (the original) Text::CSV by:
+#    Alan Citterman <alan@mfgrtl.com>
 
 require 5.006001;
 
@@ -28,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.12";
+$VERSION   = "1.13";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -36,6 +34,8 @@ bootstrap Text::CSV_XS $VERSION;
 sub PV { 0 }
 sub IV { 1 }
 sub NV { 2 }
+
+$] < 5.008002 and *utf8::decode = sub {};
 
 # version
 #
@@ -160,8 +160,7 @@ sub new
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
-	    defined $attr{$_} && $] >= 5.008002 && m/_char$/ and
-		utf8::decode ($attr{$_});
+	    defined $attr{$_} && m/_char$/ and utf8::decode ($attr{$_});
 	    next;
 	    }
 #	croak?
@@ -241,7 +240,7 @@ sub _set_attr_C
 {
     my ($self, $name, $val, $ec) = @_;
     defined $val or $val = 0;
-    $] >= 5.008002 and utf8::decode ($val);
+    utf8::decode ($val);
     $self->{$name} = $val;
     $ec = _check_sanity ($self) and
 	croak ($self->SetDiag ($ec));
@@ -283,7 +282,7 @@ sub quote
     if (@_) {
 	my $quote = shift;
 	defined $quote or $quote = "";
-	$] >= 5.008002 and utf8::decode ($quote);
+	utf8::decode ($quote);
 	my @b = unpack "U0C*", $quote;
 	if (@b > 1) {
 	    $self->quote_char ("\0");
@@ -326,7 +325,7 @@ sub sep
     if (@_) {
 	my $sep = shift;
 	defined $sep or $sep = "";
-	$] >= 5.008002 and utf8::decode ($sep);
+	utf8::decode ($sep);
 	my @b = unpack "U0C*", $sep;
 	if (@b > 1) {
 	    $self->sep_char ("\0");
