@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 225;
+ use Test::More tests => 229;
 #use Test::More "no_plan";
 
 my %err;
@@ -194,5 +194,15 @@ while (<EH>) {
     }
 close EH;
 unlink $diag_file;
+
+{   my $err = "";
+    local $SIG{DIE} = sub { $err = shift; };
+    ok (my $csv = Text::CSV_XS->new, "new");
+    eval { $csv->print_hr (*STDERR, {}); };
+    is (0 + $csv->error_diag, 3009, "Missing column names");
+    ok ($csv->column_names ("foo"), "set columns");
+    eval { $csv->print_hr (*STDERR, []); };
+    is (0 + $csv->error_diag, 3010, "print_hr needs a hashref");
+    }
 
 1;

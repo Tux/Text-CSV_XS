@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 25102;
+use Test::More tests => 25107;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -126,4 +126,18 @@ foreach my $fail (sort keys %fail) {
 	printf STDERR "%-20s - %s\n", map { _readable $_ } $combi, $fail{$fail}{$combi};
 	}
     }
+
+{   my $err = "";
+    local $SIG{__WARN__} = sub { $err = shift; };
+    is (Text::CSV_XS->new ({ sep => ",", quote => ",", auto_diag => 1 }),
+	undef, "New (illegal combo + auto_diag)");
+    like ($err, qr{\bERROR: 1001 - INI -}, "Error message");
+
+    $err = "";
+    ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1 }), "new auto_diag");
+    eval { $csv->sep ('"'); };
+    like ($err, qr{\bERROR: 1001 - INI -}, "Error message");
+    is ($csv->sep_char (), '"', "sep changed anyway");
+    }
+
 1;

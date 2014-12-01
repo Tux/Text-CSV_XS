@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 155;
+use Test::More tests => 165;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -95,6 +95,20 @@ is ($csv->sep ("--"),			"--",		"sep (\"--\")");
 is ($csv->sep_char (),			"\0",		"sep_char");
 is ($csv->quote ("++"),			"++",		"quote (\"++\")");
 is ($csv->quote_char (),		"\0",		"quote_char");
+
+# Test single-byte specials in UTF-8 mode
+is ($csv->sep ("|"),			"|",		"sep |");
+is ($csv->sep_char (),			"|",		"sep_char");
+chop (my $s = "|\x{20ac}");
+is ($csv->sep ($s),			"|",		"sep |");
+is ($csv->sep (),			"|",		"sep_char");
+is ($csv->sep_char (),			"|",		"sep_char");
+is ($csv->quote ("'"),			"'",		"quote '");
+is ($csv->quote_char (),		"'",		"quote_char");
+chop (my $q = "'\x{20ac}");
+is ($csv->quote ($q),			"'",		"quote '");
+is ($csv->quote (),			"'",		"quote_char");
+is ($csv->quote_char (),		"'",		"quote_char");
 
 # Funny settings, all three translate to \0 internally
 ok ($csv = Text::CSV_XS->new ({
