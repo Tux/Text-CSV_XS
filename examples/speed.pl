@@ -8,7 +8,8 @@ use strict;
 
 use IO::Handle;
 use Text::CSV_XS;
-use Benchmark qw(:all :hireswallclock);
+use Benchmark "timethese";
+eval { Benchmark->import (":hireswallclock"); };
 
 our $csv = Text::CSV_XS->new ({ eol => "\n" });
 
