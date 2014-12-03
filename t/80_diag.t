@@ -196,7 +196,7 @@ close EH;
 unlink $diag_file;
 
 {   my $err = "";
-    local $SIG{DIE} = sub { $err = shift; };
+    local $SIG{__DIE__} = sub { $err = shift; };
     ok (my $csv = Text::CSV_XS->new, "new");
     eval { $csv->print_hr (*STDERR, {}); };
     is (0 + $csv->error_diag, 3009, "Missing column names");
