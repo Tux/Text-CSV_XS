@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 229;
+ use Test::More tests => 233;
 #use Test::More "no_plan";
 
 my %err;
@@ -184,6 +184,9 @@ foreach my $spec (
 my $diag_file = "_$$.out";
 open  EH,     ">&STDERR";
 open  STDERR, ">", $diag_file;
+# Trigger extra output for longer quote and sep
+is ($csv->sep   ("--"), "--", "set longer sep");
+is ($csv->quote ("^^"), "^^", "set longer quote");
 ok ($csv->_cache_diag,	"Cache debugging output");
 close STDERR;
 open  STDERR, ">&EH";

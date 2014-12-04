@@ -114,6 +114,7 @@ sub _check_sanity
 {
     my $self = shift;
 
+    my $eol = $self->{eol};
     my $sep = $self->{sep};
     defined $sep && length ($sep) or $sep = $self->{sep_char};
     my $quo = $self->{quote};
@@ -123,11 +124,22 @@ sub _check_sanity
 #    use DP;::diag ("SEP: '", DPeek ($sep),
 #	        "', QUO: '", DPeek ($quo),
 #	        "', ESC: '", DPeek ($esc),"'");
-    # sep_char cannot be undefined
-    defined $quo && $quo eq $sep  and return 1001;
-    defined $esc && $esc eq $sep  and return 1001;
-
-    defined $_ && $_ =~ m/[\r\n]/ and return 1003 for $sep, $quo, $esc;
+    if (defined $sep) {	# sep_char cannot be undefined
+	length ($sep) > 16	and return 1006;
+	$sep =~ m/[\r\n]/	and return 1003;
+	}
+    if (defined $quo) {
+	$quo eq $sep		and return 1001;
+	length ($quo) > 16	and return 1007;
+	$quo =~ m/[\r\n]/	and return 1003;
+	}
+    if (defined $esc) {
+	$esc eq $sep		and return 1001;
+	$esc =~ m/[\r\n]/	and return 1003;
+	}
+    if (defined $eol) {
+	length ($eol) > 16	and return 1005;
+	}
 
     return _unhealthy_whitespace ($self, $self->{allow_whitespace});
     } # _check_sanity
@@ -285,6 +297,7 @@ sub quote
 	utf8::decode ($quote);
 	my @b = unpack "U0C*", $quote;
 	if (@b > 1) {
+	    @b > 16 and croak ($self->SetDiag (1007));
 	    $self->quote_char ("\0");
 	    }
 	else {
@@ -328,6 +341,7 @@ sub sep
 	utf8::decode ($sep);
 	my @b = unpack "U0C*", $sep;
 	if (@b > 1) {
+	    @b > 16 and croak ($self->SetDiag (1006));
 	    $self->sep_char ("\0");
 	    }
 	else {
@@ -351,6 +365,7 @@ sub eol
     if (@_) {
 	my $eol = shift;
 	defined $eol or $eol = "";
+	length ($eol) > 16 and croak ($self->SetDiag (1005));
 	$self->{eol} = $eol;
 	$self->_cache_set ($_cache_id{eol}, $eol);
 	}
@@ -3040,6 +3055,24 @@ X<1004>
 
 The L<C<callbacks>|/Callbacks>  attribute only allows one to be C<undef> or
 a hash reference.
+
+=item *
+1005 "INI - EOL too long"
+X<1005>
+
+The value passed for EOL is exceeding its maximum length (16).
+
+=item *
+1006 "INI - SEP too long"
+X<1006>
+
+The value passed for SEP is exceeding its maximum length (16).
+
+=item *
+1007 "INI - QUOTE too long"
+X<1007>
+
+The value passed for QUOTE is exceeding its maximum length (16).
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"

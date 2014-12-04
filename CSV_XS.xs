@@ -28,9 +28,8 @@
 #define CSV_XS_TYPE_IV	1
 #define CSV_XS_TYPE_NV	2
 
-#define MAX_SEP_LEN	16
-#define MAX_EOL_LEN	16
-#define MAX_QUO_LEN	16
+/* maximum length for EOL, SEP, and QUOTE - keep in sync with .pm */
+#define MAX_ATTR_LEN	16
 
 #define CSV_FLAGS_QUO		0x0001
 #define CSV_FLAGS_BIN		0x0002
@@ -160,9 +159,9 @@ typedef struct {
     int		eol_pos;
     STRLEN	size;
     STRLEN	used;
-    byte	eol[MAX_EOL_LEN];
-    byte	sep[MAX_SEP_LEN];
-    byte	quo[MAX_QUO_LEN];
+    byte	eol[MAX_ATTR_LEN];
+    byte	sep[MAX_ATTR_LEN];
+    byte	quo[MAX_ATTR_LEN];
     char	buffer[BUFFER_SIZE];
     } csv_t;
 
@@ -185,6 +184,9 @@ xs_error_t xs_errors[] =  {
     { 1002, "INI - allow_whitespace with escape_char or quote_char SP or TAB"	},
     { 1003, "INI - \r or \n in main attr not allowed"				},
     { 1004, "INI - callbacks should be undef or a hashref"			},
+    { 1005, "INI - EOL too long"						},
+    { 1006, "INI - SEP too long"						},
+    { 1007, "INI - QUOTE too long"						},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
@@ -409,25 +411,19 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 
 	/* string */
 	case CACHE_ID_sep:
-	    if (len < MAX_SEP_LEN) {
-		memcpy (csv->sep, cp, len);
-		csv->sep_len = len == 1 ? 0 : len;
-		}
+	    memcpy (csv->sep, cp, len);
+	    csv->sep_len = len == 1 ? 0 : len;
 	    break;
 
 	case CACHE_ID_quo:
-	    if (len < MAX_QUO_LEN) {
-		memcpy (csv->quo, cp, len);
-		csv->quo_len = len == 1 ? 0 : len;
-		}
+	    memcpy (csv->quo, cp, len);
+	    csv->quo_len = len == 1 ? 0 : len;
 	    break;
 
 	case CACHE_ID_eol:
-	    if (len < MAX_EOL_LEN) {
-		memcpy (csv->eol, cp, len);
-		csv->eol_len   = len;
-		csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
-		}
+	    memcpy (csv->eol, cp, len);
+	    csv->eol_len   = len;
+	    csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
 	    break;
 
 	default:
@@ -541,11 +537,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    CH_SEP = *SvPV (*svp, len);
 	if ((svp = hv_fetchs (self, "sep",            FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = SvPV (*svp, len);
-	    if (len < MAX_SEP_LEN) {
-		memcpy (csv->sep, ptr, len);
-		if (len > 1)
-		    csv->sep_len = len;
-		}
+	    memcpy (csv->sep, ptr, len);
+	    if (len > 1)
+		csv->sep_len = len;
 	    }
 
 	CH_QUOTE = '"';
@@ -559,11 +553,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	    }
 	if ((svp = hv_fetchs (self, "quote",          FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = SvPV (*svp, len);
-	    if (len < MAX_QUO_LEN) {
-		memcpy (csv->quo, ptr, len);
-		if (len > 1)
-		    csv->quo_len = len;
-		}
+	    memcpy (csv->quo, ptr, len);
+	    if (len > 1)
+		csv->quo_len = len;
 	    }
 
 	csv->escape_char = '"';
@@ -578,12 +570,10 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	if ((svp = hv_fetchs (self, "eol",            FALSE)) && *svp && SvOK (*svp)) {
 	    char *eol = SvPV (*svp, len);
-	    if (len < MAX_EOL_LEN) {
-		memcpy (csv->eol, eol, len);
-		csv->eol_len = len;
-		if (len == 1 && *csv->eol == CH_CR)
-		    csv->eol_is_cr = 1;
-		}
+	    memcpy (csv->eol, eol, len);
+	    csv->eol_len = len;
+	    if (len == 1 && *csv->eol == CH_CR)
+		csv->eol_is_cr = 1;
 	    }
 
 	if ((svp = hv_fetchs (self, "_types",         FALSE)) && *svp && SvOK (*svp)) {
