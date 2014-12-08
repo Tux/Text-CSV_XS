@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 37;
+ use Test::More tests => 39;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -89,8 +89,13 @@ is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
 $idx = 0;
 ok (csv (in => \&getrowh, out => $file), "out from CODE/HR (auto headers)");
 is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
-
 unlink $file;
+
+# Basic "key" checks
+is_deeply (csv (in => \"key,value\n1,2\n", key => "key"),
+		{ 1 => { key => 1, value => 2 }}, "key");
+is_deeply (csv (in => \"1,2\n", key => "key", headers => [qw( key value )]),
+		{ 1 => { key => 1, value => 2 }}, "key");
 
 # check internal defaults
 {
