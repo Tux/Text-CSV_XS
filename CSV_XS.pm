@@ -1046,10 +1046,10 @@ sub csv
 		}
 	    }
 	else { # aoh
-	    my @hdrs = ref $hdrs ? @{$hdrs}
-				 : map { $hdr{$_} || $_ } keys %{$in->[0]};
+	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$in->[0]};
 	    defined $hdrs or $hdrs = "auto";
-	    ref $hdrs || $hdrs eq "auto" and $csv->print ($fh, \@hdrs);
+	    ref $hdrs || $hdrs eq "auto" and
+		$csv->print ($fh, [ map { $hdr{$_} || $_ } @hdrs ]);
 	    for (@{$in}) {
 		$c->{cboi} and $c->{cboi}->($csv, $_);
 		$c->{cbbo} and $c->{cbbo}->($csv, $_);

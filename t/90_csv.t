@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 39;
+ use Test::More tests => 40;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -96,6 +96,18 @@ is_deeply (csv (in => \"key,value\n1,2\n", key => "key"),
 		{ 1 => { key => 1, value => 2 }}, "key");
 is_deeply (csv (in => \"1,2\n", key => "key", headers => [qw( key value )]),
 		{ 1 => { key => 1, value => 2 }}, "key");
+
+# Some "out" checks
+open my $fh, ">", $file;
+csv (in => [{ a => 1 }], out => $fh);
+csv (in => [{ a => 1 }], out => $fh, headers => undef);
+csv (in => [{ a => 1 }], out => $fh, headers => "auto");
+csv (in => [{ a => 1 }], out => $fh, headers => ["a"]);
+csv (in => [{ b => 1 }], out => $fh, headers => { b => "a" });
+close $fh;
+open  $fh, "<", $file;
+is (do {local $/; <$fh>}, "a\r\n1\r\n" x 5, "AoH to out");
+close $fh;
 
 # check internal defaults
 {
