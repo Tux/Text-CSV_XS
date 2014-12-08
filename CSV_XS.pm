@@ -1099,7 +1099,7 @@ sub csv
 
 __END__
 
-=encoding iso-8859-1
+=encoding utf-8
 
 =head1 NAME
 
@@ -1705,7 +1705,7 @@ record (unless quotation was added because of other reasons).
     quote_space    => 0,
     });
 
- my $row = $csv->parse (q{1,,"", ," ",f,"g","h""h",hëlp,"hélp"});
+ my $row = $csv->parse (q{1,,"", ," ",f,"g","h""h",hÃ«lp,"hÃ©lp"});
 
  $csv->print (*STDOUT, \@row);
  # 1,,, , ,f,g,"h""h",h?lp,h?lp
