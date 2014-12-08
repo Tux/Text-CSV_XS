@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 233;
+ use Test::More tests => 251;
 #use Test::More "no_plan";
 
 my %err;
@@ -158,11 +158,17 @@ foreach my $spec (
 	"row=0",	# row > 0
 	"col=0",	# col > 0
 	"cell=0",	# cell = r,c
-	"cell=0,0",	# col & row > 0
+	"cell=0,0",	# TL col > 0
+	"cell=1,0",	# TL row > 0
+	"cell=1,1;0,1",	# BR col > 0
+	"cell=1,1;1,0",	# BR row > 0
 	"row=*",	# * only after n-
 	"col=3-1",	# to >= from
 	"cell=4,1;1",	# cell has no ;
 	"cell=3,3-2,1",	# bottom-right should be right to and below top-left
+	"cell=3,3-2,*",	# bottom-right should be right to and below top-left
+	"cell=3,3-4,1",	# bottom-right should be right to and below top-left
+	"cell=3,3-*,1",	# bottom-right should be right to and below top-left
 	"cell=1,*",	# * in single cell col
 	"cell=*,1",	# * in single cell row
 	"cell=*,*",	# * in single cell row and column
