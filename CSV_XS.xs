@@ -367,7 +367,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
     if (SvIOK (val))
 	iv = SvIV (val);
     else if (SvNOK (val))	/* Needed for 5.6.x but safe for 5.8.x+ */
-	iv = (IV)SvNV (val);
+	iv = (IV)SvNV (val);	/* uncoverable statement ancient perl required */
     else
 	iv = *cp;
 
@@ -841,7 +841,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    SvREFCNT_inc (sv);
 		    csv->has_error_input = 1;
 		    unless (hv_store (csv->self, "_ERROR_INPUT", 12, sv, 0))
- /* uncovered */	SvREFCNT_dec (sv); /* uncoverable statement */
+			SvREFCNT_dec (sv); /* uncoverable statement memory fail */
 		    (void)SetDiag (csv, 2110);
 		    return FALSE;
 		    }
@@ -1399,7 +1399,7 @@ restart:
 		CSV_PUT_SV (c2);
 		}
 	    else
-/* uncovered */	ERROR_INSIDE_FIELD (2036); /* I think there's no way to get here */
+		ERROR_INSIDE_FIELD (2036); /* uncoverable statement I think there's no way to get here */
 	    } /* ESC char */
 	else
 	if (c == CH_NL || is_EOL (c)) {
@@ -1736,7 +1736,7 @@ static void hook (pTHX_ HV *hv, char *cb_name, AV *av)
     fprintf (stderr, "# HOOK %s %x\n", cb_name, av);
 #endif
     unless ((svp = hv_fetchs (hv, "callbacks", FALSE)) && _is_hashref (*svp))
-	return;
+	return; /* uncoverable statement defensive programming */
 
     cb  = (HV *)SvRV (*svp);
     svp = hv_fetch (cb, cb_name, strlen (cb_name), FALSE);

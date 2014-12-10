@@ -962,7 +962,7 @@ sub _csv_attr
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
 	if (!ref $in && $] < 5.008005) {
-	    $fh = \*$in;
+	    $fh = \*$in; # uncoverable statement ancient perl version required
 	    }
 	else {
 	    $fh = $in;
