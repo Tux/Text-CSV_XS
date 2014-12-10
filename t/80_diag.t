@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 251;
+ use Test::More tests => 255;
 #use Test::More "no_plan";
 
 my %err;
@@ -141,9 +141,16 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
 
 {   my @warn;
     local $SIG{__WARN__} = sub { push @warn, @_ };
-    Text::CSV_XS->new ()->_cache_diag ();
+    ok (my $csv = Text::CSV_XS->new (), "new for cache diag");
+    $csv->_cache_diag ();
     ok (@warn == 1, "Got warn");
     is ($warn[0], "CACHE: invalid\n", "Uninitialized cache");
+
+    @warn = ();
+    ok ($csv->parse ("1"), "parse"); # initialize cache
+    $csv->_cache_set (987, 10);
+    ok (@warn == 1, "Got warn");
+    is ($warn[0], "Unknown cache index 987 ignored\n", "Ignore bad cache calls");
     }
 
 {   my $csv = Text::CSV_XS->new ();
