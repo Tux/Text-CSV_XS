@@ -841,7 +841,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    SvREFCNT_inc (sv);
 		    csv->has_error_input = 1;
 		    unless (hv_store (csv->self, "_ERROR_INPUT", 12, sv, 0))
-/* uncovered */		SvREFCNT_dec (sv);
+ /* uncovered */	SvREFCNT_dec (sv); /* uncoverable statement */
 		    (void)SetDiag (csv, 2110);
 		    return FALSE;
 		    }
