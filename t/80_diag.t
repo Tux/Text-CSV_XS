@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 255;
+ use Test::More tests => 263;
 #use Test::More "no_plan";
 
 my %err;
@@ -141,6 +141,13 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
 
 {   my @warn;
     local $SIG{__WARN__} = sub { push @warn, @_ };
+
+    # Invalid error_input calls
+    is (Text::CSV_XS::error_input (undef), undef, "Bad error_input call");
+    is (Text::CSV_XS::error_input (""),    undef, "Bad error_input call");
+    is (Text::CSV_XS::error_input ([]),    undef, "Bad error_input call");
+    is (Text::CSV_XS->error_input,         undef, "Bad error_input call");
+
     ok (my $csv = Text::CSV_XS->new (), "new for cache diag");
     $csv->_cache_diag ();
     ok (@warn == 1, "Got warn");
@@ -151,6 +158,11 @@ $csv = Text::CSV_XS->new ({ auto_diag => 1 });
     $csv->_cache_set (987, 10);
     ok (@warn == 1, "Got warn");
     is ($warn[0], "Unknown cache index 987 ignored\n", "Ignore bad cache calls");
+
+    is ($csv->parse ('"'), 0, "Bad parse");
+    is ($csv->error_input, '"', "Error input");
+    ok ($csv->_cache_set (34, 0), "Reset error input (dangerous!)");
+    is ($csv->error_input, '"', "Error input not reset");
     }
 
 {   my $csv = Text::CSV_XS->new ();
