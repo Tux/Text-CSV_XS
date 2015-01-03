@@ -92,10 +92,13 @@ is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
 unlink $file;
 
 # Basic "key" checks
-is_deeply (csv (in => \"key,value\n1,2\n", key => "key"),
-		{ 1 => { key => 1, value => 2 }}, "key");
-is_deeply (csv (in => \"1,2\n", key => "key", headers => [qw( key value )]),
-		{ 1 => { key => 1, value => 2 }}, "key");
+SKIP: {
+    $] < 5.008 and skip "No ScalarIO support for $]", 2;
+    is_deeply (csv (in => \"key,value\n1,2\n", key => "key"),
+		    { 1 => { key => 1, value => 2 }}, "key");
+    is_deeply (csv (in => \"1,2\n", key => "key", headers => [qw( key value )]),
+		    { 1 => { key => 1, value => 2 }}, "key");
+    }
 
 # Some "out" checks
 open my $fh, ">", $file;
