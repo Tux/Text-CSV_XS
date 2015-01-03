@@ -35,7 +35,10 @@ sub PV { 0 }
 sub IV { 1 }
 sub NV { 2 }
 
-$] < 5.008002 and *utf8::decode = sub {};
+if ($] < 5.008002) {
+    no warnings "redefine";
+    *utf8::decode = sub {};
+    }
 
 # version
 #

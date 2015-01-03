@@ -56,7 +56,7 @@ my @aoa = @{$aoa}[1,2];
 is_deeply (csv (file => $file, headers  => "skip"),    \@aoa, "AOA skip");
 is_deeply (csv (file => $file, fragment => "row=2-3"), \@aoa, "AOA fragment");
 
-if ($] >= 5.008) {
+if ($] >= 5.008001) {
     is_deeply (csv (in => $file, encoding => "utf-8", headers => ["a", "b", "c"],
 		    fragment => "row=2", sep_char => ","),
 	   [{ a => 1, b => 2, c => 3 }], "AOH headers fragment");
