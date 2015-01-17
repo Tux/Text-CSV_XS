@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 17;
+ use Test::More tests => 19;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -55,5 +55,14 @@ is_deeply (csv (in => $file, headers => "auto", after_in => sub { $_[1]{baz} = "
     { foo => 1, bar => 2, baz => "A" },
     { foo => 2, bar => "a b", baz => "A" },
     ], "AOH with after_in callback");
+
+is_deeply (csv (in => $file, filter => { 2 => sub { /a/ }}), [
+    [qw( foo bar baz )],
+    [ 2, "a b", "" ],
+    ], "AOA with filter on col 2");
+is_deeply (csv (in => $file, filter => { 2 => sub { /a/ },
+					 1 => sub { length > 1 }}), [
+    [qw( foo bar baz )],
+    ], "AOA with filter on col 1 and 2");
 
 unlink $file;

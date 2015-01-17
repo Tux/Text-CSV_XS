@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 110;
+ use Test::More tests => 111;
 #use Test::More "no_plan";
 
 BEGIN {
