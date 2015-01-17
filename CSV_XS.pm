@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.13";
+$VERSION   = "1.14";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -2795,8 +2795,8 @@ Dumping a database table can be simple as this (TIMTOWTDI):
 For more extended examples, see the F<examples/> C<1>) sub-directory in the
 original distribution or the git repository C<2>).
 
- 1. http://repo.or.cz/w/Text-CSV_XS.git?a=tree;f=examples
- 2. http://repo.or.cz/w/Text-CSV_XS.git
+ 1. https://github.com/Tux/Text-CSV_XS/tree/master/examples
+ 2. https://github.com/Tux/Text-CSV_XS
 
 The following files can be found there:
 

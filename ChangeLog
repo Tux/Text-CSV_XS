@@ -1,8 +1,11 @@
-1.13	- 2015-01-01, H.Merijn Brand
-    - Simplify code path for old perl
-    - Fix quote_binary (#RT100676)
-    - Fix csv () for hashrefs with aliased headers
-    - Update copyright to 2015
+1.14	- 2015-01-17, H.Merijn Brand
+    - Move to github
+
+1.13	- 2015-01-03, H.Merijn Brand
+    * Simplify code path for old perl
+    * Fix quote_binary (#RT100676)
+    * Fix csv () for hashrefs with aliased headers
+    * Update copyright to 2015
 
 1.12	- 2014-11-01, H.Merijn Brand
     * Add field number to error_diag

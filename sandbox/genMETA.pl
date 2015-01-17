@@ -63,7 +63,7 @@ test_requires:
     Tie::Scalar:         0
 resources:
     license:             http://dev.perl.org/licenses/
-    repository:          http://repo.or.cz/w/Text-CSV_XS.git
+    repository:          https://github.com/Tux/Text-CSV_XS
     homepage:            https://metacpan.org/pod/Text::CSV_XS
     bugtracker:          http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-CSV_XS
     IRC:                 irc://irc.perl.org/#csv
