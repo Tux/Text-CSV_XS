@@ -1110,6 +1110,8 @@ sub csv
 	    $c->{cboi} and $c->{cboi}->($csv, $r);
 	    }
 	}
+
+    defined wantarray or return csv (in => $ref);
     return $ref;
     } # csv
 
@@ -2400,7 +2402,7 @@ itself (e.g. C<*STDIN>), or a reference to a scalar (e.g. C<\q{1,2,"csv"}>).
 
 When used with L</out>, C<in> should be a reference to a CSV structure (AoA
 or AoH)  or a CODE-ref that returns an array-reference or a hash-reference.
-The code-ref will be invoked with no arguments and .
+The code-ref will be invoked with no arguments.
 
  my $aoa = csv (in => "file.csv");
 
@@ -2409,6 +2411,15 @@ The code-ref will be invoked with no arguments and .
 
  my $csv = [ [qw( Foo Bar )], [ 1, 2 ], [ 2, 3 ]];
  my $err = csv (in => $csv, out => "file.csv");
+
+If called in void context without the L</out> attribute, the resulting ref
+will be used as input to a subsequent call to csv:
+
+ csv (in => "file.csv", filter => { 2 => sub { length > 2 }})
+
+will be a shortcut to
+
+ csv (in => csv (in => "file.csv", filter => { 2 => sub { length > 2 }}))
 
 =head3 out
 X<out>
