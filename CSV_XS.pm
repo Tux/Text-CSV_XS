@@ -1084,7 +1084,7 @@ sub csv
 	$csv->callbacks (after_parse => sub {
 	    my ($csv, $r) = @_;
 	    foreach my $fld (sort keys %f) {
-		local $_ = $r->[$fld];
+		local $_ = $r->[$fld - 1];
 		$f{$fld}->() or return \"skip";
 		}
 	    });
