@@ -17,10 +17,19 @@
            },
        }
 
-# validate
+# validate - croak or fail on invalid
+#            allow action  on invalid
 
 csv (in        => "foo.csv",
      validate  => sub { ($_->[1][3] // "") =~ m/^[0-9]+$/ ? 1 : 0 },
      );
 
 what would that add over "after_parse" ?
+
+# filter - key is field number (one-based), block should pass
+#          if cross-reference between fields required, use validate
+#          multiple sections are AND-ed, all should PASS
+
+csv (in     => "foo.csv",
+     filter => sub { 6 => { length > 4 }},
+     );
