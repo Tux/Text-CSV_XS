@@ -1727,21 +1727,22 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     return result;
     } /* c_xsParse */
 
-static void hook (pTHX_ HV *hv, char *cb_name, AV *av)
+static int hook (pTHX_ HV *hv, char *cb_name, AV *av)
 {
     SV **svp;
     HV *cb;
+    int res;
 
 #if MAINT_DEBUG > 1
     fprintf (stderr, "# HOOK %s %x\n", cb_name, av);
 #endif
     unless ((svp = hv_fetchs (hv, "callbacks", FALSE)) && _is_hashref (*svp))
-	return; /* uncoverable statement defensive programming */
+	return 0; /* uncoverable statement defensive programming */
 
     cb  = (HV *)SvRV (*svp);
     svp = hv_fetch (cb, cb_name, strlen (cb_name), FALSE);
     unless (svp && _is_coderef (*svp))
-	return;
+	return 0;
 
     {   dSP;
 	ENTER;
@@ -1750,10 +1751,20 @@ static void hook (pTHX_ HV *hv, char *cb_name, AV *av)
 	XPUSHs (newRV_noinc ((SV *)hv));
 	XPUSHs (newRV_noinc ((SV *)av));
 	PUTBACK;
-	call_sv (*svp, G_VOID | G_DISCARD);
+	res = call_sv (*svp, G_SCALAR);
+	SPAGAIN;
+	if (res) {
+	    SV *rv = POPs;
+	    if (SvROK (rv) && (rv = SvRV (rv)) && SvPOK (rv)) {
+		if (strcmp (SvPV_nolen (rv), "skip") == 0)
+		    res = 0;
+		}
+	    }
+	PUTBACK;
 	FREETMPS;
 	LEAVE;
 	}
+    return res;
     } /* hook */
 
 #define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
@@ -1764,7 +1775,7 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
     SetupCsv (&csv, hv, self);
     state = c_xsParse (csv, hv, av, avf, src, useIO);
     if (state && csv.has_hooks & HOOK_AFTER_PARSE)
-	hook (aTHX_ hv, "after_parse", av);
+	(void)hook (aTHX_ hv, "after_parse", av);
     return (state || !last_error);
     } /* xsParse */
 
@@ -1811,8 +1822,10 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 	    n--;
 	    }
 
-	if (csv.has_hooks & HOOK_AFTER_PARSE)
-	    hook (aTHX_ hv, "after_parse", row);
+	if (csv.has_hooks & HOOK_AFTER_PARSE) {
+	    unless (hook (aTHX_ hv, "after_parse", row))
+		continue;
+	    }
 	av_push (avr, newRV_noinc ((SV *)row));
 
 	if (n >= length && skip >= 0)
@@ -1844,7 +1857,7 @@ static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
 	PL_ors_sv = NULL;
 #endif
     if (useIO && csv.has_hooks & HOOK_BEFORE_PRINT)
-	hook (aTHX_ hv, "before_print", av);
+	(void)hook (aTHX_ hv, "before_print", av);
     result = Combine (&csv, io, av);
 #if (PERL_BCDVERSION >= 0x5008000)
     PL_ors_sv = ors;

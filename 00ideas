@@ -31,5 +31,5 @@ what would that add over "after_parse" ?
 #          multiple sections are AND-ed, all should PASS
 
 csv (in     => "foo.csv",
-     filter => sub { 6 => { length > 4 }},
+     filter => { 6 => sub { length > 4 }},
      );

@@ -990,6 +990,9 @@ sub _csv_attr
     my $cboi = delete $attr{callbacks}{on_in}       ||
 	       delete $attr{on_in};
 
+    my $fltr = delete $attr{filter};
+    ref $fltr eq "HASH" or $fltr = undef;
+
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
     my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
 
@@ -1002,6 +1005,7 @@ sub _csv_attr
 	hdrs => $hdrs,
 	key  => $key,
 	frag => $frag,
+	fltr => $fltr,
 	cbai => $cbai,
 	cbbo => $cbbo,
 	cboi => $cboi,
@@ -1075,6 +1079,17 @@ sub csv
 	    }
 	}
 
+    if ($c->{fltr}) {
+	my %f = %{$c->{fltr}};
+	$csv->callbacks (after_parse => sub {
+	    my ($csv, $r) = @_;
+	    foreach my $fld (sort keys %f) {
+		local $_ = $r->[$fld];
+		$f{$fld}->() or return \"skip";
+		}
+	    });
+	}
+
     my $frag = $c->{frag};
     my $ref = ref $hdrs
 	? # aoh
@@ -1090,9 +1105,9 @@ sub csv
     $ref or Text::CSV_XS->auto_diag;
     $c->{cls} and close $fh;
     if ($ref and $c->{cbai} || $c->{cboi}) {
-	for (@{$ref}) {
-	    $c->{cbai} and $c->{cbai}->($csv, $_);
-	    $c->{cboi} and $c->{cboi}->($csv, $_);
+	foreach my $r (@{$ref}) {
+	    $c->{cbai} and $c->{cbai}->($csv, $r);
+	    $c->{cboi} and $c->{cboi}->($csv, $r);
 	    }
 	}
     return $ref;
@@ -2573,7 +2588,8 @@ This callback is invoked after parsing with  L</getline>  only if no  error
 occurred.  The callback is invoked with two arguments:   the current C<CSV>
 parser object and an array reference to the fields parsed.
 
-The return code of the callback is ignored.
+The return code of the callback is ignored  unless it is a reference to the
+string "skip", in which case the record will be skipped in L</getline_all>.
 
  sub add_from_db
  {
@@ -2618,6 +2634,7 @@ but only feature the L</csv> function.
 
   csv (in        => "file.csv",
        callbacks => {
+           filter       => { 6 => sub { $_ > 15 } },    # first
            after_parse  => sub { say "AFTER PARSE";  }, # first
            after_in     => sub { say "AFTER IN";     }, # second
            on_in        => sub { say "ON IN";        }, # third
@@ -2634,6 +2651,21 @@ but only feature the L</csv> function.
        );
 
 =over 2
+
+=item filter
+X<filter>
+
+This callback can be used to filter records. It is called just after a new
+record has been scanned. The callback accepts a hashref where the keys are
+the index to the row (the field number, 1-based) and the values are subs to
+return a true or false value.
+
+ csv (in => "file.csv", filter => {
+            3 => sub { m/a/ },       # third field should contain an "a"
+            5 => sub { length > 4 }, # length of the 5th field minimal 5
+            });
+
+All sub results should match, as in AND.
 
 =item after_in
 X<after_in>
