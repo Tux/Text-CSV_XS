@@ -47,6 +47,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	],
     "DBD-CSV"     => [
 	"ASNMTAP",
+	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
 	],
     "Text-CSV_XS" => [
  	"App-Framework",			# Questions
