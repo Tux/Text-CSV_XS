@@ -151,6 +151,20 @@ is ($csv->callbacks (undef), undef,			"clear callbacks");
 is_deeply (Text::CSV_XS::csv (in => $fn, callbacks => $callbacks),
     [[1,"foo","NEW"],[2,"bar","NEW"],[3,"","NEW"]], "using getline_all");
 
+open $fh, ">", $fn;
+print $fh <<"EOC";
+1,foo
+2,bar
+3,baz
+4,zoo
+EOC
+close $fh;
+
+open $fh, "<", $fn;
+$csv->callbacks (after_parse => sub { $_[1][0] eq 3 and return \"skip" });
+is_deeply ($csv->getline_all ($fh), [[1,"foo"],[2,"bar"],[4,"zoo"]]);
+close $fh;
+
 __END__
 1,foo
 1

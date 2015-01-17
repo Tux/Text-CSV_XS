@@ -1823,8 +1823,10 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
 	    }
 
 	if (csv.has_hooks & HOOK_AFTER_PARSE) {
-	    unless (hook (aTHX_ hv, "after_parse", row))
+	    unless (hook (aTHX_ hv, "after_parse", row)) {
+		av_empty (row); /* re-use */
 		continue;
+		}
 	    }
 	av_push (avr, newRV_noinc ((SV *)row));
 
