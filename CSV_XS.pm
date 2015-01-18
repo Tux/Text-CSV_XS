@@ -1069,6 +1069,7 @@ sub csv
 	}
 
     my $key = $c->{key} and $hdrs ||= "auto";
+    $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
     if (defined $hdrs && !ref $hdrs) {
 	if ($hdrs eq "skip") {
 	    $csv->getline ($fh); # discard;
@@ -1081,6 +1082,13 @@ sub csv
 
     if ($c->{fltr}) {
 	my %f = %{$c->{fltr}};
+	# convert headers to index
+	if (ref $hdrs) {
+	    my @hdr = @{$hdrs};
+	    for (0 .. $#hdr) {
+		exists $f{$hdr[$_]} and $f{$_ + 1} = delete $f{$hdr[$_]};
+		}
+	    }
 	$csv->callbacks (after_parse => sub {
 	    my ($csv, $r) = @_;
 	    foreach my $fld (sort keys %f) {
@@ -2666,8 +2674,8 @@ but only feature the L</csv> function.
 =item filter
 X<filter>
 
-This callback can be used to filter records. It is called just after a new
-record has been scanned. The callback accepts a hashref where the keys are
+This callback can be used to filter records.  It is called just after a new
+record has been scanned.  The callback accepts a hashref where the keys are
 the index to the row (the field number, 1-based) and the values are subs to
 return a true or false value.
 
@@ -2675,6 +2683,13 @@ return a true or false value.
             3 => sub { m/a/ },       # third field should contain an "a"
             5 => sub { length > 4 }, # length of the 5th field minimal 5
             });
+
+If the keys to the filter contain any character that in not a digit it will
+also implicitely set L</headers> to C<auto>  unless L</headers> was already
+passed as argument.  When headers are active, returning an array of hashes,
+the filter is not applicable to the header itself.
+
+ csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
 All sub results should match, as in AND.
 
