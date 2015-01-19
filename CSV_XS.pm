@@ -2620,6 +2620,34 @@ string "skip", in which case the record will be skipped in L</getline_all>.
  my $aoa = csv (in => "file.csv", callbacks => {
      after_parse => \&add_from_db });
 
+This hook can be used for validation:
+X<validation>
+
+=over 2
+
+=item FAIL
+
+Die if any of the records does not validate a rule:
+
+ after_parse => sub {
+     $_[1][4] =~ m/^[0-9]{4}\s?[A-Z]{2}$/ or
+         die "5th field does not have a valid Dutch zipcode";
+     }
+
+=item DEFAULT
+
+Replace invalid fields with a default value:
+
+ after_parse => sub { $_[1][2] =~ m/^\d+$/ or $_[1][2] = 0 }
+
+=item SKIP
+
+Skip records that have invalid fields (only applies to L</getline_all>):
+
+ after_parse => sub { $_[1][0] =~ m/^\d+$/ or return \"skip"; }
+
+=back
+
 =item before_print
 X<before_print>
 
