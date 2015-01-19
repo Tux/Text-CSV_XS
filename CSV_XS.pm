@@ -1119,7 +1119,7 @@ sub csv
 	    }
 	}
 
-    defined wantarray or return csv (in => $ref);
+    defined wantarray or return csv (in => $ref, headers => $hdrs);
     return $ref;
     } # csv
 
