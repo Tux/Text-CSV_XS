@@ -2429,6 +2429,11 @@ will be a shortcut to
 
  csv (in => csv (in => "file.csv", filter => { 2 => sub { length > 2 }}))
 
+where, in the absence of the C<out> attribute, this is a shortcut to
+
+ csv (in  => csv (in => "file.csv", filter => { 2 => sub { length > 2 }}),
+      out => *STDOUT)
+
 =head3 out
 X<out>
 
@@ -2713,7 +2718,7 @@ return a true or false value.
             });
 
 If the keys to the filter contain any character that in not a digit it will
-also implicitely set L</headers> to C<auto>  unless L</headers> was already
+also implicitly set  L</headers> to C<auto>  unless L</headers> was already
 passed as argument.  When headers are active, returning an array of hashes,
 the filter is not applicable to the header itself.
 
@@ -2851,6 +2856,12 @@ Rewrite C<CSV> files with C<;> as separator character to well-formed C<CSV>:
 
  use Text::CSV_XS qw( csv );
  csv (in => csv (in => "bad.csv", sep_char => ";"), out => *STDOUT);
+
+As C<STDOUT> is now default in L</csv>, a one-liner converting a UTF-16 CSV
+file with BOM and TAB-separation to valid UTF-8 CSV could be:
+
+ $ perl -C3 -MText::CSV_XS=csv -we\
+    'csv(in=>"utf16tab.csv",encoding=>"utf16",sep=>"\t")' >utf8.csv
 
 =head2 Dumping database tables to CSV
 
