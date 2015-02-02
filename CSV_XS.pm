@@ -3031,10 +3031,6 @@ No guarantees, but this is what I had in mind some time ago:
 
 DIAGNOSTICS section in pod to *describe* the errors (see below)
 
-=item *
-
-Multi-byte quotation support
-
 =back
 
 =head1 EBCDIC
