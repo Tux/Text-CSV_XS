@@ -1,7 +1,7 @@
-1.14	- 2015-01-17, H.Merijn Brand
-    - Move to github
-    - Add csv (filter => {});
-    - Change csv ()'s void context behavior
+1.14	- 2015-02-02, H.Merijn Brand
+    * Move to github
+    * Add csv (filter => {});
+    * Change csv ()'s void context behavior
 
 1.13	- 2015-01-03, H.Merijn Brand
     * Simplify code path for old perl
