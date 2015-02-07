@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.14";
+$VERSION   = "1.15";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -3016,6 +3016,12 @@ Requirements|http://w3c.github.io/csvw/use-cases-and-requirements/index.html>
 
 Steal good new ideas and features from L<PapaParse|http://papaparse.com> or
 L<csvkit|http://csvkit.readthedocs.org>.
+
+=item Perl6 support
+
+I'm already working on perl6 support L<here|https://github.com/Tux/CSV>. No
+promises yet on when it is finished (or fast). Trying to keep the API alike
+as much as possible.
 
 =back
 

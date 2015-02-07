@@ -8,6 +8,7 @@
 \.gcno$
 \.releaserc
 \.exrc$
+00ideas
 blib/
 cover_db/
 sandbox/
