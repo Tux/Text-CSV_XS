@@ -1643,7 +1643,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 
     ENTER;
     if (csv.eolx || csv.eol_is_cr) {
-	/* local $\ = $eol */
+	/* local $/ = $eol */
 	SAVEGENERICSV (PL_rs);
 	PL_rs = newSVpvn ((char *)csv.eol, csv.eol_len);
 	}
