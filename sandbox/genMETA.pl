@@ -52,7 +52,6 @@ requires:
     DynaLoader:          0
     IO::Handle:          0
 recommends:
-    perl:                5.020001
     Encode:              2.68
 configure_requires:
     ExtUtils::MakeMaker: 0
