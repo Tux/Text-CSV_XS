@@ -15,15 +15,15 @@ Copying:
     it under the same terms as Perl itself.
 
     Recent changes can be (re)viewed in the public GIT repository at
-    http://repo.or.cz/w/Text-CSV_XS.git
+    http://repo.or.cz/w/Text-CSV_XS
     Feel free to clone your own copy:
 
-     $ git clone https://github.com/Tux/Text-CSV_XS.git Text-CSV_XS
+     $ git clone https://github.com/Tux/Text-CSV_XS Text-CSV_XS
 
     or get it as a tgz:
 
      $ wget --output-document=Text-CSV_XS-git.tgz \
-	       'https://github.com/Tux/Text-CSV_XS/archive/master.tar.gz'
+	   https://github.com/Tux/Text-CSV_XS/archive/master.tar.gz
 
 Prerequisites:
     perl 5.6.1 or up.
