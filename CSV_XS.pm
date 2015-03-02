@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.16";
+$VERSION   = "1.17";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -994,7 +994,8 @@ sub _csv_attr
     ref $fltr eq "HASH" or $fltr = undef;
 
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
-    my $csv = Text::CSV_XS->new (\%attr) or croak $last_new_err;
+    my $csv = delete $attr{csv} || Text::CSV_XS->new (\%attr)
+	or croak $last_new_err;
 
     return {
 	csv  => $csv,
@@ -1014,7 +1015,7 @@ sub _csv_attr
 
 sub csv
 {
-    @_ && ref $_[0] eq __PACKAGE__ and shift @_;
+    @_ && ref $_[0] eq __PACKAGE__ and splice @_, 0, 0, "csv";
     @_ or croak $csv_usage;
 
     my $c = _csv_attr (@_);
@@ -2770,6 +2771,21 @@ This callback acts exactly as the L</after_in> or the L</before_out> hooks.
 
 This callback can also be passed as an attribute  without the  C<callbacks>
 wrapper.
+
+=item csv
+
+The funtion can also be called as a method or with an existing Text::CSV_XS
+object. This could help if the function is to be invoked a lot of times and
+the overhead of creating the object internally over and over again would be
+prevented by passing an existing instance.
+
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+
+ my $aoa = $csv->csv (in => $fh);
+ my $aoa = csv (in => $fh, csv => $csv);
+
+both act the same. Running this 20000 times on a 20 lines CSV file,  showed
+a 53% speedup.
 
 =back
 

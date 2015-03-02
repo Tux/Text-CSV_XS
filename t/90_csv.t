@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 40;
+ use Test::More tests => 42;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -154,3 +154,9 @@ eval {
     ok (csv (in => [[ 1, 2, 3 ]], out => \$out), "out to scalar ref");
     is ($out, "1,2,3\r\n",	"Scalar out");
     };
+
+{   my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+    my $expect = [["a"],[1],["a"],[1],["a"],[1],["a"],[1],["a"],[1]];
+    is_deeply ($csv->csv (in => $file),        $expect, "csv from object");
+    is_deeply (csv (in => $file, csv => $csv), $expect, "csv from attribute");
+    }
