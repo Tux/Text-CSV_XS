@@ -1,4 +1,7 @@
-1.15	- 2015-02-07, H.Merijn Brand
+1.16	- 2015-03-02, H.Merijn Brand
+    * filter made more useful (access to other fields)
+
+1.15	- 2015-02-11, H.Merijn Brand
     * Remove perl recommendation from META as it breaks cpan clients
 
 1.14	- 2015-02-02, H.Merijn Brand

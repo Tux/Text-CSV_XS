@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20;
+ use Test::More tests => 22;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -68,4 +68,29 @@ is_deeply (csv (in => $file, filter => { foo => sub { $_ > 1 }}), [
     { foo => 2, bar => "a b", baz => "" },
     ], "AOH with filter on column name");
 
-unlink $file;
+open  FH, ">>", $file or die "$file: $!";
+print FH <<"EOD";
+3,3,3
+4,5,6
+5,7,9
+6,9,12
+7,11,15
+8,13,18
+EOD
+close FH;
+
+is_deeply (csv (in => $file,
+	filter => { foo => sub { $_ > 2 && $_[1][2] - $_[1][1] < 4 }}), [
+    { foo => 3, bar => 3, baz =>  3 },
+    { foo => 4, bar => 5, baz =>  6 },
+    { foo => 5, bar => 7, baz =>  9 },
+    { foo => 6, bar => 9, baz => 12 },
+    ], "AOH with filter on column name + on other numbered fields");
+
+is_deeply (csv (in => $file,
+	filter => { foo => sub { $_ > 2 && $_{baz}  - $_{bar}  < 4 }}), [
+    { foo => 3, bar => 3, baz =>  3 },
+    { foo => 4, bar => 5, baz =>  6 },
+    { foo => 5, bar => 7, baz =>  9 },
+    { foo => 6, bar => 9, baz => 12 },
+    ], "AOH with filter on column name + on other named fields");

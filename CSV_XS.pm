@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.15";
+$VERSION   = "1.16";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -1083,8 +1083,9 @@ sub csv
     if ($c->{fltr}) {
 	my %f = %{$c->{fltr}};
 	# convert headers to index
+	my @hdr;
 	if (ref $hdrs) {
-	    my @hdr = @{$hdrs};
+	    @hdr = @{$hdrs};
 	    for (0 .. $#hdr) {
 		exists $f{$hdr[$_]} and $f{$_ + 1} = delete $f{$hdr[$_]};
 		}
@@ -1093,7 +1094,9 @@ sub csv
 	    my ($csv, $r) = @_;
 	    foreach my $fld (sort keys %f) {
 		local $_ = $r->[$fld - 1];
-		$f{$fld}->() or return \"skip";
+		local %_;
+		@hdr and @_{@hdr} = @$r;
+		$f{$fld}->($csv, $r) or return \"skip";
 		}
 	    });
 	}
@@ -2725,6 +2728,17 @@ the filter is not applicable to the header itself.
  csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
 All sub results should match, as in AND.
+
+The context of the callback sets  C<$_> localized to the field indicated by
+the filter. The two arguments are as with all other callbacks, so the other
+fields in the current row can be seen:
+
+ filter => { 3 => sub { $_ > 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}
+
+If the context is set to return a list of hashes  (L</headers> is defined),
+the current record will also be available in the localized C<%_>:
+
+ filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
 
 =item after_in
 X<after_in>
