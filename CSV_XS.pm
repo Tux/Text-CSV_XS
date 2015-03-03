@@ -2774,10 +2774,10 @@ wrapper.
 
 =item csv
 
-The funtion can also be called as a method or with an existing Text::CSV_XS
-object. This could help if the function is to be invoked a lot of times and
-the overhead of creating the object internally over and over again would be
-prevented by passing an existing instance.
+The I<function>  L</csv> can also be called as a method or with an existing
+Text::CSV_XS object. This could help if the function is to be invoked a lot
+of times and the overhead of creating the object internally over  and  over
+again would be prevented by passing an existing instance.
 
  my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 
