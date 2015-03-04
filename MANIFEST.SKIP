@@ -8,6 +8,7 @@
 \.gcno$
 \.releaserc
 \.exrc$
+\.travis.yml
 00ideas
 blib/
 cover_db/
