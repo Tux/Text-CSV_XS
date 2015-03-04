@@ -11,3 +11,9 @@ perl:
   - "5.12"
   - "5.10"
   - "5.8"
+notifications:
+  irc:
+    channels:
+      - "irc.perl.org#csv"
+    on_success: always
+    on_failure: always
