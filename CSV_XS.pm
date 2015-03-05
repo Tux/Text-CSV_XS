@@ -931,7 +931,7 @@ sub _csv_attr
 
     $attr{binary} = 1;
 
-    my $enc = delete $attr{encoding} || "";
+    my $enc = delete $attr{enc} || delete $attr{encoding} || "";
     $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 
     my $fh;
@@ -2465,7 +2465,8 @@ X<encoding>
 
 If passed,  it should be an encoding accepted by the  C<:encoding()> option
 to C<open>. There is no default value. This attribute does not work in perl
-5.6.x.
+5.6.x.  C<encoding> can be abbreviated to C<enc> for ease of use in command
+line invocations.
 
 =head3 headers
 X<headers>

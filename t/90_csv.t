@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 42;
+ use Test::More tests => 43;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -58,6 +58,9 @@ is_deeply (csv (file => $file, fragment => "row=2-3"), \@aoa, "AOA fragment");
 
 if ($] >= 5.008001) {
     is_deeply (csv (in => $file, encoding => "utf-8", headers => ["a", "b", "c"],
+		    fragment => "row=2", sep_char => ","),
+	   [{ a => 1, b => 2, c => 3 }], "AOH headers fragment");
+    is_deeply (csv (in => $file, enc      => "utf-8", headers => ["a", "b", "c"],
 		    fragment => "row=2", sep_char => ","),
 	   [{ a => 1, b => 2, c => 3 }], "AOH headers fragment");
     }
