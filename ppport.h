@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.28
+    ppport.h -- Perl/Pollution/Portability Version 3.31
 
     Automatically created by Devel::PPPort running under perl 5.020002.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.28
+ppport.h - Perl/Pollution/Portability version 3.31
 
 =head1 SYNOPSIS
 
@@ -381,7 +381,7 @@ use strict;
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if $] >= 5.009004 && $] <= 5.009005 }
 
-my $VERSION = 3.28;
+my $VERSION = 3.31;
 
 my %opt = (
   quiet     => 0,
@@ -1148,6 +1148,7 @@ _to_utf8_fold_flags||5.019009|
 _to_utf8_lower_flags||5.019009|
 _to_utf8_title_flags||5.019009|
 _to_utf8_upper_flags||5.019009|
+_warn_problematic_locale|||n
 aMY_CXT_|5.007003||p
 aMY_CXT|5.007003||p
 aTHXR_|5.021008||p
@@ -1161,6 +1162,8 @@ add_data|||n
 add_multi_match|||
 add_utf16_textfilter|||
 adjust_size_and_find_bucket|||n
+advance_one_SB|||
+advance_one_WB|||
 alloc_maybe_populate_EXACT|||
 alloccopstash|||
 allocmy|||
@@ -1206,6 +1209,8 @@ av_top_index||5.017009|
 av_undef|||
 av_unshift|||
 ax|||n
+backup_one_SB|||
+backup_one_WB|||
 bad_type_gv|||
 bad_type_pv|||
 bind_match|||
@@ -1219,7 +1224,6 @@ boot_core_UNIVERSAL|||
 boot_core_mro|||
 bytes_cmp_utf8||5.013007|
 bytes_from_utf8||5.007001|
-bytes_to_uni|||n
 bytes_to_utf8||5.006001|
 call_argv|5.006000||p
 call_atexit||5.006000|
@@ -1548,14 +1552,14 @@ glob_assign_glob|||
 gp_dup|||
 gp_free|||
 gp_ref|||
-grok_atou||5.021004|n
+grok_atoUV|||n
 grok_bin|5.007003||p
 grok_bslash_N|||
 grok_bslash_c|||
 grok_bslash_o|||
 grok_bslash_x|||
 grok_hex|5.007003||p
-grok_infnan||5.021004|n
+grok_infnan||5.021004|
 grok_number_flags||5.021002|
 grok_number|5.007002||p
 grok_numeric_radix|5.007002||p
@@ -1565,7 +1569,7 @@ gv_AVadd|||
 gv_HVadd|||
 gv_IOadd|||
 gv_SVadd|||
-gv_add_by_type_p|||
+gv_add_by_type||5.011000|
 gv_autoload4||5.004000|
 gv_autoload_pvn||5.015004|
 gv_autoload_pv||5.015004|
@@ -1729,6 +1733,7 @@ isCNTRL|5.006000||p
 isDIGIT|||
 isFOO_lc|||
 isFOO_utf8_lc|||
+isGCB|||n
 isGRAPH|5.006000||p
 isGV_with_GP|5.009004||p
 isIDCONT||5.017008|
@@ -1739,9 +1744,11 @@ isOCTAL||5.013005|
 isPRINT|5.004000||p
 isPSXSPC|5.006001||p
 isPUNCT|5.006000||p
+isSB|||
 isSPACE|||
 isUPPER|||
 isUTF8_CHAR||5.021001|
+isWB|||
 isWORDCHAR||5.013006|
 isXDIGIT|5.006000||p
 is_an_int|||
@@ -1970,10 +1977,12 @@ mro_set_mro||5.010001|
 mro_set_private_data||5.010001|
 mul128|||
 mulexp10|||n
+multideref_stringify|||
 my_atof2||5.007002|
 my_atof||5.006000|
 my_attrs|||
 my_bcopy|||n
+my_bytes_to_utf8|||n
 my_bzero|||n
 my_chsize|||
 my_clearenv|||
@@ -2592,7 +2601,7 @@ sv_force_normal||5.006000|
 sv_free2|||
 sv_free_arenas|||
 sv_free|||
-sv_get_backrefs||5.021008|
+sv_get_backrefs||5.021008|n
 sv_gets||5.003070|
 sv_grow|||
 sv_i_ncmp|||
@@ -2620,6 +2629,7 @@ sv_nolocking||5.007003|
 sv_nosharing||5.007003|
 sv_nounlocking|||
 sv_nv||5.005000|
+sv_only_taint_gmagic|||n
 sv_or_pv_pos_u2b|||
 sv_peek||5.005000|
 sv_pos_b2u_flags||5.019003|
@@ -2765,7 +2775,6 @@ try_amagic_bin|||
 try_amagic_un|||
 uiv_2buf|||n
 unlnk|||
-unop_aux_stringify|||
 unpack_rec|||
 unpack_str||5.007003|
 unpackstring||5.008001|
