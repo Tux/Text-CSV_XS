@@ -1306,7 +1306,8 @@ this range may or may not work as expected.  Multibyte characters, like UTF
 C<U+060C> (ARABIC COMMA),   C<U+FF0C> (FULLWIDTH COMMA),  C<U+241B> (SYMBOL
 FOR ESCAPE), C<U+2424> (SYMBOL FOR NEWLINE), C<U+FF02> (FULLWIDTH QUOTATION
 MARK), and C<U+201C> (LEFT DOUBLE QUOTATION MARK) (to give some examples of
-what might look promising) are therefore not allowed.
+what might look promising) work for newer versions of perl for C<sep_char>,
+and C<quote_char> but not for C<escape_char>.
 
 If you use perl-5.8.2 or higher these three attributes are utf8-decoded, to
 increase the likelihood of success. This way C<U+00FE> will be allowed as a
