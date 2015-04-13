@@ -1098,6 +1098,7 @@ sub csv
 		local %_;
 		@hdr and @_{@hdr} = @$r;
 		$f{$fld}->($csv, $r) or return \"skip";
+		$r->[$fld - 1] = $_;
 		}
 	    });
 	}
@@ -2742,6 +2743,16 @@ If the context is set to return a list of hashes  (L</headers> is defined),
 the current record will also be available in the localized C<%_>:
 
  filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
+
+If the filter is used to I<alter> the content by changing C<$_>,  make sure
+that the sub returns true in order not to have that record skipped:
+
+ filter => { 2 => sub { $_ = uc }}
+
+will upper-case the second field, and then skip it if the resulting content
+evaluates to false. To always accept, end with truth:
+
+ filter => { 2 => sub { $_ = uc; 1 }}
 
 =item after_in
 X<after_in>

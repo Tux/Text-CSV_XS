@@ -1,6 +1,7 @@
-1.17	- 2015-03-18, H.Merijn Brand
+1.17	- 2015-04-13, H.Merijn Brand
     - Enable overruling $csv in csv ()
     - Allow encoding to be shortened to enc in csv ()
+    - Allow filter to alter content
 
 1.16	- 2015-03-02, H.Merijn Brand
     * filter made more useful (access to other fields)
