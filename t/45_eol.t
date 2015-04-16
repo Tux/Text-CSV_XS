@@ -202,7 +202,6 @@ $/ = $def_rs;
 {   open my $fh, "<", "files/macosx.csv" or die "Ouch $!";
     ok (1, "MacOSX exported file");
     ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, binary => 1 }), "new csv");
-    diag ();
     ok (my $row = $csv->getline ($fh),	"getline 1");
     is (scalar @$row, 15,		"field count");
     is ($row->[7], "",			"field 8");
