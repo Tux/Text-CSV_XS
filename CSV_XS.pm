@@ -814,6 +814,16 @@ sub getline_hr_all
     [ map { my %h; @h{@cn} = @$_; \%h } @{$self->getline_all (@args)} ];
     } # getline_hr_all
 
+sub say
+{
+    my ($self, $io, @f) = @_;
+    my $eol = $self->eol;
+    defined $eol && $eol ne "" or $self->eol ($\ || $/);
+    my $state = $self->print ($io, @f);
+    $self->eol ($eol);
+    return $state;
+    } # say
+
 sub print_hr
 {
     my ($self, $io, $hr) = @_;
@@ -1879,6 +1889,13 @@ A short benchmark
  $csv->print ($io, [ @data ]);   # 11800 recs/sec
  $csv->print ($io,  \@data  );   # 57600 recs/sec
  $csv->print ($io,   undef  );   # 48500 recs/sec
+
+=head2 say
+X<say>
+
+ $status = $csv->say ($io, $colref);
+
+Like L<C<print>|/print>, but L<C<eol>|/eol> defaults to C<$\>.
 
 =head2 print_hr
 X<print_hr>

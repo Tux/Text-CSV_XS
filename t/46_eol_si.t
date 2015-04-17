@@ -14,7 +14,7 @@ BEGIN {
 	plan skip_all => "No reliable perlIO available";
 	}
     else {
-	plan tests => 546;
+	plan tests => 551;
 	}
     }
 
@@ -209,5 +209,25 @@ foreach my $eol ("!", "!!", "!\n", "!\n!") {
 	}
     }
 $/ = $def_rs;
+
+{   ok (my $csv = Text::CSV_XS->new,	"new for say");
+    my $foo;
+    open my $fh, ">", \$foo;
+    ok ($csv->say ($fh, [ 1, 2 ]),	"say");
+    close $fh;
+    is ($foo, "1,2$/");
+    $foo = "";
+    $csv->eol ("#");
+    open $fh, ">", \$foo;
+    ok ($csv->say ($fh, [ 1, 2 ]),	"say");
+    close $fh;
+    is ($foo, "1,2#");
+    $foo = "";
+    $csv->eol ("0");
+    open $fh, ">", \$foo;
+    ok ($csv->say ($fh, [ 1, 2 ]),	"say");
+    close $fh;
+    is ($foo, "1,20");
+    }
 
 1;
