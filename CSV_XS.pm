@@ -1912,9 +1912,9 @@ It is just a wrapper method with basic parameter checks over
 =head2 combine
 X<combine>
 
- $status = $csv->combine (@columns);
+ $status = $csv->combine (@fields);
 
-This method constructs a C<CSV> string from C<@columns>,  returning success
+This method constructs a C<CSV> record from  C<@fields>,  returning success
 or failure.   Failure can result from lack of arguments or an argument that
 contains an invalid character.   Upon success,  L</string> can be called to
 retrieve the resultant C<CSV> string.  Upon failure,  the value returned by
