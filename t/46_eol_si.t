@@ -14,7 +14,7 @@ BEGIN {
 	plan skip_all => "No reliable perlIO available";
 	}
     else {
-	plan tests => 551;
+	plan tests => 553;
 	}
     }
 
