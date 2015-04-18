@@ -3399,6 +3399,9 @@ L<IO::File>,  L<IO::Handle>,  L<IO::Wrap>,  L<Text::CSV>,  L<Text::CSV_PP>,
 L<Text::CSV::Encoded>,     L<Text::CSV::Separator>,    L<Text::CSV::Slurp>,
 L<Spreadsheet::CSV> and L<Spreadsheet::Read>, and of course L<perl>.
 
+If you are using perl6,  you can have a look at  C<Text::CSV>  in the perl6
+ecosystem, offering the same features.
+
 =head3 non-perl
 
 A CSV parser in JavaScript,  also used by L<W3C|http://www.w3.org>,  is the
