@@ -105,6 +105,7 @@
 #define CACHE_ID__has_hooks		36
 
 #define	byte	unsigned char
+#define ulng	unsigned long
 typedef struct {
     byte	quote_char;
     byte	escape_char;
@@ -137,6 +138,7 @@ typedef struct {
     byte	has_hooks;
 
     long	is_bound;
+    ulng	recno;
 
     byte *	cache;
 
@@ -1674,7 +1676,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	}
 
     result = Parse (&csv, src, av, avf);
-    sv_inc (*(hv_fetchs (hv, "_RECNO", FALSE)));
+    hv_store (hv, "_RECNO", 6, newSViv (++csv.recno), 0);
 
     (void)hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
     if (csv.useIO) {
@@ -1699,6 +1701,9 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 		}
 	    }
 	}
+    else /* just copy the cache */
+	memcpy (csv.cache, &csv, sizeof (csv_t));
+
     if (result && csv.types) {
 	I32	i;
 	STRLEN	len = av_len (av);
