@@ -51,10 +51,13 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	],
     "Text-CSV_XS" => [
  	"App-Framework",			# Questions
+	"Business-Shipping-DataTools",		# Questions and unmet prereqs
 	"CGI-Application-Framework",		# Unmet prerequisites
 	"CohortExplorer",			# Unmet prerequisites
 	"Connector",				# no Makefile.PL (in Annelidous)
 	"Finance-Bank-DE-NetBank",		# Module signatures
+	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
+	"Net-IPFromZip",			# missing zip file(s)
 	"RT-Extension-Assets-Import-CSV",	# Questions
 	"RT-View-ConciseSpreadsheet",		# Questions
 #	"Text-CSV-Track",			# encoding, patch filed at RT
@@ -85,6 +88,7 @@ my $ua  = LWP::UserAgent->new (agent => "Opera/12.15");
 
 sub get_from_cpantesters
 {
+    warn "Get from cpantesters ...\n";
     my $url = "http://deps.cpantesters.org/depended-on-by.pl?dist=$tm";
     my $rsp = $ua->request (HTTP::Request->new (GET => $url));
     unless ($rsp->is_success) {
@@ -103,6 +107,7 @@ sub get_from_cpantesters
 
 sub get_from_cpants
 {
+    warn "Get from cpants ...\n";
     my $url = "http://cpants.cpanauthors.org/dist/$tm/used_by";
     my $rsp = $ua->request (HTTP::Request->new (GET => $url));
     unless ($rsp->is_success) {
@@ -123,6 +128,7 @@ sub get_from_cpants
 
 sub get_from_meta
 {
+    warn "Get from meta ...\n";
     my $url = "https://metacpan.org/requires/distribution/$tm";
     my $rsp = $ua->request (HTTP::Request->new (GET => $url));
     unless ($rsp->is_success) {
@@ -154,6 +160,8 @@ foreach my $h ( get_from_cpants (),
     (my $m = $h) =~ s/-/::/g;
     $tm{$m} = 1;
     }
+
+warn "fetched ", scalar keys %tm, " keys\n";
 
 unless (keys %tm) {
     ok (1, "No dependents found");
