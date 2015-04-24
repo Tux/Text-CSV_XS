@@ -15,7 +15,7 @@ BEGIN {
 	plan skip_all => "No reliable perlIO available";
 	}
     else {
-	plan tests => 117;
+	plan tests => 132;
 	}
     }
 
@@ -169,4 +169,39 @@ for ([  1, 1,    0, "\n"		],
     my $sstr = _readable ($str);
     ok ($valid ? $row : !$row, "$tst - getline ESC +, '$sstr'");
     is ($err[0], $err, "Error expected $err");
+    }
+
+{   ok (my $csv = Text::CSV_XS->new, "new for sep=");
+    open my $fh, "<", \qq{sep=;\n"a b";3\n};
+    is_deeply ($csv->getline_all ($fh), [["a b", 3]], "valid sep=");
+    is (($csv->error_diag)[0], 2012, "EOF");
+    }
+
+{   ok (my $csv = Text::CSV_XS->new, "new for sep=");
+    open my $fh, "<", \qq{sep=;\n"a b",3\n};
+    is_deeply (eval { $csv->getline_all ($fh); }, [], "invalid sep=");
+    is (($csv->error_diag)[0], 2023, "error");
+    }
+
+{   ok (my $csv = Text::CSV_XS->new, "new for sep=");
+    open my $fh, "<", \qq{sep=XX\n"a b"XX3\n};
+    is_deeply (eval { $csv->getline_all ($fh); },
+	[["a b", 3]], "multibyte sep=");
+    is (($csv->error_diag)[0], 2012, "error");
+    }
+
+{   ok (my $csv = Text::CSV_XS->new, "new for sep=");
+    # To check that it is *only* supported on the first line
+    open my $fh, "<", \qq{sep=;\n"a b";3\nsep=,\n"a b",3\n};
+    is_deeply ($csv->getline_all ($fh),
+	[["a b","3"],["sep=,"]], "sep= not on 1st line");
+    is (($csv->error_diag)[0], 2023, "error");
+    }
+
+{   ok (my $csv = Text::CSV_XS->new, "new for sep=");
+    my $sep = "#" x 80;
+    open my $fh, "<", \qq{sep=$sep\n"a b",3\n2,3\n};
+    my $r = $csv->getline_all ($fh);
+    is_deeply ($r, [["sep=$sep"],["a b","3"],[2,3]], "sep= too long");
+    is (($csv->error_diag)[0], 2012, "EOF");
     }

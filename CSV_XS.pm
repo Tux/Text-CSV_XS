@@ -3013,6 +3013,12 @@ English locale,  the default is a comma.   In Windows however,  the user is
 free to choose a  predefined locale,  and then change  I<every>  individual
 setting in it, so checking the locale is no solution.
 
+As of version 1.17, a lone first line with just
+
+  sep=;
+
+will be recognized and honored when parsing with L</getline>.
+
 =head1 TODO
 
 =over 2
