@@ -1,0 +1,3 @@
+ClientID,SendID,SubscriberKey,EmailAddress,SubscriberID,ListID,EventDate,EventType,SendURLID,URLID,URL,Alias,BatchID,TriggeredSendExternalKey,IsUnique^M
+6233222,136222,APP2356222,someemailaddress80@domain.com,53700222,68,4/1/2015 12:21:07 AM,Click,6695222,371456,http://courses.homelearningcollege.com/email/hr/get-qualified-earn-more/?cp=JBSJBS0406&utm_source=partnership&utm_content=300315&utm_medium=email&utm_campaign=HLC%%=IIF("http%3a%2f%2fcourses.homelearningcollege.com%2femail%2fhr%2fget-qualified-earn-more%2f%3fcp%3dJBSJBS0406%0a"=="edit_search", ,http://courses.homelearningcollege.com/email/hr/get-qualified-earn-more/?cp=JBSJBS0406
+,59,,True^M
