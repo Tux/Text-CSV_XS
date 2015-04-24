@@ -66,6 +66,7 @@ if ($] >= 5.008001) {
     }
 else {
     ok (1, q{This perl does not support open with "<:encoding(...)"});
+    ok (1, q{This perl does not support open with "<:encoding(...)"});
     }
 
 ok (csv (in => $aoa, out => $file), "AOA out file");
