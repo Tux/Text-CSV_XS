@@ -1,8 +1,9 @@
-1.17	- 2015-04-22, H.Merijn Brand
+1.17	- 2015-04-24, H.Merijn Brand
     - Enable overruling $csv in csv ()
     - Allow encoding to be shortened to enc in csv ()
     - Allow filter to alter content
     - Add say (print with default eol => $\)
+    - Allow MS sep=; on first line (RT#100304)
 
 1.16	- 2015-03-02, H.Merijn Brand
     * filter made more useful (access to other fields)
