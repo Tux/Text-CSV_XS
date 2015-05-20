@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.17";
+$VERSION   = "1.18";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -71,6 +71,7 @@ my %def_attr = (
     allow_loose_escapes		=> 0,
     allow_unquoted_escape	=> 0,
     always_quote		=> 0,
+    quote_empty			=> 0,
     quote_space			=> 1,
     escape_null			=> 1,
     quote_binary		=> 1,
@@ -227,7 +228,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     quote_char			=>  0,
     escape_char			=>  1,
     sep_char			=>  2,
-    sep				=> 38,	# 38 .. 54
+    sep				=> 39,	# 39 .. 55
     binary			=>  3,
     keep_meta_info		=>  4,
     always_quote		=>  5,
@@ -243,6 +244,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     auto_diag			=> 24,
     diag_verbose		=> 33,
     quote_space			=> 25,
+    quote_empty			=> 37,
     escape_null			=> 31,
     quote_binary		=> 32,
     decode_utf8			=> 35,
@@ -388,6 +390,13 @@ sub quote_space
     @_ and $self->_set_attr_X ("quote_space", shift);
     $self->{quote_space};
     } # quote_space
+
+sub quote_empty
+{
+    my $self = shift;
+    @_ and $self->_set_attr_X ("quote_empty", shift);
+    $self->{quote_empty};
+    } # quote_empty
 
 sub escape_null
 {
@@ -1702,6 +1711,18 @@ this to be forced in C<CSV>,  nor any for the opposite, the default is true
 for safety.   You can exclude the space  from this trigger  by setting this
 attribute to 0.
 
+=item quote_empty
+X<quote_empty>
+
+ my $csv = Text::CSV_XS->new ({ quote_empty => 1 });
+         $csv->quote_empty (0);
+ my $f = $csv->quote_empty;
+
+By default the generated fields are quoted only if they I<need> to be.   An
+empty (defined) field does not need quotation. If you set this attribute to
+C<1> then I<empty> defined fields will be quoted.  (C<undef> fields are not
+quoted, see L</blank_is_undef>). See also L<C<always_quote>|/always_quote>.
+
 =item escape_null or quote_null (deprecated)
 X<escape_null>
 X<quote_null>
@@ -1830,6 +1851,7 @@ is equivalent to
      allow_loose_escapes   => 0,
      allow_unquoted_escape => 0,
      always_quote          => 0,
+     quote_empty           => 0,
      quote_space           => 1,
      escape_null           => 1,
      quote_binary          => 1,

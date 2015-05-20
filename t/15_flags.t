@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 212;
+use Test::More tests => 222;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -236,7 +236,7 @@ sub crnlsp
     }
 
 ok (1, "Testing always_quote");
-{   my $csv = Text::CSV_XS->new ({ always_quote => 0 });
+{   ok (my $csv = Text::CSV_XS->new ({ always_quote => 0 }), "new (aq => 0)");
     ok ($csv->combine (1..3),		"Combine");
     is ($csv->string, q{1,2,3},		"String");
     is ($csv->always_quote, 0,		"Attr 0");
@@ -251,7 +251,7 @@ ok (1, "Testing always_quote");
     }
 
 ok (1, "Testing quote_space");
-{   my $csv = Text::CSV_XS->new ({ quote_space => 1 });
+{   ok (my $csv = Text::CSV_XS->new ({ quote_space => 1 }), "new (qs => 1)");
     ok ($csv->combine (1, " ", 3),	"Combine");
     is ($csv->string, q{1," ",3},	"String");
     is ($csv->quote_space, 1,		"Attr 1");
@@ -264,3 +264,14 @@ ok (1, "Testing quote_space");
     is ($csv->string, q{1," ",3},	"String");
     is ($csv->quote_space, 1,		"Attr 1");
     }
+
+ok (1, "Testing quote_space");
+{   ok (my $csv = Text::CSV_XS->new (),			"new (default)");
+    is ($csv->quote_empty, 0,				"default = 0");
+    ok ($csv->combine (1, undef, "", " ", 2),		"combine qe = 0");
+    is ($csv->string, qq{1,,," ",2},			"string");
+    is ($csv->quote_empty (1), 1,			"enable quote_empty");
+    ok ($csv->combine (1, undef, "", " ", 2),		"combine qe = 1");
+    is ($csv->string, qq{1,,""," ",2},			"string");
+    }
+

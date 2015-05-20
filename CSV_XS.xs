@@ -84,8 +84,8 @@
 #define CACHE_ID_allow_unquoted_escape	8
 #define CACHE_ID_allow_whitespace	9
 #define CACHE_ID_blank_is_undef		10
-#define CACHE_ID_sep			38
-#define CACHE_ID_sep_len		37
+#define CACHE_ID_sep			39
+#define CACHE_ID_sep_len		38
 #define CACHE_ID_eol			11
 #define CACHE_ID_eol_len		12
 #define CACHE_ID_eol_is_cr		13
@@ -95,6 +95,7 @@
 #define CACHE_ID_empty_is_undef		23
 #define CACHE_ID_auto_diag		24
 #define CACHE_ID_quote_space		25
+#define CACHE_ID_quote_empty		37
 #define CACHE_ID__is_bound		26
 #define CACHE_ID__has_ahead		30
 #define CACHE_ID_escape_null		31
@@ -136,6 +137,8 @@ typedef struct {
     byte	has_error_input;
     byte	decode_utf8;
     byte	has_hooks;
+
+    byte	quote_empty;
 
     long	is_bound;
     ulng	recno;
@@ -392,8 +395,9 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
 	case CACHE_ID_binary:                csv->binary                = iv; break;
 	case CACHE_ID_keep_meta_info:        csv->keep_meta_info        = iv; break;
 	case CACHE_ID_always_quote:          csv->always_quote          = iv; break;
+	case CACHE_ID_quote_empty:           csv->quote_empty           = iv; break;
 	case CACHE_ID_quote_space:           csv->quote_space           = iv; break;
-	case CACHE_ID_escape_null:           csv->escape_null            = iv; break;
+	case CACHE_ID_escape_null:           csv->escape_null           = iv; break;
 	case CACHE_ID_quote_binary:          csv->quote_binary          = iv; break;
 	case CACHE_ID_decode_utf8:           csv->decode_utf8           = iv; break;
 	case CACHE_ID_allow_loose_escapes:   csv->allow_loose_escapes   = iv; break;
@@ -478,6 +482,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     _cache_show_byte ("allow_unquoted_escape",	csv->allow_unquoted_escape);
     _cache_show_byte ("allow_whitespace",	csv->allow_whitespace);
     _cache_show_byte ("always_quote",		csv->always_quote);
+    _cache_show_byte ("quote_empty",		csv->quote_empty);
     _cache_show_byte ("quote_space",		csv->quote_space);
     _cache_show_byte ("escape_null",		csv->escape_null);
     _cache_show_byte ("quote_binary",		csv->quote_binary);
@@ -597,6 +602,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 	csv->decode_utf8		= bool_opt ("decode_utf8");
 	csv->keep_meta_info		= bool_opt ("keep_meta_info");
 	csv->always_quote		= bool_opt ("always_quote");
+	csv->quote_empty		= bool_opt ("quote_empty");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
 	csv->escape_null		= bool_opt_def ("escape_null",   1);
 	csv->quote_binary		= bool_opt_def ("quote_binary", 1);
@@ -791,7 +797,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 	if (sv) {
 	    STRLEN  len;
 	    char   *ptr;
-	    int	    quoteMe = aq ? 1 : qm ? was_quoted (aTHX_ qm, i) : 0;
+	    int	    quoteMe;
 
 	    unless ((SvOK (sv) || (
 		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
@@ -801,6 +807,10 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		csv->utf8   = 1;
 		csv->binary = 1;
 		}
+
+	    quoteMe = aq ? 1 : qm ? was_quoted (aTHX_ qm, i)
+			 : len == 0 && csv->quote_empty ? 1 : 0;
+
 	    /* Do we need quoting? We do quote, if the user requested
 	     * (always_quote), if binary or blank characters are found
 	     * and if the string contains quote or escape characters.
