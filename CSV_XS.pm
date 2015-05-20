@@ -2986,7 +2986,7 @@ or a map
      $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
      }
 
-these special secuences are not recognized by  Text::CSV_XS  on parsing the
+these special sequences are not recognized by  Text::CSV_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
 
  while (my $row = $csv->getline ($io)) {
