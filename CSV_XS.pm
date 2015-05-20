@@ -2496,10 +2496,10 @@ reference to a glob (e.g. C<\*STDOUT>), or the glob itself (e.g. C<*STDOUT>).
  csv (in => sub { $sth->fetchrow_hashref }, out => "dump.csv",
       headers => $sth->{NAME_lc});
 
-When a  code-ref  is used,  the output is generated  per invocation,  so no
-buffering is involved.  This implies that there is no  size restriction  on
-the number of records.  The function ends  when the coderef returns a false
-value.
+When a code-ref is used for C<in>, the output is generated  per invocation,
+so no buffering is involved. This implies that there is no size restriction
+on the number of records. The C<csv> function ends when the coderef returns
+a false value.
 
 =head3 encoding
 X<encoding>
@@ -2968,6 +2968,33 @@ Dumping a database table can be simple as this (TIMTOWTDI):
  my $sth = $dbh->prepare ($sql); $sth->execute;
  csv (out => "foo.csv", in => sub { $sth->fetch            });
  csv (out => "foo.csv", in => sub { $sth->fetchrow_hashref });
+
+Note that this does not discriminate between "empty" values and NULL-values
+from the database,  as both will be the same empty field in CSV.  To enable
+distinction between the two, use L<C<quote_empty>|/quote_empty>.
+
+ csv (out => "foo.csv", in => sub { $sth->fetch }, quote_empty => 1);
+
+If the database import utility supports special sequences to insert C<NULL>
+values into the database,  like MySQL/MariaDB supports C<\N>,  use a filter
+or a map
+
+ csv (out => "foo.csv", in => sub { $sth->fetch },
+                     on_in => sub { $_ //= "\\N" for @$_[1] });
+
+ while (my $row = $sth->fetch) {
+     $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
+     }
+
+these special secuences are not recognized by  Text::CSV_XS  on parsing the
+CSV generated like this, but map and filter are your friends again
+
+ while (my $row = $csv->getline ($io)) {
+     $sth->execute (map { $_ eq "\\N" ? undef : $_ } @$row);
+     }
+
+ csv (in => "foo.csv", filter => { 1 => sub {
+     $sth->execute (map { $_ eq "\\N" ? undef : $_ } @{$_[1]}); 0; }});
 
 =head2 The examples folder
 

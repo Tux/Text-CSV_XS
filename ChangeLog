@@ -1,5 +1,6 @@
 1.18	- 2015-05-20, H.Merijn Brand
     * Add quote_empty attribute
+    * Add database NULL documentation
 
 1.17	- 2015-04-24, H.Merijn Brand
     * Enable overruling $csv in csv ()
