@@ -1018,6 +1018,7 @@ sub _csv_attr
 
     return {
 	csv  => $csv,
+	attr => { %attr },
 	fh   => $fh,
 	cls  => $cls,
 	in   => $in,
@@ -1143,7 +1144,9 @@ sub csv
 	    }
 	}
 
-    defined wantarray or return csv (in => $ref, headers => $hdrs);
+    defined wantarray or
+	return csv (%{$c->{attr}}, in => $ref, headers => $hdrs, %{$c->{attr}});
+
     return $ref;
     } # csv
 

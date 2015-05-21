@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 43;
+ use Test::More tests => 44;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -18,7 +18,7 @@ my $data =
     "foo,bar,baz\n".
     "1,2,3\n".
     "2,a b,\n";
-open  FH, ">", $file or die "_90test.csv: $!";
+open  FH, ">", $file or die "$file: $!";
 print FH $data;
 close FH;
 
@@ -163,4 +163,16 @@ eval {
     my $expect = [["a"],[1],["a"],[1],["a"],[1],["a"],[1],["a"],[1]];
     is_deeply ($csv->csv (in => $file),        $expect, "csv from object");
     is_deeply (csv (in => $file, csv => $csv), $expect, "csv from attribute");
+    }
+
+{   local *STDOUT;
+    my $ofn = "_STDOUT.csv";
+    open STDOUT, ">", $ofn;
+    csv (in => $file, quote_always => 1, fragment => "row=1-2",
+	on_in => sub { splice @{$_[1]}, 1; });
+    close STDOUT;
+    open my $oh, "<", $ofn;
+    is (do { local (@ARGV, $/) = $ofn; <> },
+	qq{"a"\r\n"1"\r\n}, "Chained csv call inherited attributes");
+    unlink $ofn;
     }

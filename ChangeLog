@@ -1,6 +1,7 @@
-1.18	- 2015-05-20, H.Merijn Brand
+1.18	- 2015-05-21, H.Merijn Brand
     * Add quote_empty attribute
     * Add database NULL documentation
+    * Inherit csv attributes in csv () when called in void context
 
 1.17	- 2015-04-24, H.Merijn Brand
     * Enable overruling $csv in csv ()
