@@ -16,4 +16,4 @@ perls /pro/bin/perl:/usr/bin/perl\
 :/media/Tux/perls/bin/tperl5.1[02468]*\
 :/media/Tux/perls/bin/tperl5.2[02468]*\
 :/media/Tux/perls/bin/tperl5.21.*\
-:/media/Tux/perls/bin/cperl5.2[01].*
+:/media/Tux/perls/bin/cperl5.2[012].*
