@@ -50,13 +50,15 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
 	],
     "Text-CSV_XS" => [
- 	"App-Framework",			# Questions
+	"ASNMTAP",				# Questions
+	"App-Framework",			# Questions
 	"Business-Shipping-DataTools",		# Questions and unmet prereqs
 	"CGI-Application-Framework",		# Unmet prerequisites
 	"CohortExplorer",			# Unmet prerequisites
 	"Connector",				# no Makefile.PL (in Annelidous)
 	"Finance-Bank-DE-NetBank",		# Module signatures
 	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
+	"Gtk2-Ex-Threads-DBI",			# distribution is incomplete
 	"Net-IPFromZip",			# missing zip file(s)
 	"RT-Extension-Assets-Import-CSV",	# Questions
 	"RT-View-ConciseSpreadsheet",		# Questions
