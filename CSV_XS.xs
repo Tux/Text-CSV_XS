@@ -757,6 +757,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 {
     int  i, n, bound = 0;
     int  aq  = (int)csv->always_quote;
+    int  qe  = (int)csv->quote_empty;
     int  kmi = (int)csv->keep_meta_info;
     AV  *qm = NULL;
 
@@ -803,39 +804,42 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
 		    )) continue;
 	    ptr = SvPV (sv, len);
-	    if (len && SvUTF8 (sv))  {
-		csv->utf8   = 1;
-		csv->binary = 1;
-		}
-
-	    quoteMe = aq ? 1 : qm ? was_quoted (aTHX_ qm, i)
-			 : len == 0 && csv->quote_empty ? 1 : 0;
-
-	    /* Do we need quoting? We do quote, if the user requested
-	     * (always_quote), if binary or blank characters are found
-	     * and if the string contains quote or escape characters.
-	     */
-	    if (!quoteMe &&
-	       ( quoteMe = (!SvIOK (sv) && !SvNOK (sv) && CH_QUOTE))) {
-		char	*ptr2;
-		STRLEN	 l;
-
-		for (ptr2 = ptr, l = len; l; ++ptr2, --l) {
-		    byte c = *ptr2;
-
-		    if ((CH_QUOTE          && c == CH_QUOTE)          ||
-			(CH_SEP            && c == CH_SEP)            ||
-			(csv->escape_char  && c == csv->escape_char)  ||
-			(csv->quote_binary ? c >= 0x7f && c <= 0xa0   ||
-					     c < csv->first_safe_char
-					   : c == CH_NL || c == CH_CR ||
-					     (csv->quote_space && (
-					     c == CH_SPACE || c == CH_TAB)))) {
-			/* Binary character */
-			break;
-			}
+	    if (len == 0)
+		quoteMe = aq ? 1 : qe ? 1 : qm ? was_quoted (aTHX_ qm, i) : 0;
+	    else {
+		if (SvUTF8 (sv))  {
+		    csv->utf8   = 1;
+		    csv->binary = 1;
 		    }
-		quoteMe = (l > 0);
+
+		quoteMe = aq ? 1 : qm ? was_quoted (aTHX_ qm, i) : 0;
+
+		/* Do we need quoting? We do quote, if the user requested
+		 * (always_quote), if binary or blank characters are found
+		 * and if the string contains quote or escape characters.
+		 */
+		if (!quoteMe &&
+		   ( quoteMe = (!SvIOK (sv) && !SvNOK (sv) && CH_QUOTE))) {
+		    char	*ptr2;
+		    STRLEN	 l;
+
+		    for (ptr2 = ptr, l = len; l; ++ptr2, --l) {
+			byte c = *ptr2;
+
+			if ((CH_QUOTE          && c == CH_QUOTE)          ||
+			    (CH_SEP            && c == CH_SEP)            ||
+			    (csv->escape_char  && c == csv->escape_char)  ||
+			    (csv->quote_binary ? c >= 0x7f && c <= 0xa0   ||
+						 c < csv->first_safe_char
+					       : c == CH_NL || c == CH_CR ||
+						 (csv->quote_space && (
+						 c == CH_SPACE || c == CH_TAB)))) {
+			    /* Binary character */
+			    break;
+			    }
+			}
+		    quoteMe = (l > 0);
+		    }
 		}
 	    if (quoteMe) {
 		CSV_PUT (csv, dst, CH_QUOTE);
