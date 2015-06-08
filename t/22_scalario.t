@@ -118,16 +118,16 @@ is ($csv->eof, 1,					"EOF");
 
 {   ok (my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" }), "new csv");
     my ($out1, $out2, @fld, $fh) = ("", "", qw( 1 aa 3.14 ahhrg ));
-    open $fh, ">", \$out1 or die "IO: $!\n";
+    open $fh, ">", \$out1 or die "IO: $!";
     ok ($csv->print ($fh, \@fld), "Add line $_") for 1..3;
     close $fh;
     $csv->bind_columns (\(@fld));
-    open $fh, ">", \$out2 or die "IO: $!\n";
+    open $fh, ">", \$out2 or die "IO: $!";
     ok ($csv->print ($fh, \@fld), "Add line $_") for 1..3;
     close $fh;
     is ($out2, $out1, "ignoring bound columns");
     $out2 = "";
-    open $fh, ">", \$out2 or die "IO: $!\n";
+    open $fh, ">", \$out2 or die "IO: $!";
     ok ($csv->print ($fh, undef), "Add line $_") for 1..3;
     close $fh;
     is ($out2, $out1, "using bound columns");
@@ -160,7 +160,7 @@ for ([  1, 1,    0, "\n"		],
      ) {
     my ($tst, $valid, $err, $str) = @$_;
     $io_str = $str;
-    open $io, "<:raw", \$io_str or die "IO: $!";
+    open $io, "<", \$io_str or die "IO: $!"; binmode $io;
     my $row = $csv->getline ($io);
     close $io;
     my @err  = $csv->error_diag;
@@ -170,19 +170,19 @@ for ([  1, 1,    0, "\n"		],
     }
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
-    open my $fh, "<", \qq{sep=;\n"a b";3\n} or die "IO: $!\n";
+    open my $fh, "<", \qq{sep=;\n"a b";3\n} or die "IO: $!";
     is_deeply ($csv->getline_all ($fh), [["a b", 3]], "valid sep=");
     is (($csv->error_diag)[0], 2012, "EOF");
     }
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
-    open my $fh, "<", \qq{sep=;\n"a b",3\n} or die "IO: $!\n";
+    open my $fh, "<", \qq{sep=;\n"a b",3\n} or die "IO: $!";
     is_deeply (eval { $csv->getline_all ($fh); }, [], "invalid sep=");
     is (($csv->error_diag)[0], 2023, "error");
     }
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
-    open my $fh, "<", \qq{sep=XX\n"a b"XX3\n} or die "IO: $!\n";
+    open my $fh, "<", \qq{sep=XX\n"a b"XX3\n} or die "IO: $!";
     is_deeply (eval { $csv->getline_all ($fh); },
 	[["a b", 3]], "multibyte sep=");
     is (($csv->error_diag)[0], 2012, "error");
@@ -190,7 +190,7 @@ for ([  1, 1,    0, "\n"		],
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
     # To check that it is *only* supported on the first line
-    open my $fh, "<", \qq{sep=;\n"a b";3\nsep=,\n"a b",3\n} or die "IO: $!\n";
+    open my $fh, "<", \qq{sep=;\n"a b";3\nsep=,\n"a b",3\n} or die "IO: $!";
     is_deeply ($csv->getline_all ($fh),
 	[["a b","3"],["sep=,"]], "sep= not on 1st line");
     is (($csv->error_diag)[0], 2023, "error");
@@ -198,7 +198,7 @@ for ([  1, 1,    0, "\n"		],
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
     my $sep = "#" x 80;
-    open my $fh, "<", \qq{sep=$sep\n"a b",3\n2,3\n} or die "IO: $!\n";
+    open my $fh, "<", \qq{sep=$sep\n"a b",3\n2,3\n} or die "IO: $!";
     my $r = $csv->getline_all ($fh);
     is_deeply ($r, [["sep=$sep"],["a b","3"],[2,3]], "sep= too long");
     is (($csv->error_diag)[0], 2012, "EOF");

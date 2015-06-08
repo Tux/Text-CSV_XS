@@ -76,8 +76,8 @@ for (@tests) {
     my ($c_out, $c_fh) = ("");
 
     if ($perlio eq "[binmode]") {
-	open $p_fh, ">:raw",    \$p_out or die "IO: $!\n";
-	open $c_fh, ">:raw",    \$c_out or die "IO: $!\n";
+	open $p_fh, ">",        \$p_out or die "IO: $!\n"; binmode $p_fh;
+	open $c_fh, ">",        \$c_out or die "IO: $!\n"; binmode $c_fh;
 	}
     else {
 	open $p_fh, ">$perlio", \$p_out or die "IO: $!\n";
@@ -122,7 +122,7 @@ for (@tests) {
 	my @read;
 
 	# Using getline ()
-	open my $fh, "<:raw", \$data or die "IO: $!\n";
+	open my $fh, "<", \$data or die "IO: $!\n"; binmode $fh;
 	$bc and $csv->bind_columns (\my ($f1, $f2, $f3));
 	is (scalar $csv->bind_columns, $bc, "Columns_bound?");
 	while (my $row = $csv->getline ($fh)) {
@@ -185,7 +185,7 @@ foreach my $new (0, 1, 2, 3) {
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
 
-	open $fh, "<:raw", \$expb or die "IO: $!\n";
+	open $fh, "<", \$expb or die "IO: $!\n"; binmode $fh;
 	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
 	close $fh;
 
@@ -194,7 +194,7 @@ foreach my $new (0, 1, 2, 3) {
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
 
-	open $fh, "<:raw", \$expb or die "IO: $!\n";
+	open $fh, "<", \$expb or die "IO: $!\n"; binmode $fh;
 	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
 	close $fh;
 	}
