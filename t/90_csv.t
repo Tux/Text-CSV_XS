@@ -128,6 +128,7 @@ close $fh;
 	is ($csv->eol,		"\r\n",	"default eol");
 	} # check
 
+    # Note that 5.6.x writes to a *file* named SCALAR(0x50414A10)
     open my $fh, ">", \my $out or die "IO: $!\n";
     csv (in => [[1,2]], out => $fh, on_in => \&check);
 
@@ -135,6 +136,7 @@ close $fh;
     $ad = 0;
     csv (in => [[1,2]], out => $fh, on_in => \&check, auto_diag => 0);
     }
+$[ < 5.008 and unlink glob "SCALAR(*)";
 
 # errors
 {   my $err;
