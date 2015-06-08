@@ -136,7 +136,7 @@ close $fh;
     $ad = 0;
     csv (in => [[1,2]], out => $fh, on_in => \&check, auto_diag => 0);
     }
-$[ < 5.008 and unlink glob "SCALAR(*)";
+$] < 5.008 and unlink glob "SCALAR(*)";
 
 # errors
 {   my $err;
