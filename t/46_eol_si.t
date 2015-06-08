@@ -42,10 +42,10 @@ foreach my $rs ("\n", "\r\n", "\r") {
 	foreach my $pass (0, 1) {
 	    if ($pass == 0) {
 		$file = "";
-		open $fh, ">", \$file;
+		open $fh, ">", \$file or die "IO: $!\n";
 		}
 	    else {
-		open $fh, "<", \$file;
+		open $fh, "<", \$file or die "IO: $!\n";
 		}
 
 	    foreach my $eol ("", "\r", "\n", "\r\n", "\n\r") {
@@ -105,24 +105,24 @@ SKIP: {
     {   local $\ = "#\r\n";
 	my $csv = Text::CSV_XS->new ();
 	$file = "";
-	open my $fh, ">", \$file;
+	open my $fh, ">", \$file or die "IO: $!\n";
 	$csv->print ($fh, [ "a", 1 ]);
-	close $fh;
-	open  $fh, "<", \$file;
+	close   $fh;
+	open    $fh, "<", \$file or die "IO: $!\n";
 	local $/;
 	is (<$fh>, "a,1#\r\n", "Strange \$\\");
-	close $fh;
+	close   $fh;
 	}
     {   local $\ = "#\r\n";
 	my $csv = Text::CSV_XS->new ({ eol => $\ });
 	$file = "";
-	open my $fh, ">", \$file;
+	open my $fh, ">", \$file or die "IO: $!\n";
 	$csv->print ($fh, [ "a", 1 ]);
-	close $fh;
-	open  $fh, "<", \$file;
+	close   $fh;
+	open    $fh, "<", \$file or die "IO: $!\n";
 	local $/;
 	is (<$fh>, "a,1#\r\n", "Strange \$\\ + eol");
-	close $fh;
+	close   $fh;
 	}
     }
 $/ = $def_rs;
@@ -132,10 +132,10 @@ ok (1, "Auto-detecting \\r");
     for (["\n", "\\n"], ["\r\n", "\\r\\n"], ["\r", "\\r"]) {
 	my ($eol, $s_eol) = @$_;
 	$file = "";
-	open my $fh, ">", \$file;
-	print $fh qq{@row$eol@row$eol@row$eol\x91};
-	close $fh;
-	open  $fh, "<", \$file;
+	open my $fh, ">", \$file or die "IO: $!\n";
+	print   $fh qq{@row$eol@row$eol@row$eol\x91};
+	close   $fh;
+	open    $fh, "<", \$file or die "IO: $!\n";
 	my $c = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 	is ($c->eol (),			"",		"default EOL");
 	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 1 $s_eol");
@@ -149,10 +149,10 @@ ok (1, "Auto-detecting \\r");
 ok (1, "Specific \\r test from tfrayner");
 {   $/ = "\r";
     $file = "";
-    open my $fh, ">", \$file;
-    print $fh qq{a,b,c$/}, qq{"d","e","f"$/};
-    close $fh;
-    open  $fh, "<", \$file;
+    open my $fh, ">", \$file or die "IO: $!\n";
+    print   $fh qq{a,b,c$/}, qq{"d","e","f"$/};
+    close   $fh;
+    open    $fh, "<", \$file or die "IO: $!\n";
     my $c = Text::CSV_XS->new ({ eol => $/ });
 
     my $row;
@@ -171,12 +171,12 @@ ok (1, "EOL undef");
 {   $/ = "\r";
     ok (my $csv = Text::CSV_XS->new ({ eol => undef }), "new csv with eol => undef");
     $file = "";
-    open my $fh, ">", \$file;
+    open my $fh, ">", \$file or die "IO: $!\n";
     ok ($csv->print ($fh, [1, 2, 3]), "print");
     ok ($csv->print ($fh, [4, 5, 6]), "print");
     close $fh;
 
-    open $fh, "<", \$file;
+    open $fh, "<", \$file or die "IO: $!\n";
     ok (my $row = $csv->getline ($fh),	"getline 1");
     is (scalar @$row, 5,		"# fields");
     is_deeply ($row, [ 1, 2, 34, 5, 6],	"fields 1");
@@ -189,7 +189,7 @@ foreach my $eol ("!", "!!", "!\n", "!\n!") {
     ok (1, "EOL $s_eol");
     ok (my $csv = Text::CSV_XS->new ({ eol => $eol }), "new csv with eol => $s_eol");
     $file = "";
-    open my $fh, ">", \$file;
+    open my $fh, ">", \$file or die "IO: $!\n";
     ok ($csv->print ($fh, [1, 2, 3]), "print");
     ok ($csv->print ($fh, [4, 5, 6]), "print");
     close $fh;
@@ -198,7 +198,7 @@ foreach my $eol ("!", "!!", "!\n", "!\n!") {
 	local $/ = $rs;
 	(my $s_rs = defined $rs ? $rs : "-- undef --") =~ s/\n/\\n/g;
 	ok (1, "with RS $s_rs");
-	open $fh, "<", \$file;
+	open $fh, "<", \$file or die "IO: $!\n";
 	ok (my $row = $csv->getline ($fh),	"getline 1");
 	is (scalar @$row, 3,			"# fields");
 	is_deeply ($row, [ 1, 2, 3],		"fields 1");
@@ -212,19 +212,19 @@ $/ = $def_rs;
 
 {   ok (my $csv = Text::CSV_XS->new,	"new for say");
     my $foo;
-    open my $fh, ">", \$foo;
+    open my $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
     is ($foo, "1,2$/");
     $foo = "";
     $csv->eol ("#");
-    open $fh, ">", \$foo;
+    open $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
     is ($foo, "1,2#");
     $foo = "";
     $csv->eol ("0");
-    open $fh, ">", \$foo;
+    open $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
     is ($foo, "1,20");

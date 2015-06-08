@@ -32,7 +32,7 @@ my $io;
 my $io_str = "";
 my $csv = Text::CSV_XS->new ();
 
-open  $io, ">", \$io_str or die "_22test.csv: $!";
+open  $io, ">", \$io_str or die "IO: $!";
 ok (!$csv->print ($io, ["abc", "def\007", "ghi"]), "print bad character");
 close $io;
 
@@ -52,15 +52,15 @@ for ( [  1, 1, 1, '""'				],
       ) {
     my ($tst, $validp, $validg, @arg, $row) = @$_;
 
-    open  $io, ">", \$io_str or die "_22test.csv: $!";
+    open  $io, ">", \$io_str or die "IO: $!";
     is ($csv->print ($io, \@arg), $validp||"", "$tst - print ()");
     close $io;
 
-    open  $io, ">", \$io_str or die "_22test.csv: $!";
+    open  $io, ">", \$io_str or die "IO: $!";
     print $io join ",", @arg;
     close $io;
 
-    open  $io, "<", \$io_str or die "_22test.csv: $!";
+    open  $io, "<", \$io_str or die "IO: $!";
     $row = $csv->getline ($io);
     unless ($validg) {
 	is ($row, undef, "$tst - false getline ()");
@@ -74,12 +74,10 @@ for ( [  1, 1, 1, '""'				],
 	}
     }
 
-unlink "_22test.csv";
-
 # This test because of a problem with DBD::CSV
 
 ok (1, "Tests for DBD::CSV");
-open  $io, ">", \$io_str or die "_22test.csv: $!";
+open  $io, ">", \$io_str or die "IO: $!";
 $csv->binary (1);
 $csv->eol    ("\r\n");
 ok ($csv->print ($io, [ "id", "name"			]), "Bad character");
@@ -99,14 +97,14 @@ id,name\015
 5\015
 CONTENTS
 
-open  $io, "<", \$io_str or die "_22test.csv: $!";
+open  $io, "<", \$io_str or die "IO: $!";
 my $content = do { local $/; <$io> };
 close $io;
 is ($content, $expected, "Content");
-open  $io, ">", \$io_str or die "_22test.csv: $!";
+open  $io, ">", \$io_str or die "IO: $!";
 print $io $content;
 close $io;
-open  $io, "<", \$io_str or die "_22test.csv: $!";
+open  $io, "<", \$io_str or die "IO: $!";
 
 my $fields;
 print "# Retrieving data\n";
@@ -120,16 +118,16 @@ is ($csv->eof, 1,					"EOF");
 
 {   ok (my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" }), "new csv");
     my ($out1, $out2, @fld, $fh) = ("", "", qw( 1 aa 3.14 ahhrg ));
-    open $fh, ">", \$out1;
+    open $fh, ">", \$out1 or die "IO: $!\n";
     ok ($csv->print ($fh, \@fld), "Add line $_") for 1..3;
     close $fh;
     $csv->bind_columns (\(@fld));
-    open $fh, ">", \$out2;
+    open $fh, ">", \$out2 or die "IO: $!\n";
     ok ($csv->print ($fh, \@fld), "Add line $_") for 1..3;
     close $fh;
     is ($out2, $out1, "ignoring bound columns");
     $out2 = "";
-    open $fh, ">", \$out2;
+    open $fh, ">", \$out2 or die "IO: $!\n";
     ok ($csv->print ($fh, undef), "Add line $_") for 1..3;
     close $fh;
     is ($out2, $out1, "using bound columns");
@@ -162,7 +160,7 @@ for ([  1, 1,    0, "\n"		],
      ) {
     my ($tst, $valid, $err, $str) = @$_;
     $io_str = $str;
-    open $io, "<", \$io_str or die "_22test.csv: $!";
+    open $io, "<:raw", \$io_str or die "IO: $!";
     my $row = $csv->getline ($io);
     close $io;
     my @err  = $csv->error_diag;
@@ -172,19 +170,19 @@ for ([  1, 1,    0, "\n"		],
     }
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
-    open my $fh, "<", \qq{sep=;\n"a b";3\n};
+    open my $fh, "<", \qq{sep=;\n"a b";3\n} or die "IO: $!\n";
     is_deeply ($csv->getline_all ($fh), [["a b", 3]], "valid sep=");
     is (($csv->error_diag)[0], 2012, "EOF");
     }
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
-    open my $fh, "<", \qq{sep=;\n"a b",3\n};
+    open my $fh, "<", \qq{sep=;\n"a b",3\n} or die "IO: $!\n";
     is_deeply (eval { $csv->getline_all ($fh); }, [], "invalid sep=");
     is (($csv->error_diag)[0], 2023, "error");
     }
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
-    open my $fh, "<", \qq{sep=XX\n"a b"XX3\n};
+    open my $fh, "<", \qq{sep=XX\n"a b"XX3\n} or die "IO: $!\n";
     is_deeply (eval { $csv->getline_all ($fh); },
 	[["a b", 3]], "multibyte sep=");
     is (($csv->error_diag)[0], 2012, "error");
@@ -192,7 +190,7 @@ for ([  1, 1,    0, "\n"		],
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
     # To check that it is *only* supported on the first line
-    open my $fh, "<", \qq{sep=;\n"a b";3\nsep=,\n"a b",3\n};
+    open my $fh, "<", \qq{sep=;\n"a b";3\nsep=,\n"a b",3\n} or die "IO: $!\n";
     is_deeply ($csv->getline_all ($fh),
 	[["a b","3"],["sep=,"]], "sep= not on 1st line");
     is (($csv->error_diag)[0], 2023, "error");
@@ -200,7 +198,7 @@ for ([  1, 1,    0, "\n"		],
 
 {   ok (my $csv = Text::CSV_XS->new, "new for sep=");
     my $sep = "#" x 80;
-    open my $fh, "<", \qq{sep=$sep\n"a b",3\n2,3\n};
+    open my $fh, "<", \qq{sep=$sep\n"a b",3\n2,3\n} or die "IO: $!\n";
     my $r = $csv->getline_all ($fh);
     is_deeply ($r, [["sep=$sep"],["a b","3"],[2,3]], "sep= too long");
     is (($csv->error_diag)[0], 2012, "EOF");

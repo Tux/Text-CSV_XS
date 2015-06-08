@@ -80,23 +80,23 @@ my @test = (
 my $todo = "";
 my $data = join "" => <DATA>;
 while (my ($spec, $expect) = splice @test, 0, 2) {
-    open my $io, "<", \$data;
+    open my $io, "<", \$data or die "IO: $!\n";
     my $aoa = $csv->fragment ($io, $spec);
     is_deeply ($aoa, $expect, "${todo}Fragment $spec");
     }
 
 {   $csv->column_names ("c3", "c4");
-    open my $io, "<", \$data;
+    open my $io, "<", \$data or die "IO: $!\n";
     is_deeply ($csv->fragment ($io, "cell=3,2-4,3"),
 	[ { c3 => 32, c4 => 33 }, { c3 => 42, c4 => 43 }], "Fragment to AoH");
     }
 {   $csv->column_names ("C1", "C2");
-    open my $io, "<", \$data;
+    open my $io, "<", \$data or die "IO: $!\n";
     is_deeply ($csv->fragment ($io, "row=3"),
 	[ { C1 => 31, C2 => 32 }], "Fragment row with headers to AoH");
     }
 {   $csv->column_names ("C1");
-    open my $io, "<", \$data;
+    open my $io, "<", \$data or die "IO: $!\n";
     is_deeply ($csv->fragment ($io, "col=2"),
 	[ map +{ C1 => $_.2 } => 1 .. 9 ], "Fragment col with headers to AoH");
     }

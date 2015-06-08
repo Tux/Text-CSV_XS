@@ -27,7 +27,8 @@ BEGIN {
     @tests = (
 	# $test                        $perlio             $data,      $encoding $expect_w
 	# ---------------------------- ------------------- ----------- --------- ----------
-	[ "Unicode  default",          "",                 $euro_ch,   "utf8",   "warn",    ],
+	[ "Unicode  default",          "",                 $euro_ch,   "utf8",
+					    exists $ENV{PERL_UNICODE} ? "no warn" : "warn", ],
 	[ "Unicode  binmode",          "[binmode]",        $euro_ch,   "utf8",   "warn",    ],
 	[ "Unicode  :utf8",            ":utf8",            $euro_ch,   "utf8",   "no warn", ],
 	[ "Unicode  :encoding(utf8)",  ":encoding(utf8)",  $euro_ch,   "utf8",   "no warn", ],
@@ -75,12 +76,12 @@ for (@tests) {
     my ($c_out, $c_fh) = ("");
 
     if ($perlio eq "[binmode]") {
-	open $p_fh, ">", \$p_out;  binmode $p_fh;
-	open $c_fh, ">", \$c_out;  binmode $c_fh;
+	open $p_fh, ">:raw",    \$p_out or die "IO: $!\n";
+	open $c_fh, ">:raw",    \$c_out or die "IO: $!\n";
 	}
     else {
-	open $p_fh, ">$perlio", \$p_out;
-	open $c_fh, ">$perlio", \$c_out;
+	open $p_fh, ">$perlio", \$p_out or die "IO: $!\n";
+	open $c_fh, ">$perlio", \$c_out or die "IO: $!\n";
 	}
 
     my $p_warn = "";
@@ -121,7 +122,7 @@ for (@tests) {
 	my @read;
 
 	# Using getline ()
-	open my $fh, "<", \$data;
+	open my $fh, "<:raw", \$data or die "IO: $!\n";
 	$bc and $csv->bind_columns (\my ($f1, $f2, $f3));
 	is (scalar $csv->bind_columns, $bc, "Columns_bound?");
 	while (my $row = $csv->getline ($fh)) {
@@ -175,7 +176,7 @@ foreach my $new (0, 1, 2, 3) {
 	my $x = $csv->string;
 	is ($csv->string, $exp8,		"string");
 
-	open my $fh, ">:encoding(utf8)", \(my $out = "");
+	open my $fh, ">:encoding(utf8)", \(my $out = "") or die "IO: $!\n";
 	ok ($csv->print ($fh, $data),		"print with UTF8 sep");
 	close $fh;
 
@@ -184,7 +185,7 @@ foreach my $new (0, 1, 2, 3) {
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
 
-	open $fh, "<", \$expb;
+	open $fh, "<:raw", \$expb or die "IO: $!\n";
 	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
 	close $fh;
 
@@ -193,7 +194,7 @@ foreach my $new (0, 1, 2, 3) {
 	ok ($csv->parse ($expb),		"parse");
 	is_deeply ([ $csv->fields ],    $data,	"fields");
 
-	open $fh, "<", \$expb;
+	open $fh, "<:raw", \$expb or die "IO: $!\n";
 	is_deeply ($csv->getline ($fh), $data,	"data from getline ()");
 	close $fh;
 	}

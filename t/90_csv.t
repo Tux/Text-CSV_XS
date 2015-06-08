@@ -13,12 +13,12 @@ BEGIN {
     require "t/util.pl";
     }
 
-my $file = "_90test.csv"; END { -f $file and unlink $file }
+my $tfn  = "_90test.csv"; END { -f $tfn and unlink $tfn }
 my $data =
     "foo,bar,baz\n".
     "1,2,3\n".
     "2,a b,\n";
-open  FH, ">", $file or die "$file: $!";
+open  FH, ">", $tfn or die "$tfn: $!";
 print FH $data;
 close FH;
 
@@ -33,34 +33,34 @@ my $aoh = [
     { foo => 2, bar => "a b", baz => "" },
     ];
 
-SKIP: for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
+SKIP: for my $io ([ $tfn, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
     $] < 5.008 && ref $io->[0] eq "SCALAR" and skip "No ScalarIO support for $]", 1;
-    open FH, "<", $file;
+    open FH, "<", $tfn or die "$tfn: $!\n";
     is_deeply (csv ({ in => $io->[0] }), $aoa, "AOA $io->[1]");
     close FH;
     }
 
-SKIP: for my $io ([ $file, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
+SKIP: for my $io ([ $tfn, "file" ], [ \*FH, "globref" ], [ *FH, "glob" ], [ \$data, "ScalarIO"] ) {
     $] < 5.008 && ref $io->[0] eq "SCALAR" and skip "No ScalarIO support for $]", 1;
-    open FH, "<", $file;
+    open FH, "<", $tfn or die "$tfn: $!\n";
     is_deeply (csv (in => $io->[0], headers => "auto"), $aoh, "AOH $io->[1]");
     close FH;
     }
 
-is_deeply (csv (in => $file, headers => { bar => "tender" }), [
+is_deeply (csv (in => $tfn, headers => { bar => "tender" }), [
     { foo => 1, tender => 2,     baz => 3 },
     { foo => 2, tender => "a b", baz => "" },
     ], "AOH with header map");
 
 my @aoa = @{$aoa}[1,2];
-is_deeply (csv (file => $file, headers  => "skip"),    \@aoa, "AOA skip");
-is_deeply (csv (file => $file, fragment => "row=2-3"), \@aoa, "AOA fragment");
+is_deeply (csv (file => $tfn, headers  => "skip"),    \@aoa, "AOA skip");
+is_deeply (csv (file => $tfn, fragment => "row=2-3"), \@aoa, "AOA fragment");
 
 if ($] >= 5.008001) {
-    is_deeply (csv (in => $file, encoding => "utf-8", headers => ["a", "b", "c"],
+    is_deeply (csv (in => $tfn, encoding => "utf-8", headers => ["a", "b", "c"],
 		    fragment => "row=2", sep_char => ","),
 	   [{ a => 1, b => 2, c => 3 }], "AOH headers fragment");
-    is_deeply (csv (in => $file, enc      => "utf-8", headers => ["a", "b", "c"],
+    is_deeply (csv (in => $tfn, enc      => "utf-8", headers => ["a", "b", "c"],
 		    fragment => "row=2", sep_char => ","),
 	   [{ a => 1, b => 2, c => 3 }], "AOH headers fragment");
     }
@@ -69,31 +69,31 @@ else {
     ok (1, q{This perl does not support open with "<:encoding(...)"});
     }
 
-ok (csv (in => $aoa, out => $file), "AOA out file");
-is_deeply (csv (in => $file), $aoa, "AOA parse out");
+ok (csv (in => $aoa, out => $tfn), "AOA out file");
+is_deeply (csv (in => $tfn), $aoa, "AOA parse out");
 
-ok (csv (in => $aoh, out => $file, headers => "auto"), "AOH out file");
-is_deeply (csv (in => $file, headers => "auto"), $aoh, "AOH parse out");
+ok (csv (in => $aoh, out => $tfn, headers => "auto"), "AOH out file");
+is_deeply (csv (in => $tfn, headers => "auto"), $aoh, "AOH parse out");
 
-ok (csv (in => $aoh, out => $file, headers => "skip"), "AOH out file no header");
-is_deeply (csv (in => $file, headers => [keys %{$aoh->[0]}]),
+ok (csv (in => $aoh, out => $tfn, headers => "skip"), "AOH out file no header");
+is_deeply (csv (in => $tfn, headers => [keys %{$aoh->[0]}]),
     $aoh, "AOH parse out no header");
 
 my $idx = 0;
 sub getrowa { return $aoa->[$idx++]; }
 sub getrowh { return $aoh->[$idx++]; }
 
-ok (csv (in => \&getrowa, out => $file), "out from CODE/AR");
-is_deeply (csv (in => $file), $aoa, "data from CODE/AR");
+ok (csv (in => \&getrowa, out => $tfn), "out from CODE/AR");
+is_deeply (csv (in => $tfn), $aoa, "data from CODE/AR");
 
 $idx = 0;
-ok (csv (in => \&getrowh, out => $file, headers => \@hdr), "out from CODE/HR");
-is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
+ok (csv (in => \&getrowh, out => $tfn, headers => \@hdr), "out from CODE/HR");
+is_deeply (csv (in => $tfn, headers => "auto"), $aoh, "data from CODE/HR");
 
 $idx = 0;
-ok (csv (in => \&getrowh, out => $file), "out from CODE/HR (auto headers)");
-is_deeply (csv (in => $file, headers => "auto"), $aoh, "data from CODE/HR");
-unlink $file;
+ok (csv (in => \&getrowh, out => $tfn), "out from CODE/HR (auto headers)");
+is_deeply (csv (in => $tfn, headers => "auto"), $aoh, "data from CODE/HR");
+unlink $tfn;
 
 # Basic "key" checks
 SKIP: {
@@ -105,14 +105,14 @@ SKIP: {
     }
 
 # Some "out" checks
-open my $fh, ">", $file;
+open my $fh, ">", $tfn or die "$tfn: $!\n";
 csv (in => [{ a => 1 }], out => $fh);
 csv (in => [{ a => 1 }], out => $fh, headers => undef);
 csv (in => [{ a => 1 }], out => $fh, headers => "auto");
 csv (in => [{ a => 1 }], out => $fh, headers => ["a"]);
 csv (in => [{ b => 1 }], out => $fh, headers => { b => "a" });
 close $fh;
-open  $fh, "<", $file;
+open  $fh, "<", $tfn or die "$tfn: $!\n";
 is (do {local $/; <$fh>}, "a\r\n1\r\n" x 5, "AoH to out");
 close $fh;
 
@@ -128,7 +128,7 @@ close $fh;
 	is ($csv->eol,		"\r\n",	"default eol");
 	} # check
 
-    open my $fh, ">", \my $out;
+    open my $fh, ">", \my $out or die "IO: $!\n";
     csv (in => [[1,2]], out => $fh, on_in => \&check);
 
     # Check that I can overrule auto_diag
@@ -151,7 +151,7 @@ eval {
     $] >= 5.008                &&
     $Config{useperlio} eq "define" or skip "No scalar ref in this perl", 4;
     my $out = "";
-    open my $fh, ">", \$out;
+    open my $fh, ">", \$out or die "IO: $!\n";
     ok (csv (in => [[ 1, 2, 3 ]], out => $fh), "out to fh to scalar ref");
     is ($out, "1,2,3\r\n",	"Scalar out");
     $out = "";
@@ -161,17 +161,17 @@ eval {
 
 {   my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
     my $expect = [["a"],[1],["a"],[1],["a"],[1],["a"],[1],["a"],[1]];
-    is_deeply ($csv->csv (in => $file),        $expect, "csv from object");
-    is_deeply (csv (in => $file, csv => $csv), $expect, "csv from attribute");
+    is_deeply ($csv->csv (in => $tfn),        $expect, "csv from object");
+    is_deeply (csv (in => $tfn, csv => $csv), $expect, "csv from attribute");
     }
 
 {   local *STDOUT;
     my $ofn = "_STDOUT.csv";
-    open STDOUT, ">", $ofn;
-    csv (in => $file, quote_always => 1, fragment => "row=1-2",
+    open STDOUT, ">", $ofn or die "$ofn: $!\n";
+    csv (in => $tfn, quote_always => 1, fragment => "row=1-2",
 	on_in => sub { splice @{$_[1]}, 1; });
     close STDOUT;
-    open my $oh, "<", $ofn;
+    open my $oh, "<", $ofn or die "$ofn: $!\n";
     is (do { local (@ARGV, $/) = $ofn; <> },
 	qq{"a"\r\n"1"\r\n}, "Chained csv call inherited attributes");
     unlink $ofn;

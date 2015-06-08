@@ -11,6 +11,7 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
+my $tfn = "_76test.csv"; END { -f $tfn and unlink $tfn; }
 my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" });
 
 my $fh;
@@ -30,12 +31,12 @@ untie $bar;
 is_deeply ([$csv->fields], \@foo,	"column_names ()");
 
 tie $foo, "Foo";
-open  $fh, ">", "_76test.csv";
+open  $fh, ">", $tfn or die "$tfn: $!\n";
 ok ($csv->print ($fh, $foo),		"print with unused magic scalar");
 close $fh;
 untie $foo;
 
-open  $fh, "<", "_76test.csv";
+open  $fh, "<", $tfn or die "$tfn: $!\n";
 is_deeply ($csv->getline ($fh), \@foo,	"Content read-back");
 close $fh;
 
@@ -44,7 +45,7 @@ ok ($csv->column_names ($foo),		"column_names () from magic");
 untie $foo;
 is_deeply ([$csv->column_names], \@foo,	"column_names ()");
 
-open  $fh, "<", "_76test.csv";
+open  $fh, "<", $tfn or die "$tfn: $!\n";
 tie $bar, "Bar";
 ok ($csv->bind_columns (\$bar, \my ($f0, $f1, $f2)), "bind");
 ok ($csv->getline ($fh),		"fetch with magic");
@@ -53,8 +54,6 @@ is_deeply ([$bar,$f0,$f1,$f2], \@foo,	"columns fetched on magic");
 is ($csv->bind_columns (undef), undef,	"bind column clear");
 untie $bar;
 close $fh;
-
-unlink "_76test.csv";
 
 {   package Foo;
     use strict;

@@ -11,7 +11,9 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
-open my $fh, ">", "_75test.csv";
+my $tfn = "_75hashref.csv"; END { -f $tfn and unlink $tfn; }
+
+open my $fh, ">", $tfn or die "$tfn: $!\n";
 print $fh <<EOC;
 code,name,price,description
 1,Dress,240.00,"Evening gown"
@@ -46,7 +48,7 @@ is ($csv->error_diag () + 0, 3002, "error code");
 ok ($csv->column_names ("name", "code"), "column_names (list)");
 is_deeply ([ $csv->column_names ], [ "name", "code" ], "well set");
 
-open  $fh, "<", "_75test.csv";
+open $fh, "<", $tfn or die "$tfn: $!\n";
 my $row;
 ok ($row = $csv->getline ($fh),		"getline headers");
 is ($row->[0], "code",			"Header line");
@@ -76,7 +78,7 @@ eval { $csv->bind_columns ([undef]) };
 is ($csv->error_diag () + 0, 3004,		"legal header defenition");
 
 my @bcr = \($code, $name, $price, $desc);
-open $fh, "<", "_75test.csv";
+open $fh, "<", $tfn or die "$tfn: $!\n";
 ok ($row = $csv->getline ($fh),			"getline headers");
 ok ($csv->bind_columns (@bcr),			"Bind columns");
 ok ($csv->column_names ($row),			"column_names from array_ref");
@@ -109,7 +111,7 @@ is ($csv->error_diag () + 0, 3006,		"cannot read all fields");
 
 close $fh;
 
-open $fh, "<", "_75test.csv";
+open $fh, "<", $tfn or die "$tfn: $!\n";
 
 is ($csv->column_names (undef), undef,		"reset column headers");
 is ($csv->bind_columns (undef), undef,		"reset bound columns");
@@ -122,7 +124,7 @@ is_deeply ($hr, { "\cAUNDEF\cA" => "code", "" => "name", "name" => "description"
 
 close $fh;
 
-open $fh, ">", "_75test.csv";
+open $fh, ">", $tfn or die "$tfn: $!\n";
 $hr = { c_foo => 1, foo => "poison", zebra => "Of course" };
 is ($csv->column_names (undef), undef,		"reset column headers");
 ok ($csv->column_names (sort keys %$hr),	"set column names");
@@ -132,7 +134,7 @@ ok ($csv->print_hr ($fh, $hr),			"print_hr");
 ok ($csv->print ($fh, []),			"empty print");
 close $fh;
 ok ($csv->keep_meta_info (1),			"keep meta info");
-open $fh, "<", "_75test.csv";
+open $fh, "<", $tfn or die "$tfn: $!\n";
 ok ($csv->column_names ($csv->getline ($fh)),	"get column names");
 is_deeply ($csv->getline_hr ($fh), $hr,		"compare to written hr");
 
@@ -140,5 +142,3 @@ is_deeply ($csv->getline_hr ($fh),
     { c_foo => "", foo => undef, zebra => undef },	"compare to written hr");
 is ($csv->is_missing (1), 1,			"No col 1");
 close $fh;
-
-unlink "_75test.csv";

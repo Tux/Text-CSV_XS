@@ -39,6 +39,7 @@ my %exp = map {
     ($_ => $x);
     } @pat;
 my $line = ["", undef, "0\n", "", "\0\0\n0"];
+my $tfn = "_41test.csv"; END { -f $tfn and unlink $tfn; }
 
 my $csv = Text::CSV_XS->new ({
     eol			=> "\n",
@@ -50,12 +51,10 @@ my $csv = Text::CSV_XS->new ({
 ok ($csv->combine (@$line), "combine [ ... ]");
 is ($csv->string, qq{,,"0\n",,""0"0\n0"\n}, "string");
 
-open my $fh, ">", "__41test.csv" or die $!;
+open my $fh, ">", $tfn or die "$tfn: $!\n";
 binmode $fh;
 
-for (@pat) {
-    ok ($csv->print ($fh, [ $_ ]), "print $exp{$_}");
-    }
+ok ($csv->print ($fh, [ $_ ]), "print $exp{$_}") for @pat;
 
 $csv->always_quote (1);
 
@@ -63,7 +62,7 @@ ok ($csv->print ($fh, $line), "print [ ... ]");
 
 close $fh;
 
-open $fh, "<", "__41test.csv" or die $!;
+open $fh, "<", $tfn or die "$tfn: $!\n";
 binmode $fh;
 
 foreach my $pat (@pat) {
@@ -73,9 +72,8 @@ foreach my $pat (@pat) {
 
 is_deeply ($csv->getline ($fh), $line, "read [ ... ]");
 
-close $fh;
-
-unlink "__41test.csv";
+close  $fh;
+unlink $tfn;
 
 $csv = Text::CSV_XS->new ({
     eol			=> "\n",
@@ -88,7 +86,7 @@ $csv = Text::CSV_XS->new ({
 ok ($csv->combine (@$line), "combine [ ... ]");
 is ($csv->string, qq{,,"0\n",,"\0\0\n0"\n}, "string");
 
-open $fh, ">", "__41test.csv" or die $!;
+open $fh, ">", $tfn or die "$tfn: $!\n";
 binmode $fh;
 
 for (@pat) {
@@ -101,7 +99,7 @@ ok ($csv->print ($fh, $line), "print [ ... ]");
 
 close $fh;
 
-open $fh, "<", "__41test.csv" or die $!;
+open $fh, "<", $tfn or die "$tfn: $!\n";
 binmode $fh;
 
 foreach my $pat (@pat) {
@@ -112,5 +110,3 @@ foreach my $pat (@pat) {
 is_deeply ($csv->getline ($fh), $line, "read [ ... ]");
 
 close $fh;
-
-unlink "__41test.csv";

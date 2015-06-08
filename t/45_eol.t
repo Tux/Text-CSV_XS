@@ -15,6 +15,7 @@ $| = 1;
 
 # Embedded newline tests
 
+my $tfn = "_45eol.csv"; END { -f $tfn and unlink $tfn; }
 my $def_rs = $/;
 
 foreach my $rs ("\n", "\r\n", "\r") {
@@ -26,10 +27,10 @@ foreach my $rs ("\n", "\r\n", "\r") {
 	foreach my $pass (0, 1) {
 	    my $fh;
 	    if ($pass == 0) {
-		open $fh, ">", "_eol.csv";
+		open $fh, ">", $tfn or die "$tfn: $!\n";
 		}
 	    else {
-		open $fh, "<", "_eol.csv";
+		open $fh, "<", $tfn or die "$tfn: $!\n";
 		}
 
 	    foreach my $eol ("", "\r", "\n", "\r\n", "\n\r") {
@@ -69,7 +70,7 @@ foreach my $rs ("\n", "\r\n", "\r") {
 	    close $fh;
 	    }
 
-	unlink "_eol.csv";
+	unlink $tfn;
 	}
     }
 $/ = $def_rs;
@@ -89,25 +90,25 @@ SKIP: {
     $] < 5.008 and skip "\$\\ tests don't work in perl 5.6.x and older", 2;
     {   local $\ = "#\r\n";
 	my $csv = Text::CSV_XS->new ();
-	open  my $fh, ">", "_eol.csv";
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
 	$csv->print ($fh, [ "a", 1 ]);
-	close $fh;
-	open  $fh, "<", "_eol.csv";
+	close   $fh;
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
 	local $/;
 	is (<$fh>, "a,1#\r\n", "Strange \$\\");
-	close $fh;
-	unlink "_eol.csv";
+	close   $fh;
+	unlink  $tfn;
 	}
     {   local $\ = "#\r\n";
 	my $csv = Text::CSV_XS->new ({ eol => $\ });
-	open  my $fh, ">", "_eol.csv";
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
 	$csv->print ($fh, [ "a", 1 ]);
-	close $fh;
-	open  $fh, "<", "_eol.csv";
+	close   $fh;
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
 	local $/;
 	is (<$fh>, "a,1#\r\n", "Strange \$\\ + eol");
-	close $fh;
-	unlink "_eol.csv";
+	close   $fh;
+	unlink  $tfn;
 	}
     }
 $/ = $def_rs;
@@ -116,27 +117,27 @@ ok (1, "Auto-detecting \\r");
 {   my @row = qw( a b c ); local $" = ",";
     for (["\n", "\\n"], ["\r\n", "\\r\\n"], ["\r", "\\r"]) {
 	my ($eol, $s_eol) = @$_;
-	open  my $fh, ">", "_eol.csv";
-	print $fh qq{@row$eol@row$eol@row$eol\x91};
-	close $fh;
-	open  $fh, "<", "_eol.csv";
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
+	print   $fh qq{@row$eol@row$eol@row$eol\x91};
+	close   $fh;
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
 	my $c = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 	is ($c->eol (),			"",		"default EOL");
 	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 1 $s_eol");
 	is ($c->eol (),	$eol eq "\r" ? "\r" : "",	"EOL");
 	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 2 $s_eol");
 	is_deeply ($c->getline ($fh),	[ @row ],	"EOL 3 $s_eol");
-	close $fh;
-	unlink "_eol.csv";
+	close   $fh;
+	unlink  $tfn;
 	}
     }
 
 ok (1, "Specific \\r test from tfrayner");
 {   $/ = "\r";
-    open  my $fh, ">", "_eol.csv";
-    print $fh qq{a,b,c$/}, qq{"d","e","f"$/};
-    close $fh;
-    open  $fh, "<", "_eol.csv";
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh qq{a,b,c$/}, qq{"d","e","f"$/};
+    close   $fh;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     my $c = Text::CSV_XS->new ({ eol => $/ });
 
     my $row;
@@ -147,25 +148,25 @@ ok (1, "Specific \\r test from tfrayner");
     ok ($row = $c->getline ($fh),	"getline 2");
     is (scalar @$row, 3,		"# fields");
     is ("@$row", "d e f",		"fields 2");
-    close $fh;
-    unlink "_eol.csv";
+    close   $fh;
+    unlink  $tfn;
     }
 $/ = $def_rs;
 
 ok (1, "EOL undef");
 {   $/ = "\r";
     ok (my $csv = Text::CSV_XS->new ({ eol => undef }), "new csv with eol => undef");
-    open  my $fh, ">", "_eol.csv";
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
     ok ($csv->print ($fh, [1, 2, 3]), "print");
     ok ($csv->print ($fh, [4, 5, 6]), "print");
-    close $fh;
+    close   $fh;
 
-    open  $fh, "<", "_eol.csv";
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     ok (my $row = $csv->getline ($fh),	"getline 1");
     is (scalar @$row, 5,		"# fields");
     is_deeply ($row, [ 1, 2, 34, 5, 6],	"fields 1");
-    close $fh;
-    unlink "_eol.csv";
+    close   $fh;
+    unlink  $tfn;
     }
 $/ = $def_rs;
 
@@ -177,7 +178,7 @@ foreach my $eol ("!", "!!", "!\n", "!\n!", "!!!!!!!!", "!!!!!!!!!!",
     $s_eol =~ s/\0/\\0/g;
     ok (1, "EOL $s_eol");
     ok (my $csv = Text::CSV_XS->new ({ eol => $eol }), "new csv with eol => $s_eol");
-    open  my $fh, ">", "_eol.csv";
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
     ok ($csv->print ($fh, [1, 2, 3]), "print");
     ok ($csv->print ($fh, [4, 5, 6]), "print");
     close $fh;
@@ -186,7 +187,7 @@ foreach my $eol ("!", "!!", "!\n", "!\n!", "!!!!!!!!", "!!!!!!!!!!",
 	local $/ = $rs;
 	(my $s_rs = defined $rs ? $rs : "-- undef --") =~ s/\n/\\n/g;
 	ok (1, "with RS $s_rs");
-	open $fh, "<", "_eol.csv";
+	open $fh, "<", $tfn or die "$tfn: $!\n";
 	ok (my $row = $csv->getline ($fh),	"getline 1");
 	is (scalar @$row, 3,			"field count");
 	is_deeply ($row, [ 1, 2, 3],		"fields 1");
@@ -195,11 +196,11 @@ foreach my $eol ("!", "!!", "!\n", "!\n!", "!!!!!!!!", "!!!!!!!!!!",
 	is_deeply ($row, [ 4, 5, 6],		"fields 2");
 	close $fh;
 	}
-    unlink "_eol.csv";
+    unlink $tfn;
     }
 $/ = $def_rs;
 
-{   open my $fh, "<", "files/macosx.csv" or die "Ouch $!";
+{   open my $fh, "<", "files/macosx.csv" or die "files/macosx.csv: $!";
     ok (1, "MacOSX exported file");
     ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, binary => 1 }), "new csv");
     ok (my $row = $csv->getline ($fh),	"getline 1");
@@ -262,17 +263,16 @@ $/ = $def_rs;
     ok ($csv->parse (qq{1,"2--3",4,--}),		",eol");
     is_deeply ([$csv->fields], [ "1", "2--3", 4, "" ],	"parse");
 
-    open  my $fh, ">", "_eol.csv";
-    print $fh qq{1,"2--3",4--};
-    print $fh qq{1,"2--3",4,--};
-    print $fh qq{1,"2--3",4};
-    close $fh;
-    open $fh, "<", "_eol.csv";
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh qq{1,"2--3",4--};
+    print   $fh qq{1,"2--3",4,--};
+    print   $fh qq{1,"2--3",4};
+    close   $fh;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     is_deeply ($csv->getline ($fh), [ "1", "2--3", 4 ],		"getline eol");
     is_deeply ($csv->getline ($fh), [ "1", "2--3", 4, "" ],	"getline ,eol");
     is_deeply ($csv->getline ($fh), [ "1", "2--3", 4 ],		"getline eof");
-    close $fh;
-    unlink "_eol.csv";
+    close   $fh;
     }
 
 1;

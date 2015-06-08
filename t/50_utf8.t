@@ -20,6 +20,7 @@ BEGIN {
     require "t/util.pl";
     }
 
+my $tfn = "_50test.csv"; END { -f $tfn and unlink $tfn; }
 # No binary => 1, as UTF8 is supposed to be allowed without it
 my $csv = Text::CSV_XS->new ({
     always_quote   => 1,
@@ -106,10 +107,10 @@ ok ($csv->parse (qq{,1,"f\x{014d}o, 3""56",,bar,\r\n}), "example from XS");
 is_deeply ([$csv->fields], [
     "", 1, qq{f\x{014d}o, 3"56}, "", "bar", "" ], "content");
 
-open  my $fh, ">:encoding(utf-8)", "_50test.csv";
-print $fh "euro\n\x{20ac}\neuro\n";
-close $fh;
-open     $fh, "<:encoding(utf-8)", "_50test.csv";
+open my $fh, ">:encoding(utf-8)", $tfn or die "$tfn: $!\n";
+print   $fh "euro\n\x{20ac}\neuro\n";
+close   $fh;
+open    $fh, "<:encoding(utf-8)", $tfn or die "$tfn: $!\n";
 
 SKIP: {
     my $out = "";
@@ -132,5 +133,4 @@ SKIP: {
     is ($out,			"euro",		"euro");
     ok (!$isutf8->(1),				"not utf8");
     close $fh;
-    unlink "_50test.csv";
     }

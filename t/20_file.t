@@ -15,11 +15,13 @@ $|  = 1;
 $/  = "\n";
 $\  = undef;
 
+my $tfn = "_20test.csv"; END { -f $tfn and unlink $tfn; }
+
 my $csv = Text::CSV_XS->new ();
 
 my $UTF8 = ($ENV{LANG} || "C").($ENV{LC_ALL} || "C") =~ m/utf-?8/i ? 1 : 0;
 
-open  FH, ">", "_20test.csv" or die "_20test.csv: $!";
+open  FH, ">", $tfn or die "$tfn: $!";
 ok (!$csv->print (*FH, ["abc", "def\007", "ghi"]), "print bad character");
 close FH;
 
@@ -39,15 +41,15 @@ for ( [  1, 1, 1, '""'				],
       ) {
     my ($tst, $validp, $validg, @arg, $row) = @$_;
 
-    open  FH, ">", "_20test.csv" or die "_20test.csv: $!";
+    open  FH, ">", $tfn or die "$tfn: $!";
     is ($csv->print (*FH, \@arg), $validp||"", "$tst - print ()");
     close FH;
 
-    open  FH, ">", "_20test.csv" or die "_20test.csv: $!";
+    open  FH, ">", $tfn or die "$tfn: $!";
     print FH join ",", @arg;
     close FH;
 
-    open  FH, "<", "_20test.csv" or die "_20test.csv: $!";
+    open  FH, "<", $tfn or die "$tfn: $!";
     $row = $csv->getline (*FH);
     unless ($validg) {
 	is ($row, undef, "$tst - false getline ()");
@@ -61,12 +63,12 @@ for ( [  1, 1, 1, '""'				],
 	}
     }
 
-unlink "_20test.csv";
+unlink $tfn;
 
 # This test because of a problem with DBD::CSV
 
 ok (1, "Tests for DBD::CSV");
-open  FH, ">", "_20test.csv" or die "_20test.csv: $!";
+open  FH, ">", $tfn or die "$tfn: $!";
 $csv->binary (1);
 $csv->eol    ("\r\n");
 ok ($csv->print (*FH, [ "id", "name"			]), "Bad character");
@@ -86,14 +88,14 @@ id,name\015
 5\015
 CONTENTS
 
-open  FH, "<", "_20test.csv" or die "_20test.csv: $!";
+open  FH, "<", $tfn or die "$tfn: $!";
 my $content = do { local $/; <FH> };
 close FH;
 is ($content, $expected, "Content");
-open  FH, ">", "_20test.csv" or die "_20test.csv: $!";
+open  FH, ">", $tfn or die "$tfn: $!";
 print FH $content;
 close FH;
-open  FH, "<", "_20test.csv" or die "_20test.csv: $!";
+open  FH, "<", $tfn or die "$tfn: $!";
 
 my $fields;
 print "# Retrieving data\n";
@@ -131,10 +133,11 @@ for ([  1, 1,    0, "\n"		],
      [ 22, 0, 2025, qq{"+\r\r+"\r}	],
      ) {
     my ($tst, $valid, $err, $str) = @$_;
-    open  FH, ">", "_20test.csv" or die "_20test.csv: $!";
+    my $raw = $] < 5.008 ? "" : ":raw";
+    open  FH, ">$raw", $tfn or die "$tfn: $!";
     print FH $str;
     close FH;
-    open  FH, "<", "_20test.csv" or die "_20test.csv: $!";
+    open  FH, "<$raw", $tfn or die "$tfn: $!";
     my $row = $csv->getline (*FH);
     close FH;
     my @err  = $csv->error_diag;
@@ -146,5 +149,3 @@ for ([  1, 1,    0, "\n"		],
 	is ($err[0], $err, "Error expected $err");
 	}
     }
-
-unlink "_20test.csv";

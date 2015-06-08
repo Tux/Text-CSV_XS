@@ -207,15 +207,15 @@ foreach my $spec (
     }
 
 my $diag_file = "_$$.out";
-open  EH,     ">&STDERR";
-open  STDERR, ">", $diag_file;
+open  EH,     ">&STDERR"      or die "STDERR: $!\n";
+open  STDERR, ">", $diag_file or die "STDERR: $!\n";
 # Trigger extra output for longer quote and sep
 is ($csv->sep   ("--"), "--", "set longer sep");
 is ($csv->quote ("^^"), "^^", "set longer quote");
 ok ($csv->_cache_diag,	"Cache debugging output");
 close STDERR;
-open  STDERR, ">&EH";
-open  EH,     "<", $diag_file;
+open  STDERR, ">&EH"          or die "STDERR: $!\n";
+open  EH,     "<", $diag_file or die "STDERR: $!\n";
 is (scalar <EH>, "CACHE:\n",	"Title");
 while (<EH>) {
     like ($_, qr{^  \w+\s+[0-9a-f]+:(?:".*"|\s*[0-9]+)$}, "Content");

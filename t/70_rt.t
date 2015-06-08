@@ -12,8 +12,7 @@ BEGIN {
     require "t/util.pl";
     }
 
-my $csv_file = "_70test.csv";
-END { unlink $csv_file }
+my $tfn = "_70test.csv"; END { unlink $tfn, "_$tfn"; }
 
 my ($rt, %input, %desc);
 while (<DATA>) {
@@ -46,11 +45,11 @@ while (<DATA>) {
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
     $rt = 21530; # getline () does not return documented value at end of
     		 # filehandle IO::Handle  was first released with perl 5.00307
-    open my $fh, ">", $csv_file;
-    print $fh @{$input{$rt}};
-    close $fh;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh @{$input{$rt}};
+    close   $fh;
     ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
-    open  $fh, "<", $csv_file;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     my $row;
     foreach my $line (1 .. 5) {
 	ok ($row = $csv->getline ($fh), "getline $line");
@@ -59,8 +58,8 @@ while (<DATA>) {
 	}
     ok (eof $fh, "EOF");
     is ($row = $csv->getline ($fh), undef, "getline EOF");
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=21530
@@ -97,12 +96,12 @@ while (<DATA>) {
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=34474
     $rt = 34474; # wish: integrate row-as-hashref feature from Parse::CSV
-    open my $fh, ">$csv_file";
-    print $fh @{$input{$rt}};
-    close $fh;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh @{$input{$rt}};
+    close   $fh;
     ok (my $csv = Text::CSV_XS->new (),		"RT-$rt: $desc{$rt}");
     is ($csv->column_names, undef,		"No headers yet");
-    open  $fh, "<$csv_file";
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     my $row;
     ok ($row = $csv->getline ($fh),		"getline headers");
     is ($row->[0], "code",			"Header line");
@@ -114,24 +113,24 @@ while (<DATA>) {
 	ok (exists $hr->{name},			"Line has a name field");
 	like ($hr->{name}, qr/^[A-Z][a-z]+$/,	"Name");
 	}
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=38960
     $rt = 38960; # print () on invalid filehandle warns and returns success
-    open my $fh, ">", $csv_file;
-    print $fh "";
-    close $fh;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh "";
+    close   $fh;
     my $err = "";
-    open  $fh, "<", $csv_file;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     ok (my $csv = Text::CSV_XS->new (),		"RT-$rt: $desc{$rt}");
     local $SIG{__WARN__} = sub { $err = "Warning" };
     ok (!$csv->print ($fh, [ 1 .. 4 ]),		"print ()");
     is ($err, "Warning",			"IO::Handle triggered a warning");
     is (($csv->error_diag)[0], 2200,		"error 2200");
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=40507
@@ -157,18 +156,18 @@ while (<DATA>) {
     SKIP: {
 	$] < 5.008002 and skip "UTF8 unreliable in perl $]", 6;
 
-	open my $fh, ">", $csv_file;
-	print $fh @{$input{$rt}};
-	close $fh;
+	open my $fh, ">:raw", $tfn or die "$tfn: $!\n";
+	print   $fh @{$input{$rt}};
+	close   $fh;
 	my ($sep, $quo) = ("\x14", "\xfe");
 	chop ($_ = "$_\x{20ac}") for $sep, $quo;
 	ok (my $csv = Text::CSV_XS->new ({ binary => 1, sep_char => $sep }), "RT-$rt: $desc{$rt}");
 	ok ($csv->quote_char ($quo), "Set quote_char");
-	open  $fh, "<", $csv_file;
+	open    $fh, "<:raw", $tfn or die "$tfn: $!\n";
 	ok (my $row = $csv->getline ($fh),	"getline () with decode sep/quo");
 	$csv->error_diag ();
-	close $fh;
-	unlink $csv_file;
+	close  $fh;
+	unlink $tfn;
 	is_deeply ($row, [qw( DOG CAT WOMBAT BANDERSNATCH )], "fields ()");
 	ok ($csv->parse ($input{$rt}[1]),	"parse () with decoded sep/quo");
 	is_deeply ([ $csv->fields ], [ 0..3 ],	"fields ()");
@@ -177,24 +176,24 @@ while (<DATA>) {
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=43927
     $rt = 43927; # Is bind_columns broken or am I using it wrong?
-    open my $fh, ">", $csv_file;
-    print $fh @{$input{$rt}};
-    close $fh;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh @{$input{$rt}};
+    close   $fh;
     my ($c1, $c2);
     ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "RT-$rt: $desc{$rt}");
     ok ($csv->bind_columns (\$c1, \$c2), "bind columns");
-    open  $fh, "<", $csv_file;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     ok (my $row = $csv->getline ($fh), "getline () with bound columns");
     $csv->error_diag ();
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
     is_deeply ($row, [], "should return empty ref");
     is_deeply ([ $c1, $c2], [ 1, 2 ], "fields ()");
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=44402
     $rt = 44402; # Unexpected results parsing tab-separated spaces
-    open my $fh, ">", $csv_file;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
     my @ws = ("", " ", "  ");
     foreach my $f1 (@ws) {
 	foreach my $f2 (@ws) {
@@ -209,7 +208,7 @@ while (<DATA>) {
     ok ($csv = Text::CSV_XS->new ({
 	sep_char => "\t",
 	}), "RT-$rt: $desc{$rt}");
-    open  $fh, "<", $csv_file;
+    open $fh, "<", $tfn or die "$tfn: $!\n";
     while (my $row = $csv->getline ($fh)) {
 	ok ($row, "getline $.");
 	my @row = @$row;
@@ -223,7 +222,7 @@ while (<DATA>) {
 	sep_char         => "\t",
 	allow_whitespace => 1,
 	}), "RT-$rt: $desc{$rt}");
-    open  $fh, "<", $csv_file;
+    open $fh, "<", $tfn or die "$tfn: $!\n";
     while (my $row = $csv->getline ($fh)) {
 	ok ($row, "getline $.");
 	my @row = @$row;
@@ -231,8 +230,8 @@ while (<DATA>) {
 	is ($row[$_], "", "field $_ empty") for 0..2;
 	}
     ok ($csv->eof, "read complete file");
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
 
     ok ($csv->parse ("  \t  \t  "), "parse ()");
     is_deeply ([$csv->fields],["","",""],"3 empty fields");
@@ -240,9 +239,9 @@ while (<DATA>) {
 
 {   # Detlev reported an inconsistent difference between _XS and _PP
     $rt = "x1000";
-    open my $fh, ">", $csv_file;
-    print $fh @{$input{$rt}};
-    close $fh;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh @{$input{$rt}};
+    close   $fh;
     my ($c1, $c2);
     ok (my $csv = Text::CSV_XS->new ({
 	binary      => 1, 
@@ -251,7 +250,7 @@ while (<DATA>) {
 	escape_char => undef,
 	quote_char  => undef,
 	binary      => 1 }), "RT-$rt: $desc{$rt}");
-    open  $fh, "<", $csv_file;
+    open $fh, "<", $tfn or die "$tfn: $!\n";
     for (1 .. 4) {
 	ok (my $row = $csv->getline ($fh), "getline ()");
 	is (scalar @$row, 27, "Line $_: 27 columns");
@@ -261,26 +260,26 @@ while (<DATA>) {
 	is (scalar @$row,  1, "Line $_:  1 column");
 	}
     $csv->error_diag ();
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
     }
 
 {   # Ruslan reported a case where only Text::CSV_PP misbehaved (regression test)
     $rt = "x1001";
-    open my $fh, ">", $csv_file;
-    print $fh @{$input{$rt}};
-    close $fh;
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh @{$input{$rt}};
+    close   $fh;
     my ($c1, $c2);
     ok (my $csv = Text::CSV_XS->new (), "RT-$rt: $desc{$rt}");
-    open  $fh, "<", $csv_file;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
     for (1 .. 4) {
 	ok (my $row = $csv->getline ($fh), "getline ($_)");
 	is (scalar @$row, 2, "Line $_: 2 columns");
 	my @exp = $_ <= 2 ? ("0", "A") : ("A", "0");
 	is_deeply ($row, \@exp, "@exp");
 	}
-    close $fh;
-    unlink $csv_file;
+    close  $fh;
+    unlink $tfn;
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=58356
@@ -308,19 +307,19 @@ while (<DATA>) {
 	    auto_diag   => 1,
 	    }), "RT-$rt: $desc{$rt} - eol = $s_eol (1)");
 
-	open my $fh, ">", $csv_file;
-	print $fh join $eol => qw( "a":"b" "c":"d" "e":"x!y" "!!":"z" );
-	close $fh;
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
+	print   $fh join $eol => qw( "a":"b" "c":"d" "e":"x!y" "!!":"z" );
+	close   $fh;
 
-	open  $fh, "<", $csv_file;
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
 	is_deeply ($csv->getline ($fh), [ "a",  "b"   ], "Pair 1");
 	is_deeply ($csv->getline ($fh), [ "c",  "d"   ], "Pair 2");
 	is_deeply ($csv->getline ($fh), [ "e",  "x!y" ], "Pair 3");
 	is_deeply ($csv->getline ($fh), [ "!!", "z"   ], "Pair 4");
 	is ($csv->getline ($fh), undef, "no more pairs");
 	ok ($csv->eof, "EOF");
-	close $fh;
-	unlink $csv_file;
+	close  $fh;
+	unlink $tfn;
 	}
 
     # And secondly with eol as method only if not one of the defaults
@@ -336,30 +335,31 @@ while (<DATA>) {
 	    }), "RT-$rt: $desc{$rt} - eol = $s_eol (2)");
 	$eol eq "!" and $csv->eol ($eol);
 
-	open my $fh, ">", $csv_file;
-	print $fh join $eol => qw( "a":"b" "c":"d" "e":"x!y" "!!":"z" );
-	close $fh;
-	open  $fh, "<", $csv_file;
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
+	print   $fh join $eol => qw( "a":"b" "c":"d" "e":"x!y" "!!":"z" );
+	close   $fh;
+
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
 	is_deeply ($csv->getline ($fh), [ "a",  "b"   ], "Pair 1");
 	is_deeply ($csv->getline ($fh), [ "c",  "d"   ], "Pair 2");
 	is_deeply ($csv->getline ($fh), [ "e",  "x!y" ], "Pair 3");
 	is_deeply ($csv->getline ($fh), [ "!!", "z"   ], "Pair 4");
 	is ($csv->getline ($fh), undef, "no more pairs");
 	ok ($csv->eof, "EOF");
-	close $fh;
-	unlink $csv_file;
+	close  $fh;
+	unlink $tfn;
 	}
     }
 
 {   # http://rt.cpan.org/Ticket/Display.html?id=74216
     $rt = "74216"; # setting 'eol' affects global input record separator
 
-    open my $fh, ">", $csv_file;
-    print $fh @{$input{$rt}};
-    close $fh;
+    open  my $fh, ">", $tfn or die "$tfn: $!\n";
+    print    $fh @{$input{$rt}};
+    close    $fh;
 
     my $slurp_check = sub {
-	open $fh, "<", $csv_file;
+	open $fh, "<", $tfn or die "$tfn: $!\n";
 	is (scalar @{[<$fh>]}, 4);
 	close $fh;
 	};
@@ -367,14 +367,14 @@ while (<DATA>) {
     $slurp_check->();
 
     my $crlf = "\015\012";
-    open my $fhx, ">", "_$csv_file";
-    print $fhx "a,b,c" . $crlf . "1,2,3" . $crlf;
-    close $fhx;
-    open  $fhx, "<", "_$csv_file";
+    open my $fhx, ">", "_$tfn" or die "_$tfn: $!\n";
+    print   $fhx "a,b,c" . $crlf . "1,2,3" . $crlf;
+    close   $fhx;
+    open    $fhx, "<", "_$tfn" or die "_$tfn: $!\n";
     my $csv = Text::CSV_XS->new ({ eol => $crlf });
     is_deeply ($csv->getline ($fhx), [qw( a b c )]);
-    close $fhx;
-    unlink "_$csv_file";
+    close  $fhx;
+    unlink "_$tfn";
 
     $slurp_check->();
 
@@ -422,7 +422,7 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 	    my $enc  = Encode::encode ("UTF-8", $data);
 	    my $exp  = qq{1,"$enc"};
 	    my $out  = "";
-	    open my $fh, ">:encoding(utf-8)", \$out;
+	    open my $fh, ">:encoding(utf-8)", \$out or die "IO: $!\n";
 	    $csv->print ($fh, [ 1, $data ]);
 	    close $fh;
 
