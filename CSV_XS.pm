@@ -212,7 +212,7 @@ sub new
 	return;
 	}
     if (defined $self->{callbacks} && ref $self->{callbacks} ne "HASH") {
-	warn "The 'callbacks' attribute is set but is not a hash: ignored\n";
+	carp "The 'callbacks' attribute is set but is not a hash: ignored\n";
 	$self->{callbacks} = undef;
 	}
 
@@ -534,7 +534,7 @@ sub types
     my $self = shift;
     if (@_) {
 	if (my $types = shift) {
-	    $self->{_types} = join "", map { chr $_ } @{$types};
+	    $self->{_types} = join "", map { chr } @{$types};
 	    $self->{types}  = $types;
 	    }
 	else {
@@ -555,7 +555,7 @@ sub callbacks
 	my $cb;
 	my $hf = 0x00;
 	if (defined $_[0]) {
-	    grep { !defined $_ } @_ and croak ($self->SetDiag (1004));
+	    grep { !defined } @_ and croak ($self->SetDiag (1004));
 	    $cb = @_ == 1 && ref $_[0] eq "HASH" ? shift
 	        : @_ % 2 == 0                    ? { @_ }
 	        : croak ($self->SetDiag (1004));
@@ -3001,8 +3001,8 @@ CSV generated like this, but map and filter are your friends again
 
 =head2 The examples folder
 
-For more extended examples, see the F<examples/> C<1>) sub-directory in the
-original distribution or the git repository C<2>).
+For more extended examples, see the F<examples/> C<1>. sub-directory in the
+original distribution or the git repository C<2>.
 
  1. https://github.com/Tux/Text-CSV_XS/tree/master/examples
  2. https://github.com/Tux/Text-CSV_XS

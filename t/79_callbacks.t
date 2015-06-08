@@ -24,22 +24,22 @@ my $tfn = "_79test.csv"; END { -f $tfn and unlink $tfn; }
     is ($warn, undef,			"no warn for undef");
     is ($csv->callbacks, $warn = undef,	"no callbacks for undef");
     ok ($csv = Text::CSV_XS->new ({ callbacks => 0	}),	"new");
-    like ($warn, qr{: ignored$},	"warn for 0");
+    like ($warn, qr{: ignored\n},	"warn for 0");
     is ($csv->callbacks, $warn = undef,	"no callbacks for 0");
     ok ($csv = Text::CSV_XS->new ({ callbacks => 1	}),	"new");
-    like ($warn, qr{: ignored$},	"warn for 1");
+    like ($warn, qr{: ignored\n},	"warn for 1");
     is ($csv->callbacks, $warn = undef,	"no callbacks for 1");
     ok ($csv = Text::CSV_XS->new ({ callbacks => \1	}),	"new");
-    like ($warn, qr{: ignored$},	"warn for \\1");
+    like ($warn, qr{: ignored\n},	"warn for \\1");
     is ($csv->callbacks, $warn = undef,	"no callbacks for \\1");
     ok ($csv = Text::CSV_XS->new ({ callbacks => ""	}),	"new");
-    like ($warn, qr{: ignored$},	"warn for ''");
+    like ($warn, qr{: ignored\n},	"warn for ''");
     is ($csv->callbacks, $warn = undef,	"no callbacks for ''");
     ok ($csv = Text::CSV_XS->new ({ callbacks => []	}),	"new");
-    like ($warn, qr{: ignored$},	"warn for []");
+    like ($warn, qr{: ignored\n},	"warn for []");
     is ($csv->callbacks, $warn = undef,	"no callbacks for []");
     ok ($csv = Text::CSV_XS->new ({ callbacks => sub {}	}),	"new");
-    like ($warn, qr{: ignored$},	"warn for sub {}");
+    like ($warn, qr{: ignored\n},	"warn for sub {}");
     is ($csv->callbacks, $warn = undef,	"no callbacks for sub {}");
     }
 
