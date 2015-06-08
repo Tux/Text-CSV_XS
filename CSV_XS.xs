@@ -829,11 +829,11 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 			if ((CH_QUOTE          && c == CH_QUOTE)          ||
 			    (CH_SEP            && c == CH_SEP)            ||
 			    (csv->escape_char  && c == csv->escape_char)  ||
-			    (csv->quote_binary ? c >= 0x7f && c <= 0xa0   ||
-						 c < csv->first_safe_char
-					       : c == CH_NL || c == CH_CR ||
+			    (csv->quote_binary ? (c >= 0x7f && c <= 0xa0) ||
+						  c < csv->first_safe_char
+					       :  c == CH_NL || c == CH_CR ||
 						 (csv->quote_space && (
-						 c == CH_SPACE || c == CH_TAB)))) {
+						  c == CH_SPACE || c == CH_TAB)))) {
 			    /* Binary character */
 			    break;
 			    }
