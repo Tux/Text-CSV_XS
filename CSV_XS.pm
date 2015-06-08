@@ -1112,13 +1112,13 @@ sub csv
 		}
 	    }
 	$csv->callbacks (after_parse => sub {
-	    my ($csv, $r) = @_;
-	    foreach my $fld (sort keys %f) {
-		local $_ = $r->[$fld - 1];
+	    my ($CSV, $ROW) = @_; # lexical sub-variables in caps
+	    foreach my $FLD (sort keys %f) {
+		local $_ = $ROW->[$FLD - 1];
 		local %_;
-		@hdr and @_{@hdr} = @$r;
-		$f{$fld}->($csv, $r) or return \"skip";
-		$r->[$fld - 1] = $_;
+		@hdr and @_{@hdr} = @$ROW;
+		$f{$FLD}->($CSV, $ROW) or return \"skip";
+		$ROW->[$FLD - 1] = $_;
 		}
 	    });
 	}
