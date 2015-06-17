@@ -600,7 +600,6 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->binary			= bool_opt ("binary");
 	csv->decode_utf8		= bool_opt ("decode_utf8");
-	csv->keep_meta_info		= bool_opt ("keep_meta_info");
 	csv->always_quote		= bool_opt ("always_quote");
 	csv->quote_empty		= bool_opt ("quote_empty");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
@@ -616,6 +615,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
 
 	csv->auto_diag			= num_opt ("auto_diag");
 	csv->diag_verbose		= num_opt ("diag_verbose");
+	csv->keep_meta_info		= num_opt ("keep_meta_info");
 
 	sv_cache = newSVpvn ((char *)csv, sizeof (csv_t));
 	csv->cache = (byte *)SvPVX (sv_cache);

@@ -430,7 +430,12 @@ sub decode_utf8
 sub keep_meta_info
 {
     my $self = shift;
-    @_ and $self->_set_attr_X ("keep_meta_info", shift);
+    if (@_) {
+	my $v = shift;
+	!defined $v || $v eq "" and $v = 0;
+	$v =~ m/^[0-9]/ or $v = lc $v eq "false" ? 0 : 1; # true/truth = 1
+	$self->_set_attr_X ("keep_meta_info", $v);
+	}
     $self->{keep_meta_info};
     } # keep_meta_info
 
