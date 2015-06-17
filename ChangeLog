@@ -1,6 +1,7 @@
 1.19	- 2015-06-17, H.Merijn Brand
     * Guard tests against $PERL_UNICODE
     * Numeric options were sometimes interpreted as boolean
+    * Safer meta_info use
 
 1.18	- 2015-05-22, H.Merijn Brand
     * Add quote_empty attribute

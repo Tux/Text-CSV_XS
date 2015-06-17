@@ -769,7 +769,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 
     if (kmi >= 10) {
 	SV **svp;
-	if ((svp = hv_fetchs (csv->self, "_FFLAGS", FALSE)) && *svp) {
+	if ((svp = hv_fetchs (csv->self, "_FFLAGS", FALSE)) && _is_arrayref (*svp)) {
 	    AV *avp = (AV *)SvRV (*svp);
 	    if (avp && av_len (avp) >= n)
 		qm = avp;
