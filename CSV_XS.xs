@@ -175,7 +175,7 @@ typedef struct {
 #define bool_opt(o) bool_opt_def (o, 0)
 #define num_opt_def(o,d) \
     (((svp = hv_fetchs (self, o, FALSE)) && *svp) ? SvIV   (*svp) : d)
-#define num_opt(o) bool_opt_def (o, 0)
+#define num_opt(o)  num_opt_def  (o, 0)
 
 typedef struct {
     int   xs_errno;
