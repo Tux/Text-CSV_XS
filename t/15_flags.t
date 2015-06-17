@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 222;
+use Test::More tests => 225;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -127,10 +127,13 @@ sub crnlsp
     is ($csv->string,
 	qq{1,,, , ,f,g,"h""h",h\xe9lp,h\xeblp},		"string 1");
     ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"}), "Parse");
-    ok ($csv->keep_meta_info (11),			"keep meta on out");
+    is ($csv->keep_meta_info (11), 11,			"keep meta on out");
     ok ($csv->combine (@f),				"combine");
     is ($csv->string,
 	qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"},	"string 11");
+    ok ($csv->parse  (qq{1,,"1193-1",4,"",,6}),		"parse under 11");
+    ok ($csv->combine ($csv->fields),			"combine");
+    is ($csv->string, qq{1,,"1193-1",4,"",,6},		"return same");
     }
 
 {   my $csv = Text::CSV_XS->new ({ keep_meta_info => 1, eol => "\r" });
