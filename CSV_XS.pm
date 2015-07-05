@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.19";
+$VERSION   = "1.20";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -1169,15 +1169,21 @@ Text::CSV_XS - comma-separated values manipulation routines
 
  # Functional interface
  use Text::CSV_XS qw( csv );
- # Read whole file in memory as array of arrays
- my $aoa = csv (in => "data.csv");
+
+ # Read whole file in memory
+ my $aoa = csv (in => "data.csv");    # as array of array
+ my $aoh = csv (in => "data.csv",
+                headers => "auto");   # as array of hash
+
  # Write array of arrays as csv file
  csv (in => $aoa, out => "file.csv", sep_char=> ";");
+
 
  # Object interface
  use Text::CSV_XS;
 
  my @rows;
+ # Read/parse CSV
  my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
  open my $fh, "<:encoding(utf8)", "test.csv" or die "test.csv: $!";
  while (my $row = $csv->getline ($fh)) {
@@ -1186,9 +1192,9 @@ Text::CSV_XS - comma-separated values manipulation routines
      }
  close $fh;
 
- $csv->eol ("\r\n");
+ # and write as CSV
  open $fh, ">:encoding(utf8)", "new.csv" or die "new.csv: $!";
- $csv->print ($fh, $_) for @rows;
+ $csv->say ($fh, $_) for @rows;
  close $fh or die "new.csv: $!";
 
 =head1 DESCRIPTION
