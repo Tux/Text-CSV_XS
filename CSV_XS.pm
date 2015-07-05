@@ -1178,6 +1178,9 @@ Text::CSV_XS - comma-separated values manipulation routines
  # Write array of arrays as csv file
  csv (in => $aoa, out => "file.csv", sep_char=> ";");
 
+ # Only show lines where "code" is odd
+ csv (in => "data.csv", filter => { code => sub { $_ % 2 }});
+
 
  # Object interface
  use Text::CSV_XS;
