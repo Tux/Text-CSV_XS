@@ -1787,13 +1787,13 @@ record (unless quotation was added because of other reasons).
     quote_space    => 0,
     });
 
- my $row = $csv->parse (q{1,,"", ," ",f,"g","h""h",hëlp,"hélp"});
+ my $row = $csv->parse (q{1,,"", ," ",f,"g","h""h",help,"help"});
 
  $csv->print (*STDOUT, \@row);
- # 1,,, , ,f,g,"h""h",h?lp,h?lp
+ # 1,,, , ,f,g,"h""h",help,help
  $csv->keep_meta_info (11);
  $csv->print (*STDOUT, \@row);
- # 1,,"", ," ",f,"g","h""h",h?lp,"h?lp"
+ # 1,,"", ," ",f,"g","h""h",help,"help"
 
 =item verbatim
 X<verbatim>

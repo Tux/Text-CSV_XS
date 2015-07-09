@@ -1,5 +1,6 @@
-1.20	- 2015-07-05, H.Merijn Brand
+1.20	- 2015-07-09, H.Merijn Brand
     * Use "say" in synopsis
+    * Remove needless special characters in doc section
 
 1.19	- 2015-06-17, H.Merijn Brand
     * Guard tests against $PERL_UNICODE
