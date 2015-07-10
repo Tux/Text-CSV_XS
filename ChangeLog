@@ -2,6 +2,7 @@
     * Use "say" in synopsis
     * Remove needless special characters in doc section
     * Change doc =item attributes for new to =head for index
+    * Add known_attributes function/method
 
 1.19	- 2015-06-17, H.Merijn Brand
     * Guard tests against $PERL_UNICODE

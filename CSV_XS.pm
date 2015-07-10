@@ -73,8 +73,8 @@ my %def_attr = (
     always_quote		=> 0,
     quote_empty			=> 0,
     quote_space			=> 1,
-    escape_null			=> 1,
     quote_binary		=> 1,
+    escape_null			=> 1,
     keep_meta_info		=> 0,
     verbatim			=> 0,
     types			=> undef,
@@ -147,6 +147,11 @@ sub _check_sanity
 
     return _unhealthy_whitespace ($self, $self->{allow_whitespace});
     } # _check_sanity
+
+sub known_attributes
+{
+    sort grep !m/^_/ => "sep", "quote", keys %def_attr;
+    } # known_attributes
 
 sub new
 {
@@ -245,8 +250,8 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     diag_verbose		=> 33,
     quote_space			=> 25,
     quote_empty			=> 37,
-    escape_null			=> 31,
     quote_binary		=> 32,
+    escape_null			=> 31,
     decode_utf8			=> 35,
     _has_hooks			=> 36,
     _is_bound			=> 26,	# 26 .. 29
@@ -1381,8 +1386,6 @@ are described by the (optional) hash ref C<\%attr>.
 
 The following attributes are available:
 
-=over 4
-
 =head3 eol
 X<eol>
 
@@ -1740,6 +1743,17 @@ empty (defined) field does not need quotation. If you set this attribute to
 C<1> then I<empty> defined fields will be quoted.  (C<undef> fields are not
 quoted, see L</blank_is_undef>). See also L<C<always_quote>|/always_quote>.
 
+=head3 quote_binary
+X<quote_binary>
+
+ my $csv = Text::CSV_XS->new ({ quote_binary => 1 });
+         $csv->quote_binary (0);
+ my $f = $csv->quote_binary;
+
+By default,  all "unsafe" bytes inside a string cause the combined field to
+be quoted.  By setting this attribute to C<0>, you can disable that trigger
+for bytes >= C<0x7F>.
+
 =head3 escape_null or quote_null (deprecated)
 X<escape_null>
 X<quote_null>
@@ -1752,17 +1766,6 @@ By default, a C<NULL> byte in a field would be escaped. This option enables
 you to treat the  C<NULL>  byte as a simple binary character in binary mode
 (the C<< { binary => 1 } >> is set).  The default is true.  You can prevent
 C<NULL> escapes by setting this attribute to C<0>.
-
-=head3 quote_binary
-X<quote_binary>
-
- my $csv = Text::CSV_XS->new ({ quote_binary => 1 });
-         $csv->quote_binary (0);
- my $f = $csv->quote_binary;
-
-By default,  all "unsafe" bytes inside a string cause the combined field to
-be quoted.  By setting this attribute to C<0>, you can disable that trigger
-for bytes >= C<0x7F>.
 
 =head3 keep_meta_info
 X<keep_meta_info>
@@ -1842,7 +1845,7 @@ X<callbacks>
 
 See the L</Callbacks> section below.
 
-=back
+=head3 accessors
 
 To sum it up,
 
@@ -1897,6 +1900,17 @@ fail reason available through the L</error_diag> method.
 L</error_diag> will return a string like
 
  "INI - Unknown attribute 'ecs_char'"
+
+=head2 known_attributes
+X<known_attributes>
+
+ @attr = Text::CSV_CS->known_attributes;
+ @attr = Text::CSV_CS::known_attributes;
+ @attr = $csv->known_attributes;
+
+This method will return an ordered list of all the supported  attributes as
+described above.   This can be useful for knowing what attributes are valid
+in classes that use or extend Text::CSV_XS.
 
 =head2 print
 X<print>
