@@ -13,8 +13,7 @@ I really do not care about mixed spaces and tabs in (leading) whitespace
 
 Perl::Tidy will help getting the code in shape, but as all software, it
 is not perfect. You can find my preferences for these in
-[.perltidy](https://github.com/Tux/Release-Checklist/blob/master/.perltidyrc)
-and
+[.perltidy](https://github.com/Tux/Release-Checklist/blob/master/.perltidyrc) and
 [.perlcritic](https://github.com/Tux/Release-Checklist/blob/master/.perlcriticrc).
 
 # Requirements
