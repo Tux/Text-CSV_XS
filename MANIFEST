@@ -1,6 +1,7 @@
 ChangeLog		Change history
 README			Docs
 MANIFEST		This file
+CONTRIBUTING.md		Guide in how to contribute
 CSV_XS.pm		Perl part of the module
 CSV_XS.xs		C part of the module
 Makefile.PL		Makefile generator
