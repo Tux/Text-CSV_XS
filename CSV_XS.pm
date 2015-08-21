@@ -587,7 +587,7 @@ sub callbacks
     $self->{callbacks};
     } # callbacks
 
-# erro_diag
+# error_diag
 #
 #   If (and only if) an error occurred, this function returns a code that
 #   indicates the reason of failure
