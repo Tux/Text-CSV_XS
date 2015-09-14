@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 183;
+use Test::More tests => 184;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -16,9 +16,9 @@ ok ($csv = Text::CSV_XS->new,				"new ()");
 is ($csv->quote_char,			'"',		"quote_char");
 is ($csv->quote,			'"',		"quote");
 is ($csv->escape_char,			'"',		"escape_char");
-is ($csv->sep_char,			',',		"sep_char");
-is ($csv->sep,				',',		"sep");
-is ($csv->eol,				'',		"eol");
+is ($csv->sep_char,			",",		"sep_char");
+is ($csv->sep,				",",		"sep");
+is ($csv->eol,				"",		"eol");
 is ($csv->always_quote,			0,		"always_quote");
 is ($csv->binary,			0,		"binary");
 is ($csv->keep_meta_info,		0,		"keep_meta_info");
@@ -45,11 +45,12 @@ ok ($csv->combine (@fld),				"combine");
 is ($csv->string,
     qq{"txt =, ""Hi!""",Yes,,2,,1.09,"\r",},	"string");
 
-is ($csv->sep_char (";"),		';',		"sep_char (;)");
-is ($csv->sep (";"),			';',		"sep (;)");
-is ($csv->sep_char (),			';',		"sep_char ()");
-is ($csv->quote_char ("="),		'=',		"quote_char (=)");
-is ($csv->quote ("="),			'=',		"quote (=)");
+is ($csv->sep_char (";"),		";",		"sep_char (;)");
+is ($csv->sep (";"),			";",		"sep (;)");
+is ($csv->sep_char (),			";",		"sep_char ()");
+is ($csv->quote_char ("="),		"=",		"quote_char (=)");
+is ($csv->quote (undef),		"",		"quote (undef)");
+is ($csv->quote ("="),			"=",		"quote (=)");
 is ($csv->eol (undef),			"",		"eol (undef)");
 is ($csv->eol (""),			"",		"eol ('')");
 is ($csv->eol ("\r"),			"\r",		"eol (\\r)");
@@ -230,6 +231,5 @@ my $attr = [ sort qw(
 is_deeply ([ Text::CSV_XS::known_attributes () ],      $attr, "Known attributes (function)");
 is_deeply ([ Text::CSV_XS->known_attributes () ],      $attr, "Known attributes (class method)");
 is_deeply ([ Text::CSV_XS->new->known_attributes () ], $attr, "Known attributes (method)");
-
 
 1;
