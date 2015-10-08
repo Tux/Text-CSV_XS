@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 44;
+ use Test::More tests => 45;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -178,3 +178,6 @@ eval {
 	qq{"a"\r\n"1"\r\n}, "Chained csv call inherited attributes");
     unlink $ofn;
     }
+
+is_deeply (csv (in => \qq{1,"2 3"}, quo => undef, esc => undef),
+	   [["1", q{"2 3"}]], "quo => undef");

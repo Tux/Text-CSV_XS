@@ -128,21 +128,22 @@ sub _check_sanity
 #    use DP;::diag ("SEP: '", DPeek ($sep),
 #	        "', QUO: '", DPeek ($quo),
 #	        "', ESC: '", DPeek ($esc),"'");
-    if (defined $sep) {	# sep_char cannot be undefined
-	length ($sep) > 16	and return 1006;
-	$sep =~ m/[\r\n]/	and return 1003;
+
+    if (defined $sep) {	# sep_char should not be undefined
+	length ($sep) > 16		and return 1006;
+	$sep =~ m/[\r\n]/		and return 1003;
 	}
     if (defined $quo) {
-	$quo eq $sep		and return 1001;
-	length ($quo) > 16	and return 1007;
-	$quo =~ m/[\r\n]/	and return 1003;
+	defined $sep && $quo eq $sep	and return 1001;
+	length ($quo) > 16		and return 1007;
+	$quo =~ m/[\r\n]/		and return 1003;
 	}
     if (defined $esc) {
-	$esc eq $sep		and return 1001;
-	$esc =~ m/[\r\n]/	and return 1003;
+	defined $sep && $esc eq $sep	and return 1001;
+	$esc =~ m/[\r\n]/		and return 1003;
 	}
     if (defined $eol) {
-	length ($eol) > 16	and return 1005;
+	length ($eol) > 16		and return 1005;
 	}
 
     return _unhealthy_whitespace ($self, $self->{allow_whitespace});
@@ -169,12 +170,12 @@ sub new
 	} keys %$attr;
 
     my $sep_aliased = 0;
-    if (defined $attr{sep}) {
+    if (exists $attr{sep}) {
 	$attr{sep_char} = delete $attr{sep};
 	$sep_aliased = 1;
 	}
     my $quote_aliased = 0;
-    if (defined $attr{quote}) {
+    if (exists $attr{quote}) {
 	$attr{quote_char} = delete $attr{quote};
 	$quote_aliased = 1;
 	}
@@ -189,7 +190,7 @@ sub new
 	$attr{auto_diag} and error_diag ();
 	return;
 	}
-    if ($sep_aliased) {
+    if ($sep_aliased and defined $attr{sep_char}) {
 	my @b = unpack "U0C*", $attr{sep_char};
 	if (@b > 1) {
 	    $attr{sep} = $attr{sep_char};
@@ -199,7 +200,7 @@ sub new
 	    $attr{sep} = undef;
 	    }
 	}
-    if ($quote_aliased) {
+    if ($quote_aliased and defined $attr{quote_char}) {
 	my @b = unpack "U0C*", $attr{quote_char};
 	if (@b > 1) {
 	    $attr{quote} = $attr{quote_char};
@@ -1018,6 +1019,14 @@ sub _csv_attr
 	       delete $attr{before_out};
     my $cboi = delete $attr{callbacks}{on_in}       ||
 	       delete $attr{on_in};
+
+    for ([ quo    => "quote"		],
+	 [ esc    => "escape"		],
+	 [ escape => "escape_char"	],
+	 ) {
+	my ($f, $t) = @$_;
+	exists $attr{$f} and !exists $attr{$t} and $attr{$t} = delete $attr{$f};
+	}
 
     my $fltr = delete $attr{filter};
     ref $fltr eq "HASH" or $fltr = undef;
@@ -2475,6 +2484,10 @@ If not overridden, the default option used for CSV is
 The option that is always set and cannot be altered is
 
  binary    => 1
+
+As this function will likely be used in one-liners,  it allows  C<quote> to
+be abbreviated as C<quo>,  and  C<escape_char> to be abbreviated as  C<esc>
+or C<escape>.
 
 =head3 in
 X<in>

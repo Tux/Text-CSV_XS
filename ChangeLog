@@ -1,9 +1,10 @@
-1.20	- 2015-08-07, H.Merijn Brand
+1.20	- 2015-10-08, H.Merijn Brand
     * Use "say" in synopsis
     * Remove needless special characters in doc section
     * Change doc =item attributes for new to =head for index
     * Add known_attributes function/method
     * Add contributor notes
+    * Allow undef as value for aliased attributes
 
 1.19	- 2015-06-17, H.Merijn Brand
     * Guard tests against $PERL_UNICODE
