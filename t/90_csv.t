@@ -151,7 +151,7 @@ eval {
     exists  $Config{useperlio} &&
     defined $Config{useperlio} &&
     $] >= 5.008                &&
-    $Config{useperlio} eq "define" or skip "No scalar ref in this perl", 4;
+    $Config{useperlio} eq "define" or skip "No scalar ref in this perl", 5;
     my $out = "";
     open my $fh, ">", \$out or die "IO: $!\n";
     ok (csv (in => [[ 1, 2, 3 ]], out => $fh), "out to fh to scalar ref");
@@ -159,6 +159,9 @@ eval {
     $out = "";
     ok (csv (in => [[ 1, 2, 3 ]], out => \$out), "out to scalar ref");
     is ($out, "1,2,3\r\n",	"Scalar out");
+
+    is_deeply (csv (in => \qq{1,"2 3"}, quo => undef, esc => undef),
+	       [["1", q{"2 3"}]], "quo => undef");
     };
 
 {   my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
@@ -178,6 +181,3 @@ eval {
 	qq{"a"\r\n"1"\r\n}, "Chained csv call inherited attributes");
     unlink $ofn;
     }
-
-is_deeply (csv (in => \qq{1,"2 3"}, quo => undef, esc => undef),
-	   [["1", q{"2 3"}]], "quo => undef");
