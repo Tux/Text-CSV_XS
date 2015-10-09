@@ -73,7 +73,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Finance-Bank-DE-NetBank",		# Module signatures
 	"FormValidator-Nested",			# ::CSV - Questions
 	"FreeRADIUS-Database",			# ::CSV - Questions
-#	"Fsdb",					# ::CSV - 
+	"Fsdb",					# ::CSV - 
 	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
 	"Gtk2-Ex-Threads-DBI",			# Distribution is incomplete
 	"hwd",					# Own tests fail
@@ -87,7 +87,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"RT-Extension-Assets-Import-CSV",	# Questions
 	"RT-View-ConciseSpreadsheet",		# Questions
 	"Test-DBIC",				# ::CSV - Insecure -T in C3
-	"Text-CSV-Encoded",			# ::CSV - Encoding, patch filed at RT
+#	"Text-CSV-Encoded",			# ::CSV - Encoding, patch filed at RT
 	"Text-CSV_PP-Simple",			# ::CSV - Syntax errors, bad archive
 #	"Text-CSV-Track",			# Encoding, patch filed at RT
 	"Text-ECSV",				# POD, spelling
