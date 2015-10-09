@@ -1,4 +1,4 @@
-1.20	- 2015-10-08, H.Merijn Brand
+1.20	- 2015-10-09, H.Merijn Brand
     * Use "say" in synopsis
     * Remove needless special characters in doc section
     * Change doc =item attributes for new to =head for index
