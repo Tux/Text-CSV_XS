@@ -181,7 +181,7 @@ typedef struct {
     int   xs_errno;
     char *xs_errstr;
     } xs_error_t;
-xs_error_t xs_errors[] =  {
+static const xs_error_t xs_errors[] =  {
 
     /* Generic errors */
     { 1000, "INI - constructor failed"						},
