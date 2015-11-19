@@ -73,7 +73,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Finance-Bank-DE-NetBank",		# Module signatures
 	"FormValidator-Nested",			# ::CSV - Questions
 	"FreeRADIUS-Database",			# ::CSV - Questions
-	"Fsdb",					# ::CSV - 
+	"Fsdb",					# ::CSV -
 	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
 	"Gtk2-Ex-Threads-DBI",			# Distribution is incomplete
 	"hwd",					# Own tests fail
