@@ -146,7 +146,7 @@ while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
     "@r0" eq "@r1" and $i[0]++, $i[1]++, next;
 
     foreach my $c (1 .. $#h0) {
-	my ($L, $R) = map { defined $_ ? $_ : "" } $r0[$c], $r1[$c];
+	my ($L, $R) = map { $_ // "" } $r0[$c], $r1[$c];
 	$L eq $R and next;
 	$f[0][$i[0]][$c] = RED   . $L . RESET;
 	$f[1][$i[1]][$c] = GREEN . $R . RESET;

@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'14 [20 May 2014] Copyright H.M.Brand 2007-2015
+#	   (m)'15 [19 Nov 2015] Copyright H.M.Brand 2007-2015
 
 use strict;
 use warnings;
 
-our $VERSION = "1.73";
+our $VERSION = "1.74";
 
 sub usage
 {
@@ -156,7 +156,7 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
     my @row = @$row;
     @row > $w and push @w, ($wdt) x (($w = @row) - @w);
     foreach my $c (0 .. $#row) {
-	my $val = defined $row[$c] ? $row[$c] : "";
+	my $val = $row[$c] // "";
 	my $l = length $val;
 	$l > $w[$c] and $w[$c] = $l;
 
