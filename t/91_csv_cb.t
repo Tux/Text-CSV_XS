@@ -112,25 +112,22 @@ is_deeply (csv (in => $tfn,
 	    is ($_[1]{bar}, 2 * $_[1]{foo} - 3, "AOH $_[1]{foo}: b = 2a - 3 \$_[1]{}");
 	    });
     }
-SKIP: {
-    $] < 5.010 and skip "Cannot alias %_ in perl-$]", 8;
-    # Check content ref in on_in AOH with aliases %_
-    {   %_ = ( brt => 42 );
-	my $aoa = csv (
-	    in          => $tfn,
-	    headers     => "auto",
-	    filter      => { foo => sub { m/^[3-9]/ }},
-	    on_in       => sub {
-		is ($_{bar}, 2 * $_{foo} - 3, "AOH $_{foo}: b = 2a - 3 \$_{}");
-		});
-	is_deeply (\%_, { brt => 42 }, "%_ restored");
-	}
-
-    # Add to %_ in callback
-    is_deeply (csv (in      => $tfn,
-		    headers => "auto",
-		    filter  => { 1 => sub { $_ eq "4" }},
-		    on_in   => sub { $_{brt} = 42; }),
-		[{ foo => 4, bar => 5, baz => 6, brt => 42 }],
-		"AOH with addition to %_ in on_in");
+# Check content ref in on_in AOH with aliases %_
+{   %_ = ( brt => 42 );
+    my $aoa = csv (
+	in          => $tfn,
+	headers     => "auto",
+	filter      => { foo => sub { m/^[3-9]/ }},
+	on_in       => sub {
+	    is ($_{bar}, 2 * $_{foo} - 3, "AOH $_{foo}: b = 2a - 3 \$_{}");
+	    });
+    is_deeply (\%_, { brt => 42 }, "%_ restored");
     }
+
+# Add to %_ in callback
+is_deeply (csv (in      => $tfn,
+		headers => "auto",
+		filter  => { 1 => sub { $_ eq "4" }},
+		on_in   => sub { $_{brt} = 42; }),
+	    [{ foo => 4, bar => 5, baz => 6, brt => 42 }],
+	    "AOH with addition to %_ in on_in");
