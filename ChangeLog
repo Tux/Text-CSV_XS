@@ -2,6 +2,7 @@
     * Add confusion option to rewrite example
     * Alias %_ to row in hashref mode for csv function attributes
       on_in and before_out
+    * Examples now use defined-or and thus require perl-5.10 or up
 
 1.20	- 2015-10-09, H.Merijn Brand
     * Use "say" in synopsis

@@ -2864,8 +2864,9 @@ reference to an ARRAY as determined by the arguments.
 This callback can also be passed as an attribute  without the  C<callbacks>
 wrapper.
 
-This callback makes the row available in C<%_> if the row is a hashref.  In
-this case C<%_> is writable and will change the original row.
+For perl 5.010 and newer, this callback makes the row available in C<%_> if
+the row is a hashref.  In this case  C<%_>  is writable and will change the
+original row.
 
 =item on_in
 X<on_in>
@@ -2875,8 +2876,9 @@ This callback acts exactly as the L</after_in> or the L</before_out> hooks.
 This callback can also be passed as an attribute  without the  C<callbacks>
 wrapper.
 
-This callback makes the row available in C<%_> if the row is a hashref.  In
-this case C<%_> is writable and will change the original row. So e.g. with
+For perl 5.010 and newer, this callback makes the row available in C<%_> if
+the row is a hashref.  In this case  C<%_>  is writable and will change the
+original row. So e.g. with
 
   my $aoh = csv (
       in      => \"foo\n1\n2\n",
