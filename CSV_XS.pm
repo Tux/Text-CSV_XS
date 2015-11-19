@@ -1098,6 +1098,8 @@ sub csv
 	    ref $hdrs || $hdrs eq "auto" and
 		$csv->print ($fh, [ map { $hdr{$_} || $_ } @hdrs ]);
 	    for (@{$in}) {
+		local %_;
+		*{$::{_}} = $_;
 		$c->{cboi} and $c->{cboi}->($csv, $_);
 		$c->{cbbo} and $c->{cbbo}->($csv, $_);
 		$csv->print ($fh, [ @{$_}{@hdrs} ]);
@@ -1158,6 +1160,8 @@ sub csv
     $c->{cls} and close $fh;
     if ($ref and $c->{cbai} || $c->{cboi}) {
 	foreach my $r (@{$ref}) {
+	    local %_;
+	    ref $r eq "HASH" and *{$::{_}} = $r;
 	    $c->{cbai} and $c->{cbai}->($csv, $r);
 	    $c->{cboi} and $c->{cboi}->($csv, $r);
 	    }
@@ -2860,6 +2864,9 @@ reference to an ARRAY as determined by the arguments.
 This callback can also be passed as an attribute  without the  C<callbacks>
 wrapper.
 
+This callback makes the row available in C<%_> if the row is a hashref.  In
+this case C<%_> is writable and will change the original row.
+
 =item on_in
 X<on_in>
 
@@ -2867,6 +2874,25 @@ This callback acts exactly as the L</after_in> or the L</before_out> hooks.
 
 This callback can also be passed as an attribute  without the  C<callbacks>
 wrapper.
+
+This callback makes the row available in C<%_> if the row is a hashref.  In
+this case C<%_> is writable and will change the original row. So e.g. with
+
+  my $aoh = csv (
+      in      => \"foo\n1\n2\n",
+      headers => "auto",
+      on_in   => sub { $_{bar} = 2; },
+      );
+
+C<$aoh> will be:
+
+  [ { foo => 1,
+      bar => 2,
+      }
+    { foo => 2,
+      bar => 2,
+      }
+    ]
 
 =item csv
 

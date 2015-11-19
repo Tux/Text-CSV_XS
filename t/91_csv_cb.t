@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 22;
+ use Test::More tests => 42;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -94,3 +94,40 @@ is_deeply (csv (in => $tfn,
     { foo => 5, bar => 7, baz =>  9 },
     { foo => 6, bar => 9, baz => 12 },
     ], "AOH with filter on column name + on other named fields");
+
+# Check content ref in on_in AOA
+{   my $aoa = csv (
+	in          => $tfn,
+	filter      => { 1 => sub { m/^[3-9]/ }},
+	on_in       => sub {
+	    is ($_[1][1], 2 * $_[1][0] - 3, "AOA $_[1][0]: b = 2a - 3 \$_[1][]");
+	    });
+    }
+# Check content ref in on_in AOH
+{   my $aoa = csv (
+	in          => $tfn,
+	headers     => "auto",
+	filter      => { foo => sub { m/^[3-9]/ }},
+	after_parse => sub {
+	    is ($_[1]{bar}, 2 * $_[1]{foo} - 3, "AOH $_[1]{foo}: b = 2a - 3 \$_[1]{}");
+	    });
+    }
+# Check content ref in on_in AOH with aliases %_
+{   %_ = ( brt => 42 );
+    my $aoa = csv (
+	in          => $tfn,
+	headers     => "auto",
+	filter      => { foo => sub { m/^[3-9]/ }},
+	on_in       => sub {
+	    is ($_{bar}, 2 * $_{foo} - 3, "AOH $_{foo}: b = 2a - 3 \$_{}");
+	    });
+    is_deeply (\%_, { brt => 42 }, "%_ restored");
+    }
+
+# Add to %_ in callback
+is_deeply (csv (in      => $tfn,
+		headers => "auto",
+		filter  => { 1 => sub { $_ eq "4" }},
+		on_in   => sub { $_{brt} = 42; }),
+	    [{ foo => 4, bar => 5, baz => 6, brt => 42 }],
+	    "AOH with addition to %_ in on_in");
