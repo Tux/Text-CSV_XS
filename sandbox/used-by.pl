@@ -58,7 +58,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"chart",				# Questions (in Apache-Wyrd)
 	"CohortExplorer",			# Unmet prerequisites
 	"Connector",				# No Makefile.PL (in Annelidous)
-	"DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet preres
+	"DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet prereqs
 	"DBIx-Class-FormTools",			# ::CSV POD
 	"DBIx-Class-FromSledge",		# ::CSV Spelling
 	"DBIx-Class-InflateColumn-Serializer-CompressJSON",	# ::CSV POD
@@ -69,6 +69,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"DBIx-Class-Snowflake",			# ::CSV - Bad tests. SQLite fail
 	"DBIx-Class-StorageReadOnly",		# ::CSV - POD coverage
 	"DBIx-NoSQL",				# ::CSV - Syntax
+	"DBIx-Patcher",				# ::CSV - Own tests fail
 	"dbMan",				# Questions
 	"Finance-Bank-DE-NetBank",		# Module signatures
 	"FormValidator-Nested",			# ::CSV - Questions
@@ -95,6 +96,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Text-TEI-Collate",			# Unmet prerequisites
 	"Text-Tradition",			# Unmet prerequisites
 	"Tripletail",				# Makefile.PL broken
+	"VANAMBURG-SEMPROG-SimpleGraph",	# Own tests fail
 	"WebService-FuncNet",			# ::CSV - WSDL 404, POD
 	"Webservice-InterMine",			# Unmet prerequisites
 	"WWW-Analytics-MultiTouch",		# Unmet prerequisites
