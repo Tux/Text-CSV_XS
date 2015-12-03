@@ -1259,7 +1259,7 @@ restart:
 			continue;
 			}
 
-		    if (csv->allow_loose_escapes) {
+		    if (csv->allow_loose_escapes && c2 != CH_CR) {
 			/* ,1,"foo, 3"56",,bar,\r\n
 			 *            ^
 			 */
