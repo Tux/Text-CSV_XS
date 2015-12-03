@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1076;
+use Test::More tests => 1082;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -273,6 +273,14 @@ $/ = $def_rs;
     is_deeply ($csv->getline ($fh), [ "1", "2--3", 4, "" ],	"getline ,eol");
     is_deeply ($csv->getline ($fh), [ "1", "2--3", 4 ],		"getline eof");
     close   $fh;
+    }
+
+{   ok (my $csv = Text::CSV_XS->new (), "new csv");
+    ok ($csv->parse (qq{"a","b","c"\r\n}), "parse \\r\\n");
+    is_deeply ([$csv->fields], [qw( a b c )], "result");
+    ok ($csv->allow_loose_escapes (1), "allow loose escapes");
+    ok ($csv->parse (qq{"a","b","c"\r\n}), "parse \\r\\n");
+    is_deeply ([$csv->fields], [qw( a b c )], "result");
     }
 
 1;
