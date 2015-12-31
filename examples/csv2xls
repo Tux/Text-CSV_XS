@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'15 [19 Nov 2015] Copyright H.M.Brand 2007-2015
+#	   (m)'15 [08 Dec 2015] Copyright H.M.Brand 2007-2015
 
 use strict;
 use warnings;
 
-our $VERSION = "1.74";
+our $VERSION = "1.75";
 
 sub usage
 {
@@ -158,7 +158,7 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
     foreach my $c (0 .. $#row) {
 	my $val = $row[$c] // "";
 	my $l = length $val;
-	$l > $w[$c] and $w[$c] = $l;
+	$l > ($w[$c] // -1) and $w[$c] = $l;
 
 	if ($utf and $csv->is_binary ($c)) {
 	    from_to ($val, "utf-8", "ucs2");
