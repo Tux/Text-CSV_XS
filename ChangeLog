@@ -1,9 +1,10 @@
-1.21	- 2015-12-03, H.Merijn Brand
+1.21	- 2016-01-02, H.Merijn Brand
     * Add confusion option to rewrite example
     * Alias %_ to row in hashref mode for csv function attributes
       on_in and before_out
     * Examples now use defined-or and thus require perl-5.10 or up
     * Fix \r\n ending with allow_loose_escapes (reported by Bas Bloemsaat)
+    * It's 2016
 
 1.20	- 2015-10-09, H.Merijn Brand
     * Use "say" in synopsis
