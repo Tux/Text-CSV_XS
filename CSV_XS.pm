@@ -2464,13 +2464,6 @@ can get to the error using the class call to L</error_diag>
  my $aoa = csv (in => "test.csv") or
      die Text::CSV_XS->error_diag;
 
-Alternative invocations:
-
- my $aoa = Text::CSV_XS::csv (in => "file.csv");
-
- my $csv = Text::CSV_XS->new ();
- my $aoa = $csv->csv (in => "file.csv"); # ignore object attributes
-
 This function takes the arguments as key-value pairs. This can be passed as
 a list or as an anonymous hash:
 
@@ -2492,6 +2485,21 @@ The option that is always set and cannot be altered is
 As this function will likely be used in one-liners,  it allows  C<quote> to
 be abbreviated as C<quo>,  and  C<escape_char> to be abbreviated as  C<esc>
 or C<escape>.
+
+Alternative invocations:
+
+ my $aoa = Text::CSV_XS::csv (in => "file.csv");
+
+ my $csv = Text::CSV_XS->new ();
+ my $aoa = $csv->csv (in => "file.csv");
+
+In the latter case, the object attributes are used from the existing object
+and the attribute arguments in the function call are ignored:
+
+ my $csv = Text::CSV_XS->new ({ sep_char => ";" });
+ my $aoa = $csv->csv (in => "file.csv", sep_char => ",");
+
+will parse using C<;> as C<sep_char>, not C<,>.
 
 =head3 in
 X<in>
