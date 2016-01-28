@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.21";
+$VERSION   = "1.22";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -1596,13 +1596,17 @@ is read as
 
  ("1", "", "", " ", "2")
 
-When I<writing> C<CSV> files with L<C<always_quote>|/always_quote> set, the
-unquoted I<empty> field is the result of an undefined value. To enable this
-distinction when I<reading> C<CSV> data,  the  C<blank_is_undef>  attribute
-will cause unquoted empty fields to be set to  C<undef>,  causing the above
-to be parsed as
+When I<writing>  C<CSV> files with either  L<C<always_quote>|/always_quote>
+or  L<C<quote_empty>|/quote_empty> set, the unquoted  I<empty> field is the
+result of an undefined value.   To enable this distinction when  I<reading>
+C<CSV>  data,  the  C<blank_is_undef>  attribute will cause  unquoted empty
+fields to be set to C<undef>, causing the above to be parsed as
 
  ("1", "", undef, " ", "2")
+
+note that this is specifically important when loading  C<CSV> fields into a
+database that allows C<NULL> values,  as the perl equivalent for C<NULL> is
+C<undef> in L<DBI> land.
 
 =head3 empty_is_undef
 X<empty_is_undef>

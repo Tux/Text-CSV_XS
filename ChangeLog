@@ -1,3 +1,6 @@
+1.22	- 2016-01-28, H.Merijn Brand
+    * Small doc updates regarding blank_is_undef
+
 1.21	- 2016-01-06, H.Merijn Brand
     * Add confusion option to rewrite example
     * Alias %_ to row in hashref mode for csv function attributes
