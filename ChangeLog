@@ -1,5 +1,6 @@
-1.22	- 2016-01-28, H.Merijn Brand
+1.22	- 2016-02-15, H.Merijn Brand
     * Small doc updates regarding blank_is_undef
+    * Add new method header
 
 1.21	- 2016-01-06, H.Merijn Brand
     * Add confusion option to rewrite example

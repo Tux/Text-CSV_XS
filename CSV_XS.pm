@@ -792,6 +792,66 @@ sub column_names
     @{$self->{_COLUMN_NAMES}};
     } # column_names
 
+sub header
+{
+    my ($self, $fh, @args) = @_;
+    my (@seps, %args);
+    for (@args) {
+	if (ref $_ eq "ARRAY") {
+	    push @seps, @$_;
+	    next;
+	    }
+	if (ref $_ eq "HASH") {
+	    %args = %$_;
+	    next;
+	    }
+	croak (q{usage: $csv->headers ($fh, [ seps ], { options })});
+	}
+
+    defined $args{bom}     or $args{bom}     = 1;
+    defined $args{fold}    or $args{fold}    = "lc";
+    defined $args{columns} or $args{columns} = 1;
+
+    my $hdr = <$fh>;
+    defined $hdr && $hdr ne "" or return croak ($self->SetDiag (1010));
+    $args{fold} eq "lc" and $hdr = lc $hdr;
+    $args{fold} eq "uc" and $hdr = uc $hdr;
+
+    my %sep;
+    @seps or @seps = (",", ";");
+    foreach my $sep (@seps) {
+	index ($hdr, $sep) >= 0 and $sep{$sep}++;
+	}
+
+    keys %sep >= 2 and croak ($self->SetDiag (1011));
+
+    $self->sep_char (keys %sep);
+    my $enc = "";
+    if ($args{bom}) { # UTF-7 is not supported
+	   if ($hdr =~ s/^\xfe\xff//)         { $enc = ":encoding(utf-16be)"   }
+	elsif ($hdr =~ s/^\xff\xfe//)         { $enc = ":encoding(utf-16le)"   }
+	elsif ($hdr =~ s/^\x00\x00\xfe\xff//) { $enc = ":encoding(utf-32be)"   }
+	elsif ($hdr =~ s/^\xff\xfe\x00\x00//) { $enc = ":encoding(utf-32le)"   }
+	elsif ($hdr =~ s/^\xef\xbb\xbf//)     { $enc = ":encoding(utf-8)"      }
+	elsif ($hdr =~ s/^\xf7\x64\x4c//)     { $enc = ":encoding(utf-1)"      }
+	elsif ($hdr =~ s/^\xdd\x73\x66\x73//) { $enc = ":encoding(utf-ebcdic)" }
+	elsif ($hdr =~ s/^\x0e\xfe\xff//)     { $enc = ":encoding(scsu)"       }
+	elsif ($hdr =~ s/^\xfb\xee\x28//)     { $enc = ":encoding(bocu-1)"     }
+	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = ":encoding(gb-18030)"   }
+	$enc and binmode $fh, $enc;
+	}
+    my $hr = \$hdr; # Will cause croak on perl-5.6.x
+    open my $h, "<$enc", $hr;
+    my $row = $self->getline ($h);
+    close $h;
+    my @hdr = @$row   or  croak ($self->SetDiag (1010));
+    my %hdr = map { $_ => 1 } @hdr;
+    exists $hdr{""}   and croak ($self->SetDiag (1012));
+    keys %hdr == @hdr or  croak ($self->SetDiag (1013));
+    $args{columns} and $self->column_names (@hdr);
+    $self;
+    } # header
+
 sub bind_columns
 {
     my ($self, @refs) = @_;
@@ -2219,6 +2279,80 @@ field.
 
 L</column_names> croaks on invalid arguments.
 
+=head2 header
+
+This method does NOT work in perl-5.6.x
+
+Parse the CSV header and set C<sep_char> and encoding.
+
+  my @hdr = $csv->header ($fh)->column_names;
+  $csv->header ($fh, [ ";", ",", "|", "\t" ]);
+  $csv->header ($fh, { bom => 1, fold => "lc" });
+  $csv->header ($fh, [ ",", ";" ], { bom => 1, fold => "lc" });
+
+The first argument should be a file handle.
+
+Assuming that the file opened for parsing has a header, and the header
+does not contain problematic characters like embedded newlines, read
+the first line from the open handle, auto-detect whether the header
+separates the column names with a character from the allowed separator
+list. That list defaults to C<[ ";", "," ]> and can be overruled with
+an optional argument of an anonymous list of allowed separator sequences.
+If any of the allowed separators matches, and none of the other allowed
+separators match, set C<sep_char> to that sequence for the current CSV_XS
+instance and use it to parse the first line, map those to lowercase, use
+that to set the instance column_names and return the instance:
+
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+ open my $fh, "<:encoding(iso-8859-1)", "file.csv";
+ $csv->header ($fh) or die "file.csv has no header line\n";
+ while (my $row = $csv->getline_hr ($fh)) {
+     ...
+     }
+
+If the header line contains none of the allowed separators or more than
+one of the allowed separators, the method will croak.
+
+This method will return the instance on success or undefined on failure
+(if it did not croak).
+
+=head3 Options
+
+=over 2
+
+=item bom
+
+ $csv->header ($fh, { bom => 1 });
+
+The default behavior is to detect if the header line starts with a BOM. If
+the header has a BOM, use that to set the encoding of C<$fh>. This default
+behavior can be disabled by passing a false value to the C<bom> option.
+
+Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE,
+UTF-32LE, UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030. UTF-7 is not
+supported.
+
+This is Work-In-Progress. currently only UTF-8 is working as expected
+
+=item fold
+
+ $csv->header ($fh, { fold => "lc" });
+
+The default is to fold the header to lower case. You can also choose to
+fold the headers to upper case with C<< { fold => "uc" } >> or to leave
+the fields as-is with C<< { fold => "none" } >>.
+
+=item columns
+
+ $csv->header ($fh, { columns => 1 });
+
+The default is to set the instances column names using L</column_names> if
+the method is successful, so subsequent calls to L</getline_hr> can return
+a hash. Disable setting the header can be forced using a false value for
+this option like C<< { columns => 0 } >>.
+
+=back
+
 =head2 bind_columns
 X<bind_columns>
 
@@ -3372,6 +3506,32 @@ The value passed for SEP is exceeding its maximum length (16).
 X<1007>
 
 The value passed for QUOTE is exceeding its maximum length (16).
+
+=item *
+1010 "INI - the header is empty"
+X<1010>
+
+The header line parsed in the L</header> is empty.
+
+=item *
+1011 "INI - the header contains more than one valid separator"
+X<1011>
+
+The header line parsed in the  L</header>  contains more than one  (unique)
+separator character out of the allowed set of separators.
+
+=item *
+1012 "INI - the header contains an empty field"
+X<1012>
+
+The header line parsed in the L</header> is contains an empty field.
+
+=item *
+1013 "INI - the header contains nun-unique fields"
+X<1013>
+
+The header line parsed in the  L</header>  contains at least  two identical
+fields.
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"

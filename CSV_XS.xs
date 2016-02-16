@@ -193,6 +193,11 @@ static const xs_error_t xs_errors[] =  {
     { 1006, "INI - SEP too long"						},
     { 1007, "INI - QUOTE too long"						},
 
+    { 1010, "INI - the header is empty"						},
+    { 1011, "INI - the header contains more than one valid separator"		},
+    { 1012, "INI - the header contains an empty field"				},
+    { 1013, "INI - the header contains nun-unique fields"			},
+
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
     { 2011, "ECR - Characters after end of quoted field"			},
