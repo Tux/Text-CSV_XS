@@ -106,7 +106,7 @@ for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ]) {
 
     $csv->column_names (undef);
     open my $fh, "<", \$data;
-    ok (my $slf = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold // "undef"));
+    ok (my $slf = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold || "undef"));
     is (($csv->column_names)[0], $hdr, "folded header to $hdr");
     }
 
