@@ -2310,11 +2310,12 @@ that to set the instance column_names and return the instance:
      ...
      }
 
-If the header line contains none of the allowed separators or more than
-one of the allowed separators, the method will croak.
+If the header is empty, contains more than one unique separator out of the
+allowed set,  contains empty fields,  or contains identical fields  (after
+folding), it will croak with error 1010, 1011, 1012, or 1013 respectively.
 
-This method will return the instance on success or undefined on failure
-(if it did not croak).
+This method will return the instance on success or undefined on failure if
+it did not croak.
 
 =head3 Options
 
