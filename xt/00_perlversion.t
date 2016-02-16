@@ -22,7 +22,7 @@ my %f5xx = (
 	t/46_eol_si.t
 	t/50_utf8.t     t/51_utf8.t
 	t/70_rt.t	t/78_fragment.t
-	t/90_csv.t
+	t/85_util.t	t/90_csv.t
 	xt/00_perlversion.t
 	)],
     "5.010.0" => [],

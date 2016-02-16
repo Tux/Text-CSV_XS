@@ -814,8 +814,6 @@ sub header
 
     my $hdr = <$fh>;
     defined $hdr && $hdr ne "" or return croak ($self->SetDiag (1010));
-    $args{fold} eq "lc" and $hdr = lc $hdr;
-    $args{fold} eq "uc" and $hdr = uc $hdr;
 
     my %sep;
     @seps or @seps = (",", ";");
@@ -828,22 +826,37 @@ sub header
     $self->sep_char (keys %sep);
     my $enc = "";
     if ($args{bom}) { # UTF-7 is not supported
-	   if ($hdr =~ s/^\xfe\xff//)         { $enc = ":encoding(utf-16be)"   }
-	elsif ($hdr =~ s/^\xff\xfe//)         { $enc = ":encoding(utf-16le)"   }
-	elsif ($hdr =~ s/^\x00\x00\xfe\xff//) { $enc = ":encoding(utf-32be)"   }
-	elsif ($hdr =~ s/^\xff\xfe\x00\x00//) { $enc = ":encoding(utf-32le)"   }
-	elsif ($hdr =~ s/^\xef\xbb\xbf//)     { $enc = ":encoding(utf-8)"      }
-	elsif ($hdr =~ s/^\xf7\x64\x4c//)     { $enc = ":encoding(utf-1)"      }
-	elsif ($hdr =~ s/^\xdd\x73\x66\x73//) { $enc = ":encoding(utf-ebcdic)" }
-	elsif ($hdr =~ s/^\x0e\xfe\xff//)     { $enc = ":encoding(scsu)"       }
-	elsif ($hdr =~ s/^\xfb\xee\x28//)     { $enc = ":encoding(bocu-1)"     }
-	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = ":encoding(gb-18030)"   }
-	$enc and binmode $fh, $enc;
+	   if ($hdr =~ s/^\x00\x00\xfe\xff//) { $enc = "utf-32be"   }
+	elsif ($hdr =~ s/^\xff\xfe\x00\x00//) { $enc = "utf-32le"   }
+	elsif ($hdr =~ s/^\xfe\xff//)         { $enc = "utf-16be"   }
+	elsif ($hdr =~ s/^\xff\xfe//)         { $enc = "utf-16le"   }
+	elsif ($hdr =~ s/^\xef\xbb\xbf//)     { $enc = "utf-8"      }
+	elsif ($hdr =~ s/^\xf7\x64\x4c//)     { $enc = "utf-1"      }
+	elsif ($hdr =~ s/^\xdd\x73\x66\x73//) { $enc = "utf-ebcdic" }
+	elsif ($hdr =~ s/^\x0e\xfe\xff//)     { $enc = "scsu"       }
+	elsif ($hdr =~ s/^\xfb\xee\x28//)     { $enc = "bocu-1"     }
+	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = "gb-18030"   }
+
+	if ($enc) {
+	    if ($enc =~ m/([13]).le$/) {
+		my $l = 0 + $1;
+		my $x;
+		$hdr .= "\0" x $l;
+		read $fh, $x, $l;
+		}
+	    $enc = ":encoding($enc)";
+	    binmode $fh, $enc;
+	    }
 	}
+
+    $args{fold} eq "lc" and $hdr = lc $hdr;
+    $args{fold} eq "uc" and $hdr = uc $hdr;
+
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
     open my $h, "<$enc", $hr;
     my $row = $self->getline ($h);
     close $h;
+
     my @hdr = @$row   or  croak ($self->SetDiag (1010));
     my %hdr = map { $_ => 1 } @hdr;
     exists $hdr{""}   and croak ($self->SetDiag (1012));
@@ -2329,11 +2342,9 @@ The default behavior is to detect if the header line starts with a BOM. If
 the header has a BOM, use that to set the encoding of C<$fh>. This default
 behavior can be disabled by passing a false value to the C<bom> option.
 
-Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE,
-UTF-32LE, UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030. UTF-7 is not
-supported.
-
-This is Work-In-Progress. currently only UTF-8 is working as expected
+Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and
+UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030
+but L<Encode> does not (yet). UTF-7 is not supported.
 
 =item fold
 

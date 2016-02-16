@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 117;
+use Encode qw( encode );
+use Test::More tests => 139;
 
 BEGIN {
     $] < 5.008002 and
@@ -110,24 +111,32 @@ for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ]) {
     is (($csv->column_names)[0], $hdr, "folded header to $hdr");
     }
 
+my $fnm = "_85hdr.csv"; END { unlink $fnm; }
 $csv->binary (1);
 $csv->auto_diag (9);
-for (	[ "none"       => qq{zoo,b\xc3\xa5r\n1,"1 \xe2\x82\xac each"\n}			],
-#	[ "utf-16be"   => qq{\xfe\xffzoo,bar\n1,"1 \x20\xac each"\n}			],
-#	[ "utf-16le"   => qq{\xff\xfezoo,bar\n1,"1 \xac\x20 each"\n}			],
-#	[ "utf-32be"   => qq{\x00\x00\xfe\xffzoo,bar\n1,"1 \x00\x00\x20\xac each"\n}	],
-#	[ "utf-32le"   => qq{\xff\xfe\x00\x00zoo,bar\n1,"1 \xac\x20\x00\x00 each"\n}	],
-	[ "utf-8"      => qq{\xef\xbb\xbfzoo,b\xc3\xa5r\n1,"1 \xe2\x82\xac each"\n}		],
-#	[ "utf-1"      => qq{\xf7\x64\x4czoo,bar\n1,"1 \xe2\x82\xac each"\n}		],
-#	[ "utf-ebcdic" => qq{\xdd\x73\x66\x73zoo,bar\n1,"1 \xe2\x82\xac each"\n}	],
-#	[ "scsu"       => qq{\x0e\xfe\xffzoo,bar\n1,"1 \xe2\x82\xac each"\n}		],
-#	[ "bocu-1"     => qq{\xfb\xee\x28zoo,bar\n1,"1 \xe2\x82\xac each"\n}		],
-#	[ "gb-18030"   => qq{\x84\x31\x95zoo,bar\x33\n1,"1 \xe2\x82\xac each"\n}	],
+my $str = qq{zoo,b\x{00e5}r\n1,"1 \x{20ac} each"\n};
+for (	[ "none"       => ""	],
+	[ "utf-8"      => "\xef\xbb\xbf"	],
+	[ "utf-16be"   => "\xfe\xff"		],
+	[ "utf-16le"   => "\xff\xfe"		],
+	[ "utf-32be"   => "\x00\x00\xfe\xff"	],
+	[ "utf-32le"   => "\xff\xfe\x00\x00"	],
+#	[ "utf-1"      => "\xf7\x64\x4c"	],
+#	[ "utf-ebcdic" => "\xdd\x73\x66\x73"	],
+#	[ "scsu"       => "\x0e\xfe\xff"	],
+#	[ "bocu-1"     => "\xfb\xee\x28"	],
+#	[ "gb-18030"   => "\x84\x31\x95"	],
 	) {
-    my ($enc, $data) = @$_;
-    open my $fh, "<", \$data;
+    my ($enc, $bom) = @$_;
+    open my $fh, ">", $fnm;
+    print $fh $bom;
+    print $fh encode ($enc eq "none" ? "utf-8" : $enc, $str);
+    close $fh;
+    open  $fh, "<", $fnm;
+    ok (1, "$fnm opened for enc $enc");
     ok ($csv->header ($fh), "headers with BOM for $enc");
     is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
     ok (my $row = $csv->getline_hr ($fh), "getline_hr");
     is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+    unlink $fnm;
     }
