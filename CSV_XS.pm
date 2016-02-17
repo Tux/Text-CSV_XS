@@ -2318,7 +2318,7 @@ that to set the instance column_names and return the instance:
 
  my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
  open my $fh, "<:encoding(iso-8859-1)", "file.csv";
- $csv->header ($fh) or die "file.csv has no header line\n";
+ $csv->header ($fh);
  while (my $row = $csv->getline_hr ($fh)) {
      ...
      }
