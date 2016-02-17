@@ -3,15 +3,18 @@
 use strict;
 use warnings;
 
-use Encode qw( encode );
-use Test::More tests => 139;
+use Test::More;
 
 BEGIN {
-    $] < 5.008002 and
+    if ($] < 5.008002) {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
+        }
+    else {
+	plan tests => 139;
+	}
 
     use_ok "Text::CSV_XS";
-    plan skip_all => "Cannot load Text::CSV_XS" if $@;
+    require Encode;
     require "t/util.pl";
     }
 
@@ -130,7 +133,7 @@ for (	[ "none"       => ""	],
     my ($enc, $bom) = @$_;
     open my $fh, ">", $fnm;
     print $fh $bom;
-    print $fh encode ($enc eq "none" ? "utf-8" : $enc, $str);
+    print $fh Encode::encode ($enc eq "none" ? "utf-8" : $enc, $str);
     close $fh;
     open  $fh, "<", $fnm;
     ok (1, "$fnm opened for enc $enc");
