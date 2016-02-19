@@ -3208,7 +3208,7 @@ values into the database,  like MySQL/MariaDB supports C<\N>,  use a filter
 or a map
 
  csv (out => "foo.csv", in => sub { $sth->fetch },
-                     on_in => sub { $_ //= "\\N" for @$_[1] });
+                     on_in => sub { $_ //= "\\N" for @{$_[1]} });
 
  while (my $row = $sth->fetch) {
      $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
