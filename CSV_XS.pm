@@ -857,7 +857,7 @@ sub header
 
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
     open my $h, "<$enc", $hr;
-    my $row = $self->getline ($h);
+    my $row = $self->getline ($h) or croak;
     close $h;
 
     my @hdr = @$row   or  croak ($self->SetDiag (1010));
@@ -2330,6 +2330,9 @@ that to set the instance column_names and return the instance:
 If the header is empty,  contains more than one unique separator out of the
 allowed set,  contains empty fields,   or contains identical fields  (after
 folding), it will croak with error 1010, 1011, 1012, or 1013 respectively.
+
+If the header contains embedded newlines or is not valid  CSV  in any other
+way, this method will croak and leave the parse error untouched.
 
 =head3 return value
 

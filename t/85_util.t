@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 200;
+	plan tests => 206;
 	}
 
     use_ok "Text::CSV_XS";
@@ -88,8 +88,15 @@ foreach my $sep (@$sep_ok) {
 	}
     }
 
-for ([ 1010, "" ], [ 1011, "a,b;c,d"], [ 1012, "a,,b" ], [ 1013, "a,a,b" ]) {
-    my ($err, $data) = @$_;
+for ( [ 1010, 0, qq{}		],	# Empty header
+      [ 1011, 0, qq{a,b;c,d}	],	# Multiple allowed separators
+      [ 1012, 0, qq{a,,b}	],	# Empty header field
+      [ 1013, 0, qq{a,a,b}	],	# Non-unique headers
+      [ 2027, 1, qq{a,"b\nc",c}	],	# Embedded newline binary on
+      [ 2021, 0, qq{a,"b\nc",c}	],	# Embedded newline binary off
+      ) {
+    my ($err, $bin, $data) = @$_;
+    $csv->binary ($bin);
     open my $fh, "<", \$data;
     my $self = eval { $csv->header ($fh); };
     is ($self, undef, "FAIL for '$data'");
@@ -169,6 +176,8 @@ for (	[ "none"       => ""	],
     print $fh $bom;
     print $fh Encode::encode ($enc eq "none" ? "utf-8" : $enc, $str);
     close $fh;
+
+    $csv->column_names (undef);
     open  $fh, "<", $fnm;
     ok (1, "$fnm opened for enc $enc");
     ok ($csv->header ($fh), "headers with BOM for $enc");
