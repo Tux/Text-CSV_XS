@@ -813,7 +813,7 @@ sub header
     defined $args{columns} or $args{columns} = 1;
 
     my $hdr = <$fh>;
-    defined $hdr && $hdr ne "" or return croak ($self->SetDiag (1010));
+    defined $hdr && $hdr ne "" or croak ($self->SetDiag (1010));
 
     my %sep;
     @seps or @seps = (",", ";");
@@ -862,7 +862,7 @@ sub header
     exists $hdr{""}   and croak ($self->SetDiag (1012));
     keys %hdr == @hdr or  croak ($self->SetDiag (1013));
     $args{columns} and $self->column_names (@hdr);
-    $self;
+    wantarray ? @hdr : $self;
     } # header
 
 sub bind_columns
@@ -2327,8 +2327,14 @@ If the header is empty, contains more than one unique separator out of the
 allowed set,  contains empty fields,  or contains identical fields  (after
 folding), it will croak with error 1010, 1011, 1012, or 1013 respectively.
 
-This method will return the instance on success or undefined on failure if
-it did not croak.
+=head3 return value
+
+On error this method will croak.
+
+In list context, the headers will be returned whether they are used to set
+L</column_names> or not.
+
+In scalar context, the instance itself is returned.
 
 =head3 Options
 

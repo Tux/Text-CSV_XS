@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 139;
+	plan tests => 168;
 	}
 
     use_ok "Text::CSV_XS";
@@ -23,6 +23,8 @@ $| = 1;
 ok (my $csv = Text::CSV_XS->new, "new for header tests");
 is ($csv->sep_char, ",", "Sep = ,");
 
+my $hdr_lc = [qw( bar foo )];
+
 foreach my $sep (",", ";") {
     my $data = "bAr,foo\n1,2\n3,4,5\n";
     $data =~ s/,/$sep/g;
@@ -32,9 +34,15 @@ foreach my $sep (",", ";") {
 	ok (my $slf = $csv->header ($fh), "header");
 	is ($slf, $csv, "Return self");
 	is ($csv->sep_char, $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], [qw( bar foo )], "headers");
+	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	}
+
+    $csv->column_names (undef);
+    {   open my $fh, "<", \$data;
+	ok (my @hdr = $csv->header ($fh), "header");
+	is_deeply (\@hdr, $hdr_lc, "Return headers");
 	}
 
     $csv->column_names (undef);
@@ -42,7 +50,7 @@ foreach my $sep (",", ";") {
 	ok (my $slf = $csv->header ($fh), "header");
 	is ($slf, $csv, "Return self");
 	is ($csv->sep_char, $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], [qw( bar foo )], "headers");
+	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
 	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
 	}
@@ -58,9 +66,15 @@ foreach my $sep (",", ";", "|", "\t") {
 	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
 	is ($slf, $csv, "Return self");
 	is ($csv->sep_char, $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], [qw( bar foo )], "headers");
+	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	}
+
+    $csv->column_names (undef);
+    {   open my $fh, "<", \$data;
+	ok (my @hdr = $csv->header ($fh, $sep_ok), "header with specific sep set");
+	is_deeply (\@hdr, $hdr_lc, "Return headers");
 	}
 
     $csv->column_names (undef);
@@ -68,7 +82,7 @@ foreach my $sep (",", ";", "|", "\t") {
 	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
 	is ($slf, $csv, "Return self");
 	is ($csv->sep_char, $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], [qw( bar foo )], "headers");
+	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
 	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
 	}
@@ -87,6 +101,12 @@ for ([ 1010, "" ], [ 1011, "a,b;c,d"], [ 1012, "a,,b" ], [ 1013, "a,a,b" ]) {
     ok ($csv->header ($fh, { fold => "none" }), "non-unique unfolded headers");
     is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers");
     }
+{   open my $fh, "<", \"bar,bAr,bAR,BAR\n1,2,3,4";
+    $csv->column_names (undef);
+    ok (my @hdr = $csv->header ($fh, { fold => "none" }), "non-unique unfolded headers");
+    is_deeply (\@hdr, [qw( bar bAr bAR BAR )], "Headers from method");
+    is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers from column_names");
+    }
 
 foreach my $sep (",", ";") {
     my $data = "bAr,foo\n1,2\n3,4,5\n";
@@ -101,6 +121,12 @@ foreach my $sep (",", ";") {
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
 	}
+    $csv->column_names (undef);
+    {   open my $fh, "<", \$data;
+	ok (my @hdr = $csv->header ($fh, { columns => 0 }), "Header without column setting");
+	is_deeply (\@hdr, $hdr_lc, "Headers from method");
+	is_deeply ([ $csv->column_names ], [], "Headers from column_names");
+	}
     }
 
 for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ]) {
@@ -112,6 +138,12 @@ for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ]) {
     open my $fh, "<", \$data;
     ok (my $slf = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold || "undef"));
     is (($csv->column_names)[0], $hdr, "folded header to $hdr");
+    close $fh;
+
+    $csv->column_names (undef);
+    open $fh, "<", \$data;
+    ok (my @hdr = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold || "undef"));
+    is ($hdr[0], $hdr, "folded header to $hdr");
     }
 
 my $fnm = "_85hdr.csv"; END { unlink $fnm; }
