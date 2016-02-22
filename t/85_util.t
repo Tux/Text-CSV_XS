@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 196;
+	plan tests => 200;
 	}
 
     use_ok "Text::CSV_XS";
@@ -129,7 +129,7 @@ foreach my $sep (",", ";") {
 	}
     }
 
-for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ]) {
+for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "fc", "bar" ], [ "none", "bAr" ]) {
     my ($fold, $hdr) = @$_;
 
     my $data = "bAr,foo\n1,2\n3,4,5\n";

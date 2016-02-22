@@ -792,6 +792,8 @@ sub column_names
     @{$self->{_COLUMN_NAMES}};
     } # column_names
 
+BEGIN { *fc = $] >= 5.16 ? \&CORE::fc : sub { lc $_[0] } }
+
 sub header
 {
     my ($self, $fh, @args) = @_;
@@ -851,6 +853,7 @@ sub header
 
     $args{fold} eq "lc" and $hdr = lc $hdr;
     $args{fold} eq "uc" and $hdr = uc $hdr;
+    $args{fold} eq "fc" and $hdr = fc $hdr;
 
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
     open my $h, "<$enc", $hr;
@@ -2361,8 +2364,9 @@ The default is to fold the header to lower case. You can choose to fold the
 headers to upper case with  C<< { fold => "uc" } >>  or to leave the fields
 as-is with C<< { fold => "none" } >>.
 
-Currently supported values for fold are C<uc>, C<lc> (default), and C<none>.
-Support for C<fc> is planned (with a fallback to C<lc>).
+Currently supported values for fold are C<uc>,  C<lc> (default), C<fc>, and
+C<none>.  C<fc> requires perl-5.16 or newer,  otherwise it will fallback to
+using C<lc>.
 
 =item columns
 
@@ -3086,6 +3090,11 @@ a 53% speedup.
 =item Combine (...)
 
 =item Parse (...)
+
+=item fc (...)
+
+Unicode fold-case is available as of perl-5.16. This internal uses C<fc> if
+available and otherwise does a fallback to C<lc>.
 
 =back
 
