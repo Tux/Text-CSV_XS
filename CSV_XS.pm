@@ -2361,6 +2361,9 @@ The default is to fold the header to lower case. You can choose to fold the
 headers to upper case with  C<< { fold => "uc" } >>  or to leave the fields
 as-is with C<< { fold => "none" } >>.
 
+Currently supported values for fold are C<uc>, C<lc> (default), and C<none>.
+Support for C<fc> is planned (with a fallback to C<lc>).
+
 =item columns
 
  $csv->header ($fh, { columns => 1 });
