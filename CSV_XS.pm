@@ -792,7 +792,7 @@ sub column_names
     @{$self->{_COLUMN_NAMES}};
     } # column_names
 
-BEGIN { *fc = $] >= 5.16 ? \&CORE::fc : sub { lc $_[0] } }
+BEGIN { *fc = $] >= 5.016 ? \&CORE::fc : sub { croak "This perl does not support fc\n" } }
 
 sub header
 {
@@ -2365,8 +2365,7 @@ headers to upper case with  C<< { fold => "uc" } >>  or to leave the fields
 as-is with C<< { fold => "none" } >>.
 
 Currently supported values for fold are C<uc>,  C<lc> (default), C<fc>, and
-C<none>.  C<fc> requires perl-5.16 or newer,  otherwise it will fallback to
-using C<lc>.
+C<none>.  C<fc> requires perl-5.16 or newer, otherwise it will croak.
 
 =item columns
 

@@ -134,6 +134,8 @@ for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "fc", "bar" ], [ "non
 
     my $data = "bAr,foo\n1,2\n3,4,5\n";
 
+    $] < 5.016 && defined $fold and $fold =~ s/^fc/lc/;
+
     $csv->column_names (undef);
     open my $fh, "<", \$data;
     ok (my $slf = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold || "undef"));
