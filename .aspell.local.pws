@@ -1,4 +1,4 @@
-personal_ws-1.1 en 39 
+personal_ws-1.1 en 40 
 AoA
 API
 ASV
@@ -22,6 +22,7 @@ EIQ
 eol
 EOL
 ESC
+fc
 FULLWIDTH
 getline
 hashrefs
