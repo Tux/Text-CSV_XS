@@ -823,7 +823,7 @@ sub header
 
     keys %sep >= 2 and croak ($self->SetDiag (1011));
 
-    $self->sep_char (keys %sep);
+    $self->sep (keys %sep);
     my $enc = "";
     if ($args{bom}) { # UTF-7 is not supported
 	   if ($hdr =~ s/^\x00\x00\xfe\xff//) { $enc = "utf-32be"   }

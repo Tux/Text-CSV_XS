@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 168;
+	plan tests => 196;
 	}
 
     use_ok "Text::CSV_XS";
@@ -56,8 +56,8 @@ foreach my $sep (",", ";") {
 	}
     }
 
-my $sep_ok = [ "\t", "|", ",", ";" ];
-foreach my $sep (",", ";", "|", "\t") {
+my $sep_ok = [ "\t", "|", ",", ";", "##", "\xe2\x81\xa3" ];
+foreach my $sep (@$sep_ok) {
     my $data = "bAr,foo\n1,2\n3,4,5\n";
     $data =~ s/,/$sep/g;
 
@@ -65,7 +65,7 @@ foreach my $sep (",", ";", "|", "\t") {
     {   open my $fh, "<", \$data;
 	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
 	is ($slf, $csv, "Return self");
-	is ($csv->sep_char, $sep, "Sep = $sep");
+	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
@@ -81,7 +81,7 @@ foreach my $sep (",", ";", "|", "\t") {
     {   open my $fh, "<", \$data;
 	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
 	is ($slf, $csv, "Return self");
-	is ($csv->sep_char, $sep, "Sep = $sep");
+	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
 	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
