@@ -1,4 +1,4 @@
-1.22	- 2016-02-19, H.Merijn Brand
+1.22	- 2016-02-22, H.Merijn Brand
     * Small doc updates regarding blank_is_undef
     * Add new method header
     * Precedence error in doc

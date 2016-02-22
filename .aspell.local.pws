@@ -1,10 +1,11 @@
-personal_ws-1.1 en 37 
+personal_ws-1.1 en 39 
 AoA
 API
 ASV
 attr
 bc
-BOM
+BOCU
+bom
 ChangeLog
 Citterman
 csvdiff
@@ -34,6 +35,7 @@ PapaParse
 posix
 PV
 QUO
+SCSU
 sep
 SetDiag
 STDERR
