@@ -2305,15 +2305,16 @@ Parse the CSV header and set C<sep_char> and encoding.
 
 The first argument should be a file handle.
 
-Assuming that the file opened for parsing has a header, and the header
-does not contain problematic characters like embedded newlines, read
-the first line from the open handle, auto-detect whether the header
-separates the column names with a character from the allowed separator
-list. That list defaults to C<[ ";", "," ]> and can be overruled with
-an optional argument of an anonymous list of allowed separator sequences.
-If any of the allowed separators matches, and none of the other allowed
-separators match, set C<sep_char> to that sequence for the current CSV_XS
-instance and use it to parse the first line, map those to lowercase, use
+Assuming that the file opened for parsing has a header, and the header does
+not contain problematic characters like embedded newlines,   read the first
+line from the open handle then auto-detect whether the header separates the
+column names with a character from the allowed separator list.
+
+The legal separator list defaults to  C<[ ";", "," ]>  and can be overruled
+with an optional argument of an anonymous list of  allowed  separators.  If
+any of the allowed separators matches,  and  none of the  I<other>  allowed
+separators match,  set C<sep_char> to that sequence for the current  CSV_XS
+instance  and use it to parse the first line,  map those to lowercase,  use
 that to set the instance column_names and return the instance:
 
  my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
@@ -2323,15 +2324,15 @@ that to set the instance column_names and return the instance:
      ...
      }
 
-If the header is empty, contains more than one unique separator out of the
-allowed set,  contains empty fields,  or contains identical fields  (after
+If the header is empty,  contains more than one unique separator out of the
+allowed set,  contains empty fields,   or contains identical fields  (after
 folding), it will croak with error 1010, 1011, 1012, or 1013 respectively.
 
 =head3 return value
 
 On error this method will croak.
 
-In list context, the headers will be returned whether they are used to set
+In list context,  the headers will be returned whether they are used to set
 L</column_names> or not.
 
 In scalar context, the instance itself is returned.
@@ -2344,29 +2345,29 @@ In scalar context, the instance itself is returned.
 
  $csv->header ($fh, { bom => 1 });
 
-The default behavior is to detect if the header line starts with a BOM. If
-the header has a BOM, use that to set the encoding of C<$fh>. This default
+The default behavior is to detect if the header line starts with a BOM.  If
+the header has a BOM, use that to set the encoding of C<$fh>.  This default
 behavior can be disabled by passing a false value to the C<bom> option.
 
-Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and
-UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030
+Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE,  and
+UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
 but L<Encode> does not (yet). UTF-7 is not supported.
 
 =item fold
 
  $csv->header ($fh, { fold => "lc" });
 
-The default is to fold the header to lower case. You can also choose to
-fold the headers to upper case with C<< { fold => "uc" } >> or to leave
-the fields as-is with C<< { fold => "none" } >>.
+The default is to fold the header to lower case. You can choose to fold the
+headers to upper case with  C<< { fold => "uc" } >>  or to leave the fields
+as-is with C<< { fold => "none" } >>.
 
 =item columns
 
  $csv->header ($fh, { columns => 1 });
 
-The default is to set the instances column names using L</column_names> if
-the method is successful, so subsequent calls to L</getline_hr> can return
-a hash. Disable setting the header can be forced using a false value for
+The default is to set the instances column names using  L</column_names> if
+the method is successful,  so subsequent calls to L</getline_hr> can return
+a hash. Disable setting the header can be forced by using a false value for
 this option like C<< { columns => 0 } >>.
 
 =back
