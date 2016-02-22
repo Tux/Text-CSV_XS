@@ -173,12 +173,14 @@ for (	[ "none"       => ""	],
 	) {
     my ($enc, $bom) = @$_;
     open my $fh, ">", $fnm;
+    binmode $fh;
     print $fh $bom;
     print $fh Encode::encode ($enc eq "none" ? "utf-8" : $enc, $str);
     close $fh;
 
     $csv->column_names (undef);
     open  $fh, "<", $fnm;
+    binmode $fh;
     ok (1, "$fnm opened for enc $enc");
     ok ($csv->header ($fh), "headers with BOM for $enc");
     is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
