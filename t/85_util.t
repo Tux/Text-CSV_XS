@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 206;
+	plan tests => 242;
 	}
 
     use_ok "Text::CSV_XS";
@@ -79,6 +79,16 @@ foreach my $sep (@$sep_ok) {
 
     $csv->column_names (undef);
     {   open my $fh, "<", \$data;
+	ok (my $slf = $csv->header ($fh, { sep_set => $sep_ok }), "header with specific sep set as opt");
+	is ($slf, $csv, "Return self");
+	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
+	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
+	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
+	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	}
+
+    $csv->column_names (undef);
+    {   open my $fh, "<", \$data;
 	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
 	is ($slf, $csv, "Return self");
 	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
@@ -105,12 +115,12 @@ for ( [ 1010, 0, qq{}		],	# Empty header
     }
 {   open my $fh, "<", \"bar,bAr,bAR,BAR\n1,2,3,4";
     $csv->column_names (undef);
-    ok ($csv->header ($fh, { fold => "none" }), "non-unique unfolded headers");
+    ok ($csv->header ($fh, { munge_column_names => "none" }), "non-unique unfolded headers");
     is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers");
     }
 {   open my $fh, "<", \"bar,bAr,bAR,BAR\n1,2,3,4";
     $csv->column_names (undef);
-    ok (my @hdr = $csv->header ($fh, { fold => "none" }), "non-unique unfolded headers");
+    ok (my @hdr = $csv->header ($fh, { munge_column_names => "none" }), "non-unique unfolded headers");
     is_deeply (\@hdr, [qw( bar bAr bAR BAR )], "Headers from method");
     is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers from column_names");
     }
@@ -121,7 +131,7 @@ foreach my $sep (",", ";") {
 
     $csv->column_names (undef);
     {   open my $fh, "<", \$data;
-	ok (my $slf = $csv->header ($fh, { columns => 0 }), "Header without column setting");
+	ok (my $slf = $csv->header ($fh, { set_column_names => 0 }), "Header without column setting");
 	is ($slf, $csv, "Return self");
 	is ($csv->sep_char, $sep, "Sep = $sep");
 	is_deeply ([ $csv->column_names ], [], "headers");
@@ -130,28 +140,31 @@ foreach my $sep (",", ";") {
 	}
     $csv->column_names (undef);
     {   open my $fh, "<", \$data;
-	ok (my @hdr = $csv->header ($fh, { columns => 0 }), "Header without column setting");
+	ok (my @hdr = $csv->header ($fh, { set_column_names => 0 }), "Header without column setting");
 	is_deeply (\@hdr, $hdr_lc, "Headers from method");
 	is_deeply ([ $csv->column_names ], [], "Headers from column_names");
 	}
     }
 
-for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "fc", "bar" ], [ "none", "bAr" ]) {
-    my ($fold, $hdr) = @$_;
+my $n;
+for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ],
+     [ sub { "column_".$n++ }, "column_0" ]) {
+    my ($munge, $hdr) = @$_;
 
     my $data = "bAr,foo\n1,2\n3,4,5\n";
+    my $how  = defined $munge ? ref $munge ? "CB" : $munge : "undef";
 
-    $] < 5.016 && defined $fold and $fold =~ s/^fc/lc/;
-
+    $n = 0;
     $csv->column_names (undef);
     open my $fh, "<", \$data;
-    ok (my $slf = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold || "undef"));
+    ok (my $slf = $csv->header ($fh, { munge_column_names => $munge }), "munge header with $how");
     is (($csv->column_names)[0], $hdr, "folded header to $hdr");
     close $fh;
 
+    $n = 0;
     $csv->column_names (undef);
     open $fh, "<", \$data;
-    ok (my @hdr = $csv->header ($fh, { fold => $fold }), "header with fold ". ($fold || "undef"));
+    ok (my @hdr = $csv->header ($fh, { munge_column_names => $munge }), "munge header with $how");
     is ($hdr[0], $hdr, "folded header to $hdr");
     }
 
