@@ -2390,7 +2390,7 @@ to lower case.
 
  $csv->header ($fh, { munge_column_names => "lc" });
 
-The following values are  available:
+The following values are available:
 
   lc   - lower case
   uc   - upper case
