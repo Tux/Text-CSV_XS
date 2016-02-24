@@ -10,7 +10,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 242;
+	plan tests => 267;
 	}
 
     use_ok "Text::CSV_XS";
@@ -37,12 +37,14 @@ foreach my $sep (",", ";") {
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	close $fh;
 	}
 
     $csv->column_names (undef);
     {   open my $fh, "<", \$data;
 	ok (my @hdr = $csv->header ($fh), "header");
 	is_deeply (\@hdr, $hdr_lc, "Return headers");
+	close $fh;
 	}
 
     $csv->column_names (undef);
@@ -53,6 +55,7 @@ foreach my $sep (",", ";") {
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
 	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
+	close $fh;
 	}
     }
 
@@ -69,12 +72,14 @@ foreach my $sep (@$sep_ok) {
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	close $fh;
 	}
 
     $csv->column_names (undef);
     {   open my $fh, "<", \$data;
 	ok (my @hdr = $csv->header ($fh, $sep_ok), "header with specific sep set");
 	is_deeply (\@hdr, $hdr_lc, "Return headers");
+	close $fh;
 	}
 
     $csv->column_names (undef);
@@ -85,6 +90,7 @@ foreach my $sep (@$sep_ok) {
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	close $fh;
 	}
 
     $csv->column_names (undef);
@@ -95,6 +101,7 @@ foreach my $sep (@$sep_ok) {
 	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
 	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
 	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
+	close $fh;
 	}
     }
 
@@ -112,17 +119,20 @@ for ( [ 1010, 0, qq{}		],	# Empty header
     is ($self, undef, "FAIL for '$data'");
     ok ($@, "Error");
     is (0 + $csv->error_diag, $err, "Error code $err");
+    close $fh;
     }
 {   open my $fh, "<", \"bar,bAr,bAR,BAR\n1,2,3,4";
     $csv->column_names (undef);
     ok ($csv->header ($fh, { munge_column_names => "none" }), "non-unique unfolded headers");
     is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers");
+    close $fh;
     }
 {   open my $fh, "<", \"bar,bAr,bAR,BAR\n1,2,3,4";
     $csv->column_names (undef);
     ok (my @hdr = $csv->header ($fh, { munge_column_names => "none" }), "non-unique unfolded headers");
     is_deeply (\@hdr, [qw( bar bAr bAR BAR )], "Headers from method");
     is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers from column_names");
+    close $fh;
     }
 
 foreach my $sep (",", ";") {
@@ -137,12 +147,14 @@ foreach my $sep (",", ";") {
 	is_deeply ([ $csv->column_names ], [], "headers");
 	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
 	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	close $fh;
 	}
     $csv->column_names (undef);
     {   open my $fh, "<", \$data;
 	ok (my @hdr = $csv->header ($fh, { set_column_names => 0 }), "Header without column setting");
 	is_deeply (\@hdr, $hdr_lc, "Headers from method");
 	is_deeply ([ $csv->column_names ], [], "Headers from column_names");
+	close $fh;
 	}
     }
 
@@ -166,6 +178,7 @@ for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ],
     open $fh, "<", \$data;
     ok (my @hdr = $csv->header ($fh, { munge_column_names => $munge }), "munge header with $how");
     is ($hdr[0], $hdr, "folded header to $hdr");
+    close $fh;
     }
 
 my $fnm = "_85hdr.csv"; END { unlink $fnm; }
@@ -178,26 +191,35 @@ for (	[ "none"       => ""	],
 	[ "utf-16le"   => "\xff\xfe"		],
 	[ "utf-32be"   => "\x00\x00\xfe\xff"	],
 	[ "utf-32le"   => "\xff\xfe\x00\x00"	],
-#	[ "utf-1"      => "\xf7\x64\x4c"	],
-#	[ "utf-ebcdic" => "\xdd\x73\x66\x73"	],
-#	[ "scsu"       => "\x0e\xfe\xff"	],
-#	[ "bocu-1"     => "\xfb\xee\x28"	],
-#	[ "gb-18030"   => "\x84\x31\x95"	],
+	[ "utf-1"      => "\xf7\x64\x4c"	],
+	[ "utf-ebcdic" => "\xdd\x73\x66\x73"	],
+	[ "scsu"       => "\x0e\xfe\xff"	],
+	[ "bocu-1"     => "\xfb\xee\x28"	],
+	[ "gb-18030"   => "\x84\x31\x95"	],
 	) {
     my ($enc, $bom) = @$_;
-    open my $fh, ">", $fnm;
-    binmode $fh;
-    print $fh $bom;
-    print $fh Encode::encode ($enc eq "none" ? "utf-8" : $enc, $str);
-    close $fh;
+    my $has_enc = 0;
+    eval {
+	open my $fh, ">", $fnm;
+	binmode $fh;
+	print $fh $bom;
+	print $fh Encode::encode ($enc eq "none" ? "utf-8" : $enc, $str);
+	close $fh;
+	$has_enc = 1;
+	};
 
-    $csv->column_names (undef);
-    open  $fh, "<", $fnm;
-    binmode $fh;
-    ok (1, "$fnm opened for enc $enc");
-    ok ($csv->header ($fh), "headers with BOM for $enc");
-    is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
-    ok (my $row = $csv->getline_hr ($fh), "getline_hr");
-    is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+    SKIP: {
+	$has_enc or skip "Encoding $enc not supported", 5;
+	$csv->column_names (undef);
+	open my $fh, "<", $fnm;
+	binmode $fh;
+	ok (1, "$fnm opened for enc $enc");
+	ok ($csv->header ($fh), "headers with BOM for $enc");
+	is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
+	ok (my $row = $csv->getline_hr ($fh), "getline_hr");
+	is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+	close $fh;
+	}
+
     unlink $fnm;
     }

@@ -1,3 +1,6 @@
+1.23	- 2016-02-24, H.Merijn Brand
+    * Skip unsupported encodings
+
 1.22	- 2016-02-23, H.Merijn Brand
     * Small doc updates regarding blank_is_undef
     * Precedence error in doc
