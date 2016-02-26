@@ -2399,7 +2399,9 @@ The following values are available:
 
  $csv->header ($fh, { munge_column_names => sub { fc } });
  $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
- $csv->header ($fh, { munge_column_names => sub { lc (shift =~ s/\W+/_/gr) } });
+ $csv->header ($fh, { munge_column_names => sub { lc (s/\W+/_/gr) } });
+
+As this callback is called in a C<map>, you can use C<$_> directly.
 
 =item set_column_names
 
@@ -2411,6 +2413,32 @@ a hash. Disable setting the header can be forced by using a false value for
 this option.
 
 =back
+
+=head3 Validation
+
+When receiving CSV files from external sources,  this method can be used to
+protect against changes in the layout by restricting to known headers  (and
+typos in the header fields).
+
+ my %known = (
+     "record key" => "c_rec",
+     "rec id"     => "c_rec",
+     "id_rec"     => "c_rec",
+     "kode"       => "code",
+     "code"       => "code",
+     "vaule"      => "value",
+     "value"      => "value",
+     );
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+ open my $fh, "<", $source or die "$source: $!";
+ $csv->header ($fh, { munge_column_names => sub {
+     s/\s+$//;
+     s/^\s+//;
+     $known{lc $_} or die "Unknown column '$_' in $source";
+     }});
+ while (my $row = $csv->getline_hr ($fh)) {
+     say join "\t", $row->{c_rec}, $row->{code}, $row->{value};
+     }
 
 =head2 bind_columns
 X<bind_columns>
