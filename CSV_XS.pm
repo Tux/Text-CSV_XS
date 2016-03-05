@@ -1342,8 +1342,27 @@ The old(er) way of using global file handles is still supported
 
 Unicode is only tested to work with perl-5.8.2 and up.
 
+The simplest way to ensure the correct encoding is used for  in- and output
+is by either setting layers on the filehandles, or setting the L</encoding>
+argument for L</csv>.
+
+ open my $fh, "<:encoding(UTF-8)", "in.csv"  or die "in.csv: $!";
+ open my $fh, ">:encoding(UTF-8)", "out.csv" or die "out.csv: $!";
+ my $aoa = csv (in => "in.csv",     encoding => "UTF-8");
+ csv (in => $aoa, out => "out.csv", encoding => "UTF-8");
+
 On parsing (both for  L</getline> and  L</parse>),  if the source is marked
 being UTF8, then all fields that are marked binary will also be marked UTF8.
+
+On combining (L</print>  and  L</combine>):  if any of the combining fields
+was marked UTF8, the resulting string will be marked as UTF8.  Note however
+that all fields  I<before>  the first field marked UTF8 and contained 8-bit
+characters that were not upgraded to UTF8,  these will be  C<bytes>  in the
+resulting string too, possibly causing unexpected errors.  If you pass data
+of different encoding,  or you don't know if there is  different  encoding,
+force it to be upgraded before you pass them on:
+
+ $csv->print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);
 
 For complete control over encoding, please use L<Text::CSV::Encoded>:
 
@@ -1360,16 +1379,6 @@ For complete control over encoding, please use L<Text::CSV::Encoded>:
  $csv = Text::CSV::Encoded->new ({ encoding  => undef }); # default
  # combine () and print () accept UTF8 marked data
  # parse () and getline () return UTF8 marked data
-
-On combining (L</print>  and  L</combine>):  if any of the combining fields
-was marked UTF8, the resulting string will be marked as UTF8.  Note however
-that all fields  I<before>  the first field marked UTF8 and contained 8-bit
-characters that were not upgraded to UTF8,  these will be  C<bytes>  in the
-resulting string too, possibly causing unexpected errors.  If you pass data
-of different encoding,  or you don't know if there is  different  encoding,
-force it to be upgraded before you pass them on:
-
- $csv->print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);
 
 =head1 SPECIFICATION
 
