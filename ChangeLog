@@ -1,5 +1,7 @@
-1.23	- 2016-02-24, H.Merijn Brand
+1.23	- 2016-03-08, H.Merijn Brand
     * Skip unsupported encodings
+    * Reorganize Unicode section and mention layers (Dan Book)
+    * Amend some UTF-8 tests for PERL_UNICODE settings
 
 1.22	- 2016-02-23, H.Merijn Brand
     * Small doc updates regarding blank_is_undef

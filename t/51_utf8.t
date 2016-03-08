@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use charnames ":full";
 
-$| = 1;
 use Test::More;
 $| = 1;
 
@@ -18,6 +17,9 @@ my @tests;
 BEGIN {
     delete $ENV{PERLIO};
 
+    my $pu = $ENV{PERL_UNICODE};
+    $pu = defined $pu && ($pu eq "" || $pu =~ m/[oD]/ || ($pu =~ m/^[0-9]+$/ && $pu & 16));
+
     my $euro_ch = "\x{20ac}";
 
     utf8::encode    (my $bytes = $euro_ch);
@@ -27,8 +29,7 @@ BEGIN {
     @tests = (
 	# $test                        $perlio             $data,      $encoding $expect_w
 	# ---------------------------- ------------------- ----------- --------- ----------
-	[ "Unicode  default",          "",                 $euro_ch,   "utf8",
-					    exists $ENV{PERL_UNICODE} ? "no warn" : "warn", ],
+	[ "Unicode  default",          "",                 $euro_ch,   "utf8",   $pu ? "no warn" : "warn" ],
 	[ "Unicode  binmode",          "[binmode]",        $euro_ch,   "utf8",   "warn",    ],
 	[ "Unicode  :utf8",            ":utf8",            $euro_ch,   "utf8",   "no warn", ],
 	[ "Unicode  :encoding(utf8)",  ":encoding(utf8)",  $euro_ch,   "utf8",   "no warn", ],
