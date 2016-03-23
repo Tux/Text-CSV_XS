@@ -985,12 +985,12 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     } /* CsvGet */
 
 #define ERROR_INSIDE_QUOTES(diag_code) {	\
-    SvREFCNT_dec (sv);				\
+    unless (csv->is_bound) SvREFCNT_dec (sv);	\
     ParseError (csv, diag_code, csv->used - 1);	\
     return FALSE;				\
     }
 #define ERROR_INSIDE_FIELD(diag_code) {		\
-    SvREFCNT_dec (sv);				\
+    unless (csv->is_bound) SvREFCNT_dec (sv);	\
     ParseError (csv, diag_code, csv->used - 1);	\
     return FALSE;				\
     }
