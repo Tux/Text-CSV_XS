@@ -1107,6 +1107,13 @@ sub _csv_attr
 	}
 
     my $fltr = delete $attr{filter};
+    my %fltr = (
+	not_blank => sub { @{$_[1]} > 1 or defined $_[1][0] && $_[1][0] ne "" },
+	not_empty => sub { grep { defined && $_ ne "" } @{$_[1]} },
+	filled    => sub { grep { defined && m/\S/    } @{$_[1]} },
+	);
+    defined $fltr && !ref $fltr && exists $fltr{$fltr} and
+	$fltr = { 0 => $fltr{$fltr} };
     ref $fltr eq "HASH" or $fltr = undef;
 
     defined $attr{auto_diag} or $attr{auto_diag} = 1;
@@ -3053,10 +3060,14 @@ return a true or false value.
             5 => sub { length > 4 }, # length of the 5th field minimal 5
             });
 
-If the keys to the filter contain any character that in not a digit it will
-also implicitly set  L</headers> to C<auto>  unless L</headers> was already
-passed as argument.  When headers are active, returning an array of hashes,
-the filter is not applicable to the header itself.
+ csv (in => "file.csv", filter => "not_blank");
+ csv (in => "file.csv", filter => "not_empty");
+ csv (in => "file.csv", filter => "filled");
+
+If the keys to the filter hash contain any character that is not a digit it
+will also implicitly set L</headers> to C<"auto">  unless  L</headers>  was
+already passed as argument.  When headers are active, returning an array of
+hashes, the filter is not applicable to the header itself.
 
  csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
@@ -3082,6 +3093,63 @@ will upper-case the second field, and then skip it if the resulting content
 evaluates to false. To always accept, end with truth:
 
  filter => { 2 => sub { $_ = uc; 1 }}
+
+B<Predefined filters>
+
+Given a file like (line numbers prefixed for doc purpose only):
+
+ 1:1,2,3
+ 2:
+ 3:,
+ 4:""
+ 5:,,
+ 6:, ,
+ 7:"",
+ 8:" "
+ 9:4,5,6
+
+=over 2
+
+=item not_blank
+
+Filter out the blank lines
+
+This filter is a shortcut for
+
+ filter => { 0 => sub { @{$_[1]} > 1 or
+             defined $_[1][0] && $_[1][0] ne "" } }
+
+Due to the implementation,  it is currently impossible to also filter lines
+that consists only of a quoted empty field. These lines are also considered
+blank lines.
+
+With the given example, lines 2 and 4 will be skipped.
+
+=item not_empty
+
+Filter out lines where all the fields are empty.
+
+This filter is a shortcut for
+
+ filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
+
+A space is not regarded being empty, so given the example data, lines 1, 3,
+4, 5, and 7 are skipped.
+
+=item filled
+
+Filter out lines that have no visible data
+
+This filter is a shortcut for
+
+ filter => { 0 => sub { grep { defined && m/\S/ } @{$_[1]} } }
+
+This filter rejects all lines that I<not> have at least one field that does
+not evaluate to the empty string.
+
+With the given example data, this filter would skip lines 2 through 8.
+
+=back
 
 =item after_in
 X<after_in>

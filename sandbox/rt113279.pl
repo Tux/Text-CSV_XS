@@ -5,7 +5,7 @@ use warnings;
 
 use Text::CSV_XS;
 
-my $csv = Text::CSV_XS->new;
+my $csv = Text::CSV_XS->new ({ auto_diag => 1 });
 my $foo;
 $csv->bind_columns (\$foo);
 $csv->parse ('foo "bar"');

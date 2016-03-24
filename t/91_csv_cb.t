@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 42;
+ use Test::More tests => 45;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -131,3 +131,29 @@ is_deeply (csv (in      => $tfn,
 		on_in   => sub { $_{brt} = 42; }),
 	    [{ foo => 4, bar => 5, baz => 6, brt => 42 }],
 	    "AOH with addition to %_ in on_in");
+
+open  FH, ">", $tfn or die "$tfn: $!";
+print FH <<"EOD";
+3,3,3
+
+5,7,9
+,
+"",
+,, ,
+,"",
+,," ",
+""
+8,13,18
+EOD
+close FH;
+
+is_deeply (csv (in => $tfn, filter => "not_blank"),
+	    [[3,3,3],[5,7,9],["",""],["",""],["",""," ",""],
+	     ["","",""],["",""," ",""],[8,13,18]],
+	    "filter => not_blank");
+is_deeply (csv (in => $tfn, filter => "not_empty"),
+	    [[3,3,3],[5,7,9],["",""," ",""],["",""," ",""],[8,13,18]],
+	    "filter => not_empty");
+is_deeply (csv (in => $tfn, filter => "filled"),
+	    [[3,3,3],[5,7,9],[8,13,18]],
+	    "filter => filled");

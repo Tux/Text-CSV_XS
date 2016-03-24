@@ -1,8 +1,9 @@
-1.23	- 2016-03-23, H.Merijn Brand
+1.23	- 2016-03-24, H.Merijn Brand
     * Skip unsupported encodings
     * Reorganize Unicode section and mention layers (Dan Book)
     * Amend some UTF-8 tests for PERL_UNICODE settings
     * Fix crash on error in parsing with bound columns (RT#113279)
+    * Add predefined filters (not_blank, not_empty, filled)
 
 1.22	- 2016-02-23, H.Merijn Brand
     * Small doc updates regarding blank_is_undef
