@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20453;
+ use Test::More tests => 20458;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -448,6 +448,17 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
     is_deeply ([ $csv->fields ], [ 1, ",", 3 ], "escaped sep in unquoted field");
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=113279
+    $rt = 113279; # Failed parse + bind_columns causes memory corruption
+    my $csv = Text::CSV_XS->new ();
+    is ($csv->parse ($input{$rt}[0]), 0,	"parse invalid content");
+    is (0 + $csv->error_diag, 2034,		"Error is kept");
+    my $fld;
+    ok ($csv->bind_columns (\$fld),		"bound column");
+    is ($csv->parse ($input{$rt}[0]), 0,	"parse invalid content to bc");
+    is (0 + $csv->error_diag, 2034,		"Error is kept");
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -507,3 +518,5 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 "0","A"
 "A","0"
 "A","0"
+«113279» - Failed parse + bind_columns causes memory corruption
+foo "bar"
