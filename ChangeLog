@@ -1,4 +1,4 @@
-1.23	- 2016-03-24, H.Merijn Brand
+1.23	- 2016-03-25, H.Merijn Brand
     * Skip unsupported encodings
     * Reorganize Unicode section and mention layers (Dan Book)
     * Amend some UTF-8 tests for PERL_UNICODE settings
