@@ -1,3 +1,6 @@
+1.24	- 2016-05-03, H.Merijn Brand
+    * Fix typo in docs example code (issue#4, joevak)
+
 1.23	- 2016-03-25, H.Merijn Brand
     * Skip unsupported encodings
     * Reorganize Unicode section and mention layers (Dan Book)
