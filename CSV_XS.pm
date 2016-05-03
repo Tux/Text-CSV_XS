@@ -2827,7 +2827,7 @@ If  C<headers>  is an anonymous list,  the entries in the list will be used
 instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
- csv (in => $aoa, out => $fh, headers => [qw( code description price }]);
+ csv (in => $aoa, out => $fh, headers => [qw( code description price )]);
 
 If C<headers> is an hash reference, this implies C<auto>, but header fields
 for that exist as key in the hashref will be replaced by the value for that
