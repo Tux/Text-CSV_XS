@@ -157,23 +157,16 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 
 	if ($utf and $csv->is_binary ($c)) {
 	    from_to ($val, "utf-8", "ucs2");
-	    $wks->write_unicode ($h, $c, $val);
+	    $wks->write_string ($h, $c, $val);
 	    next;
 	    }
 
 	if ($csv->is_quoted ($c)) {
 	    $val =~ s/\r\n/\n/g;
-	    if ($utf) {
-		from_to ($val, "utf-8", "ucs2");
-		$val =~ m/\n/
-		    ? $wks->write_unicode ($h, $c, $val, $fmt{wrap})
-		    : $wks->write_unicode ($h, $c, $val);
-		}
-	    else {
-		$val =~ m/\n/
-		    ? $wks->write_string  ($h, $c, $val, $fmt{wrap})
-		    : $wks->write_string  ($h, $c, $val);
-		}
+	    $utf and from_to ($val, "utf-8", "ucs2");
+	    $val =~ m/\n/
+		? $wks->write_string ($h, $c, $val, $fmt{wrap})
+		: $wks->write_string ($h, $c, $val);
 	    next;
 	    }
 
