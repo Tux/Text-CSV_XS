@@ -36,7 +36,8 @@ t/85_util.t		Test for utility methods
 t/90_csv.t		Function csv () checks
 t/91_csv_cb.t		Callbacks with csv function
 t/util.pl		Extra test utilities
-examples/csv2xls	Script to onvert CSV files to M$Excel
+examples/csv2xls	Script to onvert CSV files to M$Excel       XLS
+examples/csv2xlsx	Script to onvert CSV files to M$Excel 2007+ XLSX
 examples/csv-check	Script to check a CSV file/stream
 examples/csvdiff	Script to shoff diff between sorted CSV files
 examples/parser-xs.pl	Parse CSV stream, be forgiving on bad lines
