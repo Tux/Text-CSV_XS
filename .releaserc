@@ -9,9 +9,9 @@ perls /pro/bin/perl\
 :/usr/bin/perl\
 :/media/Tux/perls/bin/perl5.6.[12]\
 :/media/Tux/perls/bin/perl5.8.*\
-:/media/Tux/perls/bin/perl5.1[02468]*\
-:/media/Tux/perls/bin/perl5.2[023]*\
+:/media/Tux/perls/bin/perl5.[12][02468]*\
+:/media/Tux/perls/bin/perl5.25*\
 :/media/Tux/perls/bin/tperl5.6.[2]\
 :/media/Tux/perls/bin/tperl5.8.*\
-:/media/Tux/perls/bin/tperl5.1[02468]*\
-:/media/Tux/perls/bin/tperl5.2[023]*
+:/media/Tux/perls/bin/tperl5.[12][02468]*\
+:/media/Tux/perls/bin/tperl5.25*
