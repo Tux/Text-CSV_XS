@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'15 [08 Dec 2015] Copyright H.M.Brand 2007-2016
+#	   (m)'16 [17 May 2016] Copyright H.M.Brand 2007-2016
 
 use strict;
 use warnings;
 
-our $VERSION = "1.75";
+our $VERSION = "1.76";
 
 sub usage
 {
@@ -86,14 +86,9 @@ my $wbk = Spreadsheet::WriteExcel->new ($xls);
 my $wks = $wbk->add_worksheet ();
    $dtf =~ s/j/y/g;
 my %fmt = (
-    date	=> $wbk->add_format (
-	num_format	=> $dtf,
-	align		=> "center",
-	),
-
-    rest	=> $wbk->add_format (
-	align		=> "left",
-	),
+    date => $wbk->add_format (align => "center", num_format => $dtf),
+    rest => $wbk->add_format (align => "left"),
+    wrap => $wbk->add_format (text_wrap => 1),
     );
 $crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
     num_format	=> "$1 $2",
@@ -169,10 +164,14 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 	if ($csv->is_quoted ($c)) {
 	    if ($utf) {
 		from_to ($val, "utf-8", "ucs2");
-		$wks->write_unicode ($h, $c, $val);
+		$val =~ m/\n/
+		    ? $wks->write_unicode ($h, $c, $val, $fmt{wrap})
+		    : $wks->write_unicode ($h, $c, $val);
 		}
 	    else {
-		$wks->write_string  ($h, $c, $val);
+		$val =~ m/\n/
+		    ? $wks->write_string  ($h, $c, $val, $fmt{wrap})
+		    : $wks->write_string  ($h, $c, $val);
 		}
 	    next;
 	    }

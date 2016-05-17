@@ -1,5 +1,6 @@
-1.24	- 2016-05-03, H.Merijn Brand
+1.24	- 2016-05-17, H.Merijn Brand
     * Fix typo in docs example code (issue#4, joevak)
+    * Set auto-wrap on for csv2xls with embedded newlines
 
 1.23	- 2016-03-25, H.Merijn Brand
     * Skip unsupported encodings
