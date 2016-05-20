@@ -2,7 +2,7 @@
 
 package genMETA;
 
-our $VERSION = "1.07-20160513";
+our $VERSION = "1.08-20160520";
 
 use 5.14.1;
 use warnings;
@@ -177,7 +177,7 @@ sub check_yaml {
 
     my @yml = @{$self->{yml}} or croak "No YAML to check";
 
-    warn "Checking generated YAML ...\n";
+    warn "Checking generated YAML ...\n" unless $self->{quiet};
     my $h;
     my $yml = join "", @yml;
     eval { $h = Load ($yml) };
@@ -186,7 +186,7 @@ sub check_yaml {
     $self->{name} eq  $h->{name} or
 	croak RED, "NAME mismatch Makefile.PL / YAML", RESET, "\n";
     $self->{name} =~ s/-/::/g;
-    warn "Checking for $self->{name}-$self->{version}\n";
+    warn "Checking for $self->{name}-$self->{version}\n" unless $self->{quiet};
 
     $self->{verbose} and print Dump $h;
 
@@ -309,6 +309,7 @@ sub check_changelog {
 	    }
 	last;
 	}
+    close $fh;
     } # check_changelog
 
 sub done_testing {
@@ -316,13 +317,29 @@ sub done_testing {
     Test::More::done_testing ();
     } # done_testing
 
+sub quiet {
+    my $self = shift;
+    @_ and $self->{quiet} = defined $_[0];
+    $self->{quiet};
+    } # quiet
+
 sub print_yaml {
     my $self = shift;
     print @{$self->{yml}};
     } # print_yaml
 
+sub write_yaml {
+    my ($self, $out) = @_;
+    $out ||= "META.yml";
+    $out =~ s/\.jso?n$/.yml/;
+    open my $fh, ">", $out or croak "$out: $!\n";
+    print $fh @{$self->{yml}};
+    close $fh;
+    $self->fix_meta ($out);
+    } # print_yaml
+
 sub fix_meta {
-    my $self = shift;
+    my ($self, $yf) = @_;
 
     # Convert to meta-spec version 2
     # licenses are lists now
@@ -378,10 +395,12 @@ sub fix_meta {
     $cmv->is_valid or
 	croak join "\n" => RED, "META Validator found fail:\n", $cmv->errors, RESET, "";
 
-    my @my = glob <*/META.yml> or croak "No META files";
-    my $yf = $my[0];
-    (my $jf = $yf) =~ s/yml$/json/;
-    open my $jh, ">", $jf or croak "Cannot update $jf\n";
+    unless ($yf) {
+	my @my = glob "*/META.yml" or croak "No META files";
+	$yf = $my[0];
+	}
+    my $jf = $yf =~ s/yml$/json/r;
+    open my $jh, ">", $jf or croak "Cannot update $jf: $!\n";
     print   $jh JSON::PP->new->utf8 (1)->pretty (1)->encode ($jsn);
     close   $jh;
 
@@ -426,7 +445,7 @@ sub fix_meta {
     #DDumper $yml;
     #exit;
 
-    @my == 1 && open my $my, ">", $yf or croak "Cannot update $yf\n";
+    open my $my, ">", $yf or croak "Cannot update $yf: $!\n";
     print $my Dump $yml; # @{$self->{yml}};
     close $my;
 
