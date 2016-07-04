@@ -1354,8 +1354,11 @@ is by either setting layers on the filehandles, or setting the L</encoding>
 argument for L</csv>.
 
  open my $fh, "<:encoding(UTF-8)", "in.csv"  or die "in.csv: $!";
- open my $fh, ">:encoding(UTF-8)", "out.csv" or die "out.csv: $!";
+or
  my $aoa = csv (in => "in.csv",     encoding => "UTF-8");
+
+ open my $fh, ">:encoding(UTF-8)", "out.csv" or die "out.csv: $!";
+or
  csv (in => $aoa, out => "out.csv", encoding => "UTF-8");
 
 On parsing (both for  L</getline> and  L</parse>),  if the source is marked
