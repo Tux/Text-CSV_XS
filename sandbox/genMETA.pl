@@ -23,7 +23,26 @@ $meta->from_data (<DATA>);
 if ($check) {
     $meta->check_encoding ();
     $meta->check_required ();
-    $meta->check_minimum ("5.010", [ "examples" ]);
+    my %ex;
+    for ( [qw( csv2xls		5.010	)], # //=
+	  [qw( csv2xlsx		5.014	)], # s///r
+	  [qw( csv-check	5.010	)], # //=
+	  [qw( csvdiff		5.010	)], # //=
+	  [qw( parser-xs.pl	5.006	)], #
+	  [qw( rewrite.pl	5.010	)], # //=
+	  [qw( speed.pl		5.008	)], # open "<", \$
+	  ) {
+	substr $_->[0], 0, 0, "examples/";
+	$ex{$_->[1]}{$_->[0]}++;
+	$ex{$_->[0]} = $_->[1];
+	}
+    for (grep { !$ex{$_} } glob "examples/*") {
+	$ex{$_} = "5.006";
+	$ex{"5.006"}{$_}++;
+	}
+
+    $meta->check_minimum (s/\.0+/./r, [ sort keys %{$ex{$_}} ]) for
+	sort { $a <=> $b } grep m/^5/ => keys %ex;
     $meta->done_testing ();
     }
 elsif ($opt_v) {

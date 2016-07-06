@@ -1,7 +1,8 @@
-1.24	- 2016-07-04, H.Merijn Brand
+1.24	- 2016-07-06, H.Merijn Brand
     * Fix typo in docs example code (issue#4, joevak)
     * Set auto-wrap on for csv2xls with embedded newlines
     * Add examples/csv2xlsx, the MSExcel-2007+ version of csv2xls
+      Includes new feature to merge multiple CSV's into a single xlsx
     * Slight modification in examples
 
 1.23	- 2016-03-25, H.Merijn Brand

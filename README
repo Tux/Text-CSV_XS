@@ -38,6 +38,8 @@ Prerequisites:
     reader. Other examples are checked against 5.8.4. For Unicode to
     work more or less reliable, you'd need perl 5.8.2 or newer.
 
+    examples/csv2xlsx requires 5.14 or newer.
+
 Build/Installation:
     Standard build/installation:
 	perl Makefile.PL
