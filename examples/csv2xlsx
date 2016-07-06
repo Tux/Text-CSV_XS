@@ -78,6 +78,7 @@ if ($mrg) {
 	    push @csv, $_;
 	    next;
 	    }
+	warn "Argument $_ is not an existing (CSV) file\n";
 	usage (1);
 	}
     $xls && @csv or usage (1);
