@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20458;
+ use Test::More tests => 20460;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -459,6 +459,17 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
     is (0 + $csv->error_diag, 2034,		"Error is kept");
     }
 
+{   # http://rt.cpan.org/Ticket/Display.html?id=115953
+    $rt = 115953; # Space stripped from middle of field value with allow_whitespace and allow_loose_quotes
+    my $csv = Text::CSV_XS->new ({
+	allow_loose_quotes => 1,
+	escape_char        => undef,
+	allow_whitespace   => 1,
+	});
+    ok ($csv->parse ($input{$rt}[0]),		"parse valid content");
+    is_deeply ([ $csv->fields ], [ q{foo "bar" baz} ], "Data");
+    }
+
 __END__
 «24386» - \t doesn't work in _XS, works in _PP
 VIN	StockNumber	Year	Make	Model	MD	Engine	EngineSize	Transmission	DriveTrain	Trim	BodyStyle	CityFuel	HWYFuel	Mileage	Color	InteriorColor	InternetPrice	RetailPrice	Notes	ShortReview	Certified	NewUsed	Image_URLs	Equipment
@@ -520,3 +531,5 @@ B:035_03_	fission, one	horns	@p 03-035.bmp	@p 03-035.bmp			obsolete Heising ex
 "A","0"
 «113279» - Failed parse + bind_columns causes memory corruption
 foo "bar"
+«115953» - Space stripped from middle of field value with allow_whitespace and allow_loose_quotes
+"foo "bar" baz"

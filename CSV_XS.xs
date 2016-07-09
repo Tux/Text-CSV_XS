@@ -1216,8 +1216,19 @@ restart:
 		    /* , 1 , "foo, 3" , , bar , \r\n
 		     *               ^
 		     */
-		    while (is_whitespace (c2))
+		    while (is_whitespace (c2)) {
+			if (csv->allow_loose_quotes &&
+				!(csv->escape_char && c2 == csv->escape_char)) {
+			    /* This feels like a brittle fix for RT115953, where
+			     *  ["foo "bar" baz"] got parsed as [foo "bar"baz]
+			     * when both allow_whitespace and allow_loose_quotes
+			     * are true and escape does not equal quote
+			     */
+			    CSV_PUT_SV (c);
+			    c = c2;
+			    }
 			c2 = CSV_GET;
+			}
 		    }
 
 		if (is_SEP (c2)) {
