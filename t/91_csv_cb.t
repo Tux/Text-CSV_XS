@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 45;
+ use Test::More tests => 46;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -27,7 +27,7 @@ my $aoa = [
     [ 2, "a b", "" ],
     ];
 my $aoh = [
-    { foo => 1, bar => 2, baz => 3 },
+    { foo => 1, bar => 2,     baz => 3  },
     { foo => 2, bar => "a b", baz => "" },
     ];
 
@@ -67,6 +67,12 @@ is_deeply (csv (in => $tfn, filter => { 2 => sub { /a/ },
 is_deeply (csv (in => $tfn, filter => { foo => sub { $_ > 1 }}), [
     { foo => 2, bar => "a b", baz => "" },
     ], "AOH with filter on column name");
+
+is_deeply (csv (in      => $tfn,
+		headers => sub { lcfirst uc $_[0] }),
+	    [ { fOO => 1, bAR => 2,     bAZ => 3 },
+	      { fOO => 2, bAR => "a b", bAZ => "" }],
+	    "AOH with mangled headers");
 
 open  FH, ">>", $tfn or die "$tfn: $!";
 print FH <<"EOD";

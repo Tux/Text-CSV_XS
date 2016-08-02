@@ -1,3 +1,6 @@
+1.25	- 2016-08-01, H.Merijn Brand
+    * Allow coderef for headers: $aoh = csv (..., headers => sub { ... });
+
 1.24	- 2016-07-09, H.Merijn Brand
     * Fix typo in docs example code (issue#4, joevak)
     * Set auto-wrap on for csv2xls with embedded newlines

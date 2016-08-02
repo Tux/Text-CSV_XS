@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.24";
+$VERSION   = "1.25";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -1197,13 +1197,20 @@ sub csv
 
     my $key = $c->{key} and $hdrs ||= "auto";
     $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
-    if (defined $hdrs && !ref $hdrs) {
-	if ($hdrs eq "skip") {
-	    $csv->getline ($fh); # discard;
+    if (defined $hdrs) {
+	if (!ref $hdrs) {
+	    if ($hdrs eq "skip") {
+		$csv->getline ($fh); # discard;
+		}
+	    elsif ($hdrs eq "auto") {
+		my $h = $csv->getline ($fh) or return;
+		$hdrs = [ map { $hdr{$_} || $_ } @$h ];
+		}
 	    }
-	elsif ($hdrs eq "auto") {
-	    my $h = $csv->getline ($fh) or return;
-	    $hdrs = [ map { $hdr{$_} || $_ } @$h ];
+	elsif (ref $hdrs eq "CODE") {
+	    my $h  = $csv->getline ($fh) or return;
+	    my $cr = $hdrs;
+	    $hdrs  = [ map { $cr-> ($hdr{$_} || $_) } @$h ];
 	    }
 	}
 
@@ -2815,9 +2822,9 @@ X<headers>
 If this attribute is not given, the default behavior is to produce an array
 of arrays.
 
-If C<headers> is supplied,  it should be either an anonymous list of column
-names, an anonymous hashref or a flag:  C<auto> or C<skip>. When C<skip> is
-used, the header will not be included in the output.
+If C<headers> is supplied,  it should be an anonymous list of column names,
+an anonymous hashref, a coderef, or a literal flag:  C<auto> or C<skip>.
+When C<skip> is used, the header will not be included in the output.
 
  my $aoa = csv (in => $fh, headers => "skip");
 
@@ -2825,6 +2832,15 @@ If C<auto> is used, the first line of the C<CSV> source will be read as the
 list of field headers and used to produce an array of hashes.
 
  my $aoh = csv (in => $fh, headers => "auto");
+
+If a coderef is used,  the first line of the  C<CSV> source will be read as
+the list of mangled field headers in which each field is passed as the only
+argument to the coderef. This list is used to produce an array of hashes.
+
+ my $aoh = csv (in => $fh, headers => sub { lc ($_[0]) =~ s/kode/code/gr });
+
+this example is like using C<auto> where all headers are lower case and all
+occurances of C<kode> are replaced with C<code>.
 
 If  C<headers>  is an anonymous list,  the entries in the list will be used
 instead
