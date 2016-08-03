@@ -2871,15 +2871,16 @@ If a coderef is used,  the first line of the  C<CSV> source will be read as
 the list of mangled field headers in which each field is passed as the only
 argument to the coderef. This list is used to produce an array of hashes.
 
- my $aoh = csv (in => $fh, headers => sub { lc ($_[0]) =~ s/kode/code/gr });
+ my $aoh = csv (in      => $fh,
+                headers => sub { lc ($_[0]) =~ s/kode/code/gr });
 
-this example is like using  C<lc>  where all headers are lower case and all
-occurrences of C<kode> are replaced with C<code>.
+this example is a variation of using C<lc> where all occurrences of C<kode>
+are replaced with C<code>.
 
 =item ARRAY
 
 If  C<headers>  is an anonymous list,  the entries in the list will be used
-instead
+as field names. The first line is considerd data instead of headers.
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
  csv (in => $aoa, out => $fh, headers => [qw( code description price )]);
