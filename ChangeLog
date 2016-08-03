@@ -1,5 +1,6 @@
 1.25	- 2016-08-03, H.Merijn Brand
     * Allow lc, uc, and coderef for csv () headers attribute
+    * Document for eof when the last line has an error (RT#115954)
 
 1.24	- 2016-07-09, H.Merijn Brand
     * Fix typo in docs example code (issue#4, joevak)

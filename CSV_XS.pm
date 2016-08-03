@@ -2451,6 +2451,16 @@ return true (1) if the last call hit end of file,  otherwise it will return
 false ('').  This is useful to see the difference between a failure and end
 of file.
 
+Note that if the parsing of the last line caused an error,  C<eof> is still
+true.  That means that if you are I<not> using L</auto_diag>, an idiom like
+
+ while (my $row = $csv->getline ($fh)) {
+     # ...
+     }
+ $csv->eof or $csv->error_diag;
+
+will I<not> report the error.
+
 =head2 types
 X<types>
 
