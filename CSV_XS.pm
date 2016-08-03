@@ -1204,13 +1204,21 @@ sub csv
 		}
 	    elsif ($hdrs eq "auto") {
 		my $h = $csv->getline ($fh) or return;
-		$hdrs = [ map { $hdr{$_} || $_ } @$h ];
+		$hdrs = [ map {      $hdr{$_} || $_ } @$h ];
+		}
+	    elsif ($hdrs eq "lc") {
+		my $h = $csv->getline ($fh) or return;
+		$hdrs = [ map { lc ($hdr{$_} || $_) } @$h ];
+		}
+	    elsif ($hdrs eq "uc") {
+		my $h = $csv->getline ($fh) or return;
+		$hdrs = [ map { uc ($hdr{$_} || $_) } @$h ];
 		}
 	    }
 	elsif (ref $hdrs eq "CODE") {
 	    my $h  = $csv->getline ($fh) or return;
 	    my $cr = $hdrs;
-	    $hdrs  = [ map { $cr-> ($hdr{$_} || $_) } @$h ];
+	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @$h ];
 	    }
 	}
 
@@ -2823,15 +2831,41 @@ If this attribute is not given, the default behavior is to produce an array
 of arrays.
 
 If C<headers> is supplied,  it should be an anonymous list of column names,
-an anonymous hashref, a coderef, or a literal flag:  C<auto> or C<skip>.
+an anonymous hashref, a coderef, or a literal flag:  C<auto>, C<lc>, C<uc>,
+or C<skip>.
+
+=over 2
+
+=item skip
+
 When C<skip> is used, the header will not be included in the output.
 
  my $aoa = csv (in => $fh, headers => "skip");
+
+=item auto
 
 If C<auto> is used, the first line of the C<CSV> source will be read as the
 list of field headers and used to produce an array of hashes.
 
  my $aoh = csv (in => $fh, headers => "auto");
+
+=item lc
+
+If C<lc> is used,  the first line of the  C<CSV> source will be read as the
+list of field headers mapped to  lower case and used to produce an array of
+hashes. This is a variation of C<auto>.
+
+ my $aoh = csv (in => $fh, headers => "lc");
+
+=item uc
+
+If C<uc> is used,  the first line of the  C<CSV> source will be read as the
+list of field headers mapped to  upper case and used to produce an array of
+hashes. This is a variation of C<auto>.
+
+ my $aoh = csv (in => $fh, headers => "uc");
+
+=item CODE
 
 If a coderef is used,  the first line of the  C<CSV> source will be read as
 the list of mangled field headers in which each field is passed as the only
@@ -2839,14 +2873,18 @@ argument to the coderef. This list is used to produce an array of hashes.
 
  my $aoh = csv (in => $fh, headers => sub { lc ($_[0]) =~ s/kode/code/gr });
 
-this example is like using C<auto> where all headers are lower case and all
-occurances of C<kode> are replaced with C<code>.
+this example is like using  C<lc>  where all headers are lower case and all
+occurrences of C<kode> are replaced with C<code>.
+
+=item ARRAY
 
 If  C<headers>  is an anonymous list,  the entries in the list will be used
 instead
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
  csv (in => $aoa, out => $fh, headers => [qw( code description price )]);
+
+=item HASH
 
 If C<headers> is an hash reference, this implies C<auto>, but header fields
 for that exist as key in the hashref will be replaced by the value for that
@@ -2867,6 +2905,8 @@ will return an entry like
    ID       => "13",
    fubble => "X313DF",
    }
+
+=back
 
 =head3 key
 X<key>
