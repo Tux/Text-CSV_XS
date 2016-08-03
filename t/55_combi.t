@@ -23,8 +23,7 @@ my $string  = join "=", "", @input, "";
 my %fail;
 
 ok (1, "--     qc     ec     sc     ac");
-sub combi
-{
+sub combi {
     my %attr = @_;
     my $combi = join " ", "--",
 	map { sprintf "%6s", _readable $attr{$_} } @attrib, "always_quote";

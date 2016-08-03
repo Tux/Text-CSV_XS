@@ -10,8 +10,7 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
-sub crnlsp
-{
+sub crnlsp {
     my $csv = shift;
     ok (!$csv->parse (),				"Missing arguments");
     ok ( $csv->parse ("\n"),				"NL");

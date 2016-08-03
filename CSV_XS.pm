@@ -45,8 +45,7 @@ if ($] < 5.008002) {
 #   class/object method expecting no arguments and returning the version
 #   number of Text::CSV.  there are no side-effects.
 
-sub version
-{
+sub version {
     return $VERSION;
     } # version
 
@@ -99,8 +98,7 @@ my %attr_alias = (
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
 # NOT a method: is also used before bless
-sub _unhealthy_whitespace
-{
+sub _unhealthy_whitespace {
     my $self = shift;
     $_[0] or return 0; # no checks needed without allow_whitespace
 
@@ -114,8 +112,7 @@ sub _unhealthy_whitespace
     return 0;
     } # _sane_whitespace
 
-sub _check_sanity
-{
+sub _check_sanity {
     my $self = shift;
 
     my $eol = $self->{eol};
@@ -149,13 +146,11 @@ sub _check_sanity
     return _unhealthy_whitespace ($self, $self->{allow_whitespace});
     } # _check_sanity
 
-sub known_attributes
-{
+sub known_attributes {
     sort grep !m/^_/ => "sep", "quote", keys %def_attr;
     } # known_attributes
 
-sub new
-{
+sub new {
     $last_new_err = Text::CSV_XS->SetDiag (1000,
 	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);");
 
@@ -259,8 +254,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     );
 
 # A `character'
-sub _set_attr_C
-{
+sub _set_attr_C {
     my ($self, $name, $val, $ec) = @_;
     defined $val or $val = 0;
     utf8::decode ($val);
@@ -271,8 +265,7 @@ sub _set_attr_C
     } # _set_attr_C
 
 # A flag
-sub _set_attr_X
-{
+sub _set_attr_X {
     my ($self, $name, $val) = @_;
     defined $val or $val = 0;
     $self->{$name} = $val;
@@ -280,8 +273,7 @@ sub _set_attr_X
     } # _set_attr_X
 
 # A number
-sub _set_attr_N
-{
+sub _set_attr_N {
     my ($self, $name, $val) = @_;
     $self->{$name} = $val;
     $self->_cache_set ($_cache_id{$name}, 0 + $val);
@@ -289,8 +281,7 @@ sub _set_attr_N
 
 # Accessor methods.
 #   It is unwise to change them halfway through a single file!
-sub quote_char
-{
+sub quote_char {
     my $self = shift;
     if (@_) {
 	$self->_set_attr_C ("quote_char", shift);
@@ -299,8 +290,7 @@ sub quote_char
     $self->{quote_char};
     } # quote_char
 
-sub quote
-{
+sub quote {
     my $self = shift;
     if (@_) {
 	my $quote = shift;
@@ -326,15 +316,13 @@ sub quote
     defined $quote && length ($quote) ? $quote : $self->{quote_char};
     } # quote
 
-sub escape_char
-{
+sub escape_char {
     my $self = shift;
     @_ and $self->_set_attr_C ("escape_char", shift);
     $self->{escape_char};
     } # escape_char
 
-sub sep_char
-{
+sub sep_char {
     my $self = shift;
     if (@_) {
 	$self->_set_attr_C ("sep_char", shift);
@@ -343,8 +331,7 @@ sub sep_char
     $self->{sep_char};
     } # sep_char
 
-sub sep
-{
+sub sep {
     my $self = shift;
     if (@_) {
 	my $sep = shift;
@@ -370,8 +357,7 @@ sub sep
     defined $sep && length ($sep) ? $sep : $self->{sep_char};
     } # sep
 
-sub eol
-{
+sub eol {
     my $self = shift;
     if (@_) {
 	my $eol = shift;
@@ -383,58 +369,50 @@ sub eol
     $self->{eol};
     } # eol
 
-sub always_quote
-{
+sub always_quote {
     my $self = shift;
     @_ and $self->_set_attr_X ("always_quote", shift);
     $self->{always_quote};
     } # always_quote
 
-sub quote_space
-{
+sub quote_space {
     my $self = shift;
     @_ and $self->_set_attr_X ("quote_space", shift);
     $self->{quote_space};
     } # quote_space
 
-sub quote_empty
-{
+sub quote_empty {
     my $self = shift;
     @_ and $self->_set_attr_X ("quote_empty", shift);
     $self->{quote_empty};
     } # quote_empty
 
-sub escape_null
-{
+sub escape_null {
     my $self = shift;
     @_ and $self->_set_attr_X ("escape_null", shift);
     $self->{escape_null};
     } # escape_null
 sub quote_null { goto &escape_null; }
 
-sub quote_binary
-{
+sub quote_binary {
     my $self = shift;
     @_ and $self->_set_attr_X ("quote_binary", shift);
     $self->{quote_binary};
     } # quote_binary
 
-sub binary
-{
+sub binary {
     my $self = shift;
     @_ and $self->_set_attr_X ("binary", shift);
     $self->{binary};
     } # binary
 
-sub decode_utf8
-{
+sub decode_utf8 {
     my $self = shift;
     @_ and $self->_set_attr_X ("decode_utf8", shift);
     $self->{decode_utf8};
     } # decode_utf8
 
-sub keep_meta_info
-{
+sub keep_meta_info {
     my $self = shift;
     if (@_) {
 	my $v = shift;
@@ -445,22 +423,19 @@ sub keep_meta_info
     $self->{keep_meta_info};
     } # keep_meta_info
 
-sub allow_loose_quotes
-{
+sub allow_loose_quotes {
     my $self = shift;
     @_ and $self->_set_attr_X ("allow_loose_quotes", shift);
     $self->{allow_loose_quotes};
     } # allow_loose_quotes
 
-sub allow_loose_escapes
-{
+sub allow_loose_escapes {
     my $self = shift;
     @_ and $self->_set_attr_X ("allow_loose_escapes", shift);
     $self->{allow_loose_escapes};
     } # allow_loose_escapes
 
-sub allow_whitespace
-{
+sub allow_whitespace {
     my $self = shift;
     if (@_) {
 	my $aw = shift;
@@ -471,36 +446,31 @@ sub allow_whitespace
     $self->{allow_whitespace};
     } # allow_whitespace
 
-sub allow_unquoted_escape
-{
+sub allow_unquoted_escape {
     my $self = shift;
     @_ and $self->_set_attr_X ("allow_unquoted_escape", shift);
     $self->{allow_unquoted_escape};
     } # allow_unquoted_escape
 
-sub blank_is_undef
-{
+sub blank_is_undef {
     my $self = shift;
     @_ and $self->_set_attr_X ("blank_is_undef", shift);
     $self->{blank_is_undef};
     } # blank_is_undef
 
-sub empty_is_undef
-{
+sub empty_is_undef {
     my $self = shift;
     @_ and $self->_set_attr_X ("empty_is_undef", shift);
     $self->{empty_is_undef};
     } # empty_is_undef
 
-sub verbatim
-{
+sub verbatim {
     my $self = shift;
     @_ and $self->_set_attr_X ("verbatim", shift);
     $self->{verbatim};
     } # verbatim
 
-sub auto_diag
-{
+sub auto_diag {
     my $self = shift;
     if (@_) {
 	my $v = shift;
@@ -511,8 +481,7 @@ sub auto_diag
     $self->{auto_diag};
     } # auto_diag
 
-sub diag_verbose
-{
+sub diag_verbose {
     my $self = shift;
     if (@_) {
 	my $v = shift;
@@ -528,20 +497,17 @@ sub diag_verbose
 #   object method returning the success or failure of the most recent
 #   combine () or parse ().  there are no side-effects.
 
-sub status
-{
+sub status {
     my $self = shift;
     return $self->{_STATUS};
     } # status
 
-sub eof
-{
+sub eof {
     my $self = shift;
     return $self->{_EOF};
     } # status
 
-sub types
-{
+sub types {
     my $self = shift;
     if (@_) {
 	if (my $types = shift) {
@@ -559,8 +525,7 @@ sub types
 	}
     } # types
 
-sub callbacks
-{
+sub callbacks {
     my $self = shift;
     if (@_) {
 	my $cb;
@@ -593,8 +558,7 @@ sub callbacks
 #   If (and only if) an error occurred, this function returns a code that
 #   indicates the reason of failure
 
-sub error_diag
-{
+sub error_diag {
     my $self = shift;
     my @diag = (0 + $last_new_err, $last_new_err, 0, 0, 0);
 
@@ -649,8 +613,7 @@ sub error_diag
     return $context ? @diag : $diag[1];
     } # error_diag
 
-sub record_number
-{
+sub record_number {
     my $self = shift;
     return $self->{_RECNO};
     } # record_number
@@ -661,8 +624,7 @@ sub record_number
 #   input to the most recent parse (), whichever is more recent.  there are
 #   no side-effects.
 
-sub string
-{
+sub string {
     my $self = shift;
     return ref $self->{_STRING} ? ${$self->{_STRING}} : undef;
     } # string
@@ -673,8 +635,7 @@ sub string
 #   input to the most recent combine (), whichever is more recent.  there
 #   are no side-effects.
 
-sub fields
-{
+sub fields {
     my $self = shift;
     return ref $self->{_FIELDS} ? @{$self->{_FIELDS}} : undef;
     } # fields
@@ -686,30 +647,26 @@ sub fields
 #   are no side-effects. meta_info () returns (if available)  some of the
 #   field's properties
 
-sub meta_info
-{
+sub meta_info {
     my $self = shift;
     return ref $self->{_FFLAGS} ? @{$self->{_FFLAGS}} : undef;
     } # meta_info
 
-sub is_quoted
-{
+sub is_quoted {
     my ($self, $idx, $val) = @_;
     ref $self->{_FFLAGS} &&
 	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
     $self->{_FFLAGS}[$idx] & 0x0001 ? 1 : 0;
     } # is_quoted
 
-sub is_binary
-{
+sub is_binary {
     my ($self, $idx, $val) = @_;
     ref $self->{_FFLAGS} &&
 	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
     $self->{_FFLAGS}[$idx] & 0x0002 ? 1 : 0;
     } # is_binary
 
-sub is_missing
-{
+sub is_missing {
     my ($self, $idx, $val) = @_;
     $idx < 0 || !ref $self->{_FFLAGS} and return;
     $idx >= @{$self->{_FFLAGS}} and return 1;
@@ -727,8 +684,7 @@ sub is_missing
 #      setting string ()
 #      setting error_input ()
 
-sub combine
-{
+sub combine {
     my $self = shift;
     my $str  = "";
     $self->{_FIELDS} = \@_;
@@ -749,8 +705,7 @@ sub combine
 #      setting string ()
 #      setting error_input ()
 
-sub parse
-{
+sub parse {
     my ($self, $str) = @_;
 
     my $fields = [];
@@ -769,8 +724,7 @@ sub parse
     $self->{_STATUS};
     } # parse
 
-sub column_names
-{
+sub column_names {
     my ($self, @keys) = @_;
     @keys or
 	return defined $self->{_COLUMN_NAMES} ? @{$self->{_COLUMN_NAMES}} : ();
@@ -792,8 +746,7 @@ sub column_names
     @{$self->{_COLUMN_NAMES}};
     } # column_names
 
-sub header
-{
+sub header {
     my ($self, $fh, @args) = @_;
     my (@seps, %args);
     for (@args) {
@@ -870,8 +823,7 @@ sub header
     wantarray ? @hdr : $self;
     } # header
 
-sub bind_columns
-{
+sub bind_columns {
     my ($self, @refs) = @_;
     @refs or
 	return defined $self->{_BOUND_COLUMNS} ? @{$self->{_BOUND_COLUMNS}} : undef;
@@ -892,8 +844,7 @@ sub bind_columns
     @refs;
     } # bind_columns
 
-sub getline_hr
-{
+sub getline_hr {
     my ($self, @args, %hr) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
     my $fr = $self->getline (@args) or return;
@@ -904,16 +855,14 @@ sub getline_hr
     \%hr;
     } # getline_hr
 
-sub getline_hr_all
-{
+sub getline_hr_all {
     my ($self, @args, %hr) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
     my @cn = @{$self->{_COLUMN_NAMES}};
     [ map { my %h; @h{@cn} = @$_; \%h } @{$self->getline_all (@args)} ];
     } # getline_hr_all
 
-sub say
-{
+sub say {
     my ($self, $io, @f) = @_;
     my $eol = $self->eol;
     defined $eol && $eol ne "" or $self->eol ($\ || $/);
@@ -922,16 +871,14 @@ sub say
     return $state;
     } # say
 
-sub print_hr
-{
+sub print_hr {
     my ($self, $io, $hr) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3009));
     ref $hr eq "HASH"      or croak ($self->SetDiag (3010));
     $self->print ($io, [ map { $hr->{$_} } $self->column_names ]);
     } # print_hr
 
-sub fragment
-{
+sub fragment {
     my ($self, $io, $spec) = @_;
 
     my $qd = qr{\s* [0-9]+ \s* }x;		# digit
@@ -1033,8 +980,7 @@ sub fragment
 
 my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 
-sub _csv_attr
-{
+sub _csv_attr {
     my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or croak;
 
     $attr{binary} = 1;
@@ -1137,8 +1083,7 @@ sub _csv_attr
 	};
     } # _csv_attr
 
-sub csv
-{
+sub csv {
     @_ && ref $_[0] eq __PACKAGE__ and splice @_, 0, 0, "csv";
     @_ or croak $csv_usage;
 

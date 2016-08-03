@@ -85,8 +85,7 @@ foreach my $arg (undef, 0, 1, \1, "", [], $csv) {
 ok ($csv->callbacks (bogus => sub { 0; }), "useless callback");
 
 my $error = 3006;
-sub ignore
-{
+sub ignore {
     is ($_[0], $error, "Caught error $error");
     $csv->SetDiag (0); # Ignore this error
     } # ignore

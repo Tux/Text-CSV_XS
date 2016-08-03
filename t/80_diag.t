@@ -25,8 +25,7 @@ my $csv = Text::CSV_XS->new ();
 is (Text::CSV_XS::error_diag (), "",	"Last failure for new () - OK");
 is_deeply ([ $csv->error_diag ], [ 0, "", 0, 0, 0], "OK in list context");
 
-sub parse_err
-{
+sub parse_err {
     my ($n_err, $p_err, $r_err, $f_err, $str) = @_;
     my $s_err = $err{$n_err};
     my $STR = _readable ($str);

@@ -1,8 +1,7 @@
 use strict;
 
 my %special = ( 9 => "\\t", 10 => "\\n", 13 => "\\r" );
-sub _readable
-{
+sub _readable {
     defined $_[0] or return "--undef--";
     join "", map {
 	my $cp = ord $_;
@@ -12,8 +11,7 @@ sub _readable
 	} split m//, $_[0];
     } # _readable
 
-sub is_binary
-{
+sub is_binary {
     my ($str, $exp, $tst) = @_;
     if ($str eq $exp) {
 	ok (1,		$tst);

@@ -22,8 +22,7 @@ my @testlist = (
     );
 
 my @list;
-sub do_tests
-{
+sub do_tests {
     my $sub = shift;
 
     $sub->(\@list);
