@@ -2459,7 +2459,12 @@ true.  That means that if you are I<not> using L</auto_diag>, an idiom like
      }
  $csv->eof or $csv->error_diag;
 
-will I<not> report the error.
+will I<not> report the error. You would have to change that to
+
+ while (my $row = $csv->getline ($fh)) {
+     # ...
+     }
+ +$csv->error_diag and $csv->error_diag;
 
 =head2 types
 X<types>
