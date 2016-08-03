@@ -2880,7 +2880,7 @@ are replaced with C<code>.
 =item ARRAY
 
 If  C<headers>  is an anonymous list,  the entries in the list will be used
-as field names. The first line is considerd data instead of headers.
+as field names. The first line is considered data instead of headers.
 
  my $aoh = csv (in => $fh, headers => [qw( Foo Bar )]);
  csv (in => $aoa, out => $fh, headers => [qw( code description price )]);
