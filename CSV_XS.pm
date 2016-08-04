@@ -2860,10 +2860,10 @@ using
 
 will return an entry like
 
- { pc       => "1234AA",
-   city     => "Duckstad",
-   name     => "Donald",
-   ID       => "13",
+ { pc     => "1234AA",
+   city   => "Duckstad",
+   name   => "Donald",
+   ID     => "13",
    fubble => "X313DF",
    }
 
@@ -3153,7 +3153,7 @@ This filter is a shortcut for
 
  filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
 
-A space is not regarded being empty, so given the example data, lines 1, 3,
+A space is not regarded being empty, so given the example data, lines 2, 3,
 4, 5, and 7 are skipped.
 
 =item filled
