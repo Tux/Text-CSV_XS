@@ -1154,6 +1154,17 @@ sub csv {
 	return 1;
 	}
 
+    if (defined $c->{hd_s} || defined $c->{hd_b} || defined $c->{hd_m} || defined $c->{hd_c}) {
+	my %harg;
+	defined $c->{hd_s} and $harg{set_set}            = $c->{hd_s};
+	defined $c->{hd_d} and $harg{detect_bom}         = $c->{hd_b};
+	defined $c->{hd_m} and $harg{munge_column_names} = $hdrs ? "none" : $c->{hd_m};
+	defined $c->{hd_c} and $harg{set_column_names}   = $hdrs ? 0      : $c->{hd_c};
+	$csv->header ($fh, \%harg);
+	my @hdr = $csv->column_names;
+	@hdr and $hdrs ||= \@hdr;
+	}
+
     my $key = $c->{key} and $hdrs ||= "auto";
     $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
     if (defined $hdrs) {
@@ -1179,17 +1190,6 @@ sub csv {
 	    my $cr = $hdrs;
 	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @$h ];
 	    }
-	}
-
-    if (defined $c->{hd_s} || defined $c->{hd_b} || defined $c->{hd_m} || defined $c->{hd_c}) {
-	my %harg;
-	defined $c->{hd_s} and $harg{set_set}            = $c->{hd_s};
-	defined $c->{hd_d} and $harg{detect_bom}         = $c->{hd_b};
-	defined $c->{hd_m} and $harg{munge_column_names} = $hdrs ? "none" : $c->{hd_m};
-	defined $c->{hd_c} and $harg{set_column_names}   = $hdrs ? 0      : $c->{hd_c};
-	$csv->header ($fh, \%harg);
-	my @hdr = $csv->column_names;
-	@hdr and $hdrs ||= \@hdr;
 	}
 
     if ($c->{fltr}) {
