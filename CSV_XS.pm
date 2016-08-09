@@ -986,6 +986,7 @@ sub _csv_attr {
     $attr{binary} = 1;
 
     my $enc = delete $attr{enc} || delete $attr{encoding} || "";
+    $enc eq "auto" and ($attr{detect_bom}, $enc) = (1, "");
     $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 
     my $fh;
@@ -1044,6 +1045,14 @@ sub _csv_attr {
     my $cboi = delete $attr{callbacks}{on_in}       ||
 	       delete $attr{on_in};
 
+    my $hd_s = delete $attr{sep_set}                ||
+	       delete $attr{seps};
+    my $hd_b = delete $attr{detect_bom}             ||
+	       delete $attr{bom};
+    my $hd_m = delete $attr{munge}                  ||
+	       delete $attr{munge_column_names};
+    my $hd_c = delete $attr{set_column_names};
+
     for ([ quo    => "quote"		],
 	 [ esc    => "escape"		],
 	 [ escape => "escape_char"	],
@@ -1073,6 +1082,7 @@ sub _csv_attr {
 	cls  => $cls,
 	in   => $in,
 	out  => $out,
+	enc  => $enc,
 	hdrs => $hdrs,
 	key  => $key,
 	frag => $frag,
@@ -1080,6 +1090,10 @@ sub _csv_attr {
 	cbai => $cbai,
 	cbbo => $cbbo,
 	cboi => $cboi,
+	hd_s => $hd_s,
+	hd_b => $hd_b,
+	hd_m => $hd_m,
+	hd_c => $hd_c,
 	};
     } # _csv_attr
 
@@ -1165,6 +1179,17 @@ sub csv {
 	    my $cr = $hdrs;
 	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @$h ];
 	    }
+	}
+
+    if (defined $c->{hd_s} || defined $c->{hd_b} || defined $c->{hd_m} || defined $c->{hd_c}) {
+	my %harg;
+	defined $c->{hd_s} and $harg{set_set}            = $c->{hd_s};
+	defined $c->{hd_d} and $harg{detect_bom}         = $c->{hd_b};
+	defined $c->{hd_m} and $harg{munge_column_names} = $hdrs ? "none" : $c->{hd_m};
+	defined $c->{hd_c} and $harg{set_column_names}   = $hdrs ? 0      : $c->{hd_c};
+	$csv->header ($fh, \%harg);
+	my @hdr = $csv->column_names;
+	@hdr and $hdrs ||= \@hdr;
 	}
 
     if ($c->{fltr}) {
@@ -2716,7 +2741,7 @@ In the latter case, the object attributes are used from the existing object
 and the attribute arguments in the function call are ignored:
 
  my $csv = Text::CSV_XS->new ({ sep_char => ";" });
- my $aoa = $csv->csv (in => "file.csv", sep_char => ",");
+ my $aoh = $csv->csv (in => "file.csv", bom => 1);
 
 will parse using C<;> as C<sep_char>, not C<,>.
 
@@ -2784,6 +2809,23 @@ to C<open>. There is no default value. This attribute does not work in perl
 5.6.x.  C<encoding> can be abbreviated to C<enc> for ease of use in command
 line invocations.
 
+If C<encoding> is set to the literal value C<"auto">, the method L</header>
+will be invoked on the opened stream to check if there is a BOM and set the
+encoding accordingly.   This is equal to passing a true value in the option
+L<C<detect_bom>|/detect_bom>.
+
+=head3 detect_bom
+X<detect_bom>
+
+If  C<detect_bom>  is given, the method  L</header>  will be invoked on the
+opened stream to check if there is a BOM and set the encoding accordingly.
+
+C<detect_bom> can be abbreviated to C<bom>.
+
+This is the same as setting L<C<encoding>|/encoding> to C<"auto">.
+
+Note that as L</header> is invoked, its default is to also set the headers.
+
 =head3 headers
 X<headers>
 
@@ -2797,12 +2839,14 @@ or C<skip>.
 =over 2
 
 =item skip
+X<skip>
 
 When C<skip> is used, the header will not be included in the output.
 
  my $aoa = csv (in => $fh, headers => "skip");
 
 =item auto
+X<auto>
 
 If C<auto> is used, the first line of the C<CSV> source will be read as the
 list of field headers and used to produce an array of hashes.
@@ -2810,6 +2854,7 @@ list of field headers and used to produce an array of hashes.
  my $aoh = csv (in => $fh, headers => "auto");
 
 =item lc
+X<lc>
 
 If C<lc> is used,  the first line of the  C<CSV> source will be read as the
 list of field headers mapped to  lower case and used to produce an array of
@@ -2818,6 +2863,7 @@ hashes. This is a variation of C<auto>.
  my $aoh = csv (in => $fh, headers => "lc");
 
 =item uc
+X<uc>
 
 If C<uc> is used,  the first line of the  C<CSV> source will be read as the
 list of field headers mapped to  upper case and used to produce an array of
@@ -2826,6 +2872,7 @@ hashes. This is a variation of C<auto>.
  my $aoh = csv (in => $fh, headers => "uc");
 
 =item CODE
+X<CODE>
 
 If a coderef is used,  the first line of the  C<CSV> source will be read as
 the list of mangled field headers in which each field is passed as the only
@@ -2838,6 +2885,7 @@ this example is a variation of using C<lc> where all occurrences of C<kode>
 are replaced with C<code>.
 
 =item ARRAY
+X<ARRAY>
 
 If  C<headers>  is an anonymous list,  the entries in the list will be used
 as field names. The first line is considered data instead of headers.
@@ -2846,6 +2894,7 @@ as field names. The first line is considered data instead of headers.
  csv (in => $aoa, out => $fh, headers => [qw( code description price )]);
 
 =item HASH
+X<HASH>
 
 If C<headers> is an hash reference, this implies C<auto>, but header fields
 for that exist as key in the hashref will be replaced by the value for that
@@ -2868,6 +2917,17 @@ will return an entry like
    }
 
 =back
+
+See also L<C<munge_column_names>|/munge_column_names> and
+L<C<set_column_names>|/set_column_names>.
+
+=head3 munge_column_names
+X<munge_column_names>
+
+If C<munge_column_names> is set,  the method  L</header>  is invoked on the
+opened stream with all matching arguments to detect and set the headers.
+
+C<munge_column_names> can be abbreviated to C<munge>.
 
 =head3 key
 X<key>
@@ -2924,7 +2984,24 @@ Combining all of them could give something like
      );
  say $aoh->[15]{Foo};
 
+=head3 sep_set
+X<sep_set>
+
+If C<sep_set> is set, the method L</header> is invoked on the opened stream
+to detect and set L<C<sep_char>|/sep_char> with the given set.
+
+C<sep_set> can be abbreviated to C<seps>.
+
+Note that as L</header> is invoked, its default is to also set the headers.
+
+=head3 set_column_names
+X<set_column_names>
+
+If  C<set_column_names> is passed,  the method L</header> is invoked on the
+opened stream with all arguments meant for L</header>.
+
 =head2 Callbacks
+X<Callbacks>
 
 Callbacks enable actions triggered from the I<inside> of Text::CSV_XS.
 
