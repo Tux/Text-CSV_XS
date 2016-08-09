@@ -10,10 +10,10 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 267;
+	plan tests => 297;
 	}
 
-    use_ok "Text::CSV_XS";
+    use_ok "Text::CSV_XS", "csv";
     require Encode;
     require "t/util.pl";
     }
@@ -56,6 +56,30 @@ foreach my $sep (",", ";") {
 	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
 	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
 	close $fh;
+	}
+
+    {   open my $fh, "<", \$data;
+	is_deeply (csv (in => $fh, bom => 1),
+	    [{ bar => 1, foo => 2 }, { bar => 3, foo => 4 }],
+	    "use header () from csv () with $sep");
+	}
+
+    {   open my $fh, "<", \$data;
+	is_deeply (csv (in => $fh, seps => [ ",", ";" ]),
+	    [{ bar => 1, foo => 2 }, { bar => 3, foo => 4 }],
+	    "use header () from csv () with $sep");
+	}
+
+    {   open my $fh, "<", \$data;
+	is_deeply (csv (in => $fh, bom => 1, key => "bar"),
+	    { 1 => { bar => 1, foo => 2 }, 3 => { bar => 3, foo => 4 }},
+	    "use header () from csv (key) with $sep");
+	}
+
+    {   open my $fh, "<", \$data;
+	is_deeply (csv (in => $fh, munge => "uc", key => "BAR"),
+	    { 1 => { BAR => 1, FOO => 2 }, 3 => { BAR => 3, FOO => 4 }},
+	    "use header () from csv (key, uc) with $sep");
 	}
     }
 
@@ -209,7 +233,7 @@ for (	[ "none"       => ""	],
 	};
 
     SKIP: {
-	$has_enc or skip "Encoding $enc not supported", 5;
+	$has_enc or skip "Encoding $enc not supported", 7;
 	$csv->column_names (undef);
 	open my $fh, "<", $fnm;
 	binmode $fh;
@@ -219,6 +243,10 @@ for (	[ "none"       => ""	],
 	ok (my $row = $csv->getline_hr ($fh), "getline_hr");
 	is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
 	close $fh;
+
+	ok (my $aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
+	is_deeply ($aoh,
+	    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
 	}
 
     unlink $fnm;
