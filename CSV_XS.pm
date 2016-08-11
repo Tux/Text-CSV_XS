@@ -2986,6 +2986,7 @@ Combining all of them could give something like
 
 =head3 sep_set
 X<sep_set>
+X<seps>
 
 If C<sep_set> is set, the method L</header> is invoked on the opened stream
 to detect and set L<C<sep_char>|/sep_char> with the given set.
