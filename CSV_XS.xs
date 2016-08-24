@@ -1848,7 +1848,6 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
     AV		*row = newAV ();
 
     SetupCsv (&csv, hv, self);
-    csv.keep_meta_info = 0;
 
     if (SvIOK (off)) {
 	skip = SvIV (off);
