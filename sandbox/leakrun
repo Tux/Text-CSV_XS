@@ -3,6 +3,7 @@
 export PERL_DESTRUCT_LEVEL=2 PERL_DL_NONLAZY=1
 
 valgrind					\
+    --tool=memcheck				\
     --suppressions=sandbox/perl.supp		\
     --leak-check=yes				\
     --leak-resolution=high			\

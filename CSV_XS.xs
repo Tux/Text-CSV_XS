@@ -1832,6 +1832,7 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
     return (state || !last_error);
     } /* xsParse */
 
+/* API also offers av_clear and av_undef, but they have more overhead */
 #define av_empty(av)	cx_av_empty (aTHX_ av)
 static void cx_av_empty (pTHX_ AV *av)
 {
