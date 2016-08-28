@@ -1,4 +1,4 @@
-1.25	- 2016-08-24, H.Merijn Brand
+1.25	- 2016-08-28, H.Merijn Brand
     * Allow lc, uc, and coderef for csv () headers attribute
     * Document for eof when the last line has an error (RT#115954)
     * Allow csv () to call header () with all supported arguments
