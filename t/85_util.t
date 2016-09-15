@@ -5,12 +5,18 @@ use warnings;
 
 use Test::More;
 
+my $pu;
 BEGIN {
+    $pu = $ENV{PERL_UNICODE};
+    $pu = defined $pu && ($pu eq "" || $pu =~ m/[oD]/ || ($pu =~ m/^[0-9]+$/ && $pu & 16));
+
     if ($] < 5.008002) {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	plan tests => 297;
+	my $n = 297;
+	$pu and $n -= 120;
+	plan tests => $n;
 	}
 
     use_ok "Text::CSV_XS", "csv";
@@ -84,48 +90,50 @@ foreach my $sep (",", ";") {
     }
 
 my $sep_ok = [ "\t", "|", ",", ";", "##", "\xe2\x81\xa3" ];
-foreach my $sep (@$sep_ok) {
-    my $data = "bAr,foo\n1,2\n3,4,5\n";
-    $data =~ s/,/$sep/g;
+unless ($pu) {
+    foreach my $sep (@$sep_ok) {
+	my $data = "bAr,foo\n1,2\n3,4,5\n";
+	$data =~ s/,/$sep/g;
 
-    $csv->column_names (undef);
-    {   open my $fh, "<", \$data;
-	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
-	is ($slf, $csv, "Return self");
-	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
-	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
-	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
-	close $fh;
-	}
+	$csv->column_names (undef);
+	{   open my $fh, "<", \$data;
+	    ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
+	    is ($slf, $csv, "Return self");
+	    is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
+	    is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
+	    is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
+	    is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	    close $fh;
+	    }
 
-    $csv->column_names (undef);
-    {   open my $fh, "<", \$data;
-	ok (my @hdr = $csv->header ($fh, $sep_ok), "header with specific sep set");
-	is_deeply (\@hdr, $hdr_lc, "Return headers");
-	close $fh;
-	}
+	$csv->column_names (undef);
+	{   open my $fh, "<", \$data;
+	    ok (my @hdr = $csv->header ($fh, $sep_ok), "header with specific sep set");
+	    is_deeply (\@hdr, $hdr_lc, "Return headers");
+	    close $fh;
+	    }
 
-    $csv->column_names (undef);
-    {   open my $fh, "<", \$data;
-	ok (my $slf = $csv->header ($fh, { sep_set => $sep_ok }), "header with specific sep set as opt");
-	is ($slf, $csv, "Return self");
-	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
-	is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
-	is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
-	close $fh;
-	}
+	$csv->column_names (undef);
+	{   open my $fh, "<", \$data;
+	    ok (my $slf = $csv->header ($fh, { sep_set => $sep_ok }), "header with specific sep set as opt");
+	    is ($slf, $csv, "Return self");
+	    is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
+	    is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
+	    is_deeply ($csv->getline ($fh), [ 1, 2 ],    "Line 1");
+	    is_deeply ($csv->getline ($fh), [ 3, 4, 5 ], "Line 2");
+	    close $fh;
+	    }
 
-    $csv->column_names (undef);
-    {   open my $fh, "<", \$data;
-	ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
-	is ($slf, $csv, "Return self");
-	is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
-	is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
-	is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
-	is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
-	close $fh;
+	$csv->column_names (undef);
+	{   open my $fh, "<", \$data;
+	    ok (my $slf = $csv->header ($fh, $sep_ok), "header with specific sep set");
+	    is ($slf, $csv, "Return self");
+	    is (Encode::encode ("utf-8", $csv->sep), $sep, "Sep = $sep");
+	    is_deeply ([ $csv->column_names ], $hdr_lc, "headers");
+	    is_deeply ($csv->getline_hr ($fh), { bar => 1, foo => 2 }, "Line 1");
+	    is_deeply ($csv->getline_hr ($fh), { bar => 3, foo => 4 }, "Line 2");
+	    close $fh;
+	    }
 	}
     }
 
