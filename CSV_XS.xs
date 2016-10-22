@@ -665,7 +665,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
     int keep = 0;
 
     if (csv->useIO) {
-	SV *tmp = newSVpv (csv->buffer, csv->used);
+	SV *tmp = sv_2mortal (newSVpvn (csv->buffer, csv->used));
 	dSP;
 	require_IO_Handle;
 	PUSHMARK (sp);
@@ -696,7 +696,6 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 		(void)SetDiag (csv, 2200);
 	    }
 	PUTBACK;
-	SvREFCNT_dec (tmp);
 	}
     else {
 	sv_catpvn (SvRV (dst), csv->buffer, csv->used);
