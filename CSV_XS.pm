@@ -848,8 +848,11 @@ sub getline_hr {
     my ($self, @args, %hr) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
     my $fr = $self->getline (@args) or return;
-    if (ref $self->{_FFLAGS}) {
-	$self->{_FFLAGS}[$_] = 0x0010 for ($#{$fr} + 1) .. $#{$self->{_COLUMN_NAMES}};
+    if (ref $self->{_FFLAGS}) { # missing
+	$self->{_FFLAGS}[$_] = 0x0010
+	    for (@$fr ? $#{$fr} + 1 : 0) .. $#{$self->{_COLUMN_NAMES}};
+	@$fr == 1 && (!defined $fr->[0] || $fr->[0] eq "") and
+	    $self->{_FFLAGS}[0] ||= 0x0010;
 	}
     @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
     \%hr;
@@ -2625,6 +2628,16 @@ they were not read at all, as B<all> the fields defined by L</column_names>
 are set in the hash-ref.    If you still need to know if all fields in each
 row are provided, you should enable L<C<keep_meta_info>|/keep_meta_info> so
 you can check the flags.
+
+If  L<C<keep_meta_info>|/keep_meta_info>  is C<false>,  C<is_missing>  will
+always return C<undef>, regardless of C<$column_idx> being valid or not. If
+this attribute is C<true> it will return either C<0> (the field is present)
+or C<1> (the field is missing).
+
+A special case is the empty line.  If the line is completely empty -  after
+dealing with the flags - this is still a valid CSV line:  it is a record of
+just one single empty field. However, if C<keep_meta_info> is set, invoking
+C<is_missing> with index C<0> will now return true.
 
 =head2 status
 X<status>
