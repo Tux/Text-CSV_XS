@@ -1,0 +1,2699 @@
+Running perl-all memcheck.pl
+
+=== base/perl5.6.0	5.006    x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.6.0 perl5.6.0                      This is perl, v5.6.0 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 79,584 bytes in 80 blocks
+    still reachable: 10,032 bytes in 11 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 42 errors from 42 contexts (suppressed: 0 from 0)
+
+=== base/perl5.6.1	5.006001 x86_64-linux-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.6.1 perl5.6.1                      This is perl, v5.6.1 built for x86_64-linux-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.6.1	5.006001 x86_64-linux-thread-multi-ld-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.6.1 tperl5.6.1                     This is perl, v5.6.1 built for x86_64-linux-thread-multi-ld-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.6.2	5.006002 x86_64-linux-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.6.2 perl5.6.2                      This is perl, v5.6.2 built for x86_64-linux-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.6.2	5.006002 x86_64-linux-thread-multi-ld-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.6.2 tperl5.6.2                     This is perl, v5.6.2 built for x86_64-linux-thread-multi-ld-perlio
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.0	5.008    x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.0 /media/Tux/perls/bin/perl5.8.0 This is perl, v5.8.0 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,408 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.0	5.008    x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.0 /media/Tux/perls-t/bin/perl5.8.0 This is perl, v5.8.0 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 45 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.1	5.008001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.1 /media/Tux/perls/bin/perl5.8.1 This is perl, v5.8.1 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 335 bytes in 9 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.1	5.008001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.1 /media/Tux/perls-t/bin/perl5.8.1 This is perl, v5.8.1 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 353 bytes in 9 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.2	5.008002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.2 /media/Tux/perls/bin/perl5.8.2 This is perl, v5.8.2 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 335 bytes in 9 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.2	5.008002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.2 /media/Tux/perls-t/bin/perl5.8.2 This is perl, v5.8.2 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 353 bytes in 9 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.3	5.008003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.3 /media/Tux/perls/bin/perl5.8.3 This is perl, v5.8.3 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 195 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.3	5.008003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.3 /media/Tux/perls-t/bin/perl5.8.3 This is perl, v5.8.3 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 205 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.4	5.008004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.4 /media/Tux/perls/bin/perl5.8.4 This is perl, v5.8.4 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 195 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.4	5.008004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.4 /media/Tux/perls-t/bin/perl5.8.4 This is perl, v5.8.4 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 205 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.5	5.008005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.5 /media/Tux/perls/bin/perl5.8.5 This is perl, v5.8.5 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 195 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.5	5.008005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.5 /media/Tux/perls-t/bin/perl5.8.5 This is perl, v5.8.5 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 205 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.6	5.008006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.6 /media/Tux/perls/bin/perl5.8.6 This is perl, v5.8.6 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 195 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.6	5.008006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.6 /media/Tux/perls-t/bin/perl5.8.6 This is perl, v5.8.6 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 205 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.7	5.008007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.7 /media/Tux/perls/bin/perl5.8.7 This is perl, v5.8.7 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 195 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.7	5.008007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.7 /media/Tux/perls-t/bin/perl5.8.7 This is perl, v5.8.7 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 205 bytes in 5 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.8	5.008008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.8 /media/Tux/perls/bin/perl5.8.8 This is perl, v5.8.8 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 545 bytes in 46 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 20 errors from 20 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.8	5.008008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.8 /media/Tux/perls-t/bin/perl5.8.8 This is perl, v5.8.8 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 555 bytes in 46 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 20 errors from 20 contexts (suppressed: 0 from 0)
+
+=== base/perl5.8.9	5.008009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.9 /media/Tux/perls/bin/perl5.8.9 This is perl, v5.8.9 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 323 bytes in 38 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,432 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 17 errors from 17 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.8.9	5.008009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+   5.8.9 /media/Tux/perls-t/bin/perl5.8.9 This is perl, v5.8.9 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 323 bytes in 38 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,518 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 17 errors from 17 contexts (suppressed: 0 from 0)
+
+=== base/perl5.10.0	5.010000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.10.0 /media/Tux/perls/bin/perl5.10.0 This is perl, v5.10.0 built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,411 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.10.0	5.010000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.10.0 /media/Tux/perls-t/bin/perl5.10.0 This is perl, v5.10.0 built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,497 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.10.1	5.010001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.10.1 /media/Tux/perls/bin/perl5.10.1 This is perl, v5.10.1 (*) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.10.1	5.010001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.10.1 /media/Tux/perls-t/bin/perl5.10.1 This is perl, v5.10.1 (*) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.11.0	5.011000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.0 /media/Tux/perls/bin/perl5.11.0 This is perl, v5.11.0 (*) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.11.0	5.011000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.0 /media/Tux/perls-t/bin/perl5.11.0 This is perl, v5.11.0 (*) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.11.1	5.011001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.1 /media/Tux/perls/bin/perl5.11.1 This is perl, v5.11.1 (*) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.11.1	5.011001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.1 /media/Tux/perls-t/bin/perl5.11.1 This is perl, v5.11.1 (*) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.11.2	5.011002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.2 /media/Tux/perls/bin/perl5.11.2 This is perl 5, version 11, subversion 2 (v5.11.2 (*)) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,843 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.11.2	5.011002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.2 /media/Tux/perls-t/bin/perl5.11.2 This is perl 5, version 11, subversion 2 (v5.11.2 (*)) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 416 bytes in 1 blocks
+    indirectly lost: 160 bytes in 1 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.11.3	5.011003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.3 /media/Tux/perls/bin/perl5.11.3 This is perl 5, version 11, subversion 3 (v5.11.3 (*)) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.11.3	5.011003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.3 /media/Tux/perls-t/bin/perl5.11.3 This is perl 5, version 11, subversion 3 (v5.11.3 (*)) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.11.4	5.011004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.4 /media/Tux/perls/bin/perl5.11.4 This is perl 5, version 11, subversion 4 (v5.11.4 (*)) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.11.4	5.011004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.4 /media/Tux/perls-t/bin/perl5.11.4 This is perl 5, version 11, subversion 4 (v5.11.4 (*)) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.11.5	5.011005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.5 /media/Tux/perls/bin/perl5.11.5 This is perl 5, version 11, subversion 5 (v5.11.5 (*)) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.11.5	5.011005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.11.5 /media/Tux/perls-t/bin/perl5.11.5 This is perl 5, version 11, subversion 5 (v5.11.5 (*)) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.12.0	5.012000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.0 /media/Tux/perls/bin/perl5.12.0 This is perl 5, version 12, subversion 0 (v5.12.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.12.0	5.012000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.0 /media/Tux/perls-t/bin/perl5.12.0 This is perl 5, version 12, subversion 0 (v5.12.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.12.1	5.012001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.1 /media/Tux/perls/bin/perl5.12.1 This is perl 5, version 12, subversion 1 (v5.12.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.12.1	5.012001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.1 /media/Tux/perls-t/bin/perl5.12.1 This is perl 5, version 12, subversion 1 (v5.12.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.12.2	5.012002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.2 /media/Tux/perls/bin/perl5.12.2 This is perl 5, version 12, subversion 2 (v5.12.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.12.2	5.012002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.2 /media/Tux/perls-t/bin/perl5.12.2 This is perl 5, version 12, subversion 2 (v5.12.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.12.3	5.012003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.3 /media/Tux/perls/bin/perl5.12.3 This is perl 5, version 12, subversion 3 (v5.12.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.12.3	5.012003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.3 /media/Tux/perls-t/bin/perl5.12.3 This is perl 5, version 12, subversion 3 (v5.12.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.12.4	5.012004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.4 /media/Tux/perls/bin/perl5.12.4 This is perl 5, version 12, subversion 4 (v5.12.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.12.4	5.012004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.4 /media/Tux/perls-t/bin/perl5.12.4 This is perl 5, version 12, subversion 4 (v5.12.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.12.5	5.012005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.5 /media/Tux/perls/bin/perl5.12.5 This is perl 5, version 12, subversion 5 (v5.12.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.12.5	5.012005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.12.5 /media/Tux/perls-t/bin/perl5.12.5 This is perl 5, version 12, subversion 5 (v5.12.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.0	5.013000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.0 /media/Tux/perls/bin/perl5.13.0 This is perl 5, version 13, subversion 0 (v5.13.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.0	5.013000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.0 /media/Tux/perls-t/bin/perl5.13.0 This is perl 5, version 13, subversion 0 (v5.13.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.1	5.013001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.1 /media/Tux/perls/bin/perl5.13.1 This is perl 5, version 13, subversion 1 (v5.13.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.1	5.013001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.1 /media/Tux/perls-t/bin/perl5.13.1 This is perl 5, version 13, subversion 1 (v5.13.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.2	5.013002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.2 /media/Tux/perls/bin/perl5.13.2 This is perl 5, version 13, subversion 2 (v5.13.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.2	5.013002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.2 /media/Tux/perls-t/bin/perl5.13.2 This is perl 5, version 13, subversion 2 (v5.13.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.3	5.013003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.3 /media/Tux/perls/bin/perl5.13.3 This is perl 5, version 13, subversion 3 (v5.13.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.3	5.013003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.3 /media/Tux/perls-t/bin/perl5.13.3 This is perl 5, version 13, subversion 3 (v5.13.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.4	5.013004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.4 /media/Tux/perls/bin/perl5.13.4 This is perl 5, version 13, subversion 4 (v5.13.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.4	5.013004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.4 /media/Tux/perls-t/bin/perl5.13.4 This is perl 5, version 13, subversion 4 (v5.13.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 160 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.5	5.013005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.5 /media/Tux/perls/bin/perl5.13.5 This is perl 5, version 13, subversion 5 (v5.13.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.5	5.013005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.5 /media/Tux/perls-t/bin/perl5.13.5 This is perl 5, version 13, subversion 5 (v5.13.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.6	5.013006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.6 /media/Tux/perls/bin/perl5.13.6 This is perl 5, version 13, subversion 6 (v5.13.6) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.6	5.013006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.6 /media/Tux/perls-t/bin/perl5.13.6 This is perl 5, version 13, subversion 6 (v5.13.6) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.7	5.013007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.7 /media/Tux/perls/bin/perl5.13.7 This is perl 5, version 13, subversion 7 (v5.13.7) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 4,592 bytes in 22 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.7	5.013007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.7 /media/Tux/perls-t/bin/perl5.13.7 This is perl 5, version 13, subversion 7 (v5.13.7) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 1,096 bytes in 1 blocks
+    indirectly lost: 4,200 bytes in 21 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.8	5.013008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.8 /media/Tux/perls/bin/perl5.13.8 This is perl 5, version 13, subversion 8 (v5.13.8) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.8	5.013008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.8 /media/Tux/perls-t/bin/perl5.13.8 This is perl 5, version 13, subversion 8 (v5.13.8) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.9	5.013009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.9 /media/Tux/perls/bin/perl5.13.9 This is perl 5, version 13, subversion 9 (v5.13.9) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.9	5.013009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.13.9 /media/Tux/perls-t/bin/perl5.13.9 This is perl 5, version 13, subversion 9 (v5.13.9) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.10	5.013010 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.13.10 /media/Tux/perls/bin/perl5.13.10 This is perl 5, version 13, subversion 10 (v5.13.10) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,462 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.10	5.013010 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.13.10 /media/Tux/perls-t/bin/perl5.13.10 This is perl 5, version 13, subversion 10 (v5.13.10) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,548 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.13.11	5.013011 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.13.11 /media/Tux/perls/bin/perl5.13.11 This is perl 5, version 13, subversion 11 (v5.13.11) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,462 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.13.11	5.013011 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.13.11 /media/Tux/perls-t/bin/perl5.13.11 This is perl 5, version 13, subversion 11 (v5.13.11) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,548 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.14.0	5.014000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.0 /media/Tux/perls/bin/perl5.14.0 This is perl 5, version 14, subversion 0 (v5.14.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.14.0	5.014000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.0 /media/Tux/perls-t/bin/perl5.14.0 This is perl 5, version 14, subversion 0 (v5.14.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.14.1	5.014001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.1 /media/Tux/perls/bin/perl5.14.1 This is perl 5, version 14, subversion 1 (v5.14.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.14.1	5.014001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.1 /media/Tux/perls-t/bin/perl5.14.1 This is perl 5, version 14, subversion 1 (v5.14.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.14.2	5.014002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.2 /media/Tux/perls/bin/perl5.14.2 This is perl 5, version 14, subversion 2 (v5.14.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.14.2	5.014002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.2 /media/Tux/perls-t/bin/perl5.14.2 This is perl 5, version 14, subversion 2 (v5.14.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.14.3	5.014003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.3 /media/Tux/perls/bin/perl5.14.3 This is perl 5, version 14, subversion 3 (v5.14.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.14.3	5.014003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.3 /media/Tux/perls-t/bin/perl5.14.3 This is perl 5, version 14, subversion 3 (v5.14.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.14.4	5.014004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.4 /media/Tux/perls/bin/perl5.14.4 This is perl 5, version 14, subversion 4 (v5.14.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.14.4	5.014004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.14.4 /media/Tux/perls-t/bin/perl5.14.4 This is perl 5, version 14, subversion 4 (v5.14.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.0	5.015000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.0 /media/Tux/perls/bin/perl5.15.0 This is perl 5, version 15, subversion 0 (v5.15.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.0	5.015000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.0 /media/Tux/perls-t/bin/perl5.15.0 This is perl 5, version 15, subversion 0 (v5.15.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.1	5.015001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.1 /media/Tux/perls/bin/perl5.15.1 This is perl 5, version 15, subversion 1 (v5.15.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.1	5.015001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.1 /media/Tux/perls-t/bin/perl5.15.1 This is perl 5, version 15, subversion 1 (v5.15.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.2	5.015002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.2 /media/Tux/perls/bin/perl5.15.2 This is perl 5, version 15, subversion 2 (v5.15.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.2	5.015002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.2 /media/Tux/perls-t/bin/perl5.15.2 This is perl 5, version 15, subversion 2 (v5.15.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.3	5.015003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.3 /media/Tux/perls/bin/perl5.15.3 This is perl 5, version 15, subversion 3 (v5.15.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.3	5.015003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.3 /media/Tux/perls-t/bin/perl5.15.3 This is perl 5, version 15, subversion 3 (v5.15.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.4	5.015004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.4 /media/Tux/perls/bin/perl5.15.4 This is perl 5, version 15, subversion 4 (v5.15.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.4	5.015004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.4 /media/Tux/perls-t/bin/perl5.15.4 This is perl 5, version 15, subversion 4 (v5.15.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.5	5.015005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.5 /media/Tux/perls/bin/perl5.15.5 This is perl 5, version 15, subversion 5 (v5.15.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.5	5.015005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.5 /media/Tux/perls-t/bin/perl5.15.5 This is perl 5, version 15, subversion 5 (v5.15.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.6	5.015006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.6 /media/Tux/perls/bin/perl5.15.6 This is perl 5, version 15, subversion 6 (v5.15.6) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.6	5.015006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.6 /media/Tux/perls-t/bin/perl5.15.6 This is perl 5, version 15, subversion 6 (v5.15.6) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.7	5.015007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.7 /media/Tux/perls/bin/perl5.15.7 This is perl 5, version 15, subversion 7 (v5.15.7) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.7	5.015007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.7 /media/Tux/perls-t/bin/perl5.15.7 This is perl 5, version 15, subversion 7 (v5.15.7) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.8	5.015008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.8 /media/Tux/perls/bin/perl5.15.8 This is perl 5, version 15, subversion 8 (v5.15.8) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.8	5.015008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.8 /media/Tux/perls-t/bin/perl5.15.8 This is perl 5, version 15, subversion 8 (v5.15.8) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.15.9	5.015009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.9 /media/Tux/perls/bin/perl5.15.9 This is perl 5, version 15, subversion 9 (v5.15.9) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.15.9	5.015009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.15.9 /media/Tux/perls-t/bin/perl5.15.9 This is perl 5, version 15, subversion 9 (v5.15.9) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.16.0	5.016000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.0 /media/Tux/perls/bin/perl5.16.0 This is perl 5, version 16, subversion 0 (v5.16.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.16.0	5.016000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.0 /media/Tux/perls-t/bin/perl5.16.0 This is perl 5, version 16, subversion 0 (v5.16.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.16.1	5.016001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.1 /media/Tux/perls/bin/perl5.16.1 This is perl 5, version 16, subversion 1 (v5.16.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.16.1	5.016001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.1 /media/Tux/perls-t/bin/perl5.16.1 This is perl 5, version 16, subversion 1 (v5.16.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.16.2	5.016002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.2 /media/Tux/perls/bin/perl5.16.2 This is perl 5, version 16, subversion 2 (v5.16.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.16.2	5.016002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.2 /media/Tux/perls-t/bin/perl5.16.2 This is perl 5, version 16, subversion 2 (v5.16.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.16.3	5.016003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.3 /media/Tux/perls/bin/perl5.16.3 This is perl 5, version 16, subversion 3 (v5.16.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.16.3	5.016003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.16.3 /media/Tux/perls-t/bin/perl5.16.3 This is perl 5, version 16, subversion 3 (v5.16.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.0	5.017000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.0 /media/Tux/perls/bin/perl5.17.0 This is perl 5, version 17, subversion 0 (v5.17.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.0	5.017000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.0 /media/Tux/perls-t/bin/perl5.17.0 This is perl 5, version 17, subversion 0 (v5.17.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.1	5.017001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.1 /media/Tux/perls/bin/perl5.17.1 This is perl 5, version 17, subversion 1 (v5.17.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.1	5.017001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.1 /media/Tux/perls-t/bin/perl5.17.1 This is perl 5, version 17, subversion 1 (v5.17.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 48 bytes in 1 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.2	5.017002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.2 /media/Tux/perls/bin/perl5.17.2 This is perl 5, version 17, subversion 2 (v5.17.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.2	5.017002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.2 /media/Tux/perls-t/bin/perl5.17.2 This is perl 5, version 17, subversion 2 (v5.17.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.3	5.017003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.3 /media/Tux/perls/bin/perl5.17.3 This is perl 5, version 17, subversion 3 (v5.17.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.3	5.017003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.3 /media/Tux/perls-t/bin/perl5.17.3 This is perl 5, version 17, subversion 3 (v5.17.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.4	5.017004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.4 /media/Tux/perls/bin/perl5.17.4 This is perl 5, version 17, subversion 4 (v5.17.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.4	5.017004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.4 /media/Tux/perls-t/bin/perl5.17.4 This is perl 5, version 17, subversion 4 (v5.17.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.5	5.017005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.5 /media/Tux/perls/bin/perl5.17.5 This is perl 5, version 17, subversion 5 (v5.17.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.5	5.017005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.5 /media/Tux/perls-t/bin/perl5.17.5 This is perl 5, version 17, subversion 5 (v5.17.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 512 bytes in 1 blocks
+    indirectly lost: 31,744 bytes in 5 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.6	5.017006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.6 /media/Tux/perls/bin/perl5.17.6 This is perl 5, version 17, subversion 6 (v5.17.6) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.6	5.017006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.6 /media/Tux/perls-t/bin/perl5.17.6 This is perl 5, version 17, subversion 6 (v5.17.6) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.7	5.017007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.7 /media/Tux/perls/bin/perl5.17.7 This is perl 5, version 17, subversion 7 (v5.17.7) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.7	5.017007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.7 /media/Tux/perls-t/bin/perl5.17.7 This is perl 5, version 17, subversion 7 (v5.17.7) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.8	5.017008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.8 /media/Tux/perls/bin/perl5.17.8 This is perl 5, version 17, subversion 8 (v5.17.8) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.8	5.017008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.8 /media/Tux/perls-t/bin/perl5.17.8 This is perl 5, version 17, subversion 8 (v5.17.8) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.9	5.017009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.9 /media/Tux/perls/bin/perl5.17.9 This is perl 5, version 17, subversion 9 (v5.17.9) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.9	5.017009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.17.9 /media/Tux/perls-t/bin/perl5.17.9 This is perl 5, version 17, subversion 9 (v5.17.9) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.10	5.017010 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.17.10 /media/Tux/perls/bin/perl5.17.10 This is perl 5, version 17, subversion 10 (v5.17.10) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,462 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.10	5.017010 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.17.10 /media/Tux/perls-t/bin/perl5.17.10 This is perl 5, version 17, subversion 10 (v5.17.10) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,548 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.17.11	5.017011 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.17.11 /media/Tux/perls/bin/perl5.17.11 This is perl 5, version 17, subversion 11 (v5.17.11) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,462 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.17.11	5.017011 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.17.11 /media/Tux/perls-t/bin/perl5.17.11 This is perl 5, version 17, subversion 11 (v5.17.11) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,548 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.18.0	5.018000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.0 /media/Tux/perls/bin/perl5.18.0 This is perl 5, version 18, subversion 0 (v5.18.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.18.0	5.018000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.0 /media/Tux/perls-t/bin/perl5.18.0 This is perl 5, version 18, subversion 0 (v5.18.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.18.1	5.018001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.1 /media/Tux/perls/bin/perl5.18.1 This is perl 5, version 18, subversion 1 (v5.18.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,459 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.18.1	5.018001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.1 /media/Tux/perls-t/bin/perl5.18.1 This is perl 5, version 18, subversion 1 (v5.18.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,545 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.18.2	5.018002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.2 /media/Tux/perls/bin/perl5.18.2 This is perl 5, version 18, subversion 2 (v5.18.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.18.2	5.018002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.2 /media/Tux/perls-t/bin/perl5.18.2 This is perl 5, version 18, subversion 2 (v5.18.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.18.3	5.018003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.3 /media/Tux/perls/bin/perl5.18.3 This is perl 5, version 18, subversion 3 (v5.18.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.18.3	5.018003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.3 /media/Tux/perls-t/bin/perl5.18.3 This is perl 5, version 18, subversion 3 (v5.18.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.18.4	5.018004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.4 /media/Tux/perls/bin/perl5.18.4 This is perl 5, version 18, subversion 4 (v5.18.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.18.4	5.018004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.18.4 /media/Tux/perls-t/bin/perl5.18.4 This is perl 5, version 18, subversion 4 (v5.18.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.0	5.019000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.0 /media/Tux/perls/bin/perl5.19.0 This is perl 5, version 19, subversion 0 (v5.19.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.0	5.019000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.0 /media/Tux/perls-t/bin/perl5.19.0 This is perl 5, version 19, subversion 0 (v5.19.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.1	5.019001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.1 /media/Tux/perls/bin/perl5.19.1 This is perl 5, version 19, subversion 1 (v5.19.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.1	5.019001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.1 /media/Tux/perls-t/bin/perl5.19.1 This is perl 5, version 19, subversion 1 (v5.19.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.2	5.019002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.2 /media/Tux/perls/bin/perl5.19.2 This is perl 5, version 19, subversion 2 (v5.19.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.2	5.019002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.2 /media/Tux/perls-t/bin/perl5.19.2 This is perl 5, version 19, subversion 2 (v5.19.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.3	5.019003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.3 /media/Tux/perls/bin/perl5.19.3 This is perl 5, version 19, subversion 3 (v5.19.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.3	5.019003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.3 /media/Tux/perls-t/bin/perl5.19.3 This is perl 5, version 19, subversion 3 (v5.19.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.4	5.019004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.4 /media/Tux/perls/bin/perl5.19.4 This is perl 5, version 19, subversion 4 (v5.19.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.4	5.019004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.4 /media/Tux/perls-t/bin/perl5.19.4 This is perl 5, version 19, subversion 4 (v5.19.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.5	5.019005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.5 /media/Tux/perls/bin/perl5.19.5 This is perl 5, version 19, subversion 5 (v5.19.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.5	5.019005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.5 /media/Tux/perls-t/bin/perl5.19.5 This is perl 5, version 19, subversion 5 (v5.19.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.6	5.019006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.6 /media/Tux/perls/bin/perl5.19.6 This is perl 5, version 19, subversion 6 (v5.19.6) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.6	5.019006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.6 /media/Tux/perls-t/bin/perl5.19.6 This is perl 5, version 19, subversion 6 (v5.19.6) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.7	5.019007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.7 /media/Tux/perls/bin/perl5.19.7 This is perl 5, version 19, subversion 7 (v5.19.7) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.7	5.019007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.7 /media/Tux/perls-t/bin/perl5.19.7 This is perl 5, version 19, subversion 7 (v5.19.7) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.8	5.019008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.8 /media/Tux/perls/bin/perl5.19.8 This is perl 5, version 19, subversion 8 (v5.19.8) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.8	5.019008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.8 /media/Tux/perls-t/bin/perl5.19.8 This is perl 5, version 19, subversion 8 (v5.19.8) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.9	5.019009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.9 /media/Tux/perls/bin/perl5.19.9 This is perl 5, version 19, subversion 9 (v5.19.9) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 194 errors from 5 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.9	5.019009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.19.9 /media/Tux/perls-t/bin/perl5.19.9 This is perl 5, version 19, subversion 9 (v5.19.9) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 195 errors from 6 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.10	5.019010 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.19.10 /media/Tux/perls/bin/perl5.19.10 This is perl 5, version 19, subversion 10 (v5.19.10) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,462 bytes in 4 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.10	5.019010 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.19.10 /media/Tux/perls-t/bin/perl5.19.10 This is perl 5, version 19, subversion 10 (v5.19.10) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,548 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/perl5.19.11	5.019011 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.19.11 /media/Tux/perls/bin/perl5.19.11 This is perl 5, version 19, subversion 11 (v5.19.11) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,355 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.19.11	5.019011 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.19.11 /media/Tux/perls-t/bin/perl5.19.11 This is perl 5, version 19, subversion 11 (v5.19.11) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 108 bytes in 1 blocks
+    indirectly lost: 864 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,603 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.20.0	5.020000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.0 /media/Tux/perls/bin/perl5.20.0 This is perl 5, version 20, subversion 0 (v5.20.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.20.0	5.020000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.0 /media/Tux/perls-t/bin/perl5.20.0 This is perl 5, version 20, subversion 0 (v5.20.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.20.1	5.020001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.1 /media/Tux/perls/bin/perl5.20.1 This is perl 5, version 20, subversion 1 (v5.20.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.20.1	5.020001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.1 /media/Tux/perls-t/bin/perl5.20.1 This is perl 5, version 20, subversion 1 (v5.20.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.20.2	5.020002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.2 /media/Tux/perls/bin/perl5.20.2 This is perl 5, version 20, subversion 2 (v5.20.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.20.2	5.020002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.2 /media/Tux/perls-t/bin/perl5.20.2 This is perl 5, version 20, subversion 2 (v5.20.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.20.3	5.020003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.3 /media/Tux/perls/bin/perl5.20.3 This is perl 5, version 20, subversion 3 (v5.20.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,375 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.20.3	5.020003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.20.3 /media/Tux/perls-t/bin/perl5.20.3 This is perl 5, version 20, subversion 3 (v5.20.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.0	5.021000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.0 /media/Tux/perls/bin/perl5.21.0 This is perl 5, version 21, subversion 0 (v5.21.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.0	5.021000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.0 /media/Tux/perls-t/bin/perl5.21.0 This is perl 5, version 21, subversion 0 (v5.21.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.1	5.021001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.1 /media/Tux/perls/bin/perl5.21.1 This is perl 5, version 21, subversion 1 (v5.21.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,343 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.1	5.021001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.1 /media/Tux/perls-t/bin/perl5.21.1 This is perl 5, version 21, subversion 1 (v5.21.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,591 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.2	5.021002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.2 /media/Tux/perls/bin/perl5.21.2 This is perl 5, version 21, subversion 2 (v5.21.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,415 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.2	5.021002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.2 /media/Tux/perls-t/bin/perl5.21.2 This is perl 5, version 21, subversion 2 (v5.21.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.3	5.021003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.3 /media/Tux/perls/bin/perl5.21.3 This is perl 5, version 21, subversion 3 (v5.21.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,415 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.3	5.021003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.3 /media/Tux/perls-t/bin/perl5.21.3 This is perl 5, version 21, subversion 3 (v5.21.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.4	5.021004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.4 /media/Tux/perls/bin/perl5.21.4 This is perl 5, version 21, subversion 4 (v5.21.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,415 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.4	5.021004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.4 /media/Tux/perls-t/bin/perl5.21.4 This is perl 5, version 21, subversion 4 (v5.21.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.5	5.021005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.5 /media/Tux/perls/bin/perl5.21.5 This is perl 5, version 21, subversion 5 (v5.21.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,415 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.5	5.021005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.5 /media/Tux/perls-t/bin/perl5.21.5 This is perl 5, version 21, subversion 5 (v5.21.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.6	5.021006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.6 /media/Tux/perls/bin/perl5.21.6 This is perl 5, version 21, subversion 6 (v5.21.6) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,415 bytes in 20 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.6	5.021006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.6 /media/Tux/perls-t/bin/perl5.21.6 This is perl 5, version 21, subversion 6 (v5.21.6) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.7	5.021007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.7 /media/Tux/perls/bin/perl5.21.7 This is perl 5, version 21, subversion 7 (v5.21.7) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 76,800 bytes in 150 blocks
+    indirectly lost: 1,699,840 bytes in 454 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 13 errors from 13 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.7	5.021007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.7 /media/Tux/perls-t/bin/perl5.21.7 This is perl 5, version 21, subversion 7 (v5.21.7) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 76,907 bytes in 151 blocks
+    indirectly lost: 1,700,696 bytes in 462 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 14 errors from 14 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.8	5.021008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.8 /media/Tux/perls/bin/perl5.21.8 This is perl 5, version 21, subversion 8 (v5.21.8) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 76,800 bytes in 150 blocks
+    indirectly lost: 1,699,840 bytes in 454 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 13 errors from 13 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.8	5.021008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.8 /media/Tux/perls-t/bin/perl5.21.8 This is perl 5, version 21, subversion 8 (v5.21.8) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 76,907 bytes in 151 blocks
+    indirectly lost: 1,700,696 bytes in 462 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 14 errors from 14 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.9	5.021009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.9 /media/Tux/perls/bin/perl5.21.9 This is perl 5, version 21, subversion 9 (v5.21.9) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 76,800 bytes in 150 blocks
+    indirectly lost: 1,699,840 bytes in 454 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 13 errors from 13 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.9	5.021009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.21.9 /media/Tux/perls-t/bin/perl5.21.9 This is perl 5, version 21, subversion 9 (v5.21.9) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 76,907 bytes in 151 blocks
+    indirectly lost: 1,700,696 bytes in 462 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 14 errors from 14 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.10	5.021010 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.21.10 /media/Tux/perls/bin/perl5.21.10 This is perl 5, version 21, subversion 10 (v5.21.10) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,459 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.10	5.021010 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.21.10 /media/Tux/perls-t/bin/perl5.21.10 This is perl 5, version 21, subversion 10 (v5.21.10) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 108 bytes in 1 blocks
+    indirectly lost: 864 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,675 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.21.11	5.021011 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.21.11 /media/Tux/perls/bin/perl5.21.11 This is perl 5, version 21, subversion 11 (v5.21.11) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,459 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.21.11	5.021011 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+ 5.21.11 /media/Tux/perls-t/bin/perl5.21.11 This is perl 5, version 21, subversion 11 (v5.21.11) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 108 bytes in 1 blocks
+    indirectly lost: 864 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,675 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.22.0	5.022000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.0 /media/Tux/perls/bin/perl5.22.0 This is perl 5, version 22, subversion 0 (v5.22.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.22.0	5.022000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.0 /media/Tux/perls-t/bin/perl5.22.0 This is perl 5, version 22, subversion 0 (v5.22.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.22.1	5.022001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.1 /media/Tux/perls/bin/perl5.22.1 This is perl 5, version 22, subversion 1 (v5.22.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 1,448 bytes in 21 blocks
+    still reachable: 61,758 bytes in 543 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 21 errors from 21 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.22.1	5.022001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.1 /media/Tux/perls-t/bin/perl5.22.1 This is perl 5, version 22, subversion 1 (v5.22.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 1,448 bytes in 21 blocks
+    still reachable: 61,974 bytes in 543 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 22 errors from 22 contexts (suppressed: 0 from 0)
+
+=== base/perl5.22.2	5.022002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.2 /media/Tux/perls/bin/perl5.22.2 This is perl 5, version 22, subversion 2 (v5.22.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.22.2	5.022002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.2 /media/Tux/perls-t/bin/perl5.22.2 This is perl 5, version 22, subversion 2 (v5.22.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.22.3	5.022003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.3 /media/Tux/perls/bin/perl5.22.3 This is perl 5, version 22, subversion 3 (v5.22.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.22.3	5.022003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.22.3 /media/Tux/perls-t/bin/perl5.22.3 This is perl 5, version 22, subversion 3 (v5.22.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.0	5.023000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.0 /media/Tux/perls/bin/perl5.23.0 This is perl 5, version 23, subversion 0 (v5.23.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.0	5.023000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.0 /media/Tux/perls-t/bin/perl5.23.0 This is perl 5, version 23, subversion 0 (v5.23.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.1	5.023001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.1 /media/Tux/perls/bin/perl5.23.1 This is perl 5, version 23, subversion 1 (v5.23.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.1	5.023001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.1 /media/Tux/perls-t/bin/perl5.23.1 This is perl 5, version 23, subversion 1 (v5.23.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.2	5.023002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.2 /media/Tux/perls/bin/perl5.23.2 This is perl 5, version 23, subversion 2 (v5.23.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.2	5.023002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.2 /media/Tux/perls-t/bin/perl5.23.2 This is perl 5, version 23, subversion 2 (v5.23.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.3	5.023003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.3 /media/Tux/perls/bin/perl5.23.3 This is perl 5, version 23, subversion 3 (v5.23.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.3	5.023003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.3 /media/Tux/perls-t/bin/perl5.23.3 This is perl 5, version 23, subversion 3 (v5.23.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.4	5.023004 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.4 /media/Tux/perls/bin/perl5.23.4 This is perl 5, version 23, subversion 4 (v5.23.4) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.4	5.023004 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.4 /media/Tux/perls-t/bin/perl5.23.4 This is perl 5, version 23, subversion 4 (v5.23.4) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.5	5.023005 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.5 /media/Tux/perls/bin/perl5.23.5 This is perl 5, version 23, subversion 5 (v5.23.5) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 1,448 bytes in 21 blocks
+    still reachable: 61,830 bytes in 543 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 21 errors from 21 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.5	5.023005 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.5 /media/Tux/perls-t/bin/perl5.23.5 This is perl 5, version 23, subversion 5 (v5.23.5) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 1,448 bytes in 21 blocks
+    still reachable: 62,046 bytes in 543 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 22 errors from 22 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.6	5.023006 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.6 /media/Tux/perls/bin/perl5.23.6 This is perl 5, version 23, subversion 6 (v5.23.6) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 1,448 bytes in 21 blocks
+    still reachable: 61,830 bytes in 543 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 21 errors from 21 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.6	5.023006 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.6 /media/Tux/perls-t/bin/perl5.23.6 This is perl 5, version 23, subversion 6 (v5.23.6) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 1,448 bytes in 21 blocks
+    still reachable: 62,046 bytes in 543 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 22 errors from 22 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.7	5.023007 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.7 /media/Tux/perls/bin/perl5.23.7 This is perl 5, version 23, subversion 7 (v5.23.7) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.7	5.023007 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.7 /media/Tux/perls-t/bin/perl5.23.7 This is perl 5, version 23, subversion 7 (v5.23.7) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.8	5.023008 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.8 /media/Tux/perls/bin/perl5.23.8 This is perl 5, version 23, subversion 8 (v5.23.8) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.8	5.023008 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.8 /media/Tux/perls-t/bin/perl5.23.8 This is perl 5, version 23, subversion 8 (v5.23.8) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.23.9	5.023009 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.9 /media/Tux/perls/bin/perl5.23.9 This is perl 5, version 23, subversion 9 (v5.23.9) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.23.9	5.023009 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.23.9 /media/Tux/perls-t/bin/perl5.23.9 This is perl 5, version 23, subversion 9 (v5.23.9) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.24.0	5.024000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.24.0 /media/Tux/perls/bin/perl5.24.0 This is perl 5, version 24, subversion 0 (v5.24.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.24.0	5.024000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.24.0 /media/Tux/perls-t/bin/perl5.24.0 This is perl 5, version 24, subversion 0 (v5.24.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.24.1	5.024001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.24.1 /media/Tux/perls/bin/perl5.24.1 This is perl 5, version 24, subversion 1 (v5.24.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.24.1	5.024001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.24.1 /media/Tux/perls-t/bin/perl5.24.1 This is perl 5, version 24, subversion 1 (v5.24.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.25.0	5.025000 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.0 /media/Tux/perls/bin/perl5.25.0 This is perl 5, version 25, subversion 0 (v5.25.0) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.25.0	5.025000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.0 /media/Tux/perls-t/bin/perl5.25.0 This is perl 5, version 25, subversion 0 (v5.25.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.25.1	5.025001 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.1 /media/Tux/perls/bin/perl5.25.1 This is perl 5, version 25, subversion 1 (v5.25.1) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.25.1	5.025001 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.1 /media/Tux/perls-t/bin/perl5.25.1 This is perl 5, version 25, subversion 1 (v5.25.1) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.25.2	5.025002 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.2 /media/Tux/perls/bin/perl5.25.2 This is perl 5, version 25, subversion 2 (v5.25.2) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.25.2	5.025002 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.2 /media/Tux/perls-t/bin/perl5.25.2 This is perl 5, version 25, subversion 2 (v5.25.2) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== base/perl5.25.3	5.025003 x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.3 /media/Tux/perls/bin/perl5.25.3 This is perl 5, version 25, subversion 3 (v5.25.3) built for x86_64-linux
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 0 bytes in 0 blocks
+    indirectly lost: 0 bytes in 0 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,447 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+=== base/tperl5.25.3	5.025003 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.25.3 /media/Tux/perls-t/bin/perl5.25.3 This is perl 5, version 25, subversion 3 (v5.25.3) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 107 bytes in 1 blocks
+    indirectly lost: 856 bytes in 8 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 7,663 bytes in 21 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+=== /usr/bin/perl	5.024000 x86_64-linux-thread-multi
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.24.0 /usr/bin/perl                  This is perl 5, version 24, subversion 0 (v5.24.0) built for x86_64-linux-thread-multi
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 20,652 bytes in 19 blocks
+    indirectly lost: 1,187,876 bytes in 4,715 blocks
+      possibly lost: 0 bytes in 0 blocks
+    still reachable: 1,536 bytes in 5 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 19 errors from 19 contexts (suppressed: 0 from 0)
+
+=== /pro/bin/perl	5.024000 x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+  5.24.0 /pro/bin/perl                  This is perl 5, version 24, subversion 0 (v5.24.0) built for x86_64-linux-thread-multi-ld
+-------- ------------------------------ ------------------------------------------------------------------------------------------
+    definitely lost: 94,662 bytes in 43 blocks
+    indirectly lost: 69,850 bytes in 33 blocks
+      possibly lost: 18,200,289 bytes in 62,002 blocks
+    still reachable: 13,601 bytes in 37 blocks
+         suppressed: 0 bytes in 0 blocks
+ ERROR SUMMARY: 2386 errors from 2386 contexts (suppressed: 0 from 0)
+
