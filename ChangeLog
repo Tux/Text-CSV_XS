@@ -1,4 +1,4 @@
-1.26	- 2016-11-22, H.Merijn Brand
+1.26	- 2016-11-29, H.Merijn Brand
     * Disable some Unicode related tests for unhealthy $PERL_UNICODE
       (RT#117856)
     * is_missing (0) on empty line returns 1 for keep_meta_info = true
