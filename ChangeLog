@@ -1,3 +1,6 @@
+1.27	- 2016-11-30, H.Merijn Brand
+    * Remove unneeded done_testing (Paul Howarth)
+
 1.26	- 2016-11-29, H.Merijn Brand
     * Disable some Unicode related tests for unhealthy $PERL_UNICODE
       (RT#117856)

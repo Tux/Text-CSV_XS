@@ -181,5 +181,3 @@ is (int $hr->{code}, 2, "code == 2");
 is ($csv->is_missing (0), 0, "not is_missing () - with meta");
 is ($csv->is_missing (1), 1, "not is_missing () - with meta");
 close $fh;
-
-done_testing;
