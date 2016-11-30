@@ -1,6 +1,3 @@
-1.27	- 2016-11-29, H.Merijn Brand
-    * 
-
 1.26	- 2016-11-29, H.Merijn Brand
     * Disable some Unicode related tests for unhealthy $PERL_UNICODE
       (RT#117856)
