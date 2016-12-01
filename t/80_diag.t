@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 264;
+ use Test::More tests => 271;
 #use Test::More "no_plan";
 
 my %err;
@@ -230,6 +230,29 @@ unlink $diag_file;
     ok ($csv->column_names ("foo"), "set columns");
     eval { $csv->print_hr (*STDERR, []); };
     is (0 + $csv->error_diag, 3010, "print_hr needs a hashref");
+    }
+
+{   my $csv = Text::CSV_XS->new ({ sep_char => "=" });
+    eval { $csv->quote ("::::::::::::::"); };
+    is (0 + $csv->error_diag,    0, "Can set quote to something long");
+    eval { $csv->quote ("="); };
+    is (0 + $csv->error_diag, 1001, "Cannot set quote to current sep");
+    }
+
+{   my $csv = Text::CSV_XS->new ({ quote_char => "=" });
+    eval { $csv->sep ("::::::::::::::"); };
+    is (0 + $csv->error_diag,    0, "Can set sep to something long");
+    eval { $csv->sep (undef); };
+    is (0 + $csv->error_diag, 1008, "Can set sep to undef");
+    eval { $csv->sep ("="); };
+    is (0 + $csv->error_diag, 1001, "Cannot set sep to current sep");
+    }
+
+{   my $csv = Text::CSV_XS->new;
+    eval { $csv->header (undef, "foo"); };
+    is (0 + $csv->error_diag, 1014, "Cannot read header from undefined source");
+    eval { $csv->header (*STDIN, "foo"); };
+    like ($@, qr/^usage:/, "Illegal header call");
     }
 
 1;

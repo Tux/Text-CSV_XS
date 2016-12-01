@@ -155,7 +155,7 @@ for ( [ 1010, 0, qq{}		],	# Empty header
     }
 {   open my $fh, "<", \"bar,bAr,bAR,BAR\n1,2,3,4";
     $csv->column_names (undef);
-    ok ($csv->header ($fh, { munge_column_names => "none" }), "non-unique unfolded headers");
+    ok ($csv->header ($fh, { munge_column_names => "none", detect_bom => 0 }), "non-unique unfolded headers");
     is_deeply ([ $csv->column_names ], [qw( bar bAr bAR BAR )], "Headers");
     close $fh;
     }

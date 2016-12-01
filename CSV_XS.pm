@@ -752,6 +752,9 @@ sub column_names {
 
 sub header {
     my ($self, $fh, @args) = @_;
+
+    $fh or croak ($self->SetDiag (1014));
+
     my (@seps, %args);
     for (@args) {
 	if (ref $_ eq "ARRAY") {
@@ -762,7 +765,7 @@ sub header {
 	    %args = %$_;
 	    next;
 	    }
-	croak (q{usage: $csv->headers ($fh, [ seps ], { options })});
+	croak (q{usage: $csv->header ($fh, [ seps ], { options })});
 	}
 
     defined $args{detect_bom}         or $args{detect_bom}         = 1;
@@ -3822,6 +3825,12 @@ X<1013>
 
 The header line parsed in the  L</header>  contains at least  two identical
 fields.
+
+=item *
+1014 "INI - header called on undefined stream"
+X<1014>
+
+The header line cannot be parsed from an undefined sources.
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"

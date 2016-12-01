@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 189;
+use Test::More tests => 194;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -55,6 +55,11 @@ is ($csv->eol (undef),			"",		"eol (undef)");
 is ($csv->eol (""),			"",		"eol ('')");
 is ($csv->eol ("\r"),			"\r",		"eol (\\r)");
 is ($csv->keep_meta_info (1),		1,		"keep_meta_info (1)");
+is ($csv->keep_meta_info (0),		0,		"keep_meta_info (0)");
+is ($csv->keep_meta_info (""),		0,		"keep_meta_info ('')");
+is ($csv->keep_meta_info (undef),	0,		"keep_meta_info (undef)");
+is ($csv->keep_meta_info ("false"),	0,		"keep_meta_info (undef)");
+is ($csv->keep_meta_info ("true"),	1,		"keep_meta_info (undef)");
 is ($csv->always_quote (undef),		0,		"always_quote (undef)");
 is ($csv->always_quote (1),		1,		"always_quote (1)");
 is ($csv->allow_loose_quotes (1),	1,		"allow_loose_quotes (1)");

@@ -198,6 +198,7 @@ static const xs_error_t xs_errors[] =  {
     { 1011, "INI - the header contains more than one valid separator"		},
     { 1012, "INI - the header contains an empty field"				},
     { 1013, "INI - the header contains nun-unique fields"			},
+    { 1014, "INI - header called on undefined stream"				},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
