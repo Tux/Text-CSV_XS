@@ -116,12 +116,12 @@ is ($csv->quote_char (),		"'",		"quote_char");
 
 # Funny settings, all three translate to \0 internally
 ok ($csv = Text::CSV_XS->new ({
-    sep_char	=> undef,
+    sep		=> "::::::::::",
     quote_char	=> undef,
     escape_char	=> undef,
     }),						"new (undef ...)");
-is ($csv->sep_char,		undef,		"sep_char undef");
-is ($csv->sep,			undef,		"sep undef");
+is ($csv->sep_char,		"\0",		"sep_char undef");
+is ($csv->sep,			"::::::::::",	"sep long");
 is ($csv->quote_char,		undef,		"quote_char undef");
 is ($csv->quote,		undef,		"quote undef");
 is ($csv->escape_char,		undef,		"escape_char undef");
@@ -140,11 +140,11 @@ ok ( $csv->parse ("foo,foo\0bar"),		"parse (foo)");
 ok ($csv = Text::CSV_XS->new ({ quote_always => 1, verbose_diag => 1}));
 is ($csv->always_quote, 1,	"always_quote = quote_always");
 is ($csv->diag_verbose, 1,	"diag_verbose = verbose_diag");
-ok ($csv = Text::CSV_XS->new ({ quote => undef, sep => undef }), "undef aliases");
-is ($csv->sep_char,   undef,	"sep_char is undef");
-is ($csv->sep,        undef,	"sep is undef");
-is ($csv->quote_char, undef,	"quote_char is undef");
-is ($csv->quote,      undef,	"quote is undef");
+ok ($csv = Text::CSV_XS->new ({ escape_char => undef }), "undef escape aliases");
+is ($csv->escape_char, undef,	"escape_char is undef");
+ok ($csv = Text::CSV_XS->new ({ quote  => undef }), "undef quote aliases");
+is ($csv->quote_char,  undef,	"quote_char is undef");
+is ($csv->quote,       undef,	"quote is undef");
 
 # Some forbidden combinations
 foreach my $ws (" ", "\t") {

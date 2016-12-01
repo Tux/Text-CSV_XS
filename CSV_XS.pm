@@ -126,9 +126,13 @@ sub _check_sanity {
 #	        "', QUO: '", DPeek ($quo),
 #	        "', ESC: '", DPeek ($esc),"'");
 
-    if (defined $sep) {	# sep_char should not be undefined
+    # sep_char should not be undefined
+    if (defined $sep && $sep ne "") {
 	length ($sep) > 16		and return 1006;
 	$sep =~ m/[\r\n]/		and return 1003;
+	}
+    else {
+					    return 1008;
 	}
     if (defined $quo) {
 	defined $sep && $quo eq $sep	and return 1001;
@@ -3786,6 +3790,12 @@ The value passed for SEP is exceeding its maximum length (16).
 X<1007>
 
 The value passed for QUOTE is exceeding its maximum length (16).
+
+=item *
+1008 "INI - SEP undefined"
+X<1008>
+
+The value passed for SEP should be defined and not empty.
 
 =item *
 1010 "INI - the header is empty"

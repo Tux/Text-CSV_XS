@@ -192,6 +192,7 @@ static const xs_error_t xs_errors[] =  {
     { 1005, "INI - EOL too long"						},
     { 1006, "INI - SEP too long"						},
     { 1007, "INI - QUOTE too long"						},
+    { 1008, "INI - SEP undefined"						},
 
     { 1010, "INI - the header is empty"						},
     { 1011, "INI - the header contains more than one valid separator"		},
