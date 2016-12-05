@@ -1081,7 +1081,8 @@ sub _csv_attr {
 	$fltr = { 0 => $fltr{$fltr} };
     ref $fltr eq "HASH" or $fltr = undef;
 
-    defined $attr{auto_diag} or $attr{auto_diag} = 1;
+    defined $attr{auto_diag}   or $attr{auto_diag}   = 1;
+    defined $attr{escape_null} or $attr{escape_null} = 0;
     my $csv = delete $attr{csv} || Text::CSV_XS->new (\%attr)
 	or croak $last_new_err;
 
@@ -1875,6 +1876,8 @@ By default, a C<NULL> byte in a field would be escaped. This option enables
 you to treat the  C<NULL>  byte as a simple binary character in binary mode
 (the C<< { binary => 1 } >> is set).  The default is true.  You can prevent
 C<NULL> escapes by setting this attribute to C<0>.
+
+The default when using the C<csv> function is C<false>.
 
 =head3 keep_meta_info
 X<keep_meta_info>
@@ -2720,9 +2723,6 @@ This function is not exported by default and should be explicitly requested:
 
  use Text::CSV_XS qw( csv );
 
-This is the second draft. This function will stay,  but the arguments might
-change based on user feedback.
-
 This is an high-level function that aims at simple (user) interfaces.  This
 can be used to read/parse a C<CSV> file or stream (the default behavior) or
 to produce a file or write to a stream (define the  C<out>  attribute).  It
@@ -2745,11 +2745,12 @@ as enumerated and explained in L</new>.
 
 If not overridden, the default option used for CSV is
 
- auto_diag => 1
+ auto_diag   => 1
+ escape_null => 0
 
 The option that is always set and cannot be altered is
 
- binary    => 1
+ binary      => 1
 
 As this function will likely be used in one-liners,  it allows  C<quote> to
 be abbreviated as C<quo>,  and  C<escape_char> to be abbreviated as  C<esc>
