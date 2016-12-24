@@ -244,12 +244,8 @@ static const xs_error_t xs_errors[] =  {
     {    0, "" },
     };
 
-typedef struct {
-    int  last_error;
-    SV  *m_getline;
-    SV  *m_print;
-    } t_globvar;
-static t_globvar *globs;
+static int last_error = 0;
+static SV *m_getline, *m_print;
 
 #define is_EOL(c) (c == CH_EOLX)
 
@@ -322,7 +318,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
     dSP;
     SV *err = SvDiag (xse);
 
-    globs->last_error = xse;
+    last_error = xse;
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
 	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
@@ -517,7 +513,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
     STRLEN	 len;
     char	*ptr;
 
-    globs->last_error = 0;
+    last_error = 0;
 
     if ((svp = hv_fetchs (self, "_CACHE", FALSE)) && *svp) {
 	byte *cache = (byte *)SvPVX (*svp);
@@ -673,7 +669,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst) {
 	    }
 	PUSHs (tmp);
 	PUTBACK;
-	result = call_sv (globs->m_print, G_SCALAR | G_METHOD);
+	result = call_sv (m_print, G_METHOD);
 	SPAGAIN;
 	if (result) {
 	    result = POPi;
@@ -917,7 +913,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-	result = call_sv (globs->m_getline, G_SCALAR | G_METHOD);
+	result = call_sv (m_getline, G_METHOD);
 	SPAGAIN;
 	csv->eol_pos = -1;
 	csv->tmp = result ? POPs : NULL;
@@ -1798,7 +1794,7 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
     state = c_xsParse (csv, hv, av, avf, src, useIO);
     if (state && csv.has_hooks & HOOK_AFTER_PARSE)
 	(void)hook (aTHX_ hv, "after_parse", av);
-    return (state || !globs->last_error);
+    return (state || !last_error);
     } /* xsParse */
 
 /* API also offers av_clear and av_undef, but they have more overhead */
@@ -1893,9 +1889,8 @@ MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 PROTOTYPES: DISABLE
 
 BOOT:
-    globs = PerlMemShared_calloc (1, sizeof (t_globvar));
-    globs->m_getline = newSVpvs ("getline");
-    globs->m_print   = newSVpvs ("print");
+    m_getline = newSVpvs ("getline");
+    m_print   = newSVpvs ("print");
     Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT, newSVpvs ("IO::Handle"), NULL, NULL, NULL);
 
 void
