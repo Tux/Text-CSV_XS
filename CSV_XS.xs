@@ -259,8 +259,7 @@ static t_globvar *globs;
     (csv->used += csv->sep_len - 1)					&&\
     (c = CH_SEPX))))
 #if MAINT_DEBUG > 1
-static byte _is_SEPX (unsigned int *c, csv_t *csv, int line)
-{
+static byte _is_SEPX (unsigned int *c, csv_t *csv, int line) {
     unsigned int b = __is_SEPX (*c);
     (void)fprintf (stderr, "# %4d - is_SEPX:\t%d (%d)\n", line, b, csv->sep_len);
     if (csv->sep_len)
@@ -280,8 +279,7 @@ static byte _is_SEPX (unsigned int *c, csv_t *csv, int line)
     (csv->used += csv->quo_len - 1)					&&\
     (c = CH_QUOTEX))))
 #if MAINT_DEBUG > 1
-static byte _is_QUOTEX (unsigned int *c, csv_t *csv, int line)
-{
+static byte _is_QUOTEX (unsigned int *c, csv_t *csv, int line) {
     unsigned int b = __is_QUOTEX (*c);
     (void)fprintf (stderr, "# %4d - is_QUOTEX:\t%d (%d)\n", line, b, csv->quo_len);
 
@@ -306,8 +304,7 @@ static byte _is_QUOTEX (unsigned int *c, csv_t *csv, int line)
     )
 
 #define SvDiag(xse)		cx_SvDiag (aTHX_ xse)
-static SV *cx_SvDiag (pTHX_ int xse)
-{
+static SV *cx_SvDiag (pTHX_ int xse) {
     int   i = 0;
     SV   *err;
 
@@ -321,8 +318,7 @@ static SV *cx_SvDiag (pTHX_ int xse)
     } /* SvDiag */
 
 #define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
-static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
-{
+static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
     dSP;
     SV *err = SvDiag (xse);
 
@@ -350,8 +346,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     } /* SetDiag */
 
 #define xs_cache_set(hv,idx,val)	cx_xs_cache_set (aTHX_ hv, idx, val)
-static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
-{
+static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
     SV    **svp;
     byte   *cache;
 
@@ -442,8 +437,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val)
     } /* cache_set */
 
 #define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
-static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
-{
+static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
     SV *dsv = sv_2mortal (newSVpvs (""));
     return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
 	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
@@ -457,8 +451,7 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l)
     warn ("  %-21s %02d:%s\n",  trim, l, _pretty_str (str, l))
 
 #define xs_cache_diag(hv)	cx_xs_cache_diag (aTHX_ hv)
-static void cx_xs_cache_diag (pTHX_ HV *hv)
-{
+static void cx_xs_cache_diag (pTHX_ HV *hv) {
     SV   **svp;
     byte  *cache;
     csv_t  csvs;
@@ -509,8 +502,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv)
     } /* xs_cache_diag */
 
 #define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
-static void cx_set_eol_is_cr (pTHX_ csv_t *csv)
-{
+static void cx_set_eol_is_cr (pTHX_ csv_t *csv) {
     csv->eol[0]    = CH_CR;
     csv->eol_is_cr = 1;
     csv->eol_len   = 1;
@@ -520,8 +512,7 @@ static void cx_set_eol_is_cr (pTHX_ csv_t *csv)
     } /* set_eol_is_cr */
 
 #define SetupCsv(csv,self,pself)	cx_SetupCsv (aTHX_ csv, self, pself)
-static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
-{
+static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
     SV	       **svp;
     STRLEN	 len;
     char	*ptr;
@@ -655,8 +646,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
-static int cx_Print (pTHX_ csv_t *csv, SV *dst)
-{
+static int cx_Print (pTHX_ csv_t *csv, SV *dst) {
     int result;
     int keep = 0;
 
@@ -712,8 +702,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
     }
 
 #define bound_field(csv,i,keep)	cx_bound_field (aTHX_ csv, i, keep)
-static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep)
-{
+static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep) {
     SV *sv = csv->bound;
     AV *av;
 
@@ -743,8 +732,7 @@ static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep)
     } /* bound_field */
 
 #define was_quoted(mf,idx)	cx_was_quoted (aTHX_ mf, idx)
-static int cx_was_quoted (pTHX_ AV *mf, int idx)
-{
+static int cx_was_quoted (pTHX_ AV *mf, int idx) {
     SV **x = av_fetch (mf, idx, FALSE);
     return (x && SvIOK (*x) && SvIV (*x) & CSV_FLAGS_QUO ? 1 : 0);
     } /* was_quoted */
@@ -753,8 +741,7 @@ static int cx_was_quoted (pTHX_ AV *mf, int idx)
 #define is_csv_binary(ch) ((ch < CH_SPACE || ch >= CH_DEL) && ch != CH_TAB)
 
 #define Combine(csv,dst,fields)	cx_Combine (aTHX_ csv, dst, fields)
-static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
-{
+static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
     int  i, n, bound = 0;
     int  aq  = (int)csv->always_quote;
     int  qe  = (int)csv->quote_empty;
@@ -899,8 +886,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
     } /* Combine */
 
 #define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos)
-static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos)
-{
+static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos) {
     (void)hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
     (void)hv_store (csv->self, "_ERROR_FLD", 10, newSViv (csv->fld_idx), 0);
     if (csv->tmp) {
@@ -912,8 +898,7 @@ static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos)
     } /* ParseError */
 
 #define CsvGet(csv,src)		cx_CsvGet (aTHX_ csv, src)
-static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
-{
+static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
     unless (csv->useIO)
 	return EOF;
 
@@ -1044,8 +1029,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     (csv->used < csv->size ? (byte)csv->bptr[csv->used++] : CsvGet (csv, src))
 
 #if MAINT_DEBUG > 3
-int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l)
-{
+int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l) {
     int c;
     fprintf (stderr, "# 1-CSV_GET @ %4d: (used: %d, size: %d, eol_pos: %d, eolx = %d)\n", l, csv->used, csv->size, csv->eol_pos, csv->eolx);
     c = CSV_GET1;
@@ -1081,8 +1065,7 @@ int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l)
     }
 
 #define strip_trail_whitespace(sv)	cx_strip_trail_whitespace (aTHX_ sv)
-static void cx_strip_trail_whitespace (pTHX_ SV *sv)
-{
+static void cx_strip_trail_whitespace (pTHX_ SV *sv) {
     STRLEN len;
     char   *s = SvPV (sv, len);
     unless (s && len) return;
@@ -1106,8 +1089,7 @@ static char str_parsed[40];
 #endif
 
 #if MAINT_DEBUG > 1
-static char *_sep_string (csv_t *csv)
-{
+static char *_sep_string (csv_t *csv) {
     char sep[64];
     if (csv->sep_len) {
 	int x;
@@ -1121,8 +1103,7 @@ static char *_sep_string (csv_t *csv)
 #endif
 
 #define Parse(csv,src,fields,fflags)	cx_Parse (aTHX_ csv, src, fields, fflags)
-static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags)
-{
+static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags) {
     int		 c, f = 0;
     int		 waitingForField	= 1;
     SV		*sv			= NULL;
@@ -1679,8 +1660,7 @@ EOLX:
     } /* Parse */
 
 #define c_xsParse(csv,hv,av,avf,src,useIO)	cx_c_xsParse (aTHX_ csv, hv, av, avf, src, useIO)
-static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
-{
+static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool useIO) {
     int	result, ahead = 0;
     SV	*pos = NULL;
 
@@ -1771,8 +1751,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     return result;
     } /* c_xsParse */
 
-static int hook (pTHX_ HV *hv, char *cb_name, AV *av)
-{
+static int hook (pTHX_ HV *hv, char *cb_name, AV *av) {
     SV **svp;
     HV *cb;
     int res;
@@ -1812,8 +1791,7 @@ static int hook (pTHX_ HV *hv, char *cb_name, AV *av)
     } /* hook */
 
 #define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
-static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO)
-{
+static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO) {
     csv_t	csv;
     int		state;
     SetupCsv (&csv, hv, self);
@@ -1825,15 +1803,13 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
 
 /* API also offers av_clear and av_undef, but they have more overhead */
 #define av_empty(av)	cx_av_empty (aTHX_ av)
-static void cx_av_empty (pTHX_ AV *av)
-{
+static void cx_av_empty (pTHX_ AV *av) {
     while (av_len (av) >= 0)
 	sv_free (av_pop (av));
     } /* av_empty */
 
 #define xsParse_all(self,hv,io,off,len)		cx_xsParse_all (aTHX_ self, hv, io, off, len)
-static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
-{
+static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len) {
     csv_t	csv;
     int		n = 0, skip = 0, length = MAXINT, tail = MAXINT;
     AV		*avr = newAV ();
@@ -1888,8 +1864,7 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len)
     } /* xsParse_all */
 
 #define xsCombine(self,hv,av,io,useIO)	cx_xsCombine (aTHX_ self, hv, av, io, useIO)
-static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO)
-{
+static int cx_xsCombine (pTHX_ SV *self, HV *hv, AV *av, SV *io, bool useIO) {
     csv_t	csv;
     int		result;
 #if (PERL_BCDVERSION >= 0x5008000)
