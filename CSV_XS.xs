@@ -244,9 +244,12 @@ static const xs_error_t xs_errors[] =  {
     {    0, "" },
     };
 
-static int  io_handle_loaded = 0;
-static SV  *m_getline, *m_print, *m_read;
-static int  last_error = 0;
+typedef struct {
+    int  last_error;
+    SV  *m_getline;
+    SV  *m_print;
+    } t_globvar;
+static t_globvar *globs;
 
 #define is_EOL(c) (c == CH_EOLX)
 
@@ -293,15 +296,6 @@ static byte _is_QUOTEX (unsigned int *c, csv_t *csv, int line)
 #define is_QUOTE(c) __is_QUOTEX (c)
 #endif
 
-#define require_IO_Handle \
-    unless (io_handle_loaded) {\
-	ENTER;\
-	Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT,\
-	    newSVpvs ("IO::Handle"), NULL, NULL, NULL);\
-	LEAVE;\
-	io_handle_loaded = 1;\
-	}
-
 #define is_whitespace(ch) \
     ( (ch) != CH_SEP           && \
       (ch) != CH_QUOTE         && \
@@ -332,7 +326,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse)
     dSP;
     SV *err = SvDiag (xse);
 
-    last_error = xse;
+    globs->last_error = xse;
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
 	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
@@ -532,7 +526,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself)
     STRLEN	 len;
     char	*ptr;
 
-    last_error = 0;
+    globs->last_error = 0;
 
     if ((svp = hv_fetchs (self, "_CACHE", FALSE)) && *svp) {
 	byte *cache = (byte *)SvPVX (*svp);
@@ -669,7 +663,6 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
     if (csv->useIO) {
 	SV *tmp = sv_2mortal (newSVpvn (csv->buffer, csv->used));
 	dSP;
-	require_IO_Handle;
 	PUSHMARK (sp);
 	EXTEND (sp, 2);
 	PUSHs ((dst));
@@ -690,7 +683,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst)
 	    }
 	PUSHs (tmp);
 	PUTBACK;
-	result = call_sv (m_print, G_SCALAR | G_METHOD);
+	result = call_sv (globs->m_print, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	if (result) {
 	    result = POPi;
@@ -749,7 +742,8 @@ static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep)
     return (NULL);
     } /* bound_field */
 
-static int was_quoted (pTHX_ AV *mf, int idx)
+#define was_quoted(mf,idx)	cx_was_quoted (aTHX_ mf, idx)
+static int cx_was_quoted (pTHX_ AV *mf, int idx)
 {
     SV **x = av_fetch (mf, idx, FALSE);
     return (x && SvIOK (*x) && SvIV (*x) & CSV_FLAGS_QUO ? 1 : 0);
@@ -811,14 +805,14 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields)
 		    )) continue;
 	    ptr = SvPV (sv, len);
 	    if (len == 0)
-		quoteMe = aq ? 1 : qe ? 1 : qm ? was_quoted (aTHX_ qm, i) : 0;
+		quoteMe = aq ? 1 : qe ? 1 : qm ? was_quoted (qm, i) : 0;
 	    else {
 		if (SvUTF8 (sv))  {
 		    csv->utf8   = 1;
 		    csv->binary = 1;
 		    }
 
-		quoteMe = aq ? 1 : qm ? was_quoted (aTHX_ qm, i) : 0;
+		quoteMe = aq ? 1 : qm ? was_quoted (qm, i) : 0;
 
 		/* Do we need quoting? We do quote, if the user requested
 		 * (always_quote), if binary or blank characters are found
@@ -934,13 +928,11 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src)
     {	STRLEN		result;
 	dSP;
 
-	require_IO_Handle;
-
 	PUSHMARK (sp);
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-	result = call_sv (m_getline, G_SCALAR | G_METHOD);
+	result = call_sv (globs->m_getline, G_SCALAR | G_METHOD);
 	SPAGAIN;
 	csv->eol_pos = -1;
 	csv->tmp = result ? POPs : NULL;
@@ -1700,8 +1692,6 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	}
 
     if ((csv.useIO = useIO)) {
-	require_IO_Handle;
-
 	csv.tmp = NULL;
 
 	if ((ahead = csv.has_ahead)) {
@@ -1830,7 +1820,7 @@ static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool us
     state = c_xsParse (csv, hv, av, avf, src, useIO);
     if (state && csv.has_hooks & HOOK_AFTER_PARSE)
 	(void)hook (aTHX_ hv, "after_parse", av);
-    return (state || !last_error);
+    return (state || !globs->last_error);
     } /* xsParse */
 
 /* API also offers av_clear and av_undef, but they have more overhead */
@@ -1928,9 +1918,10 @@ MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 PROTOTYPES: DISABLE
 
 BOOT:
-    m_getline = newSVpvs ("getline");
-    m_print   = newSVpvs ("print");
-    m_read    = newSVpvs ("read");
+    globs = PerlMemShared_calloc (1, sizeof (t_globvar));
+    globs->m_getline = newSVpvs ("getline");
+    globs->m_print   = newSVpvs ("print");
+    Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT, newSVpvs ("IO::Handle"), NULL, NULL, NULL);
 
 void
 SetDiag (self, xse, ...)
