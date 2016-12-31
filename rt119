@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export PERL5LIB=/pro/3gl/CPAN/Text-CSV_XS/blib/lib:/pro/3gl/CPAN/Text-CSV_XS/blib/arch
+cd sandbox
+perl rt119312.pl
