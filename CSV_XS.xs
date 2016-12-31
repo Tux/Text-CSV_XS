@@ -244,8 +244,16 @@ static const xs_error_t xs_errors[] =  {
     {    0, "" },
     };
 
-static int last_error = 0;
-static SV *m_getline, *m_print;
+#define MY_CXT_KEY "Text::CSV_XS::_guts" XS_VERSION
+typedef struct {
+#ifdef USE_ITHREADS
+    tTHX owner;
+#endif
+    int last_error;
+    SV  *m_getline, *m_print;
+    } my_cxt_t;
+
+START_MY_CXT;
 
 #define is_EOL(c) (c == CH_EOLX)
 
@@ -316,9 +324,10 @@ static SV *cx_SvDiag (pTHX_ int xse) {
 #define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
 static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
     dSP;
+    dMY_CXT;
     SV *err = SvDiag (xse);
 
-    last_error = xse;
+    MY_CXT.last_error = xse;
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
     if (xse == 0) {
 	(void)hv_store (csv->self, "_ERROR_POS",   10, newSViv  (0), 0);
@@ -509,11 +518,12 @@ static void cx_set_eol_is_cr (pTHX_ csv_t *csv) {
 
 #define SetupCsv(csv,self,pself)	cx_SetupCsv (aTHX_ csv, self, pself)
 static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
+    dMY_CXT;
     SV	       **svp;
     STRLEN	 len;
     char	*ptr;
 
-    last_error = 0;
+    MY_CXT.last_error = 0;
 
     if ((svp = hv_fetchs (self, "_CACHE", FALSE)) && *svp) {
 	byte *cache = (byte *)SvPVX (*svp);
@@ -643,6 +653,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)
 static int cx_Print (pTHX_ csv_t *csv, SV *dst) {
+    dMY_CXT;
     int result;
     int keep = 0;
 
@@ -669,7 +680,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst) {
 	    }
 	PUSHs (tmp);
 	PUTBACK;
-	result = call_sv (m_print, G_METHOD);
+	result = call_sv (MY_CXT.m_print, G_METHOD);
 	SPAGAIN;
 	if (result) {
 	    result = POPi;
@@ -895,6 +906,8 @@ static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos) {
 
 #define CsvGet(csv,src)		cx_CsvGet (aTHX_ csv, src)
 static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
+    dMY_CXT;
+
     unless (csv->useIO)
 	return EOF;
 
@@ -913,7 +926,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
 	EXTEND (sp, 1);
 	PUSHs (src);
 	PUTBACK;
-	result = call_sv (m_getline, G_METHOD);
+	result = call_sv (MY_CXT.m_getline, G_METHOD);
 	SPAGAIN;
 	csv->eol_pos = -1;
 	csv->tmp = result ? POPs : NULL;
@@ -1788,13 +1801,14 @@ static int hook (pTHX_ HV *hv, char *cb_name, AV *av) {
 
 #define xsParse(self,hv,av,avf,src,useIO)	cx_xsParse (aTHX_ self, hv, av, avf, src, useIO)
 static int cx_xsParse (pTHX_ SV *self, HV *hv, AV *av, AV *avf, SV *src, bool useIO) {
+    dMY_CXT;
     csv_t	csv;
     int		state;
     SetupCsv (&csv, hv, self);
     state = c_xsParse (csv, hv, av, avf, src, useIO);
     if (state && csv.has_hooks & HOOK_AFTER_PARSE)
 	(void)hook (aTHX_ hv, "after_parse", av);
-    return (state || !last_error);
+    return (state || !MY_CXT.last_error);
     } /* xsParse */
 
 /* API also offers av_clear and av_undef, but they have more overhead */
@@ -1889,9 +1903,15 @@ MODULE = Text::CSV_XS		PACKAGE = Text::CSV_XS
 PROTOTYPES: DISABLE
 
 BOOT:
-    m_getline = newSVpvs ("getline");
-    m_print   = newSVpvs ("print");
+{
+    MY_CXT_INIT;
+    MY_CXT.m_getline = newSVpvs ("getline");
+    MY_CXT.m_print   = newSVpvs ("print");
+#ifdef USE_ITHREADS
+    MY_CXT.owner     = aTHX;
+#endif
     Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT, newSVpvs ("IO::Handle"), NULL, NULL, NULL);
+    }
 
 void
 SetDiag (self, xse, ...)
