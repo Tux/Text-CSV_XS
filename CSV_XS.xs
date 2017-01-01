@@ -2188,7 +2188,6 @@ BOOT:
 #ifdef USE_ITHREADS
     MY_CXT.owner     = aTHX;
 #endif
-    Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT, newSVpvs ("IO::Handle"), NULL, NULL, NULL);
     }
 
 void

@@ -23,6 +23,7 @@ use warnings;
 
 require Exporter;
 use XSLoader;
+use IO::Handle ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
