@@ -23,6 +23,7 @@ use warnings;
 
 require Exporter;
 use DynaLoader ();
+use IO::Handle ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
