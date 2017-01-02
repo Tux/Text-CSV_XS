@@ -9,25 +9,27 @@ use Thread::Queue;
 my $input  = "input.csv";
 my $output = "output.csv";
 my @cols   = qw(a b c d);
+my $count  = 0;
 my $q;
-my $count = 0;
 
-threads->create(sub {
-require Text::CSV_XS;
-threads->create(sub {
+threads->create (sub {
+    require Text::CSV_XS;
+    threads->create (sub {
 
-while (1) {
-    $q = Thread::Queue->new;
-    my $inth  = threads->create (\&inputthread);
-    my $outth = threads->create (\&outputthread);
-    $inth->join  ();
-    $q->enqueue  (undef);
-    $outth->join () or die ("thread crashed?\n");
-    $count++;
-    print "$count\n";
-    }
+	while (1) {
+	    $q = Thread::Queue->new;
+	    my $inth  = threads->create (\&inputthread);
+	    my $outth = threads->create (\&outputthread);
+	    $inth->join  ();
+	    $q->enqueue  (undef);
+	    $outth->join () or die ("thread crashed?\n");
+	    $count++;
+	    print "$count\n";
+	    }
 
-})})->join; sleep 100;
+	})
+    })->join;
+sleep 100;
 
 sub inputthread {
     require Text::CSV_XS;
