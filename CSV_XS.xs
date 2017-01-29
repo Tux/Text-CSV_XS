@@ -201,7 +201,7 @@ static const xs_error_t xs_errors[] =  {
     { 1014, "INI - header called on undefined stream"				},
 
     /* Syntax errors */
-    { 1500, "PRM - Invalid/unsupported arguments(s)"				},
+    { 1500, "PRM - Invalid/unsupported argument(s)"				},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
