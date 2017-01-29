@@ -712,6 +712,8 @@ sub combine {
 sub parse {
     my ($self, $str) = @_;
 
+    ref $str and croak ($self->SetDiag (1500));
+
     my $fields = [];
     my $fflags = [];
     $self->{_STRING} = \$str;
@@ -2198,6 +2200,9 @@ argument.
 
 You may use the L</types>  method for setting column types.  See L</types>'
 description below.
+
+The C<$line> argument is supposed to be a simple scalar. Everything else is
+supposed to croak and set error 1500.
 
 =head2 fragment
 X<fragment>
@@ -3832,6 +3837,12 @@ fields.
 X<1014>
 
 The header line cannot be parsed from an undefined sources.
+
+=item *
+1500 "PRM - Invalid/unsupported argument(s)"
+X<1500>
+
+Function or method called with invalid argument(s) or parameter(s).
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"

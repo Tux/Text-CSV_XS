@@ -200,6 +200,9 @@ static const xs_error_t xs_errors[] =  {
     { 1013, "INI - the header contains nun-unique fields"			},
     { 1014, "INI - header called on undefined stream"				},
 
+    /* Syntax errors */
+    { 1500, "PRM - Invalid/unsupported arguments(s)"				},
+
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},
     { 2011, "ECR - Characters after end of quoted field"			},

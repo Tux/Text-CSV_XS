@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 271;
+ use Test::More tests => 279;
 #use Test::More "no_plan";
 
 my %err;
@@ -253,6 +253,15 @@ unlink $diag_file;
     is (0 + $csv->error_diag, 1014, "Cannot read header from undefined source");
     eval { $csv->header (*STDIN, "foo"); };
     like ($@, qr/^usage:/, "Illegal header call");
+    }
+
+{   my $csv = Text::CSV_XS->new;
+    foreach my $arg ([], sub {}, Text::CSV_XS->new, {}) {
+	eval { $csv->parse ($arg) };
+	my @diag = $csv->error_diag;
+	is   ($diag[0], 1500, "Invalid parameters (code)");
+	like ($diag[1], qr{^PRM - Invalid/unsupported argument}, "Invalid parameters (msg)");
+	}
     }
 
 1;

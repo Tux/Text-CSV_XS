@@ -4,6 +4,7 @@
     * Increased test coverage: added errors 1008 and 1014
     * Default for escape_null in csv () is now false
     * It's 2017
+    * New error code for illegal argument(s)/parameter(s)
 
 1.26	- 2016-11-29, H.Merijn Brand
     * Disable some Unicode related tests for unhealthy $PERL_UNICODE
