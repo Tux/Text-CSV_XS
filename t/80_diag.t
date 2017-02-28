@@ -11,7 +11,7 @@ my %err;
 BEGIN {
     require_ok "Text::CSV_XS";
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
-    require "t/util.pl";
+    require "./t/util.pl";
 
     open XS, "<", "CSV_XS.xs" or die "Cannot read error messages from XS\n";
     while (<XS>) {

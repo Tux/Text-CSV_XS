@@ -17,7 +17,7 @@ BEGIN {
 BEGIN {
     require_ok "Text::CSV_XS";
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
-    require "t/util.pl";
+    require "./t/util.pl";
     }
 
 my $tfn = "_50test.csv"; END { -f $tfn and unlink $tfn; }

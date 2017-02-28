@@ -9,7 +9,7 @@ use warnings;
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
-    require "t/util.pl";
+    require "./t/util.pl";
     }
 
 my $tfn  = "_91test.csv"; END { -f $tfn and unlink $tfn }

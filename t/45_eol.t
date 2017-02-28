@@ -8,7 +8,7 @@ use Test::More tests => 1082;
 BEGIN {
     require_ok "Text::CSV_XS";
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
-    require "t/util.pl";
+    require "./t/util.pl";
     }
 
 $| = 1;
