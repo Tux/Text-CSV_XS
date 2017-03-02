@@ -1,4 +1,4 @@
-1.27	- 2017-02-28, H.Merijn Brand
+1.27	- 2017-03-02, H.Merijn Brand
     * Remove unneeded done_testing (Paul Howarth)
     * Attribute sep/sep_char is not allowed to be undefined
     * Increased test coverage: added errors 1008 and 1014
@@ -6,6 +6,7 @@
     * It's 2017
     * New error code for illegal argument(s)/parameter(s) (RT#119827)
     * Fix tests for perl without dot in @INC
+    * Fix crlf issue for csv () on Windows (RT#120466)
 
 1.26	- 2016-11-29, H.Merijn Brand
     * Disable some Unicode related tests for unhealthy $PERL_UNICODE

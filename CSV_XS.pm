@@ -1010,7 +1010,6 @@ sub _csv_attr {
 
     if ($out) {
 	$in or croak $csv_usage;	# No out without in
-	defined $attr{eol} or $attr{eol} = "\r\n";
 	if ((ref $out and ref $out ne "SCALAR") or "GLOB" eq ref \$out) {
 	    $fh = $out;
 	    }
@@ -1019,6 +1018,10 @@ sub _csv_attr {
 	    $cls = 1;
 	    }
 	$enc and binmode $fh, $enc;
+	unless (defined $attr{eol}) {
+	    my @layers = eval { PerlIO::get_layers ($fh) };
+	    $attr{eol} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
+	    }
 	}
 
     if (   ref $in eq "CODE" or ref $in eq "ARRAY") {
