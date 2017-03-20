@@ -65,11 +65,9 @@
 #define _is_coderef(f) ( f && \
      (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
       SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVCV )
-#define SvSetEmpty(sv) {	\
-    sv_setpvn (sv, "", 0);	\
-    SvUTF8_off (sv);		\
-    SvSETMAGIC (sv);		\
-    }
+
+#define SvSetUndef(sv)	sv_setpvn_mg (sv, NULL, 0)
+#define SvSetEmpty(sv)	sv_setpvn_mg (sv, "",   0)
 
 #define CSV_XS_SELF					\
     if (!self || !SvOK (self) || !SvROK (self) ||	\
@@ -1051,7 +1049,7 @@ int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l) {
     if (SvCUR (sv) == 0 && (						\
 	    csv->empty_is_undef ||					\
 	    (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef)))		\
-	sv_setpvn (sv, NULL, 0);					\
+	SvSetUndef (sv);						\
     else {								\
 	if (csv->allow_whitespace && ! (f & CSV_FLAGS_QUO))		\
 	    strip_trail_whitespace (sv);				\
@@ -1142,7 +1140,7 @@ restart:
 		 * ^           ^
 		 */
 		if (csv->blank_is_undef || csv->empty_is_undef)
-		    sv_setpvn (sv, NULL, 0);
+		    SvSetUndef (sv);
 		else
 		    SvSetEmpty (sv);
 		unless (csv->is_bound)
@@ -1424,7 +1422,7 @@ EOLX:
 		 *                  ^
 		 */
 		if (csv->blank_is_undef || csv->empty_is_undef)
-		    sv_setpvn (sv, NULL, 0);
+		    SvSetUndef (sv);
 		else
 		    SvSetEmpty (sv);
 		unless (csv->is_bound)
@@ -1641,7 +1639,7 @@ EOLX:
 	if (seenSomething || !csv->useIO) {
 	    NewField;
 	    if (csv->blank_is_undef || csv->empty_is_undef)
-		sv_setpvn (sv, NULL, 0);
+		SvSetUndef (sv);
 	    else
 		SvSetEmpty (sv);
 	    unless (csv->is_bound)
