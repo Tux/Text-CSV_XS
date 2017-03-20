@@ -1,3 +1,6 @@
+1.28	- 2017-03-20, H.Merijn Brand
+    * Fix length problem with bound empty fields and UTF-8 (RT#120655)
+
 1.27	- 2017-03-02, H.Merijn Brand
     * Remove unneeded done_testing (Paul Howarth)
     * Attribute sep/sep_char is not allowed to be undefined

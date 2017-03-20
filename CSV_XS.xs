@@ -65,6 +65,11 @@
 #define _is_coderef(f) ( f && \
      (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
       SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVCV )
+#define SvSetEmpty(sv) {	\
+    sv_setpvn (sv, "", 0);	\
+    SvUTF8_off (sv);		\
+    SvSETMAGIC (sv);		\
+    }
 
 #define CSV_XS_SELF					\
     if (!self || !SvOK (self) || !SvROK (self) ||	\
@@ -721,7 +726,7 @@ static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep) {
 		return (sv);
 
 	    unless (SvREADONLY (sv)) {
-		sv_setpvn (sv, "", 0);
+		SvSetEmpty (sv);
 		return (sv);
 		}
 	    }
@@ -1139,7 +1144,7 @@ restart:
 		if (csv->blank_is_undef || csv->empty_is_undef)
 		    sv_setpvn (sv, NULL, 0);
 		else
-		    sv_setpvn (sv, "", 0);
+		    SvSetEmpty (sv);
 		unless (csv->is_bound)
 		    av_push (fields, sv);
 		sv = NULL;
@@ -1347,7 +1352,7 @@ restart:
 		    /* ... get and store next character */
 		    int c2 = CSV_GET;
 
-		    sv_setpvn (sv, "", 0);
+		    SvSetEmpty (sv);
 
 		    if (c2 == EOF) {
 			csv->used--;
@@ -1421,7 +1426,7 @@ EOLX:
 		if (csv->blank_is_undef || csv->empty_is_undef)
 		    sv_setpvn (sv, NULL, 0);
 		else
-		    sv_setpvn (sv, "", 0);
+		    SvSetEmpty (sv);
 		unless (csv->is_bound)
 		    av_push (fields, sv);
 		if (csv->keep_meta_info && fflags)
@@ -1638,7 +1643,7 @@ EOLX:
 	    if (csv->blank_is_undef || csv->empty_is_undef)
 		sv_setpvn (sv, NULL, 0);
 	    else
-		sv_setpvn (sv, "", 0);
+		SvSetEmpty (sv);
 	    unless (csv->is_bound)
 		av_push (fields, sv);
 	    if (csv->keep_meta_info && fflags)
