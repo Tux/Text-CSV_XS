@@ -66,7 +66,7 @@
      (SvROK (f) || (SvRMAGICAL (f) && (mg_get (f), 1) && SvROK (f))) && \
       SvOK (f) && SvTYPE (SvRV (f)) == SVt_PVCV )
 
-#define SvSetUndef(sv)	sv_setpvn_mg (sv, NULL, 0)
+#define SvSetUndef(sv)	sv_setpvn    (sv, NULL, 0)
 #define SvSetEmpty(sv)	sv_setpvn_mg (sv, "",   0)
 
 #define CSV_XS_SELF					\

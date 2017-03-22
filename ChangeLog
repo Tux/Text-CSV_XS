@@ -1,4 +1,4 @@
-1.28	- 2017-03-20, H.Merijn Brand
+1.28	- 2017-03-22, H.Merijn Brand
     * Fix length problem with bound empty fields and UTF-8 (RT#120655)
 
 1.27	- 2017-03-02, H.Merijn Brand
@@ -30,6 +30,7 @@
       Includes new feature to merge multiple CSV's into a single xlsx
     * Slight modification in examples
     * Fix parse error in complex option combo (RT#115953)
+      - requires perl-5.6.2 or newer
 
 1.23	- 2016-03-25, H.Merijn Brand
     * Skip unsupported encodings
