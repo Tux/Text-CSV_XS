@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.28";
+$VERSION   = "1.29";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -2488,9 +2488,10 @@ If no arguments are passed at all, L</bind_columns> will return the list of
 current bindings or C<undef> if no binds are active.
 
 Note that in parsing with  C<bind_columns>,  the fields are set on the fly.
-That implies that if the third field  of a row  causes an error,  the first
-two fields already have been assigned the values of the current row,  while
-the rest will still hold the values of the previous row.
+That implies that if the third field of a row causes an error  (or this row
+has just two fields where the previous row had more),  the first two fields
+already have been assigned the values of the current row, while the rest of
+the fields will still hold the values of the previous row.
 
 =head2 eof
 X<eof>
