@@ -107,6 +107,7 @@
 #define CACHE_ID_has_error_input	34
 #define CACHE_ID_decode_utf8		35
 #define CACHE_ID__has_hooks		36
+#define CACHE_ID_strict			58
 
 #define	byte	unsigned char
 #define ulng	unsigned long
@@ -142,6 +143,8 @@ typedef struct {
     byte	has_hooks;
 
     byte	quote_empty;
+    byte	strict;
+    short	strict_n;
 
     long	is_bound;
     ulng	recno;
@@ -211,6 +214,7 @@ static const xs_error_t xs_errors[] =  {
     { 2011, "ECR - Characters after end of quoted field"			},
     { 2012, "EOF - End of data in parsing input stream"				},
     { 2013, "ESP - Specification error for fragments RFC7111"			},
+    { 2014, "ENF - Inconsistent number of fields"				},
 
     /*  EIQ - Error Inside Quotes */
     { 2021, "EIQ - NL char inside quotes, binary off"				},
@@ -404,6 +408,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	case CACHE_ID_allow_whitespace:      csv->allow_whitespace      = iv; break;
 	case CACHE_ID_blank_is_undef:        csv->blank_is_undef        = iv; break;
 	case CACHE_ID_empty_is_undef:        csv->empty_is_undef        = iv; break;
+	case CACHE_ID_strict:                csv->strict                = iv; break;
 	case CACHE_ID_verbatim:              csv->verbatim              = iv; break;
 	case CACHE_ID_auto_diag:             csv->auto_diag             = iv; break;
 	case CACHE_ID_diag_verbose:          csv->diag_verbose          = iv; break;
@@ -484,6 +489,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     _cache_show_byte ("quote_binary",		csv->quote_binary);
     _cache_show_byte ("auto_diag",		csv->auto_diag);
     _cache_show_byte ("diag_verbose",		csv->diag_verbose);
+    _cache_show_byte ("strict",			csv->strict);
     _cache_show_byte ("has_error_input",	csv->has_error_input);
     _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
     _cache_show_byte ("empty_is_undef",		csv->empty_is_undef);
@@ -595,6 +601,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->binary			= bool_opt ("binary");
 	csv->decode_utf8		= bool_opt ("decode_utf8");
 	csv->always_quote		= bool_opt ("always_quote");
+	csv->strict			= bool_opt ("strict");
 	csv->quote_empty		= bool_opt ("quote_empty");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
 	csv->escape_null		= bool_opt_def ("escape_null",   1);
@@ -1697,9 +1704,17 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	}
 
     result = Parse (&csv, src, av, avf);
-    hv_store (hv, "_RECNO", 6, newSViv (++csv.recno), 0);
+    (void)hv_store (hv, "_RECNO", 6, newSViv (++csv.recno), 0);
+    (void)hv_store (hv, "_EOF",   4, &PL_sv_no,             0);
 
-    (void)hv_store (hv, "_EOF", 4, &PL_sv_no,  0);
+    if (csv.strict) {
+	unless (csv.strict_n) csv.strict_n = (short)csv.fld_idx;
+	if (csv.fld_idx != csv.strict_n) {
+	    ParseError (&csv, 2014, csv.used);
+	    result = FALSE;
+	    }
+	}
+
     if (csv.useIO) {
 	if (csv.tmp && csv.used < csv.size && csv.has_ahead) {
 	    SV *sv = newSVpvn (csv.bptr + csv.used, csv.size - csv.used);

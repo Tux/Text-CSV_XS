@@ -63,6 +63,7 @@ my %def_attr = (
     decode_utf8			=> 1,
     auto_diag			=> 0,
     diag_verbose		=> 0,
+    strict			=> 0,
     blank_is_undef		=> 0,
     empty_is_undef		=> 0,
     allow_whitespace		=> 0,
@@ -255,6 +256,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     decode_utf8			=> 35,
     _has_hooks			=> 36,
     _is_bound			=> 26,	# 26 .. 29
+    strict			=> 58,
     );
 
 # A `character'
@@ -409,6 +411,12 @@ sub binary {
     @_ and $self->_set_attr_X ("binary", shift);
     $self->{binary};
     } # binary
+
+sub strict {
+    my $self = shift;
+    @_ and $self->_set_attr_X ("strict", shift);
+    $self->{strict};
+    } # always_quote
 
 sub decode_utf8 {
     my $self = shift;
@@ -1622,6 +1630,16 @@ binary characters other than C<CR> and C<NL> are encountered.   Note that a
 simple string like C<"\x{00a0}"> might still be binary, but not marked UTF8,
 so setting C<< { binary => 1 } >> is still a wise option.
 
+=head3 strict
+X<strict>
+
+ my $csv = Text::CSV_XS->new ({ strict => 1 });
+         $csv->strict (0);
+ my $f = $csv->strict;
+
+If this attribute is set to C<1>, any row that parses to a different number
+of fields than the previous row will cause the parser to throw error 2014.
+
 =head3 decode_utf8
 X<decode_utf8>
 
@@ -2491,7 +2509,8 @@ Note that in parsing with  C<bind_columns>,  the fields are set on the fly.
 That implies that if the third field of a row causes an error  (or this row
 has just two fields where the previous row had more),  the first two fields
 already have been assigned the values of the current row, while the rest of
-the fields will still hold the values of the previous row.
+the fields will still hold the values of the previous row.  If you want the
+parser to fail in these cases, use the L<C<strict>|/strict> attribute.
 
 =head2 eof
 X<eof>
@@ -3878,6 +3897,12 @@ strings that are not required to have a trailing L<C<eol>|/eol>.
 X<2013>
 
 Invalid specification for URI L</fragment> specification.
+
+=item *
+2014 "ENF - Inconsistent number of fields"
+X<2014>
+
+Inconsistent number of fields under strict parsing.
 
 =item *
 2021 "EIQ - NL char inside quotes, binary off"
