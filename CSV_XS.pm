@@ -3407,6 +3407,12 @@ change in future releases.
      }
  close $fh or die "file.csv: $!";
 
+or
+
+ my $aoa = csv (in => "file.csv", on_in => sub {
+     # do something with %_
+     });
+
 =head3 Reading only a single column
 
  my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
@@ -3438,6 +3444,26 @@ with L</csv>, you could do
          $csv->error_input, "\n";
      $csv->error_diag ();
      }
+
+=head3 Parsing CSV from memory
+
+Given a complete CSV data-set in scalar C<$data>,  generate a list of lists
+to represent the rows and fields
+
+ # The data
+ my $data = join "\r\n" => map { join "," => 0 .. 5 } 0 .. 5;
+
+ # in a loop
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+ open my $fh, "<", \$data;
+ my @foo;
+ while (my $row = $csv->getline ($fh)) {
+     push @foo, $row;
+     }
+ close $fh;
+
+ # a single call
+ my $foo = csv (in => \$data);
 
 =head2 Printing CSV data
 
@@ -3471,6 +3497,22 @@ or using the slower L</combine> and L</string> methods:
          $csv->error_input, "\n";
      }
  close $csv_fh or die "hello.csv: $!";
+
+=head3 Generating CSV into memory
+
+Format a data-set (C<@foo>) into a scalar value in memory (C<$data>):
+
+ # The data
+ my @foo = map { [ 0 .. 5 ] } 0 .. 3;
+
+ # in a loop
+ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1, eol => "\r\n" });
+ open my $fh, ">", \my $data;
+ $csv->print ($fh, $_) for @foo;
+ close $fh;
+
+ # a single call
+ csv (in => \@foo, out => \my $data);
 
 =head2 Rewriting CSV
 
