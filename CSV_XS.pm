@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.29";
+$VERSION   = "1.30";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -2836,6 +2836,13 @@ where, in the absence of the C<out> attribute, this is a shortcut to
 =head3 out
 X<out>
 
+ csv (in => $aoa, out => "file.csv");
+ csv (in => $aoa, out => $fh);
+ csv (in => $aoa, out =>   STDOUT);
+ csv (in => $aoa, out =>  *STDOUT);
+ csv (in => $aoa, out => \*STDOUT);
+ csv (in => $aoa, out => \my $data);
+
 In output mode, the default CSV options when producing CSV are
 
  eol       => "\r\n"
@@ -2844,7 +2851,8 @@ The L</fragment> attribute is ignored in output mode.
 
 C<out> can be a file name  (e.g.  C<"file.csv">),  which will be opened for
 writing and closed when finished,  a file handle (e.g. C<$fh> or C<FH>),  a
-reference to a glob (e.g. C<\*STDOUT>), or the glob itself (e.g. C<*STDOUT>).
+reference to a glob (e.g. C<\*STDOUT>),  the glob itself (e.g. C<*STDOUT>),
+or a reference to a scalar (e.g. C<\my $data>).
 
  csv (in => sub { $sth->fetch },            out => "dump.csv");
  csv (in => sub { $sth->fetchrow_hashref }, out => "dump.csv",

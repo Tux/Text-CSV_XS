@@ -1,3 +1,6 @@
+1.30	- 2017-04-28, H.Merijn Brand
+    * Add csv (..., out => ...) syntax examples (issue 7)
+
 1.29	- 2017-04-25, H.Merijn Brand
     * More docs for bind_colmns (RT#121350)
     * New attribute "strict" (also addresses RT#121350)
