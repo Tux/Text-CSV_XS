@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 25107;
+use Test::More tests => 25119;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -139,4 +139,20 @@ foreach my $fail (sort keys %fail) {
     is ($csv->sep_char (), '"', "sep changed anyway");
     }
 
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "New CSV default");
+    ok ($csv->combine ("=\x00="), "combine =\\x00=");
+    is ($csv->string, qq{"="0="}, "string");
+    }
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1, escape_null => 0 }), "New CSV no escape_null");
+    ok ($csv->combine ("=\x00="), "combine =\\x00=");
+    is ($csv->string, qq{"=\0="}, "string");
+    }
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1, escape_char => "" }), "New CSV no escape");
+    ok ($csv->combine ("=\x00="), "combine =\\x00=");
+    is ($csv->string, qq{"=\0="}, "string");
+    }
+{   ok (my $csv = Text::CSV_XS->new ({ binary => 1, escape_char => "", escape_null => 0 }), "New CSV no escape no escape_null");
+    ok ($csv->combine ("=\x00="), "combine =\\x00=");
+    is ($csv->string, qq{"=\0="}, "string");
+    }
 1;

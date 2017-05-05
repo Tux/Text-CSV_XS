@@ -1,5 +1,6 @@
-1.30	- 2017-04-28, H.Merijn Brand
+1.30	- 2017-05-05, H.Merijn Brand
     * Add csv (..., out => ...) syntax examples (issue 7)
+    * Disable escape_null for undefined escape_char
 
 1.29	- 2017-04-25, H.Merijn Brand
     * More docs for bind_colmns (RT#121350)

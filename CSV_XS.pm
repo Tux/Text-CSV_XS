@@ -1593,7 +1593,7 @@ See also L</CAVEATS>
 X<escape_char>
 
  my $csv = Text::CSV_XS->new ({ escape_char => "\\" });
-         $csv->escape_char (undef);
+         $csv->escape_char (":");
  my $c = $csv->escape_char;
 
 The character to  escape  certain characters inside quoted fields.  This is
@@ -1611,6 +1611,9 @@ C<escape_char>,  the  C<escape_char> will still be the double-quote (C<">).
 If instead you want to escape the  L<C<quote_char>|/quote_char> by doubling
 it you will need to also change the  C<escape_char>  to be the same as what
 you have changed the L<C<quote_char>|/quote_char> to.
+
+Setting C<escape_char> to <undef> or C<""> will disable escaping completely
+and is greatly discouraged. This will also disable C<escape_null>.
 
 The escape character can not be equal to the separation character.
 
@@ -1899,6 +1902,17 @@ By default, a C<NULL> byte in a field would be escaped. This option enables
 you to treat the  C<NULL>  byte as a simple binary character in binary mode
 (the C<< { binary => 1 } >> is set).  The default is true.  You can prevent
 C<NULL> escapes by setting this attribute to C<0>.
+
+When the C<escape_char> attribute is set to undefined,  this attribute will
+be set to false.
+
+The default setting will encode "=\x00=" as
+
+ "="0="
+
+With C<escape_null> set, this will result in
+
+ "=\x00="
 
 The default when using the C<csv> function is C<false>.
 

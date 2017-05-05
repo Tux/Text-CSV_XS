@@ -633,6 +633,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 
     csv->first_safe_char = csv->quote_space ? 0x21 : 0x20;
 
+    unless (csv->escape_char) csv->escape_null = 0;
+
     if (csv->is_bound) {
 	if ((svp = hv_fetchs (self, "_BOUND_COLUMNS", FALSE)) && _is_arrayref (*svp))
 	    csv->bound = *svp;
