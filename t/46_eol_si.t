@@ -14,7 +14,7 @@ BEGIN {
 	plan skip_all => "No reliable perlIO available";
 	}
     else {
-	plan tests => 553;
+	plan tests => 559;
 	}
     }
 
@@ -215,19 +215,39 @@ $/ = $def_rs;
     open my $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
-    is ($foo, "1,2$/");
+    is ($foo, "1,2$/", "content with eol \$/");
     $foo = "";
     $csv->eol ("#");
     open $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
-    is ($foo, "1,2#");
+    is ($foo, "1,2#", "content with eol #");
     $foo = "";
     $csv->eol ("0");
     open $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
-    is ($foo, "1,20");
+    is ($foo, "1,20", "content with eol 0");
+    }
+
+{   ok (my $csv = Text::CSV_XS->new,	"new for say");
+    my $foo;
+    my $dta = "x";
+    ok ($csv->bind_columns (\$dta), "bind columns");
+
+    local $\ = undef;
+    local $/ = "\n";
+
+    open my $fh, ">", \$foo or die "IO: $!\n";
+    ok ($csv->print ($fh, undef), "print");
+    close $fh;
+    is ($foo, "x", "print, no newline");
+
+    $foo = "";
+    open $fh, ">", \$foo or die "IO: $!\n";
+    ok ($csv->say ($fh, undef), "say");
+    close $fh;
+    is ($foo, "x\n", "say, with newline");
     }
 
 1;

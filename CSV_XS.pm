@@ -886,7 +886,8 @@ sub say {
     my ($self, $io, @f) = @_;
     my $eol = $self->eol;
     defined $eol && $eol ne "" or $self->eol ($\ || $/);
-    my $state = $self->print ($io, @f);
+    # say ($fh, undef) does not propage actual undef to print ()
+    my $state = $self->print ($io, @f == 1 && !defined $f[0] ? undef : @f);
     $self->eol ($eol);
     return $state;
     } # say
