@@ -1404,7 +1404,7 @@ For complete control over encoding, please use L<Text::CSV::Encoded>:
 
 While no formal specification for CSV exists,  RFC 4180 I<1>) describes the
 common format and establishes  C<text/csv> as the MIME type registered with
-the IANA. RFC 7111 I<2> adds fragments to CSV.
+the IANA. RFC 7111 I<2>) adds fragments to CSV.
 
 Many informal documents exist that describe the C<CSV> format. "How To: The
 Comma Separated Value (CSV) File Format" I<3>)  provides an overview of the
