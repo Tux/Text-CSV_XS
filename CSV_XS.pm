@@ -1402,14 +1402,15 @@ For complete control over encoding, please use L<Text::CSV::Encoded>:
 
 =head1 SPECIFICATION
 
-While no formal specification for CSV exists,  RFC 4180 I<1>) describes the
-common format and establishes  C<text/csv> as the MIME type registered with
-the IANA. RFC 7111 I<2>) adds fragments to CSV.
+While no formal specification for CSV exists, L<RFC 4180|http://tools.ietf.org/html/rfc4180>
+(I<1>) describes the common format and establishes  C<text/csv> as the MIME
+type registered with the IANA. L<RFC 7111|http://tools.ietf.org/html/rfc7111>
+(I<2>) adds fragments to CSV.
 
-Many informal documents exist that describe the C<CSV> format. "How To: The
-Comma Separated Value (CSV) File Format" I<3>)  provides an overview of the
-C<CSV>  format in the most widely used applications and explains how it can
-best be used and supported.
+Many informal documents exist that describe the C<CSV> format.   L<"How To:
+The Comma Separated Value (CSV) File Format"|http://www.creativyst.com/Doc/Articles/CSV/CSV01.htm>
+(I<3>)  provides an overview of the  C<CSV>  format in the most widely used
+applications and explains how it can best be used and supported.
 
  1) http://tools.ietf.org/html/rfc4180
  2) http://tools.ietf.org/html/rfc7111
