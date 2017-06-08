@@ -605,7 +605,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->strict			= bool_opt ("strict");
 	csv->quote_empty		= bool_opt ("quote_empty");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
-	csv->escape_null		= bool_opt_def ("escape_null",   1);
+	csv->escape_null		= bool_opt_def ("escape_null",  1);
 	csv->quote_binary		= bool_opt_def ("quote_binary", 1);
 	csv->allow_loose_quotes		= bool_opt ("allow_loose_quotes");
 	csv->allow_loose_escapes	= bool_opt ("allow_loose_escapes");
@@ -618,6 +618,8 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->auto_diag			= num_opt ("auto_diag");
 	csv->diag_verbose		= num_opt ("diag_verbose");
 	csv->keep_meta_info		= num_opt ("keep_meta_info");
+
+	unless (csv->escape_char) csv->escape_null = 0;
 
 	sv_cache = newSVpvn ((char *)csv, sizeof (csv_t));
 	csv->cache = (byte *)SvPVX (sv_cache);
@@ -634,8 +636,6 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 
     csv->first_safe_char = csv->quote_space ? 0x21 : 0x20;
 
-    unless (csv->escape_char) csv->escape_null = 0;
-
     if (csv->is_bound) {
 	if ((svp = hv_fetchs (self, "_BOUND_COLUMNS", FALSE)) && _is_arrayref (*svp))
 	    csv->bound = *svp;
@@ -651,9 +651,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 		? 0
 		: 1
 	: 0;
-    if (csv->sep_len && is_utf8_string ((U8 *)(csv->sep), csv->sep_len))
+    if (csv->sep_len > 1 && is_utf8_string ((U8 *)(csv->sep), csv->sep_len))
 	csv->utf8 = 1;
-    if (csv->quo_len && is_utf8_string ((U8 *)(csv->quo), csv->quo_len))
+    if (csv->quo_len > 1 && is_utf8_string ((U8 *)(csv->quo), csv->quo_len))
 	csv->utf8 = 1;
     } /* SetupCsv */
 

@@ -265,8 +265,7 @@ sub _set_attr_C {
     defined $val or $val = 0;
     utf8::decode ($val);
     $self->{$name} = $val;
-    $ec = _check_sanity ($self) and
-	croak ($self->SetDiag ($ec));
+    $ec = _check_sanity ($self) and croak ($self->SetDiag ($ec));
     $self->_cache_set ($_cache_id{$name}, $val);
     } # _set_attr_C
 
@@ -324,7 +323,11 @@ sub quote {
 
 sub escape_char {
     my $self = shift;
-    @_ and $self->_set_attr_C ("escape_char", shift);
+    if (@_) {
+	my $ec = shift;
+	$self->_set_attr_C ("escape_char", $ec);
+	$ec or $self->_set_attr_X ("escape_null", 0);
+	}
     $self->{escape_char};
     } # escape_char
 
