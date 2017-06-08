@@ -1320,6 +1320,17 @@ Text::CSV_XS - comma-separated values manipulation routines
  $csv->say ($fh, $_) for @rows;
  close $fh or die "new.csv: $!";
 
+ # Write a CSV in memory using print()
+ my $csv = Text::CSV_XS->new( { binary => 1, auto_diag => 2, eol => "\r\n" } );
+ my $file;
+ open my $fh, '>', \$file;
+
+ my @foo = map { [ 0 .. 5 ] } 0 .. 3;
+
+ for my $line ( @foo ) {
+     $csv->print( $fh, $line );
+ }
+
 =head1 DESCRIPTION
 
 Text::CSV_XS  provides facilities for the composition  and decomposition of
