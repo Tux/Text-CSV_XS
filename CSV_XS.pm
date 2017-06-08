@@ -1346,8 +1346,8 @@ is to  B<not>  pass L<C<eol>|/eol> in the parser  (it accepts C<\n>, C<\r>,
 B<and> C<\r\n> by default) and then
 
  my $csv = Text::CSV_XS->new ({ binary => 1 });
- open my $io, "<", $file or die "$file: $!";
- while (my $row = $csv->getline ($io)) {
+ open my $fh, "<", $file or die "$file: $!";
+ while (my $row = $csv->getline ($fh)) {
      my @fields = @$row;
      }
 
@@ -2066,11 +2066,11 @@ in classes that use or extend Text::CSV_XS.
 =head2 print
 X<print>
 
- $status = $csv->print ($io, $colref);
+ $status = $csv->print ($fh, $colref);
 
 Similar to  L</combine> + L</string> + L</print>,  but much more efficient.
 It expects an array ref as input  (not an array!)  and the resulting string
-is not really  created,  but  immediately  written  to the  C<$io>  object,
+is not really  created,  but  immediately  written  to the  C<$fh>  object,
 typically an IO handle or any other object that offers a L</print> method.
 
 For performance reasons  C<print>  does not create a result string,  so all
@@ -2090,28 +2090,28 @@ A short benchmark
  my @data = ("aa" .. "zz");
  $csv->bind_columns (\(@data));
 
- $csv->print ($io, [ @data ]);   # 11800 recs/sec
- $csv->print ($io,  \@data  );   # 57600 recs/sec
- $csv->print ($io,   undef  );   # 48500 recs/sec
+ $csv->print ($fh, [ @data ]);   # 11800 recs/sec
+ $csv->print ($fh,  \@data  );   # 57600 recs/sec
+ $csv->print ($fh,   undef  );   # 48500 recs/sec
 
 =head2 say
 X<say>
 
- $status = $csv->say ($io, $colref);
+ $status = $csv->say ($fh, $colref);
 
 Like L<C<print>|/print>, but L<C<eol>|/eol> defaults to C<$\>.
 
 =head2 print_hr
 X<print_hr>
 
- $csv->print_hr ($io, $ref);
+ $csv->print_hr ($fh, $ref);
 
 Provides an easy way  to print a  C<$ref>  (as fetched with L</getline_hr>)
 provided the column names are set with L</column_names>.
 
 It is just a wrapper method with basic parameter checks over
 
- $csv->print ($io, [ map { $ref->{$_} } $csv->column_names ]);
+ $csv->print ($fh, [ map { $ref->{$_} } $csv->column_names ]);
 
 =head2 combine
 X<combine>
@@ -2136,12 +2136,12 @@ of L</combine>, whichever was called more recently.
 =head2 getline
 X<getline>
 
- $colref = $csv->getline ($io);
+ $colref = $csv->getline ($fh);
 
 This is the counterpart to  L</print>,  as L</parse>  is the counterpart to
-L</combine>:  it parses a row from the C<$io>  handle using the L</getline>
-method associated with C<$io>  and parses this row into an array ref.  This
-array ref is returned by the function or C<undef> for failure.  When C<$io>
+L</combine>:  it parses a row from the C<$fh>  handle using the L</getline>
+method associated with C<$fh>  and parses this row into an array ref.  This
+array ref is returned by the function or C<undef> for failure.  When C<$fh>
 does not support C<getline>, you are likely to hit errors.
 
 When fields are bound with L</bind_columns> the return value is a reference
@@ -2152,27 +2152,27 @@ The L</string>, L</fields>, and L</status> methods are meaningless again.
 =head2 getline_all
 X<getline_all>
 
- $arrayref = $csv->getline_all ($io);
- $arrayref = $csv->getline_all ($io, $offset);
- $arrayref = $csv->getline_all ($io, $offset, $length);
+ $arrayref = $csv->getline_all ($fh);
+ $arrayref = $csv->getline_all ($fh, $offset);
+ $arrayref = $csv->getline_all ($fh, $offset, $length);
 
-This will return a reference to a list of L<getline ($io)|/getline> results.
+This will return a reference to a list of L<getline ($fh)|/getline> results.
 In this call, C<keep_meta_info> is disabled.  If C<$offset> is negative, as
-with C<splice>, only the last  C<abs ($offset)> records of C<$io> are taken
+with C<splice>, only the last  C<abs ($offset)> records of C<$fh> are taken
 into consideration.
 
 Given a CSV file with 10 lines:
 
  lines call
  ----- ---------------------------------------------------------
- 0..9  $csv->getline_all ($io)         # all
- 0..9  $csv->getline_all ($io,  0)     # all
- 8..9  $csv->getline_all ($io,  8)     # start at 8
- -     $csv->getline_all ($io,  0,  0) # start at 0 first 0 rows
- 0..4  $csv->getline_all ($io,  0,  5) # start at 0 first 5 rows
- 4..5  $csv->getline_all ($io,  4,  2) # start at 4 first 2 rows
- 8..9  $csv->getline_all ($io, -2)     # last 2 rows
- 6..7  $csv->getline_all ($io, -4,  2) # first 2 of last  4 rows
+ 0..9  $csv->getline_all ($fh)         # all
+ 0..9  $csv->getline_all ($fh,  0)     # all
+ 8..9  $csv->getline_all ($fh,  8)     # start at 8
+ -     $csv->getline_all ($fh,  0,  0) # start at 0 first 0 rows
+ 0..4  $csv->getline_all ($fh,  0,  5) # start at 0 first 5 rows
+ 4..5  $csv->getline_all ($fh,  4,  2) # start at 4 first 2 rows
+ 8..9  $csv->getline_all ($fh, -2)     # last 2 rows
+ 6..7  $csv->getline_all ($fh, -4,  2) # first 2 of last  4 rows
 
 =head2 getline_hr
 X<getline_hr>
@@ -2182,7 +2182,7 @@ to have rows returned as hashrefs.  You must call L</column_names> first to
 declare your column names.
 
  $csv->column_names (qw( code name price description ));
- $hr = $csv->getline_hr ($io);
+ $hr = $csv->getline_hr ($fh);
  print "Price for $hr->{name} is $hr->{price} EUR\n";
 
 L</getline_hr> will croak if called before L</column_names>.
@@ -2191,18 +2191,18 @@ Note that  L</getline_hr>  creates a hashref for every row and will be much
 slower than the combined use of L</bind_columns>  and L</getline> but still
 offering the same ease of use hashref inside the loop:
 
- my @cols = @{$csv->getline ($io)};
+ my @cols = @{$csv->getline ($fh)};
  $csv->column_names (@cols);
- while (my $row = $csv->getline_hr ($io)) {
+ while (my $row = $csv->getline_hr ($fh)) {
      print $row->{price};
      }
 
 Could easily be rewritten to the much faster:
 
- my @cols = @{$csv->getline ($io)};
+ my @cols = @{$csv->getline ($fh)};
  my $row = {};
  $csv->bind_columns (\@{$row}{@cols});
- while ($csv->getline ($io)) {
+ while ($csv->getline ($fh)) {
      print $row->{price};
      }
 
@@ -2216,11 +2216,11 @@ perl-5.14.2 the comparison for a 100_000 line file with 14 rows:
 =head2 getline_hr_all
 X<getline_hr_all>
 
- $arrayref = $csv->getline_hr_all ($io);
- $arrayref = $csv->getline_hr_all ($io, $offset);
- $arrayref = $csv->getline_hr_all ($io, $offset, $length);
+ $arrayref = $csv->getline_hr_all ($fh);
+ $arrayref = $csv->getline_hr_all ($fh, $offset);
+ $arrayref = $csv->getline_hr_all ($fh, $offset, $length);
 
-This will return a reference to a list of   L<getline_hr ($io)|/getline_hr>
+This will return a reference to a list of   L<getline_hr ($fh)|/getline_hr>
 results.  In this call, L<C<keep_meta_info>|/keep_meta_info> is disabled.
 
 =head2 parse
@@ -2247,7 +2247,7 @@ X<fragment>
 This function tries to implement RFC7111  (URI Fragment Identifiers for the
 text/csv Media Type) - http://tools.ietf.org/html/rfc7111
 
- my $AoA = $csv->fragment ($io, $spec);
+ my $AoA = $csv->fragment ($fh, $spec);
 
 In specifications,  C<*> is used to specify the I<last> item, a dash (C<->)
 to indicate a range.   All indices are C<1>-based:  the first row or column
@@ -2259,7 +2259,7 @@ disjointed  cell-based combined selection  might return rows with different
 number of columns making the use of hashes unpredictable.
 
  $csv->column_names ("Name", "Age");
- my $AoH = $csv->fragment ($io, "col=3;8");
+ my $AoH = $csv->fragment ($fh, "col=3;8");
 
 If the L</after_parse> callback is active,  it is also called on every line
 parsed and skipped before the fragment.
@@ -2341,14 +2341,14 @@ Set the "keys" that will be used in the  L</getline_hr>  calls.  If no keys
 L</column_names> accepts a list of scalars  (the column names)  or a single
 array_ref, so you can pass the return value from L</getline> too:
 
- $csv->column_names ($csv->getline ($io));
+ $csv->column_names ($csv->getline ($fh));
 
 L</column_names> does B<no> checking on duplicates at all, which might lead
 to unexpected results.   Undefined entries will be replaced with the string
 C<"\cAUNDEF\cA">, so
 
  $csv->column_names (undef, "", "name", "name");
- $hr = $csv->getline_hr ($io);
+ $hr = $csv->getline_hr ($fh);
 
 Will set C<< $hr->{"\cAUNDEF\cA"} >> to the 1st field,  C<< $hr->{""} >> to
 the 2nd field, and C<< $hr->{name} >> to the 4th field,  discarding the 3rd
@@ -2509,7 +2509,7 @@ C<3006>.  If you pass more than there are fields to return,  the content of
 the remaining references is left untouched.
 
  $csv->bind_columns (\$code, \$name, \$price, \$description);
- while ($csv->getline ($io)) {
+ while ($csv->getline ($fh)) {
      print "The price of a $name is \x{20ac} $price\n";
      }
 
@@ -3587,7 +3587,7 @@ or a map
 these special sequences are not recognized by  Text::CSV_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
 
- while (my $row = $csv->getline ($io)) {
+ while (my $row = $csv->getline ($fh)) {
      $sth->execute (map { $_ eq "\\N" ? undef : $_ } @$row);
      }
 
