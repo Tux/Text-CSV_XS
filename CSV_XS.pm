@@ -1190,7 +1190,11 @@ sub csv {
 	@hdr and $hdrs ||= \@hdr;
 	}
 
-    my $key = $c->{key} and $hdrs ||= "auto";
+    my $key = $c->{key};
+    if ($key) {
+	ref $key and croak ($csv->SetDiag (1501, "1501 - PRM"));
+	$hdrs ||= "auto";
+	}
     $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
     if (defined $hdrs) {
 	if (!ref $hdrs) {
@@ -3044,6 +3048,15 @@ will return
         }
     }
 
+The C<key> attribute can be combined with L<C<headers>|/headers> for C<CSV>
+date that has no header line, like
+
+ my $ref = csv (
+     in      => "foo.csv",
+     headers => [qw( c_foo foo bar description stock )],
+     key     =>     "c_foo",
+     );
+
 =head3 fragment
 X<fragment>
 
@@ -3932,6 +3945,12 @@ The header line cannot be parsed from an undefined sources.
 X<1500>
 
 Function or method called with invalid argument(s) or parameter(s).
+
+=item *
+1501 "PRM - The key attribute is passed as an unsupported type"
+X<1501>
+
+The C<key> attribute is of an unsupported type.
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"

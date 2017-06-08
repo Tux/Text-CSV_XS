@@ -208,6 +208,7 @@ static const xs_error_t xs_errors[] =  {
 
     /* Syntax errors */
     { 1500, "PRM - Invalid/unsupported argument(s)"				},
+    { 1501, "PRM - The key attribute is passed as an unsupported type"		},
 
     /* Parse errors */
     { 2010, "ECR - QUO char inside quotes followed by CR not part of EOL"	},

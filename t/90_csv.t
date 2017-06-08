@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 45;
+ use Test::More tests => 47;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -148,6 +148,13 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     my $r = eval { csv (in => undef); };
     is ($r, undef, "csv needs in or file");
     like ($err, qr{^usage:}, "error");
+    undef $err;
+    }
+{   my $err;
+    local $SIG{__DIE__} = sub { $err = shift; };
+    my $r = eval { csv (in => $tfn, key => ["foo"], auto_diag => 0); };
+    is ($r, undef, "Fail call with bad key type");
+    like ($err, qr{1501 - PRM}, "Error 1501");
     undef $err;
     }
 
