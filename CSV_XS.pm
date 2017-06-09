@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.30";
+$VERSION   = "1.31";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -812,6 +812,7 @@ sub header {
 	elsif ($hdr =~ s/^\x0e\xfe\xff//)     { $enc = "scsu"       }
 	elsif ($hdr =~ s/^\xfb\xee\x28//)     { $enc = "bocu-1"     }
 	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = "gb-18030"   }
+	elsif ($hdr =~ s/^\x{feff}//)         { $enc = ""           }
 
 	if ($enc) {
 	    if ($enc =~ m/([13]).le$/) {
