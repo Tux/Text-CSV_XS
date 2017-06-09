@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 297;
+	my $n = 388;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -217,7 +217,7 @@ my $fnm = "_85hdr.csv"; END { unlink $fnm; }
 $csv->binary (1);
 $csv->auto_diag (9);
 my $str = qq{zoo,b\x{00e5}r\n1,"1 \x{20ac} each"\n};
-for (	[ "none"       => ""	],
+for (	[ "none"       => ""			],
 	[ "utf-8"      => "\xef\xbb\xbf"	],
 	[ "utf-16be"   => "\xfe\xff"		],
 	[ "utf-16le"   => "\xff\xfe"		],
@@ -228,10 +228,12 @@ for (	[ "none"       => ""	],
 	[ "scsu"       => "\x0e\xfe\xff"	],
 	[ "bocu-1"     => "\xfb\xee\x28"	],
 	[ "gb-18030"   => "\x84\x31\x95"	],
+	[ "UTF-8"      => "\x{feff}"		],
 	) {
     my ($enc, $bom) = @$_;
     my $has_enc = 0;
     eval {
+	no warnings "utf8";
 	open my $fh, ">", $fnm;
 	binmode $fh;
 	print $fh $bom;
@@ -245,6 +247,23 @@ for (	[ "none"       => ""	],
 	$csv->column_names (undef);
 	open my $fh, "<", $fnm;
 	binmode $fh;
+	ok (1, "$fnm opened for enc $enc");
+	ok ($csv->header ($fh), "headers with BOM for $enc");
+	is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
+	ok (my $row = $csv->getline_hr ($fh), "getline_hr");
+	is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+	close $fh;
+
+	ok (my $aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
+	is_deeply ($aoh,
+	    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
+	}
+
+    SKIP: {
+	$has_enc or skip "Encoding $enc not supported", 7;
+	$csv->column_names (undef);
+	open my $fh, "<", $fnm;
+	$enc eq "none" or binmode $fh, ":encoding($enc)";
 	ok (1, "$fnm opened for enc $enc");
 	ok ($csv->header ($fh), "headers with BOM for $enc");
 	is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
