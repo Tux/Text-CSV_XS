@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'15 [19 Nov 2015] Copyright H.M.Brand 2007-2017
+#	   (m)'17 [10 Jun 2017] Copyright H.M.Brand 2007-2017
 
 # This code requires the defined-or feature and PerlIO
 
@@ -11,13 +11,13 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode );
 
-our $VERSION = "1.7";	# 2015-11-19
+our $VERSION = "1.8";	# 2017-06-10
+my $cmd = $0; $cmd =~ s{.*/}{};
 
-sub usage
-{
+sub usage {
     my $err = shift and select STDERR;
-    print <<EOU;
-usage: csv-check [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
+    print <<"EOU";
+usage: $cmd [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
        -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
                   The string "tab" is allowed.
        -e <esc>   use <sep>   as seperator char. Auto-detect, default = ','
@@ -25,6 +25,9 @@ usage: csv-check [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
        -q <quot>  use <quot>  as quotation char. Default = '"'
                   The string "undef" will disable quotation.
        -u         check if all fields are valid unicode
+       -E <enc>   open file with encoding
+       -h         check with header (implies BOM)
+       -b         check with BOM (no header)
 
        --pp       use Text::CSV_PP instead (cross-check)
 EOU
@@ -37,15 +40,22 @@ my $quo = '"';
 my $esc = '"';
 my $opt_u = 0;
 my $opt_p = 0;
+my $opt_h = 0;
+my $opt_b = 0;
+my $enc;
 GetOptions (
-    "help|?"	=> sub { usage (0); },
+    "help|?"		=> sub { usage (0); },
+    "V|version"		=> sub { print "$cmd [$VERSION]\n"; exit 0; },
 
-    "c|s=s"	=> \$sep,
-    "q=s"	=> \$quo,
-    "e=s"	=> \$esc,
-    "u"		=> \$opt_u,
+    "c|s|sep=s"		=> \$sep,
+    "q|quo|quote=s"	=> \$quo,
+    "e|esc|escape=s"	=> \$esc,
+    "u|utf|utf8|utf-8!"	=> \$opt_u,
+    "E|enc|encoding=s"	=> \$enc,
+    "h|hdr|header!"	=> \$opt_h,
+    "b|bom!"		=> \$opt_b,
 
-    "pp!"	=> \$opt_p,
+    "pp!"		=> \$opt_p,
     ) or usage (1);
 
 my  $csvmod = "Text::CSV_XS";
@@ -82,11 +92,17 @@ my $csv = $csvmod->new ({
     auto_diag      => 1,
     });
 
-sub done
-{
+sub done {
     (my $file = $ARGV // "") =~ s{(\S)$}{$1 };
-    (my $prog = $0) =~ s{.*/}{};
-    print "Checked $file with $prog $VERSION using $csvmod @{[$csvmod->VERSION]}\n";
+    (my $pv = "$]0000000") =~ s{^([0-9]+)\.([0-9]{3})([0-9]{3})[0-9]*}
+			       {sprintf "%d.%d.%d",$1,$2,$3}e;
+    my $uv = eval {
+	no warnings;
+	(my $cv = $]) =~ s/0+$//;
+	eval { require Unicode::UCD;     Unicode::UCD::UnicodeVersion () } ||
+	eval { require Module::CoreList; $Module::CoreList::version{$cv}{Unicode} };
+	} || "unknown";
+    print "Checked $file with $cmd $VERSION\nusing $csvmod @{[$csvmod->VERSION]} with perl $pv and Unicode $uv\n";
     my @diag = $csv->error_diag;
     if ($diag[0] == 2012 && $csv->eof) {
 	my @coll = sort { $a <=> $b } keys %cols;
@@ -120,8 +136,7 @@ sub done
     exit $diag[0];
     } # done
 
-sub stats
-{
+sub stats {
     my $r = shift;
     $cols{scalar @$r}++;
     grep { $_ & 0x0002 } $csv->meta_info and $bin = 1;
@@ -140,7 +155,15 @@ sub stats
 	}
     } # stats
 
-open my $fh, "<", \$data or die "$fn: $!\n";
+my $mode = $enc ? "<:encoding($enc)" : "<";
+open my $fh, $mode, \$data or die "$fn: $!\n";
+if ($opt_h) {
+    $csv->header;
+    }
+elsif ($opt_b) {
+    my @hdr = $csv->header ($fh, { detect_bom => 1, set_column_names => 0 });
+    stats \@hdr;
+    }
 while (my $row = $csv->getline ($fh)) {
     $rows++;
     stats $row;
