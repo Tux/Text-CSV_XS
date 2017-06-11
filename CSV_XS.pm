@@ -668,21 +668,21 @@ sub meta_info {
     } # meta_info
 
 sub is_quoted {
-    my ($self, $idx, $val) = @_;
+    my ($self, $idx) = @_;
     ref $self->{_FFLAGS} &&
 	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
     $self->{_FFLAGS}[$idx] & 0x0001 ? 1 : 0;
     } # is_quoted
 
 sub is_binary {
-    my ($self, $idx, $val) = @_;
+    my ($self, $idx) = @_;
     ref $self->{_FFLAGS} &&
 	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
     $self->{_FFLAGS}[$idx] & 0x0002 ? 1 : 0;
     } # is_binary
 
 sub is_missing {
-    my ($self, $idx, $val) = @_;
+    my ($self, $idx) = @_;
     $idx < 0 || !ref $self->{_FFLAGS} and return;
     $idx >= @{$self->{_FFLAGS}} and return 1;
     $self->{_FFLAGS}[$idx] & 0x0010 ? 1 : 0;
@@ -830,7 +830,8 @@ sub header {
     $args{munge_column_names} eq "uc" and $hdr = uc $hdr;
 
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
-    open my $h, "<$enc", $hr;
+    open my $h, "<$enc", $hr or croak ($self->SetDiag (1010));
+
     my $row = $self->getline ($h) or croak;
     close $h;
 
@@ -880,7 +881,7 @@ sub getline_hr {
     } # getline_hr
 
 sub getline_hr_all {
-    my ($self, @args, %hr) = @_;
+    my ($self, @args) = @_;
     $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
     my @cn = @{$self->{_COLUMN_NAMES}};
     [ map { my %h; @h{@cn} = @$_; \%h } @{$self->getline_all (@args)} ];
