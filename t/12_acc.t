@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 196;
+use Test::More tests => 227;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -51,6 +51,7 @@ is ($csv->sep (";"),			";",		"sep (;)");
 is ($csv->sep_char (),			";",		"sep_char ()");
 is ($csv->quote_char ("="),		"=",		"quote_char (=)");
 is ($csv->quote (undef),		"",		"quote (undef)");
+is ($csv->quote (""),			"",		"quote (undef)");
 is ($csv->quote ("="),			"=",		"quote (=)");
 is ($csv->eol (undef),			"",		"eol (undef)");
 is ($csv->eol (""),			"",		"eol ('')");
@@ -168,13 +169,19 @@ foreach my $ws (" ", "\t") {
     eval { ok ($csv->quote_char  ($ws),     "esc") };
     is (($csv->error_diag)[0], 1002, "Wrong combo");
     }
-eval { $csv = Text::CSV_XS->new ({
-    escape_char      => "\t",
-    quote_char       => " ",
-    allow_whitespace => 1,
-    }) };
-like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo - error message");
-is   ((Text::CSV_XS::error_diag)[0], 1002, "Wrong combo - numeric error");
+foreach my $esc (undef, "", " ", "\t", "!!!!!!") {
+    foreach my $quo (undef, "", " ", "\t", "!!!!!!") {
+	defined $esc && $esc =~ m/[ \t]/ or 
+	defined $quo && $quo =~ m/[ \t]/ or next;
+	eval { $csv = Text::CSV_XS->new ({
+	    escape           => $esc,
+	    quote            => $quo,
+	    allow_whitespace => 1,
+	    }) };
+	like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo - error message");
+	is   ((Text::CSV_XS::error_diag)[0], 1002, "Wrong combo - numeric error");
+	}
+    }
 
 # Test 1003 in constructor
 foreach my $x ("\r", "\n", "\r\n", "x\n", "\rx") {

@@ -95,23 +95,26 @@ my %attr_alias = (
     quote_always		=> "always_quote",
     verbose_diag		=> "diag_verbose",
     quote_null			=> "escape_null",
+    escape			=> "escape_char",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
 # NOT a method: is also used before bless
 sub _unhealthy_whitespace {
-    my $self = shift;
-    $_[0] or return 0; # no checks needed without allow_whitespace
+    my ($self, $aw, $sep) = @_;
+    $aw or return 0; # no checks needed without allow_whitespace
+
+#   $sep =~ m/^[ \t]/ || $sep =~ m/[ \t]$/ and return 1002;
 
     my $quo = $self->{quote};
     defined $quo && length ($quo) or $quo = $self->{quote_char};
     my $esc = $self->{escape_char};
 
-    (defined $quo && $quo =~ m/^[ \t]/) || (defined $esc && $esc =~ m/^[ \t]/) and
-	return 1002;
+    defined $quo && $quo =~ m/^[ \t]/ and return 1002;
+    defined $esc && $esc =~ m/^[ \t]/ and return 1002;
 
     return 0;
-    } # _sane_whitespace
+    } # _unhealty_whitespace
 
 sub _check_sanity {
     my $self = shift;
@@ -128,13 +131,10 @@ sub _check_sanity {
 #	        "', ESC: '", DPeek ($esc),"'");
 
     # sep_char should not be undefined
-    if (defined $sep && $sep ne "") {
-	length ($sep) > 16		and return 1006;
-	$sep =~ m/[\r\n]/		and return 1003;
-	}
-    else {
-					    return 1008;
-	}
+    defined $sep && $sep ne ""		or  return 1008;
+    length ($sep) > 16			and return 1006;
+    $sep =~ m/[\r\n]/			and return 1003;
+
     if (defined $quo) {
 	defined $sep && $quo eq $sep	and return 1001;
 	length ($quo) > 16		and return 1007;
@@ -148,7 +148,7 @@ sub _check_sanity {
 	length ($eol) > 16		and return 1005;
 	}
 
-    return _unhealthy_whitespace ($self, $self->{allow_whitespace});
+    return _unhealthy_whitespace ($self, $self->{allow_whitespace}, $sep);
     } # _check_sanity
 
 sub known_attributes {
@@ -454,7 +454,7 @@ sub allow_whitespace {
     my $self = shift;
     if (@_) {
 	my $aw = shift;
-	_unhealthy_whitespace ($self, $aw) and
+	_unhealthy_whitespace ($self, $aw, $self->sep) and
 	    croak ($self->SetDiag (1002));
 	$self->_set_attr_X ("allow_whitespace", $aw);
 	}

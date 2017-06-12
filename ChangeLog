@@ -2,6 +2,7 @@
     * Fix already decoded BOM in headers
     * New options in csv-check
     * Some perlcritic
+    * "escape" is alias for "escape_char" for consistency.
 
 1.30	- 2017-06-08, H.Merijn Brand
     * Add csv (..., out => ...) syntax examples (issue 7)
