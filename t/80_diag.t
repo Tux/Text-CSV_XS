@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 287;
+ use Test::More tests => 288;
 #use Test::More "no_plan";
 
 my %err;
@@ -244,6 +244,8 @@ unlink $diag_file;
     is (0 + $csv->error_diag,    0, "Can set sep to something long");
     eval { $csv->sep (undef); };
     is (0 + $csv->error_diag, 1008, "Can set sep to undef");
+    eval { $csv->sep (""); };
+    is (0 + $csv->error_diag, 1008, "Can set sep to empty");
     eval { $csv->sep ("="); };
     is (0 + $csv->error_diag, 1001, "Cannot set sep to current sep");
     }

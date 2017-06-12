@@ -131,21 +131,21 @@ sub _check_sanity {
 #	        "', ESC: '", DPeek ($esc),"'");
 
     # sep_char should not be undefined
-    defined $sep && $sep ne ""		or  return 1008;
-    length ($sep) > 16			and return 1006;
-    $sep =~ m/[\r\n]/			and return 1003;
+    $sep ne ""			or  return 1008;
+    length ($sep) > 16		and return 1006;
+    $sep =~ m/[\r\n]/		and return 1003;
 
     if (defined $quo) {
-	defined $sep && $quo eq $sep	and return 1001;
-	length ($quo) > 16		and return 1007;
-	$quo =~ m/[\r\n]/		and return 1003;
+	$quo eq $sep		and return 1001;
+	length ($quo) > 16	and return 1007;
+	$quo =~ m/[\r\n]/	and return 1003;
 	}
     if (defined $esc) {
-	defined $sep && $esc eq $sep	and return 1001;
-	$esc =~ m/[\r\n]/		and return 1003;
+	$esc eq $sep		and return 1001;
+	$esc =~ m/[\r\n]/	and return 1003;
 	}
     if (defined $eol) {
-	length ($eol) > 16		and return 1005;
+	length ($eol) > 16	and return 1005;
 	}
 
     return _unhealthy_whitespace ($self, $self->{allow_whitespace}, $sep);
