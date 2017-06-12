@@ -190,7 +190,7 @@ sub new {
 	$attr{auto_diag} and error_diag ();
 	return;
 	}
-    if ($sep_aliased and defined $attr{sep_char}) {
+    if ($sep_aliased) {
 	my @b = unpack "U0C*", $attr{sep_char};
 	if (@b > 1) {
 	    $attr{sep} = $attr{sep_char};
