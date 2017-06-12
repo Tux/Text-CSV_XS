@@ -551,7 +551,9 @@ sub callbacks {
 	        : @_ % 2 == 0                    ? { @_ }
 	        : croak ($self->SetDiag (1004));
 	    foreach my $cbk (keys %$cb) {
-		(!ref $cbk && $cbk =~ m/^[\w.]+$/) && ref $cb->{$cbk} eq "CODE" or
+		# A key cannot be a ref. That would be stored as the *string
+		# 'SCALAR(0x1f3e710)' or 'ARRAY(0x1a5ae18)'
+		$cbk =~ m/^[\w.]+$/ && ref $cb->{$cbk} eq "CODE" or
 		    croak ($self->SetDiag (1004));
 		}
 	    exists $cb->{error}        and $hf |= 0x01;
@@ -585,7 +587,7 @@ sub error_diag {
 	$diag[3] =     $self->{_RECNO};
 	$diag[4] =     $self->{_ERROR_FLD} if exists $self->{_ERROR_FLD};
 
-	$diag[0] && $self && $self->{callbacks} && $self->{callbacks}{error} and
+	$diag[0] && $self->{callbacks} && $self->{callbacks}{error} and
 	    return $self->{callbacks}{error}->(@diag);
 	}
 
