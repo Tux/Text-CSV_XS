@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'17 [10 Jun 2017] Copyright H.M.Brand 2007-2017
+#	   (m)'17 [13 Jun 2017] Copyright H.M.Brand 2007-2017
 
 # This code requires the defined-or feature and PerlIO
 
@@ -11,7 +11,7 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode );
 
-our $VERSION = "1.8";	# 2017-06-10
+our $VERSION = "1.9";	# 2017-06-13
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -73,13 +73,15 @@ my $data = do { local $/; <> } or die "No data to analyze\n";
 
 my ($bin, $rows, $eol, %cols) = (0, 0, undef);
 unless ($sep) { # No sep char passed, try to auto-detect;
-    $sep = $data =~ m/["\d],["\d,]/ ? ","  :
-	   $data =~ m/["\d];["\d;]/ ? ";"  :
-	   $data =~ m/["\d]\t["\d]/ ? "\t" :
+    my ($first_line) = ($data =~ m/\A(.*?)(?:\r\n|\n|\r)/);
+    $first_line ||= $data; # if no EOL at all, use whole set
+    $sep = $first_line =~ m/["\d],["\d,]/ ? ","  :
+	   $first_line =~ m/["\d];["\d;]/ ? ";"  :
+	   $first_line =~ m/["\d]\t["\d]/ ? "\t" :
 	   # If neither, then for unquoted strings
-	   $data =~ m/\w,[\w,]/     ? ","  :
-	   $data =~ m/\w;[\w;]/     ? ";"  :
-	   $data =~ m/\w\t[\w]/     ? "\t" : ",";
+	   $first_line =~ m/\w,[\w,]/     ? ","  :
+	   $first_line =~ m/\w;[\w;]/     ? ";"  :
+	   $first_line =~ m/\w\t[\w]/     ? "\t" : ",";
     $data =~ m/([\r\n]+)\Z/ and $eol = DDisplay "$1";
     }
 
