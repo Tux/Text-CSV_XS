@@ -14,7 +14,7 @@ BEGIN {
 	plan skip_all => "No reliable perlIO available";
 	}
     else {
-	plan tests => 559;
+	plan tests => 562;
 	}
     }
 
@@ -213,6 +213,17 @@ $/ = $def_rs;
 {   ok (my $csv = Text::CSV_XS->new,	"new for say");
     my $foo;
     open my $fh, ">", \$foo or die "IO: $!\n";
+    ok ($csv->say ($fh, [ 1, 2 ]),	"say");
+    close $fh;
+    is ($foo, "1,2$/", "content with eol \$/");
+    $foo = "";
+    $csv->eol (undef);
+    open $fh, ">", \$foo or die "IO: $!\n";
+    ok ($csv->say ($fh, [ 1, 2 ]),	"say");
+    close $fh;
+    $foo = "";
+    $csv->eol ("");
+    open $fh, ">", \$foo or die "IO: $!\n";
     ok ($csv->say ($fh, [ 1, 2 ]),	"say");
     close $fh;
     is ($foo, "1,2$/", "content with eol \$/");

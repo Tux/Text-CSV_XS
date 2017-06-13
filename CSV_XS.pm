@@ -787,10 +787,14 @@ sub header {
     defined $args{munge_column_names} or $args{munge_column_names} = "lc";
     defined $args{set_column_names}   or $args{set_column_names}   = 1;
 
-    defined $args{sep_set} && ref $args{sep_set} eq "ARRAY" and
+    if (defined $args{sep_set}) {
+	ref $args{sep_set} eq "ARRAY" or
+	    croak ($self->SetDiag (1500, "sep_set should be an array ref"));
 	@seps =  @{$args{sep_set}};
+	}
 
     my $hdr = <$fh>;
+    # check if $hdr can be empty here, I don't think so
     defined $hdr && $hdr ne "" or croak ($self->SetDiag (1010));
 
     my %sep;
@@ -816,6 +820,8 @@ sub header {
 	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = "gb-18030"   }
 	elsif ($hdr =~ s/^\x{feff}//)         { $enc = ""           }
 
+	$hdr eq "" and croak ($self->SetDiag (1010));
+
 	if ($enc) {
 	    if ($enc =~ m/([13]).le$/) {
 		my $l = 0 + $1;
@@ -837,7 +843,7 @@ sub header {
     my $row = $self->getline ($h) or croak;
     close $h;
 
-    my @hdr = @$row   or  croak ($self->SetDiag (1010));
+    my @hdr = @$row;
     ref $args{munge_column_names} eq "CODE" and
 	@hdr = map { $args{munge_column_names}->($_) } @hdr;
     my %hdr = map { $_ => 1 } @hdr;
@@ -892,7 +898,7 @@ sub getline_hr_all {
 sub say {
     my ($self, $io, @f) = @_;
     my $eol = $self->eol;
-    defined $eol && $eol ne "" or $self->eol ($\ || $/);
+    $eol eq "" and $self->eol ($\ || $/);
     # say ($fh, undef) does not propage actual undef to print ()
     my $state = $self->print ($io, @f == 1 && !defined $f[0] ? undef : @f);
     $self->eol ($eol);
@@ -977,7 +983,8 @@ sub fragment {
 	    or croak ($self->SetDiag (2013));
 	$to ||= $from;
 	$to eq "*" and ($to, $eod) = ($from, 1);
-	$from <= 0 || $to <= 0 || $to < $from and croak ($self->SetDiag (2013));
+	# $to cannot be <= 0 due to regex and ||=
+	$from <= 0 || $to < $from and croak ($self->SetDiag (2013));
 	$r[$_] = 1 for $from .. $to;
 	}
 
@@ -1025,7 +1032,6 @@ sub _csv_attr {
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
     if ($out) {
-	$in or croak $csv_usage;	# No out without in
 	if ((ref $out and ref $out ne "SCALAR") or "GLOB" eq ref \$out) {
 	    $fh = $out;
 	    }

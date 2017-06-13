@@ -325,6 +325,8 @@ static SV *cx_SvDiag (pTHX_ int xse) {
     return (err);
     } /* SvDiag */
 
+/* This function should be altered to deal with the optional extra argument
+ * that holds the replacement message */
 #define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
 static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
     dSP;

@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 47;
+ use Test::More tests => 62;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -83,7 +83,7 @@ my $idx = 0;
 sub getrowa { return $aoa->[$idx++]; }
 sub getrowh { return $aoh->[$idx++]; }
 
-ok (csv (in => \&getrowa, out => $tfn), "out from CODE/AR");
+ok (csv (in => \&getrowa, file => $tfn), "out via file from CODE/AR");
 is_deeply (csv (in => $tfn), $aoa, "data from CODE/AR");
 
 $idx = 0;
@@ -138,7 +138,8 @@ close $fh;
 
     # Check that I can overrule auto_diag
     $ad = 0;
-    csv (in => [[1,2]], out => $fh, on_in => \&check, auto_diag => 0);
+    csv (in => [[1,2]], out => $fh, encoding => "utf-8",
+	on_in => \&check, auto_diag => 0);
     }
 $] < 5.008 and unlink glob "SCALAR(*)";
 
@@ -149,12 +150,47 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     is ($r, undef, "csv needs in or file");
     like ($err, qr{^usage:}, "error");
     undef $err;
-    }
-{   my $err;
-    local $SIG{__DIE__} = sub { $err = shift; };
-    my $r = eval { csv (in => $tfn, key => ["foo"], auto_diag => 0); };
+
+    $r = eval { csv (in => $tfn, key => ["foo"], auto_diag => 0); };
     is ($r, undef, "Fail call with bad key type");
     like ($err, qr{1501 - PRM}, "Error 1501");
+    undef $err;
+
+#   $r = eval { csv (in => +{}, auto_diag => 0); };
+#   is ($r, undef, "Cannot read from hashref");
+#   like ($err, qr{No such file}i, "No such file or directory");
+#   undef $err;
+
+    $r = eval { csv (in => undef, auto_diag => 0); };
+    is ($r, undef, "Cannot read from undef");
+    like ($err, qr{^usage}, "Remind them of correct syntax");
+    undef $err;
+
+    $r = eval { csv (in => "", auto_diag => 0); };
+    is ($r, undef, "Cannot read from empty");
+    like ($err, qr{^usage}, "Remind them of correct syntax");
+    undef $err;
+
+    my $fn = "./dev/foo/bar/\x99\x99/\x88\x88/".
+	(join "\x99" => map { chr (128 + int rand 128) } 0..100).".csv";
+    $r = eval { csv (in => $fn, auto_diag => 0); };
+    is ($r, undef, "Cannot read from impossible file");
+    like ($err, qr{/foo/bar}, "No such file or directory");
+    undef $err;
+
+    $r = eval { csv (in => $tfn, out => $fn, auto_diag => 0); };
+    is ($r, undef, "Cannot write to impossible file");
+    like ($err, qr{/foo/bar}, "No such file or directory");
+    undef $err;
+
+    $r = eval { csv (in => $tfn, out => \my %x, auto_diag => 0); };
+    is ($r, undef, "Cannot write to hashref");
+    like ($err, qr{Not a GLOB}i, "Not a GLOB");
+    undef $err;
+
+    $r = eval { csv (); };
+    is ($r, undef, "Needs arguments");
+    like ($err, qr{^usage}i, "Don't know what to do");
     undef $err;
     }
 
@@ -183,12 +219,35 @@ eval {
 
 {   local *STDOUT;
     my $ofn = "_STDOUT.csv";
+
     open STDOUT, ">", $ofn or die "$ofn: $!\n";
     csv (in => $tfn, quote_always => 1, fragment => "row=1-2",
 	on_in => sub { splice @{$_[1]}, 1; }, eol => "\n");
     close STDOUT;
-    open my $oh, "<", $ofn or die "$ofn: $!\n";
     my $dta = do { local (@ARGV, $/) = $ofn; <> };
     is ($dta, qq{"a"\n"1"\n}, "Chained csv call inherited attributes");
+    unlink $ofn;
+
+    open STDOUT, ">", $ofn;
+    csv (in => [[1,2]], out => *STDOUT, eol => "\n");
+    close STDOUT;
+    $dta = do { local (@ARGV, $/) = $ofn; <> };
+    is ($dta, qq{1,2\n}, "out to *STDOUT");
+    unlink $ofn;
+
+    open STDOUT, ">", $ofn;
+    csv (in => [[1,2]], out => \*STDOUT, eol => "\n");
+    close STDOUT;
+    $dta = do { local (@ARGV, $/) = $ofn; <> };
+    is ($dta, qq{1,2\n}, "out to \\*STDOUT");
+    unlink $ofn;
+
+    open STDOUT, ">:crlf", $ofn;
+    csv (in => [[1,2]], out => \*STDOUT);
+    close STDOUT;
+    open my $oh, "<", $ofn or die "$ofn: $!\n";
+    binmode $oh;
+    $dta = do { local $/; <$oh> };
+    is ($dta, qq{1,2\r\n}, "out to \\*STDOUT");
     unlink $ofn;
     }

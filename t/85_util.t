@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 388;
+	my $n = 426;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -190,6 +190,22 @@ foreach my $sep (",", ";") {
 	}
     }
 
+foreach my $ss ("", "bad", sub { 1; }, \*STDOUT, +{}) {
+    my $dta = "a,b\n1,2\n";
+    open my $fh, "<", \$dta;
+    my @hdr = eval { $csv->header ($fh, { sep_set => $ss }) };
+    is (scalar @hdr, 0, "No header on invalid sep_set");
+    is (0 + $csv->error_diag, 1500, "Error code");
+    }
+
+foreach my $dta ("", "\xfe\xff", "\xf7\x64\x4c", "\xdd\x73\x66\x73",
+	"\x0e\xfe\xff", "\xfb\xee\x28", "\x84\x31\x95\x33") {
+    open my $fh, "<", \$dta;
+    my @hdr = eval { $csv->header ($fh) };
+    is (scalar @hdr, 0, "No header on empty stream");
+    is (0 + $csv->error_diag, 1010, "Error code");
+    }
+
 my $n;
 for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ],
      [ sub { "column_".$n++ }, "column_0" ]) {
@@ -254,7 +270,12 @@ for (	[ "none"       => ""			],
 	is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
 	close $fh;
 
-	ok (my $aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
+	my $aoh;
+	ok ($aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
+	is_deeply ($aoh,
+	    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
+
+	ok ($aoh = csv (in => $fnm, encoding => "auto"), "csv (encoding => auto)");
 	is_deeply ($aoh,
 	    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
 	}

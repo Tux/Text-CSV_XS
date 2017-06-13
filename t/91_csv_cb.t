@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 48;
+ use Test::More tests => 49;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -138,11 +138,31 @@ is_deeply (csv (in => $tfn,
     }
 
 # Add to %_ in callback
-is_deeply (csv (in      => $tfn,
-		headers => "auto",
-		filter  => { 1 => sub { $_ eq "4" }},
-		on_in   => sub { $_{brt} = 42; }),
-	    [{ foo => 4, bar => 5, baz => 6, brt => 42 }],
+# And test bizarre (but allowed) attribute combinations
+# Most of them can be either left out or done more efficiently in
+# a different way
+my $xcsv = Text::CSV_XS->new;
+is_deeply (csv (in                 => $tfn,
+		seps               => [ ",", ";" ],
+		munge              => "uc",
+		quo                => '"',
+		esc                => '"',
+		csv                => $xcsv,
+		filter             => { 1 => sub { $_ eq "4" }},
+		on_in              => sub { $_{BRT} = 42; }),
+	    [{ FOO => 4, BAR => 5, BAZ => 6, BRT => 42 }],
+	    "AOH with addition to %_ in on_in");
+is_deeply ($xcsv->csv (
+		file               => $tfn,
+		sep_set            => [ ";", "," ],
+		munge_column_names => "uc",
+		quote_char         => '"',
+		quote              => '"',
+		escape_char        => '"',
+		escape             => '"',
+		filter             => { 1 => sub { $_ eq "4" }},
+		after_in           => sub { $_{BRT} = 42; }),
+	    [{ FOO => 4, BAR => 5, BAZ => 6, BRT => 42 }],
 	    "AOH with addition to %_ in on_in");
 
 open  FH, ">", $tfn or die "$tfn: $!";
