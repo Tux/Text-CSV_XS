@@ -137,33 +137,36 @@ is_deeply (csv (in => $tfn,
     is_deeply (\%_, { brt => 42 }, "%_ restored");
     }
 
-# Add to %_ in callback
-# And test bizarre (but allowed) attribute combinations
-# Most of them can be either left out or done more efficiently in
-# a different way
-my $xcsv = Text::CSV_XS->new;
-is_deeply (csv (in                 => $tfn,
-		seps               => [ ",", ";" ],
-		munge              => "uc",
-		quo                => '"',
-		esc                => '"',
-		csv                => $xcsv,
-		filter             => { 1 => sub { $_ eq "4" }},
-		on_in              => sub { $_{BRT} = 42; }),
-	    [{ FOO => 4, BAR => 5, BAZ => 6, BRT => 42 }],
-	    "AOH with addition to %_ in on_in");
-is_deeply ($xcsv->csv (
-		file               => $tfn,
-		sep_set            => [ ";", "," ],
-		munge_column_names => "uc",
-		quote_char         => '"',
-		quote              => '"',
-		escape_char        => '"',
-		escape             => '"',
-		filter             => { 1 => sub { $_ eq "4" }},
-		after_in           => sub { $_{BRT} = 42; }),
-	    [{ FOO => 4, BAR => 5, BAZ => 6, BRT => 42 }],
-	    "AOH with addition to %_ in on_in");
+SKIP: {
+    $] < 5.008001 and skip "Too complicated test for $]", 2;
+    # Add to %_ in callback
+    # And test bizarre (but allowed) attribute combinations
+    # Most of them can be either left out or done more efficiently in
+    # a different way
+    my $xcsv = Text::CSV_XS->new;
+    is_deeply (csv (in                 => $tfn,
+		    seps               => [ ",", ";" ],
+		    munge              => "uc",
+		    quo                => '"',
+		    esc                => '"',
+		    csv                => $xcsv,
+		    filter             => { 1 => sub { $_ eq "4" }},
+		    on_in              => sub { $_{BRT} = 42; }),
+		[{ FOO => 4, BAR => 5, BAZ => 6, BRT => 42 }],
+		"AOH with addition to %_ in on_in");
+    is_deeply ($xcsv->csv (
+		    file               => $tfn,
+		    sep_set            => [ ";", "," ],
+		    munge_column_names => "uc",
+		    quote_char         => '"',
+		    quote              => '"',
+		    escape_char        => '"',
+		    escape             => '"',
+		    filter             => { 1 => sub { $_ eq "4" }},
+		    after_in           => sub { $_{BRT} = 42; }),
+		[{ FOO => 4, BAR => 5, BAZ => 6, BRT => 42 }],
+		"AOH with addition to %_ in on_in");
+    }
 
 open  FH, ">", $tfn or die "$tfn: $!";
 print FH <<"EOD";

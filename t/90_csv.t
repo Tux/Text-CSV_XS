@@ -138,8 +138,8 @@ close $fh;
 
     # Check that I can overrule auto_diag
     $ad = 0;
-    csv (in => [[1,2]], out => $fh, encoding => "utf-8",
-	on_in => \&check, auto_diag => 0);
+    csv (in => [[1,2]], out => $fh, on_in => \&check, auto_diag => 0,
+	($] >= 5.008004 ? (encoding => "utf-8") : ()));
     }
 $] < 5.008 and unlink glob "SCALAR(*)";
 
@@ -183,7 +183,8 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     like ($err, qr{/foo/bar}, "No such file or directory");
     undef $err;
 
-    $r = eval { csv (in => $tfn, out => \my %x, auto_diag => 0); };
+    my %x;
+    $r = eval { csv (in => $tfn, out => \%x, auto_diag => 0); };
     is ($r, undef, "Cannot write to hashref");
     like ($err, qr{Not a GLOB}i, "Not a GLOB");
     undef $err;
@@ -242,12 +243,15 @@ eval {
     is ($dta, qq{1,2\n}, "out to \\*STDOUT");
     unlink $ofn;
 
-    open STDOUT, ">:crlf", $ofn;
-    csv (in => [[1,2]], out => \*STDOUT);
-    close STDOUT;
-    open my $oh, "<", $ofn or die "$ofn: $!\n";
-    binmode $oh;
-    $dta = do { local $/; <$oh> };
-    is ($dta, qq{1,2\r\n}, "out to \\*STDOUT");
-    unlink $ofn;
+    SKIP: {
+	$] <= 5.008003 and skip qq{$] does not support ">:crlf"}, 1;
+	open STDOUT, ">", $ofn; binmode STDOUT, ":crlf";
+	csv (in => [[1,2]], out => \*STDOUT);
+	close STDOUT;
+	open my $oh, "<", $ofn or die "$ofn: $!\n";
+	binmode $oh;
+	$dta = do { local $/; <$oh> };
+	is ($dta, qq{1,2\r\n}, "out to \\*STDOUT");
+	unlink $ofn;
+	}
     }
