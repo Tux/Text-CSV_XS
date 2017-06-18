@@ -1282,7 +1282,8 @@ sub csv {
     $ref or Text::CSV_XS->auto_diag;
     $c->{cls} and close $fh;
     if ($ref and $c->{cbai} || $c->{cboi}) {
-	foreach my $r (@{$ref}) {
+	# Default is ARRAYref, but with key =>, you'll get a hashref
+	foreach my $r (ref $ref eq "ARRAY" ? @{$ref} : values %{$ref}) {
 	    local %_;
 	    ref $r eq "HASH" and *_ = $r;
 	    $c->{cbai} and $c->{cbai}->($csv, $r);
