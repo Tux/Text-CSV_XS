@@ -104,8 +104,6 @@ sub _unhealthy_whitespace {
     my ($self, $aw, $sep) = @_;
     $aw or return 0; # no checks needed without allow_whitespace
 
-#   $sep =~ m/^[ \t]/ || $sep =~ m/[ \t]$/ and return 1002;
-
     my $quo = $self->{quote};
     defined $quo && length ($quo) or $quo = $self->{quote_char};
     my $esc = $self->{escape_char};
