@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 62;
+ use Test::More tests => 86;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -55,6 +55,21 @@ is_deeply (csv (in => $tfn, headers => { bar => "tender" }), [
 my @aoa = @{$aoa}[1,2];
 is_deeply (csv (file => $tfn, headers  => "skip"),    \@aoa, "AOA skip");
 is_deeply (csv (file => $tfn, fragment => "row=2-3"), \@aoa, "AOA fragment");
+
+{   my @hdr;
+    ok (my $ref = csv (in => $tfn, bom => 1), "csv (-- not keeping header)");
+    is_deeply (\@hdr, [], "Should still be empty");
+    foreach my $alias (qw( keep_headers keep_column_names kh )) {
+	@hdr = ();
+	ok (my $ref = csv (in => $tfn, bom => 1, $alias => \@hdr), "csv ($alias => ...)");
+	is_deeply (\@hdr, [qw( foo bar baz )], "Headers kept for $alias");
+	}
+    foreach my $alias (qw( keep_headers keep_column_names kh )) {
+	@hdr = ();
+	ok (my $ref = csv (in => $tfn, $alias => \@hdr), "csv ($alias => ... -- implied headers)");
+	is_deeply (\@hdr, [qw( foo bar baz )], "Headers kept for $alias");
+	}
+    }
 
 if ($] >= 5.008001) {
     is_deeply (csv (in => $tfn, encoding => "utf-8", headers => ["a", "b", "c"],
@@ -155,6 +170,14 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     is ($r, undef, "Fail call with bad key type");
     like ($err, qr{1501 - PRM}, "Error 1501");
     undef $err;
+
+    local $SIG{__DIE__} = sub { $err = shift; };
+    foreach my $hr (1, "foo", \my %hr, sub { 42; }, *STDOUT) {
+	$r = eval { csv (in => $tfn, kh => $hr, auto_diag => 0); };
+	is ($r, undef, "Fail call with bad keep_header type");
+	like ($err, qr{1501 - PRM}, "Error 1501");
+	undef $err;
+	}
 
 #   $r = eval { csv (in => +{}, auto_diag => 0); };
 #   is ($r, undef, "Cannot read from hashref");

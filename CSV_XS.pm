@@ -1073,7 +1073,6 @@ sub _csv_attr {
     my $frag = delete $attr{fragment};
     my $key  = delete $attr{key};
     my $kh   = delete $attr{keep_headers}	    ||
-	       delete $attr{column_names}	    ||
 	       delete $attr{keep_column_names}      ||
 	       delete $attr{kh};
 
@@ -1101,8 +1100,6 @@ sub _csv_attr {
 	my ($f, $t) = @$_;
 	exists $attr{$f} and !exists $attr{$t} and $attr{$t} = delete $attr{$f};
 	}
-
-    $kh && ref $kh ne "ARRAY" and croak "Bad arg";
 
     my $fltr = delete $attr{filter};
     my %fltr = (
@@ -1210,11 +1207,17 @@ sub csv {
 	@hdr and $hdrs ||= \@hdr;
 	}
 
+    if ($c->{kh}) {
+	ref $c->{kh} eq "ARRAY" or croak ($csv->SetDiag (1501, "1501 - PRM"));
+	$hdrs ||= "auto";
+	}
+
     my $key = $c->{key};
     if ($key) {
 	ref $key and croak ($csv->SetDiag (1501, "1501 - PRM"));
 	$hdrs ||= "auto";
 	}
+
     $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
     if (defined $hdrs) {
 	if (!ref $hdrs) {
@@ -3077,6 +3080,20 @@ date that has no header line, like
      headers => [qw( c_foo foo bar description stock )],
      key     =>     "c_foo",
      );
+
+=head3 keep_headers
+X<keep_headers>
+X<keep_column_names>
+X<kh>
+
+When using hashes,  keep the column names into the arrayref passed,  so all
+headers are available after the call in the original order.
+
+ my $aoh = csv (in => "file.csv", keep_headers => \my @hdr);
+
+This attribute can be abbreviated to C<kh> or passed as C<keep_column_names>.
+
+This attribute implies a default of C<auto> for the C<headers> attribute.
 
 =head3 fragment
 X<fragment>
