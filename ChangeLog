@@ -1,3 +1,6 @@
+1.32	- 2017-06-18, H.Merijn Brand
+    * Add keep_headers attribute to csv ()
+
 1.31	- 2017-06-13, H.Merijn Brand
     * Fix already decoded BOM in headers
     * New options in csv-check

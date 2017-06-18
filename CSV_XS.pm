@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.31";
+$VERSION   = "1.32";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -1072,6 +1072,10 @@ sub _csv_attr {
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
     my $key  = delete $attr{key};
+    my $kh   = delete $attr{keep_headers}	    ||
+	       delete $attr{column_names}	    ||
+	       delete $attr{keep_column_names}      ||
+	       delete $attr{kh};
 
     my $cbai = delete $attr{callbacks}{after_in}    ||
 	       delete $attr{after_in}               ||
@@ -1098,6 +1102,8 @@ sub _csv_attr {
 	exists $attr{$f} and !exists $attr{$t} and $attr{$t} = delete $attr{$f};
 	}
 
+    $kh && ref $kh ne "ARRAY" and croak "Bad arg";
+
     my $fltr = delete $attr{filter};
     my %fltr = (
 	not_blank => sub { @{$_[1]} > 1 or defined $_[1][0] && $_[1][0] ne "" },
@@ -1123,6 +1129,7 @@ sub _csv_attr {
 	enc  => $enc,
 	hdrs => $hdrs,
 	key  => $key,
+	kh   => $kh,
 	frag => $frag,
 	fltr => $fltr,
 	cbai => $cbai,
@@ -1232,6 +1239,7 @@ sub csv {
 	    my $cr = $hdrs;
 	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @$h ];
 	    }
+	$c->{kh} and $hdrs and @{$c->{kh}} = @$hdrs;
 	}
 
     if ($c->{fltr}) {
