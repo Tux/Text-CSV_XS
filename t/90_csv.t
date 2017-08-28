@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 86;
+ use Test::More tests => 88;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -201,7 +201,7 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     like ($err, qr{/foo/bar}, "No such file or directory");
     undef $err;
 
-    $r = eval { csv (in => $tfn, out => $fn, auto_diag => 0); };
+    $r = eval { csv (in => [[1,2]], out => $fn, auto_diag => 0); };
     is ($r, undef, "Cannot write to impossible file");
     like ($err, qr{/foo/bar}, "No such file or directory");
     undef $err;
@@ -215,6 +215,11 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     $r = eval { csv (); };
     is ($r, undef, "Needs arguments");
     like ($err, qr{^usage}i, "Don't know what to do");
+    undef $err;
+
+    $r = eval { csv (in => "in.csv", out => "out.csv"); };
+    is ($r, undef, "Cannot use strings for both");
+    like ($err, qr{^cannot}i, "Explicitely unsupported");
     undef $err;
     }
 

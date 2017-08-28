@@ -1029,6 +1029,10 @@ sub _csv_attr {
 
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
+    $in && $out && !ref $in && !ref $out and croak join "\n" =>
+	qq{Cannot use a string for both in and out. Instead use:},
+	qq{ csv (in => csv (in => "$in"), out => "$out");\n};
+
     if ($out) {
 	if ((ref $out and ref $out ne "SCALAR") or "GLOB" eq ref \$out) {
 	    $fh = $out;
