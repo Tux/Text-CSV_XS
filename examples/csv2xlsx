@@ -8,8 +8,7 @@ use warnings;
 
 our $VERSION = "1.01";
 
-sub usage
-{
+sub usage {
     my $err = shift and select STDERR;
     print <<EOU;
 usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]

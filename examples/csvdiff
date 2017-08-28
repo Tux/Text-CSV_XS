@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-sub usage
-{
+sub usage {
     my $err = shift and select STDERR;
     print "usage: csvdiff [--no-color] [--html] file.csv file.csv\n",
 	"  provides colorized diff on sorted CSV files\n",
@@ -98,8 +97,7 @@ my %cls;
     ">"	=> sub { "b$cls{b}" },
     );
 
-sub show
-{
+sub show {
     my ($pfx, $x) = @_;
     my $row = $f[$x][$i[$x]++];
 
