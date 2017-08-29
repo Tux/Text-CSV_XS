@@ -46,6 +46,27 @@ $ExtUtils::MakeMaker::VERSION > 6.30 and $wm{LICENSE} = "perl";
 
 my $rv = WriteMakefile (%wm);
 
+# perlcriticrc uses Config::Tiny, which does not support nesting
+if (-f ".perlcriticrc" && -s "$ENV{HOME}/.perlcriticrc") {
+    open my $fh, ">", ".perlcriticrc";
+
+    require Config::Tiny;
+    my $cnf = Config::Tiny->read ("$ENV{HOME}/.perlcriticrc");
+    for ("ControlStructures::ProhibitPostfixControls",	# postfix if in diag
+         "Freenode::PackageMatchesFilename",		# XS
+	 "Subroutines::ProhibitBuiltinHomonyms",	# eof, say
+	 "ErrorHandling::RequireCarping",		# for autodie
+	 "BuiltinFunctions::ProhibitBooleanGrep",
+	 "Variables::RequireLocalizedPunctuationVars",	# *_, %_
+	 ) {
+	delete $cnf->{$_};
+	$cnf->{"-$_"} = {};
+	}
+    $cnf->{"Compatibility::PodMinimumVersion"}
+	{above_version} = "5.012";	# For L<> and =head3
+    $cnf->write (".perlcriticrc");
+    }
+
 1;
 
 package MY;

@@ -15,6 +15,7 @@ Text
 *.gcov
 *.gcda
 *.gcno
+.perlcriticrc
 Text-CSV_XS*
 xx*
 valgrind.log

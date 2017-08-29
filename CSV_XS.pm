@@ -101,7 +101,7 @@ my $last_new_err = Text::CSV_XS->SetDiag (0);
 
 # NOT a method: is also used before bless
 sub _unhealthy_whitespace {
-    my ($self, $aw, $sep) = @_;
+    my ($self, $aw) = @_;
     $aw or return 0; # no checks needed without allow_whitespace
 
     my $quo = $self->{quote};
@@ -146,7 +146,7 @@ sub _check_sanity {
 	length ($eol) > 16	and return 1005;
 	}
 
-    return _unhealthy_whitespace ($self, $self->{allow_whitespace}, $sep);
+    return _unhealthy_whitespace ($self, $self->{allow_whitespace});
     } # _check_sanity
 
 sub known_attributes {
@@ -452,7 +452,7 @@ sub allow_whitespace {
     my $self = shift;
     if (@_) {
 	my $aw = shift;
-	_unhealthy_whitespace ($self, $aw, $self->sep) and
+	_unhealthy_whitespace ($self, $aw) and
 	    croak ($self->SetDiag (1002));
 	$self->_set_attr_X ("allow_whitespace", $aw);
 	}
