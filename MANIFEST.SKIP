@@ -24,4 +24,4 @@ META.yml
 valgrind.log
 pod2htmd.tmp
 \.aspell\.local\.pws
-\.percriticrc
+\.perlcriticrc
