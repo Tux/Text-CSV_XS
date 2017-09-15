@@ -416,6 +416,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	case CACHE_ID_verbatim:              csv->verbatim              = iv; break;
 	case CACHE_ID_auto_diag:             csv->auto_diag             = iv; break;
 	case CACHE_ID_diag_verbose:          csv->diag_verbose          = iv; break;
+	case CACHE_ID__has_ahead:            csv->has_ahead             = iv; break;
 	case CACHE_ID__has_hooks:            csv->has_hooks             = iv; break;
 	case CACHE_ID_has_error_input:       csv->has_error_input       = iv; break;
 

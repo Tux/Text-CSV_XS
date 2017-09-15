@@ -1,7 +1,8 @@
-1.32	- 2017-08-28, H.Merijn Brand
+1.32	- 2017-09-15, H.Merijn Brand
     * Add keep_headers attribute to csv ()
     * Fix on_in when used in combination with key
     * Fail on invalid arguments to csv
+    * Fix header method on EOL = CR (RT#122764)
 
 1.31	- 2017-06-13, H.Merijn Brand
     * Fix already decoded BOM in headers

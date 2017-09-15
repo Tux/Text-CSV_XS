@@ -252,6 +252,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     quote_binary		=> 32,
     escape_null			=> 31,
     decode_utf8			=> 35,
+    _has_ahead			=> 30,
     _has_hooks			=> 36,
     _is_bound			=> 26,	# 26 .. 29
     strict			=> 58,
@@ -827,19 +828,31 @@ sub header {
 		$hdr .= "\0" x $l;
 		read $fh, $x, $l;
 		}
-	    $enc = ":encoding($enc)";
-	    binmode $fh, $enc;
+	    if ($enc ne "utf-8") {
+		require Encode;
+		$hdr = Encode::decode ($enc, $hdr);
+		}
+	    binmode $fh, ":encoding($enc)";
 	    }
 	}
+
+    my $ahead;
+    $hdr =~ s/^([^\r\n]+)[\r\n]+([^\r\n].+)\z/$1/s and
+	$ahead = $2;
 
     $args{munge_column_names} eq "lc" and $hdr = lc $hdr;
     $args{munge_column_names} eq "uc" and $hdr = uc $hdr;
 
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
-    open my $h, "<$enc", $hr or croak ($self->SetDiag (1010));
+    open my $h, "<", $hr or croak ($self->SetDiag (1010));
 
     my $row = $self->getline ($h) or croak;
     close $h;
+
+    if ($ahead) { # Must be after getline, which creates the cache
+	$self->_cache_set ($_cache_id{_has_ahead}, 1);
+	$self->{_AHEAD} = $ahead;
+	}
 
     my @hdr = @$row;
     ref $args{munge_column_names} eq "CODE" and
