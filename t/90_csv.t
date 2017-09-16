@@ -56,7 +56,8 @@ my @aoa = @{$aoa}[1,2];
 is_deeply (csv (file => $tfn, headers  => "skip"),    \@aoa, "AOA skip");
 is_deeply (csv (file => $tfn, fragment => "row=2-3"), \@aoa, "AOA fragment");
 
-{   my @hdr;
+if ($] >= 5.008001) {
+    my @hdr;
     ok (my $ref = csv (in => $tfn, bom => 1), "csv (-- not keeping header)");
     is_deeply (\@hdr, [], "Should still be empty");
     foreach my $alias (qw( keep_headers keep_column_names kh )) {
@@ -69,6 +70,9 @@ is_deeply (csv (file => $tfn, fragment => "row=2-3"), \@aoa, "AOA fragment");
 	ok (my $ref = csv (in => $tfn, $alias => \@hdr), "csv ($alias => ... -- implied headers)");
 	is_deeply (\@hdr, [qw( foo bar baz )], "Headers kept for $alias");
 	}
+    }
+else {
+    ok (1, q{This perl cannot do scalar IO}) for 1..14;
     }
 
 if ($] >= 5.008001) {
