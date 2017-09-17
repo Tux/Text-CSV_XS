@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 608;
+	my $n = 790;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -230,7 +230,7 @@ for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ],
     }
 
 my $fnm = "_85hdr.csv"; END { unlink $fnm; }
-foreach my $eol ("\n", "\r\n") {#, "\r\n", "\r") {
+foreach my $eol ("\n", "\r\n", "\r") {
     my $str = join $eol =>
 	qq{zoo,b\x{00e5}r},
 	qq{1,"1 \x{20ac} each"},

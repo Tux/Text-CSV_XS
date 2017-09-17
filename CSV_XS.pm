@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.32";
+$VERSION   = "1.33";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -836,9 +836,11 @@ sub header {
 	    }
 	}
 
-    my $ahead;
-    $hdr =~ s/^([^\r\n]+)[\r\n]+([^\r\n].+)\z/$1/s and
-	$ahead = $2;
+    my ($ahead, $eol);
+    if ($hdr =~ s/^([^\r\n]+)([\r\n]+)([^\r\n].+)\z/$1/s) {
+	$eol   = $2;
+	$ahead = $3;
+	}
 
     $args{munge_column_names} eq "lc" and $hdr = lc $hdr;
     $args{munge_column_names} eq "uc" and $hdr = uc $hdr;
@@ -852,6 +854,7 @@ sub header {
     if ($ahead) { # Must be after getline, which creates the cache
 	$self->_cache_set ($_cache_id{_has_ahead}, 1);
 	$self->{_AHEAD} = $ahead;
+	$eol =~ m/^\r([^\n]|\z)/ and $self->eol ($eol);
 	}
 
     my @hdr = @$row;
