@@ -47,7 +47,7 @@ $ExtUtils::MakeMaker::VERSION > 6.30 and $wm{LICENSE} = "perl";
 my $rv = WriteMakefile (%wm);
 
 # perlcriticrc uses Config::Tiny, which does not support nesting
-if (-f ".perlcriticrc" && -s "$ENV{HOME}/.perlcriticrc") {
+-f ".perlcriticrc" && -s "$ENV{HOME}/.perlcriticrc" and eval {
     open my $fh, ">", ".perlcriticrc";
 
     require Config::Tiny;
@@ -65,7 +65,7 @@ if (-f ".perlcriticrc" && -s "$ENV{HOME}/.perlcriticrc") {
     $cnf->{"Compatibility::PodMinimumVersion"}
 	{above_version} = "5.012";	# For L<> and =head3
     $cnf->write (".perlcriticrc");
-    }
+    };
 
 1;
 
