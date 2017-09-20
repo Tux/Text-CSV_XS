@@ -1,5 +1,6 @@
-1.33	- 2017-09-17, H.Merijn Brand
+1.33	- 2017-09-20, H.Merijn Brand
     * Small additional fix for eol = \r + BOM
+    * Updated doc for example files
 
 1.32	- 2017-09-15, H.Merijn Brand
     * Add keep_headers attribute to csv ()

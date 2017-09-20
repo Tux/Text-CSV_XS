@@ -3691,16 +3691,25 @@ This is a command-line tool that uses parser-xs.pl  techniques to check the
 C<CSV> file and report on its content.
 
  $ csv-check files/utf8.csv
- Checked with examples/csv-check 1.5 using Text::CSV_XS 0.81
+ Checked files/utf8.csv  with csv-check 1.9
+ using Text::CSV_XS 1.32 with perl 5.26.0 and Unicode 9.0.0
  OK: rows: 1, columns: 2
-     sep = <,>, quo = <">, bin = <1>
+     sep = <,>, quo = <">, bin = <1>, eol = <"\n">
 
 =item csv2xls
 X<csv2xls>
 
-A script to convert C<CSV> to Microsoft Excel.  This requires L<Date::Calc>
-and L<Spreadsheet::WriteExcel>.   The converter accepts various options and
-can produce UTF-8 Excel files.
+A script to convert C<CSV> to Microsoft Excel (C<XLS>). This requires extra
+modules L<Date::Calc> and L<Spreadsheet::WriteExcel>. The converter accepts
+various options and can produce UTF-8 compliant Excel files.
+
+=item csv2xlsx
+X<csv2xlsx>
+
+A script to convert C<CSV> to Microsoft Excel (C<XLSX>).  This requires the
+modules L<Date::Calc> and L<Spreadsheet::Writer::XLSX>.  The converter does
+accept various options including merging several C<CSV> files into a single
+Excel file.
 
 =item csvdiff
 X<csvdiff>
@@ -3710,6 +3719,16 @@ line is header and first field is the key. Output options include colorized
 ANSI escape codes or HTML.
 
  $ csvdiff --html --output=diff.html file1.csv file2.csv
+
+=item rewrite.pl
+X<rewrite.pl>
+
+A script to rewrite (in)valid CSV into valid CSV files.  Script has options
+to generate confusing CSV files or CSV files that conform to Dutch MS-Excel
+exports (using C<;> as separation).
+
+Script - by default - honors BOM  and auto-detects separation converting it
+to default standard CSV with C<,> as separator.
 
 =back
 
