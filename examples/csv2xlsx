@@ -243,4 +243,5 @@ foreach my $csvf (@args) {
 
     $wks->set_column ($_, $_, $w[$_]) for 0 .. $#w;
     }
+$opt_v and say "Writing $xls";
 $wbk->close ();
