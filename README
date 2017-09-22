@@ -15,7 +15,7 @@ Copying:
     it under the same terms as Perl itself.
 
     Recent changes can be (re)viewed in the public GIT repository at
-    http://repo.or.cz/w/Text-CSV_XS
+    https://github.com/Tux/Text-CSV_XS
     Feel free to clone your own copy:
 
      $ git clone https://github.com/Tux/Text-CSV_XS Text-CSV_XS
