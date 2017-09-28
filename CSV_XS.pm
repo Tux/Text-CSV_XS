@@ -2949,7 +2949,8 @@ C<detect_bom> can be abbreviated to C<bom>.
 
 This is the same as setting L<C<encoding>|/encoding> to C<"auto">.
 
-Note that as L</header> is invoked, its default is to also set the headers.
+Note that as the method  L</header> is invoked,  its default is to also set
+the headers.
 
 =head3 headers
 X<headers>
@@ -3141,7 +3142,8 @@ to detect and set L<C<sep_char>|/sep_char> with the given set.
 
 C<sep_set> can be abbreviated to C<seps>.
 
-Note that as L</header> is invoked, its default is to also set the headers.
+Note that as the  L</header> method is invoked,  its default is to also set
+the headers.
 
 =head3 set_column_names
 X<set_column_names>
