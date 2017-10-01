@@ -8,9 +8,14 @@
 #include <perl.h>
 #include <XSUB.h>
 #define DPPP_PL_parser_NO_DUMMY
-#define NEED_my_snprintf
-#define NEED_pv_escape
-#define	NEED_pv_pretty
+#define NEED_PL_parser_GLOBAL
+#define NEED_load_module_GLOBAL
+#define NEED_my_snprintf_GLOBAL
+#define NEED_newRV_noinc_GLOBAL
+#define NEED_pv_escape_GLOBAL
+#define NEED_pv_pretty_GLOBAL
+#define NEED_sv_2pv_flags_GLOBAL
+#define NEED_vload_module_GLOBAL
 #ifndef PERLIO_F_UTF8
 #  define PERLIO_F_UTF8	0x00008000
 #  endif
