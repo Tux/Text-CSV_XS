@@ -267,7 +267,7 @@ static SV *m_getline, *m_print;
 #define is_EOL(c) (c == CH_EOLX)
 
 #define __is_SEPX(c) (c == CH_SEP && (csv->sep_len == 0 || (\
-    csv->size - csv->used >= csv->sep_len - 1				&&\
+    csv->size - csv->used >= (STRLEN)csv->sep_len - 1				&&\
     !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
     (csv->used += csv->sep_len - 1)					&&\
     (c = CH_SEPX))))
@@ -287,7 +287,7 @@ static byte _is_SEPX (unsigned int *c, csv_t *csv, int line) {
 #endif
 
 #define __is_QUOTEX(c) (CH_QUOTE && c == CH_QUOTE && (csv->quo_len == 0 || (\
-    csv->size - csv->used >= csv->quo_len - 1				&&\
+    csv->size - csv->used >= (STRLEN)csv->quo_len - 1				&&\
     !memcmp (csv->bptr + csv->used, csv->quo + 1, csv->quo_len - 1)	&&\
     (csv->used += csv->quo_len - 1)					&&\
     (c = CH_QUOTEX))))
@@ -763,13 +763,14 @@ static int cx_was_quoted (pTHX_ AV *mf, int idx) {
 
 #define Combine(csv,dst,fields)	cx_Combine (aTHX_ csv, dst, fields)
 static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
-    int  i, n, bound = 0;
-    int  aq  = (int)csv->always_quote;
-    int  qe  = (int)csv->quote_empty;
-    int  kmi = (int)csv->keep_meta_info;
-    AV  *qm = NULL;
+    SSize_t i, n;
+    int     bound = 0;
+    int     aq  = (int)csv->always_quote;
+    int     qe  = (int)csv->quote_empty;
+    int     kmi = (int)csv->keep_meta_info;
+    AV     *qm = NULL;
 
-    n = av_len (fields);
+    n = (IV)av_len (fields);
     if (n < 0 && csv->is_bound) {
 	n = csv->is_bound - 1;
 	bound = 1;
@@ -1482,11 +1483,11 @@ EOLX:
 			(csv->bptr[2] == 'p' || csv->bptr[2] == 'P') &&
 			 csv->bptr[3] == '=') {
 		    char *sep = csv->bptr + 4;
-		    int   len = csv->used - 5;
-		    if (len <= MAX_ATTR_LEN) {
-			sep[len] = (char)0;
-			memcpy (csv->sep, sep, len);
-			csv->sep_len = len == 1 ? 0 : len;
+		    int   lnu = csv->used - 5;
+		    if (lnu <= MAX_ATTR_LEN) {
+			sep[lnu] = (char)0;
+			memcpy (csv->sep, sep, lnu);
+			csv->sep_len = lnu == 1 ? 0 : lnu;
 			return Parse (csv, src, fields, fflags);
 			}
 		    }
@@ -1611,7 +1612,7 @@ EOLX:
 #endif
 	    /* Needed for non-IO parse, where EOL is not set during read */
 	    if (csv->eolx && c == CH_EOL &&
-		 csv->size - csv->used >= csv->eol_len - 1 &&
+		 csv->size - csv->used >= (STRLEN)csv->eol_len - 1 &&
 		 !memcmp (csv->bptr + csv->used, csv->eol + 1, csv->eol_len - 1) &&
 		 (csv->used += csv->eol_len - 1)) {
 		c = CH_EOLX;
@@ -1700,7 +1701,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	    if ((svp = hv_fetchs (hv, "_AHEAD", FALSE)) && *svp) {
 		csv.bptr = SvPV (csv.tmp = *svp, csv.size);
 		csv.used = 0;
-		if (pos && SvIV (pos) > csv.size)
+		if (pos && SvIV (pos) > (IV)csv.size)
 		    sv_setiv (pos, SvIV (pos) - csv.size);
 		}
 	    }
@@ -1753,11 +1754,11 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	memcpy (csv.cache, &csv, sizeof (csv_t));
 
     if (result && csv.types) {
-	I32	i;
+	STRLEN	i;
 	STRLEN	len = av_len (av);
 	SV    **svp;
 
-	for (i = 0; i <= (I32)len && i <= (I32)csv.types_len; i++) {
+	for (i = 0; i <= len && i <= csv.types_len; i++) {
 	    if ((svp = av_fetch (av, i, 0)) && *svp && SvOK (*svp)) {
 		switch (csv.types[i]) {
 		    case CSV_XS_TYPE_IV:
