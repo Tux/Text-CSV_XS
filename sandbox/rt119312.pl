@@ -6,18 +6,21 @@ use threads;
 use Thread::Queue;
 #require Text::CSV_XS;
 
-my $input  = "input.csv";
-my $output = "output.csv";
+my $dir = -d "sandbox" ? "sandbox" : ".";
+my $input  = "$dir/input.csv";
+my $output = "$dir/output.csv";
+END { unlink $output }
+
 my @cols   = qw(a b c d);
 my $q;
 my $count = 0;
 while (1) {
     $q = Thread::Queue->new;
-    my $inth  = threads->create (\&inputthread);
-    my $outth = threads->create (\&outputthread);
-    $inth->join  ();
+    my $t_in  = threads->create (\&inputthread);
+    my $t_out = threads->create (\&outputthread);
+    $t_in->join  ();
     $q->enqueue  (undef);
-    $outth->join () or die ("thread crashed?\n");
+    $t_out->join () or die ("thread crashed?\n");
     $count++;
     print "$count\n";
     }
