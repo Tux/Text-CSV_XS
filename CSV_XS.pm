@@ -77,6 +77,7 @@ my %def_attr = (
     escape_null			=> 1,
     keep_meta_info		=> 0,
     verbatim			=> 0,
+    formula			=> 0,
     types			=> undef,
     callbacks			=> undef,
 
@@ -255,7 +256,8 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     _has_ahead			=> 30,
     _has_hooks			=> 36,
     _is_bound			=> 26,	# 26 .. 29
-    strict			=> 58,
+    formula			=> 38,
+    strict			=> 42
     );
 
 # A `character'
@@ -418,6 +420,22 @@ sub strict {
     my $self = shift;
     @_ and $self->_set_attr_X ("strict", shift);
     $self->{strict};
+    } # always_quote
+
+sub _supported_formula {
+    my $f = lc (shift || 0);
+    $f =~ m/^(?: 0 | none    )$/x ? 0 :
+    $f =~ m/^(?: 1 | die     )$/x ? 1 :
+    $f =~ m/^(?: 2 | croak   )$/x ? 2 :
+    $f =~ m/^(?: 3 | diag    )$/x ? 3 :
+    $f =~ m/^(?: 4 | empty   )$/x ? 4 :
+    $f =~ m/^(?: 5 | undef   )$/x ? 5 : 0;
+    } # _supported_formula
+
+sub formula {
+    my $self = shift;
+    @_ and $self->_set_attr_N ("formula", _supported_formula (shift));
+    $self->{formula};
     } # always_quote
 
 sub decode_utf8 {
@@ -1129,6 +1147,9 @@ sub _csv_attr {
 	$fltr = { 0 => $fltr{$fltr} };
     ref $fltr eq "HASH" or $fltr = undef;
 
+    exists $attr{formula} and
+	$attr{formula} = _supported_formula ($attr{formula});
+
     defined $attr{auto_diag}   or $attr{auto_diag}   = 1;
     defined $attr{escape_null} or $attr{escape_null} = 0;
     my $csv = delete $attr{csv} || Text::CSV_XS->new (\%attr)
@@ -1691,6 +1712,81 @@ X<strict>
 
 If this attribute is set to C<1>, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
+
+=head3 formula
+X<formula>
+
+ my $csv = Text::CSV_XS->new ({ formula => 0 });
+         $csv->formula (0);
+ my $f = $csv->formula;
+
+This defines the behavior of fields containg I<formulas>.   As formulas are
+considered dangerous in spreadsheets, this attribute can define an optional
+action to be taken if a field starts with an equal sign (C<=>).
+
+Possible values for this attribute are
+
+=over 2
+
+=item C< >0
+
+Take no specific action. This is the default.
+
+C<0> can be aliased to C<none>.
+
+ $csv->formula (0);
+ $csv->formula ("none");
+
+=item C< >1
+
+Cause the process to C<die> whenever a leading C<=> is encountered.
+
+C<1> can be aliased to C<die>.
+
+ $csv->formula (1);
+ $csv->formula ("die");
+
+=item C< >2
+
+Cause the process to C<croak> whenever a leading C<=> is encountered.  (See
+L<Carp>)
+
+C<1> can be aliased to C<croak>.
+
+ $csv->formula (2);
+ $csv->formula ("croak");
+
+=item C< >3
+
+Report position and content of the field whenever a leading  C<=> is found.
+The value of the field is unchanged.
+
+C<3> can be aliased to C<diag>.
+
+ $csv->formula (3);
+ $csv->formula ("diag");
+
+=item C< >4
+
+Replace the content of fields that start with a C<=> with the empty string.
+
+C<4> can be aliased to C<empty>.
+
+ $csv->formula (4);
+ $csv->formula ("empty");
+
+=item C< >5
+
+Replace the content of fields that start with a C<=> with C<undef>.
+
+C<5> can be aliased to C<undef>.
+
+ $csv->formula (5);
+ $csv->formula ("undef");
+
+=back
+
+All other values are silently ignored.
 
 =head3 decode_utf8
 X<decode_utf8>

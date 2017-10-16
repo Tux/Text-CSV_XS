@@ -108,7 +108,8 @@
 #define CACHE_ID_has_error_input	34
 #define CACHE_ID_decode_utf8		35
 #define CACHE_ID__has_hooks		36
-#define CACHE_ID_strict			58
+#define CACHE_ID_formula		38
+#define CACHE_ID_strict			42
 
 #define	byte	unsigned char
 #define ulng	unsigned long
@@ -144,6 +145,8 @@ typedef struct {
     byte	has_hooks;
 
     byte	quote_empty;
+    byte	formula;
+
     byte	strict;
     short	strict_n;
 
@@ -165,7 +168,7 @@ typedef struct {
 
     char *	bptr;
     SV *	tmp;
-    int		utf8;
+    byte	utf8;
     byte	has_ahead;
     byte	eolx;
     int		eol_pos;
@@ -412,6 +415,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	case CACHE_ID_allow_whitespace:      csv->allow_whitespace      = iv; break;
 	case CACHE_ID_blank_is_undef:        csv->blank_is_undef        = iv; break;
 	case CACHE_ID_empty_is_undef:        csv->empty_is_undef        = iv; break;
+	case CACHE_ID_formula:               csv->formula               = iv; break;
 	case CACHE_ID_strict:                csv->strict                = iv; break;
 	case CACHE_ID_verbatim:              csv->verbatim              = iv; break;
 	case CACHE_ID_auto_diag:             csv->auto_diag             = iv; break;
@@ -494,6 +498,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     _cache_show_byte ("quote_binary",		csv->quote_binary);
     _cache_show_byte ("auto_diag",		csv->auto_diag);
     _cache_show_byte ("diag_verbose",		csv->diag_verbose);
+    _cache_show_byte ("formula",		csv->formula);
     _cache_show_byte ("strict",			csv->strict);
     _cache_show_byte ("has_error_input",	csv->has_error_input);
     _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
@@ -622,6 +627,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->auto_diag			= num_opt ("auto_diag");
 	csv->diag_verbose		= num_opt ("diag_verbose");
 	csv->keep_meta_info		= num_opt ("keep_meta_info");
+	csv->formula			= num_opt ("formula");
 
 	unless (csv->escape_char) csv->escape_null = 0;
 
@@ -756,6 +762,41 @@ static int cx_was_quoted (pTHX_ AV *mf, int idx) {
 /* Should be extended for EBCDIC ? */
 #define is_csv_binary(ch) ((ch < CH_SPACE || ch >= CH_DEL) && ch != CH_TAB)
 
+#define _formula(csv,sv,len,f) cx_formula (aTHX_ csv, sv, len, f)
+static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
+
+    int fa = csv->formula;
+
+    if (fa == 1) die   ("Formulas are forbidden\n");
+    if (fa == 2) croak ("Formulas are forbidden\n");
+
+    if (fa == 3) {
+	char *ptr = SvPV_nolen (sv);
+	char  rec[40];
+
+	if (csv->recno) sprintf (rec, " in record %d", csv->recno);
+	else           *rec = (char)0;
+
+	warn ("Field %d%s contains formula '%s'\n", f, rec, ptr);
+	return ptr;
+	}
+
+    if (len) *len = 0;
+
+    if (fa == 4) {
+	SvSetEmpty (sv);
+	return "";
+	}
+
+    if (fa == 5) {
+	SvSetUndef (sv);
+	return NULL;
+	}
+
+    /* So far undefined behavior */
+    return NULL;
+    } /* _formula */
+
 #define Combine(csv,dst,fields)	cx_Combine (aTHX_ csv, dst, fields)
 static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
     SSize_t i, n;
@@ -808,9 +849,14 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
 		    )) continue;
 	    ptr = SvPV (sv, len);
+	    if (*ptr == '=' && csv->formula) {
+		unless (ptr = _formula (csv, sv, &len, i))
+		    continue;
+		}
 	    if (len == 0)
 		quoteMe = aq ? 1 : qe ? 1 : qm ? was_quoted (qm, i) : 0;
 	    else {
+
 		if (SvUTF8 (sv))  {
 		    csv->utf8   = 1;
 		    csv->binary = 1;
@@ -1061,6 +1107,8 @@ int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l) {
 #define AV_PUSH { \
     *SvEND (sv) = (char)0;						\
     SvUTF8_off (sv);							\
+    if (csv->formula && SvCUR (sv) && *(SvPV_nolen (sv)) == '=')	\
+	(void)_formula (csv, sv, NULL, fnum);				\
     if (SvCUR (sv) == 0 && (						\
 	    csv->empty_is_undef ||					\
 	    (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef)))		\
@@ -1703,7 +1751,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	}
     else {
 	csv.tmp  = src;
-	csv.utf8 = SvUTF8 (src);
+	csv.utf8 = SvUTF8 (src) ? 1 : 0;
 	csv.bptr = SvPV (src, csv.size);
 	}
     if (csv.has_error_input) {
