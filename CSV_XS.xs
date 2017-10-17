@@ -1142,9 +1142,10 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv) {
 #define NewField				\
     unless (sv) {				\
 	if (csv->is_bound)			\
-	    sv = bound_field (csv, fnum++, 0);	\
+	    sv = bound_field (csv, fnum, 0);	\
 	else					\
 	    sv = newSVpvs ("");			\
+	fnum++;					\
 	unless (sv) return FALSE;		\
 	f = 0; csv->fld_idx++;			\
 	}
