@@ -47,15 +47,17 @@ Build/Installation:
 	make install
 
 Author:
-    H.Merijn Brand <h.m.brand@xs4all.nl>
-    Jochen Wiedmann <joe@ispsoft.de>
+    H.Merijn Brand <h.m.brand@xs4all.nl> (   0.25 - 2007-05-07 ..)
+    Jochen Wiedmann <joe@ispsoft.de>     (.. 0.23 - 2001-10-10   )
 
     Interface design by Alan Citterman <alan@mfgrtl.com>
 
-    A pure-perl version is being maintained by Makamaka Hannyaharamitu
-    as Text::CSV_PP, which tries to follow Text::CSV_XS. It is not worth
-    filing bugs to Text::CSV_XS when Text::CSV is not in sync.
+    A pure-perl version (L<Text::CSV_PP>) is being maintained by Kenichi
+    Ishigaki. This module was created by Makamaka Hannyaharamitu who
+    maintained it up to 2015. It tries to follow Text::CSV_XS as closely
+    as possible. It is not worth filing bugs to Text::CSV_XS when
+    Text::CSV is not in sync.
 
     Text::CSV_PP is bundled in Text::CSV, which now is a wrapper module
     over Text::CSV_XS and Text::CSV_PP that will select Text::CSV_XS if
-    available, and otherwise use Text::PP.
+    available, and otherwise use Text::CSV_PP.
