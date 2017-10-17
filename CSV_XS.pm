@@ -178,6 +178,8 @@ sub new {
 	$attr{quote_char} = delete $attr{quote};
 	$quote_aliased = 1;
 	}
+    exists $attr{formula_handling} and
+	$attr{formula} = delete $attr{formula_handling};
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
@@ -437,6 +439,10 @@ sub formula {
     @_ and $self->_set_attr_N ("formula", _supported_formula (shift));
     $self->{formula};
     } # always_quote
+sub formula_handling {
+    my $self = shift;
+    $self->formula (@_);
+    } # formula_handling
 
 sub decode_utf8 {
     my $self = shift;
@@ -1713,7 +1719,9 @@ X<strict>
 If this attribute is set to C<1>, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
 
+=head3 formula_handling
 =head3 formula
+X<formula_handling>
 X<formula>
 
  my $csv = Text::CSV_XS->new ({ formula => 0 });
@@ -1723,6 +1731,12 @@ X<formula>
 This defines the behavior of fields containg I<formulas>.   As formulas are
 considered dangerous in spreadsheets, this attribute can define an optional
 action to be taken if a field starts with an equal sign (C<=>).
+
+For purpose of code-readability, this can also be written as
+
+ my $csv = Text::CSV_XS->new ({ formula_handling => 0 });
+         $csv->formula_handling ("none");
+ my $f = $csv->formula_handling;
 
 Possible values for this attribute are
 

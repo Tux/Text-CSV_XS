@@ -784,12 +784,12 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
     if (len) *len = 0;
 
     if (fa == 4) {
-	SvSetEmpty (sv);
+	unless (SvREADONLY (sv)) SvSetEmpty (sv);
 	return "";
 	}
 
     if (fa == 5) {
-	SvSetUndef (sv);
+	unless (SvREADONLY (sv)) SvSetUndef (sv);
 	return NULL;
 	}
 

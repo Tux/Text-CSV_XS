@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 42;
+use Test::More tests => 60;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -25,12 +25,15 @@ is ($csv->formula ("empty"),	4,	"empty");
 is ($csv->formula ("undef"),	5,	"undef");
 is ($csv->formula ("xxx"),	0,	"invalid");
 
-is ($csv->formula ("DIE"),	1,	"die");
-is ($csv->formula ("CROAK"),	2,	"croak");
-is ($csv->formula ("DIAG"),	3,	"diag");
-is ($csv->formula ("EMPTY"),	4,	"empty");
-is ($csv->formula ("UNDEF"),	5,	"undef");
-is ($csv->formula ("XXX"),	0,	"invalid");
+is ($csv->formula_handling,		0,	"default");
+is ($csv->formula_handling ("DIE"),	1,	"die");
+is ($csv->formula_handling ("CROAK"),	2,	"croak");
+is ($csv->formula_handling ("DIAG"),	3,	"diag");
+is ($csv->formula_handling ("EMPTY"),	4,	"empty");
+is ($csv->formula_handling ("UNDEF"),	5,	"undef");
+is ($csv->formula_handling ("XXX"),	0,	"invalid");
+
+# Parser
 
 my @data = split m/\n/ => <<"EOC";
 a,b,c
@@ -69,23 +72,22 @@ is ($r, undef,				"Croak on formulas");
 is ($@, "Formulas are forbidden\n",	"Message");
 $@ = undef;
 
-{ my @m;
-  local $SIG{__WARN__} = sub { push @m, @_ };
+my @m;
+local $SIG{__WARN__} = sub { push @m, @_ };
 
-  is_deeply (parse (3), [
+is_deeply (parse (3), [
     [ "a",	"b",	"c",	],
     [ "1",	"2",	"3",	],
     [ "=1+2",	"3",	"4",	],
     [ "1",	"=2+3",	"4",	],
     [ "1",	"2",	"=3+4",	],
     ], "Default");
-  is ($@, undef, "Legal with warnings");
-  is_deeply (\@m, [
+is ($@, undef, "Legal with warnings");
+is_deeply (\@m, [
     "Field 1 in record 2 contains formula '=1+2'\n",
     "Field 2 in record 3 contains formula '=2+3'\n",
     "Field 3 in record 4 contains formula '=3+4'\n",
     ],		"Warnings");
-  }
 
 is_deeply (parse (4), [
     [ "a",	"b",	"c",	],
@@ -102,3 +104,21 @@ is_deeply (parse (5), [
     [ "1",	undef,	"4",	],
     [ "1",	"2",	undef,	],
     ], "Undef");
+
+# Writer
+
+sub writer {
+    my $f = shift;
+    ok (my $csv = Text::CSV_XS->new ({ formula => $f, quote_empty => 1 }), "new $f");
+    ok ($csv->combine ("1", "=2+3", "4"), "combine $f");
+    $csv->string;
+    } # writer
+
+@m = ();
+is (       writer (0),   q{1,=2+3,4}, "Out 0");
+is (eval { writer (1) }, undef,       "Out 1");
+is (eval { writer (2) }, undef,       "Out 2");
+is (       writer (3),   q{1,=2+3,4}, "Out 3");
+is (       writer (4),   q{1,"",4},   "Out 4");
+is (       writer (5),   q{1,,4},     "Out 5");
+is_deeply (\@m,  [ "Field 1 contains formula '=2+3'\n" ], "Warning 3");
