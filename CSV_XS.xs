@@ -773,11 +773,23 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
     if (fa == 3) {
 	char *ptr = SvPV_nolen (sv);
 	char  rec[40];
+	char  field[128];
+	SV  **svp;
 
 	if (csv->recno) sprintf (rec, " in record %d", csv->recno);
 	else           *rec = (char)0;
 
-	warn ("Field %d%s contains formula '%s'\n", f, rec, ptr);
+	*field = (char)0;
+	if ((svp = hv_fetchs (csv->self, "_COLUMN_NAMES", FALSE)) && _is_arrayref (*svp)) {
+	    AV *avp = (AV *)SvRV (*svp);
+	    if (avp && av_len (avp) >= (f - 1)) {
+		SV **fnm = av_fetch (avp, f - 1, FALSE);
+		if (fnm && *fnm && SvOK (*fnm))
+		    (void)sprintf (field, " (column: '%.100s')", SvPV_nolen (*fnm));
+		}
+	    }
+
+	warn ("Field %d%s%s contains formula '%s'\n", f, field, rec, ptr);
 	return ptr;
 	}
 
@@ -836,7 +848,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 	if (bound)
 	    sv = bound_field (csv, i, 1);
 	else {
-	    SV **svp = av_fetch (fields, i, 0);
+	    SV **svp = av_fetch (fields, i, FALSE);
 	    sv = svp && *svp ? *svp : NULL;
 	    }
 
@@ -1803,7 +1815,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	SV    **svp;
 
 	for (i = 0; i <= len && i <= csv.types_len; i++) {
-	    if ((svp = av_fetch (av, i, 0)) && *svp && SvOK (*svp)) {
+	    if ((svp = av_fetch (av, i, FALSE)) && *svp && SvOK (*svp)) {
 		switch (csv.types[i]) {
 		    case CSV_XS_TYPE_IV:
 #ifdef CSV_XS_TYPE_WARN

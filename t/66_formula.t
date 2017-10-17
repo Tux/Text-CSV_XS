@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 60;
+use Test::More tests => 64;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -44,7 +44,7 @@ a,b,c
 EOC
 
 sub parse {
-    my $f = shift;
+    my $f  = shift;
     my @d;
     ok (my $csv = Text::CSV_XS->new ({ formula => $f }), "new $f");
     for (@data) {
@@ -104,6 +104,15 @@ is_deeply (parse (5), [
     [ "1",	undef,	"4",	],
     [ "1",	"2",	undef,	],
     ], "Undef");
+
+{   @m = ();
+    ok (my $csv = Text::CSV_XS->new ({ formula => 3 }), "new 3 hr");
+    ok ($csv->column_names ("code", "value", "desc"), "Set column names");
+    ok ($csv->parse ("1,=2+3,4"), "Parse");
+    is_deeply (\@m,
+	[ qq{Field 2 (column: 'value') contains formula '=2+3'\n} ],
+	"Warning for HR");
+    }
 
 # Writer
 
