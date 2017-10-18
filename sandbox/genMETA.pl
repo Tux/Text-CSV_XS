@@ -24,9 +24,9 @@ if ($check) {
     $meta->check_encoding ();
     $meta->check_required ();
     my %ex;
-    for ( [qw( csv2xls		5.010	)], # //=
+    for ( [qw( csv2xls		5.012	)], # //=
 	  [qw( csv2xlsx		5.014	)], # s///r
-	  [qw( csv-check	5.010	)], # //=
+	  [qw( csv-check	5.012	)], # //=
 	  [qw( csvdiff		5.010	)], # //=
 	  [qw( parser-xs.pl	5.006	)], #
 	  [qw( rewrite.pl	5.010	)], # //=
