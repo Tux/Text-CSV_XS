@@ -129,13 +129,6 @@ unless ($sep) { # No sep char passed, try to auto-detect;
 	last;
 	}
     }
-my %fac = qw(
-    0 0 none  0
-    1 1 die   1
-    2 2 croak 2
-    3 3 diag  3
-    4 4 empty 4
-    5 5 undef 5 );
 my $csv = Text::CSV_XS-> new ({
     sep_char       => $sep eq "tab"   ? "\t"  : $sep,
     quote_char     => $quo eq "undef" ? undef : $quo,
@@ -143,7 +136,7 @@ my $csv = Text::CSV_XS-> new ({
     binary         => 1,
     keep_meta_info => 1,
     auto_diag      => 1,
-    formula        => $fac{lc $fac} || 0,
+    formula        => $fac,
     });
 if ($firstline) {
     $csv->parse ($firstline) or die $csv->error_diag ();

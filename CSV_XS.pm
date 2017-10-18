@@ -180,6 +180,16 @@ sub new {
 	}
     exists $attr{formula_handling} and
 	$attr{formula} = delete $attr{formula_handling};
+    if (exists $attr{formula}) {
+	my $f = defined $attr{formula} ? lc $attr{formula} : "undef";
+	$attr{formula} = $f eq "" ? "empty" : {qw(
+	    0 0 none  0
+	    1 1 die   1
+	    2 2 croak 2
+	    3 3 diag  3
+	    4 4 empty 4
+	    5 5 undef 5 )}->{$f} || 0;
+	}
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false

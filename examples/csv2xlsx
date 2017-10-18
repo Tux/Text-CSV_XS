@@ -124,14 +124,6 @@ $crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
     align	=> "right",
     );
 
-my %fac = qw(
-    0 0 none  0
-    1 1 die   1
-    2 2 croak 2
-    3 3 diag  3
-    4 4 empty 4
-    5 5 undef 5 );
-
 my @args = @ARGV ? @ARGV : ("");
 foreach my $csvf (@args) {
     my $wks = $wbk->add_worksheet ($csvf =~ s{\.csv$}{}ir || "Sheet 1");
@@ -177,7 +169,7 @@ foreach my $csvf (@args) {
 	binary         => 1,
 	keep_meta_info => 1,
 	auto_diag      => 1,
-	formula        => $fac{lc $fac} || 0,
+	formula        => $fac,
 	});
     if ($firstline) {
 	$csv->parse ($firstline) or die $csv->error_diag ();

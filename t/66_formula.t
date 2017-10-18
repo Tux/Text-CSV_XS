@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 64;
+use Test::More tests => 90;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -32,6 +32,20 @@ is ($csv->formula_handling ("DIAG"),	3,	"diag");
 is ($csv->formula_handling ("EMPTY"),	4,	"empty");
 is ($csv->formula_handling ("UNDEF"),	5,	"undef");
 is ($csv->formula_handling ("XXX"),	0,	"invalid");
+
+my %f = qw(
+    0 0 none  0
+    1 1 die   1
+    2 2 croak 2
+    3 3 diag  3
+    4 4 empty 4
+    5 5 undef 5
+	xxx   0
+    );
+foreach my $f (sort keys %f) {
+    ok (my $p = Text::CSV_XS->new ({ formula => $f }), "new with $f");
+    is ($p->formula, $f{$f}, "Set to $f{$f}");
+    }
 
 # Parser
 
