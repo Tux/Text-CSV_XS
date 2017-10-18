@@ -1724,6 +1724,7 @@ If this attribute is set to C<1>, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
 
 =head3 formula_handling
+
 =head3 formula
 X<formula_handling>
 X<formula>
@@ -1732,7 +1733,7 @@ X<formula>
          $csv->formula (0);
  my $f = $csv->formula;
 
-This defines the behavior of fields containg I<formulas>.   As formulas are
+This defines the behavior of fields containing I<formulas>. As formulas are
 considered dangerous in spreadsheets, this attribute can define an optional
 action to be taken if a field starts with an equal sign (C<=>).
 
@@ -1742,11 +1743,13 @@ For purpose of code-readability, this can also be written as
          $csv->formula_handling ("none");
  my $f = $csv->formula_handling;
 
+The return value is always numeric.
+
 Possible values for this attribute are
 
 =over 2
 
-=item C< >0
+=item C<0>
 
 Take no specific action. This is the default.
 
@@ -1755,7 +1758,7 @@ C<0> can be aliased to C<none>.
  $csv->formula (0);
  $csv->formula ("none");
 
-=item C< >1
+=item C<1>
 
 Cause the process to C<die> whenever a leading C<=> is encountered.
 
@@ -1764,7 +1767,7 @@ C<1> can be aliased to C<die>.
  $csv->formula (1);
  $csv->formula ("die");
 
-=item C< >2
+=item C<2>
 
 Cause the process to C<croak> whenever a leading C<=> is encountered.  (See
 L<Carp>)
@@ -1774,7 +1777,7 @@ C<1> can be aliased to C<croak>.
  $csv->formula (2);
  $csv->formula ("croak");
 
-=item C< >3
+=item C<3>
 
 Report position and content of the field whenever a leading  C<=> is found.
 The value of the field is unchanged.
@@ -1784,7 +1787,7 @@ C<3> can be aliased to C<diag>.
  $csv->formula (3);
  $csv->formula ("diag");
 
-=item C< >4
+=item C<4>
 
 Replace the content of fields that start with a C<=> with the empty string.
 
@@ -1794,7 +1797,7 @@ C<4> can be aliased to C<empty>.
  $csv->formula ("empty");
  $csv->formula ("");
 
-=item C< >5
+=item C<5>
 
 Replace the content of fields that start with a C<=> with C<undef>.
 
@@ -1806,7 +1809,7 @@ C<5> can be aliased to C<undef>.
 
 =back
 
-All other values are interpreted as C<diag>.
+All other values will give a warning and then fallback to C<diag>.
 
 =head3 decode_utf8
 X<decode_utf8>
@@ -2055,7 +2058,7 @@ By default,  all "unsafe" bytes inside a string cause the combined field to
 be quoted.  By setting this attribute to C<0>, you can disable that trigger
 for bytes >= C<0x7F>.
 
-=head3 escape_null or quote_null (deprecated)
+=head3 escape_null
 X<escape_null>
 X<quote_null>
 
@@ -2080,6 +2083,9 @@ With C<escape_null> set, this will result in
  "=\x00="
 
 The default when using the C<csv> function is C<false>.
+
+For backward compatibility reasons,  the deprecated old name  C<quote_null>
+is still recognized.
 
 =head3 keep_meta_info
 X<keep_meta_info>
