@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 90;
+use Test::More tests => 93;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -16,14 +16,17 @@ ok (my $csv = Text::CSV_XS->new,	"new");
 
 is ($csv->formula,		0,	"default");
 is ($csv->formula ($_),		$_,	"formula $_") for 0 .. 5;
-is ($csv->formula ($_),		0,	"invalid") for 9, -1, undef, [], {};
+is ($csv->formula (""),		4,	"explicit empty");
+is ($csv->formula (undef),	5,	"explicit undef");
+is ($csv->formula ($_),		3,	"invalid") for 9, -1, [], {};
 
 is ($csv->formula ("die"),	1,	"die");
 is ($csv->formula ("croak"),	2,	"croak");
 is ($csv->formula ("diag"),	3,	"diag");
 is ($csv->formula ("empty"),	4,	"empty");
 is ($csv->formula ("undef"),	5,	"undef");
-is ($csv->formula ("xxx"),	0,	"invalid");
+is ($csv->formula ("xxx"),	3,	"invalid");
+is ($csv->formula ("none"),	0,	"invalid");
 
 is ($csv->formula_handling,		0,	"default");
 is ($csv->formula_handling ("DIE"),	1,	"die");
@@ -31,7 +34,8 @@ is ($csv->formula_handling ("CROAK"),	2,	"croak");
 is ($csv->formula_handling ("DIAG"),	3,	"diag");
 is ($csv->formula_handling ("EMPTY"),	4,	"empty");
 is ($csv->formula_handling ("UNDEF"),	5,	"undef");
-is ($csv->formula_handling ("XXX"),	0,	"invalid");
+is ($csv->formula_handling ("XXX"),	3,	"invalid");
+is ($csv->formula_handling ("NONE"),	0,	"invalid");
 
 my %f = qw(
     0 0 none  0
@@ -40,7 +44,7 @@ my %f = qw(
     3 3 diag  3
     4 4 empty 4
     5 5 undef 5
-	xxx   0
+	xxx   3
     );
 foreach my $f (sort keys %f) {
     ok (my $p = Text::CSV_XS->new ({ formula => $f }), "new with $f");

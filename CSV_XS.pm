@@ -180,16 +180,8 @@ sub new {
 	}
     exists $attr{formula_handling} and
 	$attr{formula} = delete $attr{formula_handling};
-    if (exists $attr{formula}) {
-	my $f = defined $attr{formula} ? lc $attr{formula} : "undef";
-	$attr{formula} = $f eq "" ? "empty" : {qw(
-	    0 0 none  0
-	    1 1 die   1
-	    2 2 croak 2
-	    3 3 diag  3
-	    4 4 empty 4
-	    5 5 undef 5 )}->{$f} || 0;
-	}
+    exists $attr{formula} and
+	$attr{formula} = _supported_formula ($attr{formula});
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
@@ -435,13 +427,14 @@ sub strict {
     } # always_quote
 
 sub _supported_formula {
-    my $f = lc (shift || 0);
-    $f =~ m/^(?: 0 | none    )$/x ? 0 :
-    $f =~ m/^(?: 1 | die     )$/x ? 1 :
-    $f =~ m/^(?: 2 | croak   )$/x ? 2 :
-    $f =~ m/^(?: 3 | diag    )$/x ? 3 :
-    $f =~ m/^(?: 4 | empty   )$/x ? 4 :
-    $f =~ m/^(?: 5 | undef   )$/x ? 5 : 0;
+    my $f = shift;
+    defined $f or return 5;
+    $f =~ m/^(?: 0 | none    )$/xi ? 0 :
+    $f =~ m/^(?: 1 | die     )$/xi ? 1 :
+    $f =~ m/^(?: 2 | croak   )$/xi ? 2 :
+    $f =~ m/^(?: 3 | diag    )$/xi ? 3 :
+    $f =~ m/^(?: 4 | empty | )$/xi ? 4 :
+    $f =~ m/^(?: 5 | undef   )$/xi ? 5 : 3;
     } # _supported_formula
 
 sub formula {
@@ -1798,6 +1791,7 @@ C<4> can be aliased to C<empty>.
 
  $csv->formula (4);
  $csv->formula ("empty");
+ $csv->formula ("");
 
 =item C< >5
 
@@ -1807,10 +1801,11 @@ C<5> can be aliased to C<undef>.
 
  $csv->formula (5);
  $csv->formula ("undef");
+ $csv->formula (undef);
 
 =back
 
-All other values are silently ignored.
+All other values are interpreted as C<diag>.
 
 =head3 decode_utf8
 X<decode_utf8>
