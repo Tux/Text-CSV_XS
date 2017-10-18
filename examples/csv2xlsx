@@ -1,16 +1,16 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'16 [06 Jun 2016] Copyright H.M.Brand 2007-2017
+#	   (m)'17 [18 Oct 2017] Copyright H.M.Brand 2007-2017
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.01";
+our $VERSION = "1.02";
 
 sub usage {
     my $err = shift and select STDERR;
-    print <<EOU;
+    print <<"EOU";
 usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                [-o <xlsx>] [file.csv]
        -s <sep>   use <sep>   as seperator char, auto-detect, default = ','
@@ -25,6 +25,12 @@ usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                   if from standard input, defaults to csv2xlsx.xlsx
        -F         allow formula's. Otherwise fields starting with
                   an equal sign are forced to string
+         --Fa=aaa Define formula action: die/croak/diag/empty/undef
+         --Fd     Formula's will cause a die
+         --Fc     Formula's will cause a croak
+         --FD     Formula's will cause a warning (this is the default)
+         --Fe     Formula's will be replaced by the empty string
+         --Fu     Formula's will be replaced with an undefined cell
        -f         force usage of <xlsx> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -C <C:fmt> use <fmt> as currency formats for currency <C>, no default
@@ -40,9 +46,10 @@ EOU
 use Getopt::Long qw(:config bundling passthrough);
 my $quo = '"';
 my $esc = '"';
-my $wdt = 4;	# Default minimal column width
+my $wdt = 4;		# Default minimal column width
+my $fac = "diag";	# Formula action (default is warn only)
 my $dtf = "dd-mm-yyyy";	# Date format
-my $crf = "";	# Currency format, e.g.: $:### ### ##0.00
+my $crf = "";		# Currency format, e.g.: $:### ### ##0.00
 my $opt_v = 1;
 my $dtc;
 
@@ -60,6 +67,12 @@ GetOptions (
     "C|curr-fmt=s"	=> \$crf,
     "f|force!"		=> \my $frc,
     "F|formulas!"	=> \my $frm,
+      "Fa=s"		=> \$fac,
+      "Fd"		=> sub { $fac = "die";		},
+      "Fc"		=> sub { $fac = "croak";	},
+      "FD"		=> sub { $fac = "diag";		},
+      "Fe"		=> sub { $fac = "empty";	},
+      "Fu"		=> sub { $fac = "undef";	},
     "u|utf-8|utf8!"	=> \my $utf,
     "m|merge!"		=> \my $mrg,
     "v|verbose:1"	=> \$opt_v,
@@ -73,7 +86,7 @@ if ($mrg) {
 	    $xls = $_;
 	    next;
 	    }
-	if (m/\.csv$/i && -s $_) {
+	if (m/\.csv$/i && -s) {
 	    push @csv, $_;
 	    next;
 	    }
@@ -84,13 +97,13 @@ if ($mrg) {
     @ARGV = @csv;
     }
 
-my $base //= @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xlsx";
+my $base = @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xlsx";
 $xls ||= $base =~ s/(?:\.csv)?$/.xlsx/ir;
 
 -s $xls && $frc and unlink $xls;
 if (-s $xls) {
     print STDERR "File '$xls' already exists. Overwrite? [y/N] > N\b";
-    scalar <STDIN> =~ m/^[yj](es|a)?$/i or exit;
+    scalar <STDIN> =~ m/^[yj](?:es|a)?$/i or exit;
     }
 
 # Don't split ourselves when modules do it _much_ better, and follow the standards
@@ -110,6 +123,14 @@ $crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
     num_format	=> "$1 $2",
     align	=> "right",
     );
+
+my %fac = qw(
+    0 0 none  0
+    1 1 die   1
+    2 2 croak 2
+    3 3 diag  3
+    4 4 empty 4
+    5 5 undef 5 );
 
 my @args = @ARGV ? @ARGV : ("");
 foreach my $csvf (@args) {
@@ -156,6 +177,7 @@ foreach my $csvf (@args) {
 	binary         => 1,
 	keep_meta_info => 1,
 	auto_diag      => 1,
+	formula        => $fac{lc $fac} || 0,
 	});
     if ($firstline) {
 	$csv->parse ($firstline) or die $csv->error_diag ();

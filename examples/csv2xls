@@ -1,16 +1,16 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'16 [17 May 2016] Copyright H.M.Brand 2007-2017
+#	   (m)'17 [18 Oct 2017] Copyright H.M.Brand 2007-2017
 
-use strict;
+use 5.12.0;
 use warnings;
 
-our $VERSION = "1.76";
+our $VERSION = "1.77";
 
 sub usage {
     my $err = shift and select STDERR;
-    print <<EOU;
+    print <<"EOU";
 usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                [-o <xls>] [file.csv]
        -s <sep>   use <sep>   as seperator char, auto-detect, default = ','
@@ -25,6 +25,12 @@ usage: csv2xls [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                   if from standard input, defaults to csv2xls.xls
        -F         allow formula's. Otherwise fields starting with
                   an equal sign are forced to string
+         --Fa=aaa Define formula action: die/croak/diag/empty/undef
+         --Fd     Formula's will cause a die
+         --Fc     Formula's will cause a croak
+         --FD     Formula's will cause a warning (this is the default)
+         --Fe     Formula's will be replaced by the empty string
+         --Fu     Formula's will be replaced with an undefined cell
        -f         force usage of <xls> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -C <C:fmt> use <fmt> as currency formats for currency <C>, no default
@@ -39,31 +45,38 @@ use Getopt::Long qw(:config bundling nopermute passthrough);
 my $sep;	# Set after reading first line in a flurry attempt to auto-detect
 my $quo = '"';
 my $esc = '"';
-my $wdt = 4;	# Default minimal column width
-my $xls;	# Excel out file name
-my $frc = 0;	# Force use of file
-my $utf = 0;	# Data is encoded in Unicode
-my $frm = 0;	# Allow formula's
+my $wdt = 4;		# Default minimal column width
+my $xls;		# Excel out file name
+my $frc = 0;		# Force use of file
+my $utf = 0;		# Data is encoded in Unicode
+my $frm = 0;		# Allow formula's
+my $fac = "diag";	# Formula action (default is warn only)
 my $dtf = "dd-mm-yyyy";	# Date format
-my $crf = "";	# Currency format, e.g.: $:### ### ##0.00
+my $crf = "";		# Currency format, e.g.: $:### ### ##0.00
 my $opt_v = 1;
 my $dtc;
 
 GetOptions (
-    "help|?"	=> sub { usage (0); },
+    "help|?"		=> sub { usage (0); },
 
-    "c|s=s"	=> \$sep,
-    "q=s"	=> \$quo,
-    "e=s"	=> \$esc,
-    "w=i"	=> \$wdt,
-    "o|x=s"	=> \$xls,
-    "d=s"	=> \$dtf,
-    "D=s"	=> \$dtc,
-    "C=s"	=> \$crf,
-    "f"		=> \$frc,
-    "F"		=> \$frm,
-    "u"		=> \$utf,
-    "v:1"	=> \$opt_v,
+    "c|s|sep=s"		=> \$sep,
+    "q|quo=s"		=> \$quo,
+    "e|esc=s"		=> \$esc,
+    "w|width=i"		=> \$wdt,
+    "o|x|out=s"		=> \$xls,
+    "d|date-fmt=s"	=> \$dtf,
+    "D|date-col=s"	=> \$dtc,
+    "C|curr-fmt=s"	=> \$crf,
+    "f|force!"		=> \$frc,
+    "F|formulas!"	=> \$frm,
+      "Fa=s"		=> \$fac,
+      "Fd"		=> sub { $fac = "die";		},
+      "Fc"		=> sub { $fac = "croak";	},
+      "FD"		=> sub { $fac = "diag";		},
+      "Fe"		=> sub { $fac = "empty";	},
+      "Fu"		=> sub { $fac = "undef";	},
+    "u|utf-8!"		=> \$utf,
+    "v|verbose:1"	=> \$opt_v,
     ) or usage (1);
 
 my $title = @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xls";
@@ -72,7 +85,7 @@ my $title = @ARGV && -f $ARGV[0] ? $ARGV[0] : "csv2xls";
 -s $xls && $frc and unlink $xls;
 if (-s $xls) {
     print STDERR "File '$xls' already exists. Overwrite? [y/N] > N\b";
-    scalar <STDIN> =~ m/^[yj](es|a)?$/i or exit;
+    scalar <STDIN> =~ m/^[yj](?:es|a)?$/i or exit;
     }
 
 # Don't split ourselves when modules do it _much_ better, and follow the standards
@@ -116,6 +129,13 @@ unless ($sep) { # No sep char passed, try to auto-detect;
 	last;
 	}
     }
+my %fac = qw(
+    0 0 none  0
+    1 1 die   1
+    2 2 croak 2
+    3 3 diag  3
+    4 4 empty 4
+    5 5 undef 5 );
 my $csv = Text::CSV_XS-> new ({
     sep_char       => $sep eq "tab"   ? "\t"  : $sep,
     quote_char     => $quo eq "undef" ? undef : $quo,
@@ -123,6 +143,7 @@ my $csv = Text::CSV_XS-> new ({
     binary         => 1,
     keep_meta_info => 1,
     auto_diag      => 1,
+    formula        => $fac{lc $fac} || 0,
     });
 if ($firstline) {
     $csv->parse ($firstline) or die $csv->error_diag ();
