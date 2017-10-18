@@ -383,7 +383,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        2 Cause the process to "croak" whenever a leading "=" is encountered.
          (See Carp)
 
-         1 can be aliased to "croak".
+         2 can be aliased to "croak".
 
           $csv->formula (2);
           $csv->formula ("croak");

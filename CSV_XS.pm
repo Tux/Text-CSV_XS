@@ -1772,7 +1772,7 @@ C<1> can be aliased to C<die>.
 Cause the process to C<croak> whenever a leading C<=> is encountered.  (See
 L<Carp>)
 
-C<1> can be aliased to C<croak>.
+C<2> can be aliased to C<croak>.
 
  $csv->formula (2);
  $csv->formula ("croak");

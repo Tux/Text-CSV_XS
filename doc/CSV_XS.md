@@ -387,7 +387,7 @@ Possible values for this attribute are
     Cause the process to `croak` whenever a leading `=` is encountered.  (See
     [Carp](https://metacpan.org/pod/Carp))
 
-    `1` can be aliased to `croak`.
+    `2` can be aliased to `croak`.
 
         $csv->formula (2);
         $csv->formula ("croak");
