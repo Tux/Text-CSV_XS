@@ -1,17 +1,17 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'17 [13 Jun 2017] Copyright H.M.Brand 2007-2017
+#	   (m)'17 [18 Oct 2017] Copyright H.M.Brand 2007-2017
 
 # This code requires the defined-or feature and PerlIO
 
-use strict;
+use 5.12.0;
 use warnings;
 
 use Data::Peek;
 use Encode qw( decode );
 
-our $VERSION = "1.9";	# 2017-06-13
+our $VERSION = "2.0";	# 2017-10-18
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -28,13 +28,14 @@ usage: $cmd [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
        -E <enc>   open file with encoding
        -h         check with header (implies BOM)
        -b         check with BOM (no header)
+       -f         do not check formula's
 
        --pp       use Text::CSV_PP instead (cross-check)
 EOU
     exit $err;
     } # usage
 
-use Getopt::Long qw(:config bundling nopermute passthrough);
+use Getopt::Long qw(:config bundling);
 my $sep;	# Set after reading first line in a flurry attempt to auto-detect
 my $quo = '"';
 my $esc = '"';
@@ -42,6 +43,7 @@ my $opt_u = 0;
 my $opt_p = 0;
 my $opt_h = 0;
 my $opt_b = 0;
+my $opt_f = 0;
 my $enc;
 GetOptions (
     "help|?"		=> sub { usage (0); },
@@ -54,6 +56,7 @@ GetOptions (
     "E|enc|encoding=s"	=> \$enc,
     "h|hdr|header!"	=> \$opt_h,
     "b|bom!"		=> \$opt_b,
+    "f|skip-formula!"	=> \$opt_f,
 
     "pp!"		=> \$opt_p,
     ) or usage (1);
@@ -70,6 +73,7 @@ $csvmod->import ();
 
 my $fn   = $ARGV[0] // "-";
 my $data = do { local $/; <> } or die "No data to analyze\n";
+my @warn;
 
 my ($bin, $rows, $eol, %cols) = (0, 0, undef);
 unless ($sep) { # No sep char passed, try to auto-detect;
@@ -92,6 +96,7 @@ my $csv = $csvmod->new ({
     binary         => 1,
     keep_meta_info => 1,
     auto_diag      => 1,
+    formula        => $opt_f ? "none" : "diag",
     });
 
 sub done {
@@ -114,16 +119,15 @@ sub done {
 	print "OK: rows: $rows, columns: $cols\n";
 	print "    sep = <$sep>, quo = <$quo>, bin = <$bin>, eol = <$eol>\n";
 	if (@coll > 1) {
-	    print "WARN: multiple column lengths:\n";
+	    print "multiple column lengths:\n";
 	    printf " %6d line%s with %4d field%s\n",
 		$cols{$_}, $cols{$_} == 1 ? " " : "s",
 		$_,        $_        == 1 ? ""  : "s"
 		    for @coll;
 	    }
-	exit 0;
+	$diag[0] = 0;
 	}
-
-    if ($diag[2]) {
+    elsif ($diag[2]) {
 	print "$ARGV record $diag[3] at line $./$diag[2] - $diag[0] - $diag[1]\n";
 	my $ep  = $diag[2] - 1; # diag[2] is 1-based
 	my $err = $csv->error_input . "         ";
@@ -135,6 +139,7 @@ sub done {
     else {
 	print "$ARGV line $. - $diag[1]\n";
 	}
+    print for @warn;
     exit $diag[0];
     } # done
 
@@ -149,8 +154,10 @@ sub stats {
 
 	    local $SIG{__WARN__} = sub {
 		(my $msg = shift) =~ s{ at /\S+Encode.pm.*}{};
-		printf STDERR "Field %3d:%3d - '%s'\t- %s",
-		    $rows, $x, DPeek ($r[$x]), $msg;
+		my @h = $csv->column_names;
+		push @warn, sprintf "Field %d%s in record %d - '%s'\t- %s",
+		    $x + 1, @h ? " (column: '$h[$x]')" : "", $rows,
+		    DPeek ($r[$x]), $msg;
 		};
 	    my $oct = decode ("utf-8", $r[$x], Encode::FB_WARN);
 	    }
@@ -160,12 +167,14 @@ sub stats {
 my $mode = $enc ? "<:encoding($enc)" : "<";
 open my $fh, $mode, \$data or die "$fn: $!\n";
 if ($opt_h) {
-    $csv->header;
+    $csv->header ($fh);
     }
 elsif ($opt_b) {
     my @hdr = $csv->header ($fh, { detect_bom => 1, set_column_names => 0 });
     stats \@hdr;
     }
+
+local $SIG{__WARN__} = sub { push @warn, @_; };
 while (my $row = $csv->getline ($fh)) {
     $rows++;
     stats $row;
