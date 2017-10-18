@@ -434,7 +434,8 @@ sub _supported_formula {
     $f =~ m/^(?: 2 | croak   )$/xi ? 2 :
     $f =~ m/^(?: 3 | diag    )$/xi ? 3 :
     $f =~ m/^(?: 4 | empty | )$/xi ? 4 :
-    $f =~ m/^(?: 5 | undef   )$/xi ? 5 : 3;
+    $f =~ m/^(?: 5 | undef   )$/xi ? 5 :
+    do { warn "formula-handling '$f' is not supported\n"; 3 };
     } # _supported_formula
 
 sub formula {
