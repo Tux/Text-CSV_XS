@@ -1,4 +1,5 @@
 1.34	- 2017-10-19, H.Merijn Brand
+    * Bad arg for formula (like "craok") will now die with error 1500
     * Row report in formula reporting was off by 1
 
 1.33	- 2017-10-19, H.Merijn Brand

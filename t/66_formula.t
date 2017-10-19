@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 125;
+use Test::More tests => 110;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -37,12 +37,8 @@ is ($csv->formula_handling ("UNDEF"),	"undef",	"undef");
 is ($csv->formula_handling ("NONE"),	"none",		"none");
 
 foreach my $f (-1, 9, "xxx", "DIAX", [], {}, sub {}) {
-    my @w;
-    local $SIG{__WARN__} = sub { push @w, @_ };
-
-    is ($csv->formula ($f),	"diag",	"invalid");
-    is (scalar @w,		1,	"got warning");
-    like ($w[0], qr{^formula-handling '.*' is not supported}s, "warning");
+    eval { $csv->formula ($f); };
+    like ($@, qr/^formula-handling '\Q$f\E' is not supported/, "$f in invalid");
     }
 
 my %f = qw(
@@ -52,13 +48,13 @@ my %f = qw(
     3 diag  diag  diag
     4 empty empty empty
     5 undef undef undef
-	    xxx   diag
     );
 foreach my $f (sort keys %f) {
-    local $SIG{__WARN__} = sub { };
     ok (my $p = Text::CSV_XS->new ({ formula => $f }), "new with $f");
     is ($p->formula, $f{$f}, "Set to $f{$f}");
     }
+eval { Text::CSV_XS->new ({ formula => "xxx" }); };
+like ($@, qr/^formula-handling 'xxx' is not supported/, "xxx in invalid");
 
 # Parser
 

@@ -26,7 +26,7 @@ use DynaLoader ();
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.33";
+$VERSION   = "1.34";
 @ISA       = qw( DynaLoader Exporter );
 @EXPORT_OK = qw( csv );
 bootstrap Text::CSV_XS $VERSION;
@@ -181,7 +181,7 @@ sub new {
     exists $attr{formula_handling} and
 	$attr{formula} = delete $attr{formula_handling};
     exists $attr{formula} and
-	$attr{formula} = _supported_formula ($attr{formula});
+	$attr{formula} = _supported_formula (undef, $attr{formula});
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
@@ -427,24 +427,24 @@ sub strict {
     } # always_quote
 
 sub _supported_formula {
-    my $f = shift;
+    my ($self, $f) = @_;
     defined $f or return 5;
     $f =~ m/^(?: 0 | none    )$/xi ? 0 :
     $f =~ m/^(?: 1 | die     )$/xi ? 1 :
     $f =~ m/^(?: 2 | croak   )$/xi ? 2 :
     $f =~ m/^(?: 3 | diag    )$/xi ? 3 :
     $f =~ m/^(?: 4 | empty | )$/xi ? 4 :
-    $f =~ m/^(?: 5 | undef   )$/xi ? 5 :
-    do { warn "formula-handling '$f' is not supported\n"; 3 };
+    $f =~ m/^(?: 5 | undef   )$/xi ? 5 : do {
+	$self ||= "Text::CSV_XS";
+	$self->SetDiag (1500);
+	croak "formula-handling '$f' is not supported\n";
+	};
     } # _supported_formula
-sub _formula_string {
-    [qw( none die croak diag empty undef )]->[_supported_formula (shift)];
-    } # _formula_string
 
 sub formula {
     my $self = shift;
-    @_ and $self->_set_attr_N ("formula", _supported_formula (shift));
-    _formula_string ($self->{formula});
+    @_ and $self->_set_attr_N ("formula", _supported_formula ($self, shift));
+    [qw( none die croak diag empty undef )]->[_supported_formula ($self, $self->{formula})];
     } # always_quote
 sub formula_handling {
     my $self = shift;
@@ -1168,7 +1168,7 @@ sub _csv_attr {
     ref $fltr eq "HASH" or $fltr = undef;
 
     exists $attr{formula} and
-	$attr{formula} = _supported_formula ($attr{formula});
+	$attr{formula} = _supported_formula (undef, $attr{formula});
 
     defined $attr{auto_diag}   or $attr{auto_diag}   = 1;
     defined $attr{escape_null} or $attr{escape_null} = 0;
