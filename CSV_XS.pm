@@ -814,6 +814,12 @@ sub header {
     defined $args{munge_column_names} or $args{munge_column_names} = "lc";
     defined $args{set_column_names}   or $args{set_column_names}   = 1;
 
+    # Reset any previous leftovers
+    $self->{_RECNO}		= 0;
+    $self->{_AHEAD}		= undef;
+    $self->{_COLUMN_NAMES}	= undef if $args{set_column_names};
+    $self->{_BOUND_COLUMNS}	= undef if $args{set_column_names};
+
     if (defined $args{sep_set}) {
 	ref $args{sep_set} eq "ARRAY" or
 	    croak ($self->SetDiag (1500, "sep_set should be an array ref"));
@@ -2536,6 +2542,10 @@ Parse the CSV header and set L<C<sep>|/sep>, column_names and encoding.
  $csv->header ($fh, { detect_bom => 1, munge_column_names => "lc" });
 
 The first argument should be a file handle.
+
+This method resets some object properties,  as it is supposed to be invoked
+only once per file or stream.  It will leave attributes C<column_names> and
+C<bound_columns> alone of setting column names is disabled.
 
 Assuming that the file opened for parsing has a header, and the header does
 not contain problematic characters like embedded newlines,   read the first

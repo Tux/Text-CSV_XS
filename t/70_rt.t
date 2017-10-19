@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 20465;
+ use Test::More tests => 20469;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -473,7 +473,7 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 	}
     }
 
-{   # http://rt.cpan.org/Ticket/Display.html?id=115953
+{   # http://rt.cpan.org/Ticket/Display.html?id=120655
     $rt = 120655; # bind_columns with strange behavior / length() from old value
     SKIP: {
 	$] < 5.008002 and skip "UTF8 unreliable in perl $]", 5;
@@ -485,6 +485,44 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 	ok ($csv->parse (""),			"Parse empty line");
 	is (length $row{c1}, 0,			"Length");
 	}
+    }
+
+{   # http://rt.cpan.org/Ticket/Display.html?id=123320
+    $rt = 123320; # ext::CSV_XS bug w/Mac format files
+
+    my $fn_bad  = "rt123320_bad.csv";
+    my $fn_good = "rt123320_good.csv";
+    open my $fh, ">", $fn_bad or die "$fn_bad: $!\n";
+    print $fh join "\r" =>
+	q{col1,col2,col3,},
+	q{"One","","Three"},
+	q{"Four","Five and a half","Six"},
+	q{};
+    close $fh;
+    open $fh, ">", $fn_good or die "$fn_good: $!\n";
+    print $fh join "\r" =>
+	q{col1,col2,col3},
+	q{"One","Two","Three"},
+	"";
+    close $fh;
+
+    ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, eol => "\r", }), "new");
+
+    my @msg;
+    local $SIG{__WARN__} = sub { push @msg, @_; };
+
+    open $fh, "<", $fn_bad  or die "$!\n";
+    my @hdr = eval { $csv->header ($fh); };
+    is (scalar @hdr,		0,	"Empty field in header");
+    is (($csv->error_diag)[0],	1012,	"error 1012");
+    close $fh;
+
+    open $fh, "<", $fn_good or die "$!\n";
+    @hdr = eval { $csv->header ($fh); };
+    is_deeply (\@hdr, [qw( col1 col2 col3 )], "Header is ok");
+    close $fh;
+
+    unlink $fn_good, $fn_bad;
     }
 
 __END__
@@ -551,3 +589,4 @@ foo "bar"
 «115953» - Space stripped from middle of field value with allow_whitespace and allow_loose_quotes
 "foo "bar" baz"
 «120655» - bind_columns with strange behavior / length() from old value
+«123320» - ext::CSV_XS bug w/Mac format files

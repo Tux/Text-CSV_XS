@@ -1,8 +1,9 @@
-1.33	- 2017-10-18, H.Merijn Brand
+1.33	- 2017-10-19, H.Merijn Brand
     * Small additional fix for eol = \r + BOM
     * Updated doc for example files
     * Add support for formula actions (issue 11)
       - csv2xls and csv2xlsx now warn by default
+    * Reset file info on ->header call (RT#123320)
 
 1.32	- 2017-09-15, H.Merijn Brand
     * Add keep_headers attribute to csv ()
