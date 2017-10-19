@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2017-10-18" "perl v5.26.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2017-10-19" "perl v5.26.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -525,8 +525,8 @@ of fields than the previous row will cause the parser to throw error 2014.
 .IX Subsection "formula"
 .PP
 .Vb 3
-\& my $csv = Text::CSV_XS\->new ({ formula => 0 });
-\&         $csv\->formula (0);
+\& my $csv = Text::CSV_XS\->new ({ formula => "none" });
+\&         $csv\->formula ("none");
 \& my $f = $csv\->formula;
 .Ve
 .PP
@@ -537,81 +537,55 @@ action to be taken if a field starts with an equal sign (\f(CW\*(C`=\*(C'\fR).
 For purpose of code-readability, this can also be written as
 .PP
 .Vb 3
-\& my $csv = Text::CSV_XS\->new ({ formula_handling => 0 });
+\& my $csv = Text::CSV_XS\->new ({ formula_handling => "none" });
 \&         $csv\->formula_handling ("none");
 \& my $f = $csv\->formula_handling;
 .Ve
 .PP
-The return value is always numeric.
-.PP
 Possible values for this attribute are
-.ie n .IP "0" 2
-.el .IP "\f(CW0\fR" 2
-.IX Item "0"
+.IP "none" 2
+.IX Item "none"
 Take no specific action. This is the default.
 .Sp
-\&\f(CW0\fR can be aliased to \f(CW\*(C`none\*(C'\fR.
-.Sp
-.Vb 2
-\& $csv\->formula (0);
+.Vb 1
 \& $csv\->formula ("none");
 .Ve
-.ie n .IP "1" 2
-.el .IP "\f(CW1\fR" 2
-.IX Item "1"
+.IP "die" 2
+.IX Item "die"
 Cause the process to \f(CW\*(C`die\*(C'\fR whenever a leading \f(CW\*(C`=\*(C'\fR is encountered.
 .Sp
-\&\f(CW1\fR can be aliased to \f(CW\*(C`die\*(C'\fR.
-.Sp
-.Vb 2
-\& $csv\->formula (1);
+.Vb 1
 \& $csv\->formula ("die");
 .Ve
-.ie n .IP "2" 2
-.el .IP "\f(CW2\fR" 2
-.IX Item "2"
+.IP "croak" 2
+.IX Item "croak"
 Cause the process to \f(CW\*(C`croak\*(C'\fR whenever a leading \f(CW\*(C`=\*(C'\fR is encountered.  (See
 Carp)
 .Sp
-\&\f(CW2\fR can be aliased to \f(CW\*(C`croak\*(C'\fR.
-.Sp
-.Vb 2
-\& $csv\->formula (2);
+.Vb 1
 \& $csv\->formula ("croak");
 .Ve
-.ie n .IP "3" 2
-.el .IP "\f(CW3\fR" 2
-.IX Item "3"
+.IP "diag" 2
+.IX Item "diag"
 Report position and content of the field whenever a leading  \f(CW\*(C`=\*(C'\fR is found.
 The value of the field is unchanged.
 .Sp
-\&\f(CW3\fR can be aliased to \f(CW\*(C`diag\*(C'\fR.
-.Sp
-.Vb 2
-\& $csv\->formula (3);
+.Vb 1
 \& $csv\->formula ("diag");
 .Ve
-.ie n .IP "4" 2
-.el .IP "\f(CW4\fR" 2
-.IX Item "4"
+.IP "empty" 2
+.IX Item "empty"
 Replace the content of fields that start with a \f(CW\*(C`=\*(C'\fR with the empty string.
 .Sp
-\&\f(CW4\fR can be aliased to \f(CW\*(C`empty\*(C'\fR.
-.Sp
-.Vb 3
-\& $csv\->formula (4);
+.Vb 2
 \& $csv\->formula ("empty");
 \& $csv\->formula ("");
 .Ve
-.ie n .IP "5" 2
-.el .IP "\f(CW5\fR" 2
-.IX Item "5"
+.IP "undef" 2
+.IX Item "undef"
 Replace the content of fields that start with a \f(CW\*(C`=\*(C'\fR with \f(CW\*(C`undef\*(C'\fR.
 .Sp
-\&\f(CW5\fR can be aliased to \f(CW\*(C`undef\*(C'\fR.
-.Sp
-.Vb 3
-\& $csv\->formula (5);
+.Vb 2
 \& $csv\->formula ("undef");
 \& $csv\->formula (undef);
 .Ve
@@ -1486,6 +1460,10 @@ Parse the \s-1CSV\s0 header and set \f(CW\*(C`sep\*(C'\fR, column_names and enco
 .Ve
 .PP
 The first argument should be a file handle.
+.PP
+This method resets some object properties,  as it is supposed to be invoked
+only once per file or stream.  It will leave attributes \f(CW\*(C`column_names\*(C'\fR and
+\&\f(CW\*(C`bound_columns\*(C'\fR alone of setting column names is disabled.
 .PP
 Assuming that the file opened for parsing has a header, and the header does
 not contain problematic characters like embedded newlines,   read the first

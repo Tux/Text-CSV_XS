@@ -348,8 +348,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        [4mformula[0m
 
-        my $csv = Text::CSV_XS->new ({ formula => 0 });
-                $csv->formula (0);
+        my $csv = Text::CSV_XS->new ({ formula => "none" });
+                $csv->formula ("none");
         my $f = $csv->formula;
 
        This defines the behavior of fields containing [4mformulas[24m. As formulas
@@ -358,58 +358,44 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        For purpose of code-readability, this can also be written as
 
-        my $csv = Text::CSV_XS->new ({ formula_handling => 0 });
+        my $csv = Text::CSV_XS->new ({ formula_handling => "none" });
                 $csv->formula_handling ("none");
         my $f = $csv->formula_handling;
 
-       The return value is always numeric.
-
        Possible values for this attribute are
 
-       0 Take no specific action. This is the default.
+       none
+         Take no specific action. This is the default.
 
-         0 can be aliased to "none".
-
-          $csv->formula (0);
           $csv->formula ("none");
 
-       1 Cause the process to "die" whenever a leading "=" is encountered.
+       die
+         Cause the process to "die" whenever a leading "=" is encountered.
 
-         1 can be aliased to "die".
-
-          $csv->formula (1);
           $csv->formula ("die");
 
-       2 Cause the process to "croak" whenever a leading "=" is encountered.
+       croak
+         Cause the process to "croak" whenever a leading "=" is encountered.
          (See Carp)
 
-         2 can be aliased to "croak".
-
-          $csv->formula (2);
           $csv->formula ("croak");
 
-       3 Report position and content of the field whenever a leading  "=" is
+       diag
+         Report position and content of the field whenever a leading  "=" is
          found.  The value of the field is unchanged.
 
-         3 can be aliased to "diag".
-
-          $csv->formula (3);
           $csv->formula ("diag");
 
-       4 Replace the content of fields that start with a "=" with the empty
+       empty
+         Replace the content of fields that start with a "=" with the empty
          string.
 
-         4 can be aliased to "empty".
-
-          $csv->formula (4);
           $csv->formula ("empty");
           $csv->formula ("");
 
-       5 Replace the content of fields that start with a "=" with "undef".
+       undef
+         Replace the content of fields that start with a "=" with "undef".
 
-         5 can be aliased to "undef".
-
-          $csv->formula (5);
           $csv->formula ("undef");
           $csv->formula (undef);
 
@@ -1096,6 +1082,11 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         $csv->header ($fh, { detect_bom => 1, munge_column_names => "lc" });
 
        The first argument should be a file handle.
+
+       This method resets some object properties,  as it is supposed to be
+       invoked only once per file or stream.  It will leave attributes
+       "column_names" and "bound_columns" alone of setting column names is
+       disabled.
 
        Assuming that the file opened for parsing has a header, and the header
        does not contain problematic characters like embedded newlines,   read
@@ -2668,4 +2659,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.26.0                      2017-10-18                          STDIN(1)
+perl v5.26.0                      2017-10-19                          STDIN(1)

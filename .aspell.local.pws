@@ -1,4 +1,4 @@
-personal_ws-1.1 en 40 
+personal_ws-1.1 en 41 
 AoA
 API
 ASV
@@ -12,6 +12,7 @@ csvdiff
 csvkit
 dcsv
 DDumper
+diag
 EBCDIC
 ECB
 ECR

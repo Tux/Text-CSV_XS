@@ -346,8 +346,8 @@ of fields than the previous row will cause the parser to throw error 2014.
 
 
 
-    my $csv = Text::CSV_XS->new ({ formula => 0 });
-            $csv->formula (0);
+    my $csv = Text::CSV_XS->new ({ formula => "none" });
+            $csv->formula ("none");
     my $f = $csv->formula;
 
 This defines the behavior of fields containing _formulas_. As formulas are
@@ -356,69 +356,49 @@ action to be taken if a field starts with an equal sign (`=`).
 
 For purpose of code-readability, this can also be written as
 
-    my $csv = Text::CSV_XS->new ({ formula_handling => 0 });
+    my $csv = Text::CSV_XS->new ({ formula_handling => "none" });
             $csv->formula_handling ("none");
     my $f = $csv->formula_handling;
 
-The return value is always numeric.
-
 Possible values for this attribute are
 
-- `0`
+- none
 
     Take no specific action. This is the default.
 
-    `0` can be aliased to `none`.
-
-        $csv->formula (0);
         $csv->formula ("none");
 
-- `1`
+- die
 
     Cause the process to `die` whenever a leading `=` is encountered.
 
-    `1` can be aliased to `die`.
-
-        $csv->formula (1);
         $csv->formula ("die");
 
-- `2`
+- croak
 
     Cause the process to `croak` whenever a leading `=` is encountered.  (See
     [Carp](https://metacpan.org/pod/Carp))
 
-    `2` can be aliased to `croak`.
-
-        $csv->formula (2);
         $csv->formula ("croak");
 
-- `3`
+- diag
 
     Report position and content of the field whenever a leading  `=` is found.
     The value of the field is unchanged.
 
-    `3` can be aliased to `diag`.
-
-        $csv->formula (3);
         $csv->formula ("diag");
 
-- `4`
+- empty
 
     Replace the content of fields that start with a `=` with the empty string.
 
-    `4` can be aliased to `empty`.
-
-        $csv->formula (4);
         $csv->formula ("empty");
         $csv->formula ("");
 
-- `5`
+- undef
 
     Replace the content of fields that start with a `=` with `undef`.
 
-    `5` can be aliased to `undef`.
-
-        $csv->formula (5);
         $csv->formula ("undef");
         $csv->formula (undef);
 
@@ -1145,6 +1125,10 @@ Parse the CSV header and set [`sep`](#sep), column\_names and encoding.
     $csv->header ($fh, { detect_bom => 1, munge_column_names => "lc" });
 
 The first argument should be a file handle.
+
+This method resets some object properties,  as it is supposed to be invoked
+only once per file or stream.  It will leave attributes `column_names` and
+`bound_columns` alone of setting column names is disabled.
 
 Assuming that the file opened for parsing has a header, and the header does
 not contain problematic characters like embedded newlines,   read the first

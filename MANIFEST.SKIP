@@ -12,6 +12,7 @@
 00ideas
 blib/
 cover_db/
+doc/
 sandbox/
 tmp/
 genMETA.pl

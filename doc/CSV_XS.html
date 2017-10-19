@@ -438,89 +438,69 @@ or
 
 <h3 id="formula">formula  </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ formula =&gt; 0 });
-         $csv-&gt;formula (0);
+<pre><code> my $csv = Text::CSV_XS-&gt;new ({ formula =&gt; &quot;none&quot; });
+         $csv-&gt;formula (&quot;none&quot;);
  my $f = $csv-&gt;formula;</code></pre>
 
 <p>This defines the behavior of fields containing <i>formulas</i>. As formulas are considered dangerous in spreadsheets, this attribute can define an optional action to be taken if a field starts with an equal sign (<code>=</code>).</p>
 
 <p>For purpose of code-readability, this can also be written as</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ formula_handling =&gt; 0 });
+<pre><code> my $csv = Text::CSV_XS-&gt;new ({ formula_handling =&gt; &quot;none&quot; });
          $csv-&gt;formula_handling (&quot;none&quot;);
  my $f = $csv-&gt;formula_handling;</code></pre>
-
-<p>The return value is always numeric.</p>
 
 <p>Possible values for this attribute are</p>
 
 <dl>
 
-<dt id="pod0"><code>0</code></dt>
+<dt id="none">none</dt>
 <dd>
 
 <p>Take no specific action. This is the default.</p>
 
-<p><code>0</code> can be aliased to <code>none</code>.</p>
-
-<pre><code> $csv-&gt;formula (0);
- $csv-&gt;formula (&quot;none&quot;);</code></pre>
+<pre><code> $csv-&gt;formula (&quot;none&quot;);</code></pre>
 
 </dd>
-<dt id="pod1"><code>1</code></dt>
+<dt id="die">die</dt>
 <dd>
 
 <p>Cause the process to <code>die</code> whenever a leading <code>=</code> is encountered.</p>
 
-<p><code>1</code> can be aliased to <code>die</code>.</p>
-
-<pre><code> $csv-&gt;formula (1);
- $csv-&gt;formula (&quot;die&quot;);</code></pre>
+<pre><code> $csv-&gt;formula (&quot;die&quot;);</code></pre>
 
 </dd>
-<dt id="pod2"><code>2</code></dt>
+<dt id="croak">croak</dt>
 <dd>
 
 <p>Cause the process to <code>croak</code> whenever a leading <code>=</code> is encountered. (See <a>Carp</a>)</p>
 
-<p><code>2</code> can be aliased to <code>croak</code>.</p>
-
-<pre><code> $csv-&gt;formula (2);
- $csv-&gt;formula (&quot;croak&quot;);</code></pre>
+<pre><code> $csv-&gt;formula (&quot;croak&quot;);</code></pre>
 
 </dd>
-<dt id="pod3"><code>3</code></dt>
+<dt id="diag">diag</dt>
 <dd>
 
 <p>Report position and content of the field whenever a leading <code>=</code> is found. The value of the field is unchanged.</p>
 
-<p><code>3</code> can be aliased to <code>diag</code>.</p>
-
-<pre><code> $csv-&gt;formula (3);
- $csv-&gt;formula (&quot;diag&quot;);</code></pre>
+<pre><code> $csv-&gt;formula (&quot;diag&quot;);</code></pre>
 
 </dd>
-<dt id="pod4"><code>4</code></dt>
+<dt id="empty">empty</dt>
 <dd>
 
 <p>Replace the content of fields that start with a <code>=</code> with the empty string.</p>
 
-<p><code>4</code> can be aliased to <code>empty</code>.</p>
-
-<pre><code> $csv-&gt;formula (4);
- $csv-&gt;formula (&quot;empty&quot;);
+<pre><code> $csv-&gt;formula (&quot;empty&quot;);
  $csv-&gt;formula (&quot;&quot;);</code></pre>
 
 </dd>
-<dt id="pod5"><code>5</code></dt>
+<dt id="undef">undef</dt>
 <dd>
 
 <p>Replace the content of fields that start with a <code>=</code> with <code>undef</code>.</p>
 
-<p><code>5</code> can be aliased to <code>undef</code>.</p>
-
-<pre><code> $csv-&gt;formula (5);
- $csv-&gt;formula (&quot;undef&quot;);
+<pre><code> $csv-&gt;formula (&quot;undef&quot;);
  $csv-&gt;formula (undef);</code></pre>
 
 </dd>
@@ -1087,6 +1067,8 @@ or
  $csv-&gt;header ($fh, { detect_bom =&gt; 1, munge_column_names =&gt; &quot;lc&quot; });</code></pre>
 
 <p>The first argument should be a file handle.</p>
+
+<p>This method resets some object properties, as it is supposed to be invoked only once per file or stream. It will leave attributes <code>column_names</code> and <code>bound_columns</code> alone of setting column names is disabled.</p>
 
 <p>Assuming that the file opened for parsing has a header, and the header does not contain problematic characters like embedded newlines, read the first line from the open handle then auto-detect whether the header separates the column names with a character from the allowed separator list.</p>
 
