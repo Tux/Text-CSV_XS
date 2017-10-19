@@ -829,6 +829,7 @@ sub header {
 	@seps =  @{$args{sep_set}};
 	}
 
+    $^O eq "MSWin32" and binmode $fh;
     my $hdr = <$fh>;
     # check if $hdr can be empty here, I don't think so
     defined $hdr && $hdr ne "" or croak ($self->SetDiag (1010));
