@@ -2528,7 +2528,8 @@ The first argument should be a file handle.
 
 This method resets some object properties,  as it is supposed to be invoked
 only once per file or stream.  It will leave attributes C<column_names> and
-C<bound_columns> alone of setting column names is disabled.
+C<bound_columns> alone of setting column names is disabled. Reading headers
+on previously process objects might fail on perl-5.8.0 and older.
 
 Assuming that the file opened for parsing has a header, and the header does
 not contain problematic characters like embedded newlines,   read the first

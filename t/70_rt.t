@@ -490,39 +490,39 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 {   # http://rt.cpan.org/Ticket/Display.html?id=123320
     $rt = 123320; # ext::CSV_XS bug w/Mac format files
 
-    my $fn_bad  = "rt123320_bad.csv";
-    my $fn_good = "rt123320_good.csv";
-    open my $fh, ">", $fn_bad or die "$fn_bad: $!\n";
-    print $fh join "\r" =>
-	q{col1,col2,col3,},
-	q{"One","","Three"},
-	q{"Four","Five and a half","Six"},
-	q{};
-    close $fh;
-    open $fh, ">", $fn_good or die "$fn_good: $!\n";
-    print $fh join "\r" =>
-	q{col1,col2,col3},
-	q{"One","Two","Three"},
-	"";
-    close $fh;
+    SKIP: {
+	$] < 5.008001 and skip "unreliable in perl $]", 4;
 
-    ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, eol => "\r", }), "new");
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
+	print $fh join "\r" =>
+	    q{col1,col2,col3,},
+	    q{"One","","Three"},
+	    q{"Four","Five and a half","Six"},
+	    q{};
+	close $fh;
 
-    my @msg;
-    local $SIG{__WARN__} = sub { push @msg, @_; };
+	ok (my $csv = Text::CSV_XS->new ({ auto_diag => 1, eol => "\r", }), "new");
 
-    open $fh, "<", $fn_bad  or die "$!\n";
-    my @hdr = eval { $csv->header ($fh); };
-    is (scalar @hdr,		0,	"Empty field in header");
-    is (($csv->error_diag)[0],	1012,	"error 1012");
-    close $fh;
+	my @msg;
+	local $SIG{__WARN__} = sub { push @msg, @_; };
 
-    open $fh, "<", $fn_good or die "$!\n";
-    @hdr = eval { $csv->header ($fh); };
-    is_deeply (\@hdr, [qw( col1 col2 col3 )], "Header is ok");
-    close $fh;
+	open $fh, "<", $tfn  or die "$!\n";
+	my @hdr = eval { $csv->header ($fh); };
+	is (scalar @hdr,		0,	"Empty field in header");
+	is (($csv->error_diag)[0],	1012,	"error 1012");
+	close $fh;
 
-    unlink $fn_good, $fn_bad;
+	open $fh, ">", $tfn or die "$tfn: $!\n";
+	print $fh join "\r" =>
+	    q{col1,col2,col3},
+	    q{"One","Two","Three"},
+	    "";
+	close $fh;
+	open $fh, "<", $tfn or die "$!\n";
+	@hdr = eval { $csv->header ($fh); };
+	is_deeply (\@hdr, [qw( col1 col2 col3 )], "Header is ok");
+	close $fh;
+	}
     }
 
 __END__
