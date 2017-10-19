@@ -437,11 +437,14 @@ sub _supported_formula {
     $f =~ m/^(?: 5 | undef   )$/xi ? 5 :
     do { warn "formula-handling '$f' is not supported\n"; 3 };
     } # _supported_formula
+sub _formula_string {
+    [qw( none die croak diag empty undef )]->[_supported_formula (shift)];
+    } # _formula_string
 
 sub formula {
     my $self = shift;
     @_ and $self->_set_attr_N ("formula", _supported_formula (shift));
-    $self->{formula};
+    _formula_string ($self->{formula});
     } # always_quote
 sub formula_handling {
     my $self = shift;
@@ -1735,8 +1738,8 @@ of fields than the previous row will cause the parser to throw error 2014.
 X<formula_handling>
 X<formula>
 
- my $csv = Text::CSV_XS->new ({ formula => 0 });
-         $csv->formula (0);
+ my $csv = Text::CSV_XS->new ({ formula => "none" });
+         $csv->formula ("none");
  my $f = $csv->formula;
 
 This defines the behavior of fields containing I<formulas>. As formulas are
@@ -1745,71 +1748,51 @@ action to be taken if a field starts with an equal sign (C<=>).
 
 For purpose of code-readability, this can also be written as
 
- my $csv = Text::CSV_XS->new ({ formula_handling => 0 });
+ my $csv = Text::CSV_XS->new ({ formula_handling => "none" });
          $csv->formula_handling ("none");
  my $f = $csv->formula_handling;
-
-The return value is always numeric.
 
 Possible values for this attribute are
 
 =over 2
 
-=item C<0>
+=item none
 
 Take no specific action. This is the default.
 
-C<0> can be aliased to C<none>.
-
- $csv->formula (0);
  $csv->formula ("none");
 
-=item C<1>
+=item die
 
 Cause the process to C<die> whenever a leading C<=> is encountered.
 
-C<1> can be aliased to C<die>.
-
- $csv->formula (1);
  $csv->formula ("die");
 
-=item C<2>
+=item croak
 
 Cause the process to C<croak> whenever a leading C<=> is encountered.  (See
 L<Carp>)
 
-C<2> can be aliased to C<croak>.
-
- $csv->formula (2);
  $csv->formula ("croak");
 
-=item C<3>
+=item diag
 
 Report position and content of the field whenever a leading  C<=> is found.
 The value of the field is unchanged.
 
-C<3> can be aliased to C<diag>.
-
- $csv->formula (3);
  $csv->formula ("diag");
 
-=item C<4>
+=item empty
 
 Replace the content of fields that start with a C<=> with the empty string.
 
-C<4> can be aliased to C<empty>.
-
- $csv->formula (4);
  $csv->formula ("empty");
  $csv->formula ("");
 
-=item C<5>
+=item undef
 
 Replace the content of fields that start with a C<=> with C<undef>.
 
-C<5> can be aliased to C<undef>.
-
- $csv->formula (5);
  $csv->formula ("undef");
  $csv->formula (undef);
 

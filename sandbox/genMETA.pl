@@ -71,7 +71,7 @@ requires:
     DynaLoader:          0
     IO::Handle:          0
 recommends:
-    Encode:              2.92
+    Encode:              2.93
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:

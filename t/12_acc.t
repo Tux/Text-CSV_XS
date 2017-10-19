@@ -31,7 +31,7 @@ is ($csv->empty_is_undef,		0,		"empty_is_undef");
 is ($csv->auto_diag,			0,		"auto_diag");
 is ($csv->diag_verbose,			0,		"diag_verbose");
 is ($csv->verbatim,			0,		"verbatim");
-is ($csv->formula,			0,		"formula");
+is ($csv->formula,			"none",		"formula");
 is ($csv->strict,			0,		"strict");
 is ($csv->quote_space,			1,		"quote_space");
 is ($csv->quote_empty,			0,		"quote_empty");

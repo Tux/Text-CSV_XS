@@ -3,54 +3,56 @@
 use strict;
 use warnings;
 
-use Test::More tests => 108;
+use Test::More tests => 125;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
-# Some assorted examples from the modules history
+ok (my $csv = Text::CSV_XS->new,		"new");
 
-ok (my $csv = Text::CSV_XS->new,	"new");
+is ($csv->formula,		"none",		"default");
+is ($csv->formula (1),		"die",		"die");
+is ($csv->formula ("die"),	"die",		"die");
+is ($csv->formula (2),		"croak",	"croak");
+is ($csv->formula ("croak"),	"croak",	"croak");
+is ($csv->formula (3),		"diag",		"diag");
+is ($csv->formula ("diag"),	"diag",		"diag");
+is ($csv->formula (4),		"empty",	"empty");
+is ($csv->formula ("empty"),	"empty",	"empty");
+is ($csv->formula (""),		"empty",	"explicit empty");
+is ($csv->formula (5),		"undef",	"undef");
+is ($csv->formula ("undef"),	"undef",	"undef");
+is ($csv->formula (undef),	"undef",	"explicit undef");
+is ($csv->formula (0),		"none",		"none");
+is ($csv->formula ("none"),	"none",		"none");
 
-is ($csv->formula,		0,	"default");
-is ($csv->formula ($_),		$_,	"formula $_") for 0 .. 5;
-is ($csv->formula (""),		4,	"explicit empty");
-is ($csv->formula (undef),	5,	"explicit undef");
+is ($csv->formula_handling,		"none",		"default");
+is ($csv->formula_handling ("DIE"),	"die",		"die");
+is ($csv->formula_handling ("CROAK"),	"croak",	"croak");
+is ($csv->formula_handling ("DIAG"),	"diag",		"diag");
+is ($csv->formula_handling ("EMPTY"),	"empty",	"empty");
+is ($csv->formula_handling ("UNDEF"),	"undef",	"undef");
+is ($csv->formula_handling ("NONE"),	"none",		"none");
 
 foreach my $f (-1, 9, "xxx", "DIAX", [], {}, sub {}) {
     my @w;
     local $SIG{__WARN__} = sub { push @w, @_ };
 
-    is ($csv->formula ($f),	3,	"invalid");
+    is ($csv->formula ($f),	"diag",	"invalid");
     is (scalar @w,		1,	"got warning");
     like ($w[0], qr{^formula-handling '.*' is not supported}s, "warning");
     }
 
-is ($csv->formula ("die"),	1,	"die");
-is ($csv->formula ("croak"),	2,	"croak");
-is ($csv->formula ("diag"),	3,	"diag");
-is ($csv->formula ("empty"),	4,	"empty");
-is ($csv->formula ("undef"),	5,	"undef");
-is ($csv->formula ("none"),	0,	"none");
-
-is ($csv->formula_handling,		0,	"default");
-is ($csv->formula_handling ("DIE"),	1,	"die");
-is ($csv->formula_handling ("CROAK"),	2,	"croak");
-is ($csv->formula_handling ("DIAG"),	3,	"diag");
-is ($csv->formula_handling ("EMPTY"),	4,	"empty");
-is ($csv->formula_handling ("UNDEF"),	5,	"undef");
-is ($csv->formula_handling ("NONE"),	0,	"none");
-
 my %f = qw(
-    0 0 none  0
-    1 1 die   1
-    2 2 croak 2
-    3 3 diag  3
-    4 4 empty 4
-    5 5 undef 5
-	xxx   3
+    0 none  none  none
+    1 die   die   die
+    2 croak croak croak
+    3 diag  diag  diag
+    4 empty empty empty
+    5 undef undef undef
+	    xxx   diag
     );
 foreach my $f (sort keys %f) {
     local $SIG{__WARN__} = sub { };
@@ -149,10 +151,19 @@ sub writer {
     } # writer
 
 @m = ();
-is (       writer (0),   q{1,=2+3,4}, "Out 0");
-is (eval { writer (1) }, undef,       "Out 1");
-is (eval { writer (2) }, undef,       "Out 2");
-is (       writer (3),   q{1,=2+3,4}, "Out 3");
-is (       writer (4),   q{1,"",4},   "Out 4");
-is (       writer (5),   q{1,,4},     "Out 5");
+is (       writer (0),		q{1,=2+3,4}, "Out 0");
+is (eval { writer (1) },	undef,       "Out 1");
+is (eval { writer (2) },	undef,       "Out 2");
+is (       writer (3),		q{1,=2+3,4}, "Out 3");
+is (       writer (4),		q{1,"",4},   "Out 4");
+is (       writer (5),		q{1,,4},     "Out 5");
 is_deeply (\@m,  [ "Field 1 contains formula '=2+3'\n" ], "Warning 3");
+
+@m = ();
+is (       writer ("none"),	q{1,=2+3,4}, "Out none");
+is (eval { writer ("die") },	undef,       "Out die");
+is (eval { writer ("croak") },	undef,       "Out croak");
+is (       writer ("diag"),	q{1,=2+3,4}, "Out diag");
+is (       writer ("empty"),	q{1,"",4},   "Out empty");
+is (       writer ("undef"),	q{1,,4},     "Out undef");
+is_deeply (\@m,  [ "Field 1 contains formula '=2+3'\n" ], "Warning diag");
