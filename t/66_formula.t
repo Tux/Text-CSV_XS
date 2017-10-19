@@ -111,10 +111,10 @@ is_deeply (parse (3), [
     ], "Default");
 is ($@, undef, "Legal with warnings");
 is_deeply (\@m, [
-    "Field 1 in record 2 contains formula '=1+2'\n",
-    "Field 2 in record 3 contains formula '=2+3'\n",
-    "Field 3 in record 4 contains formula '=3+4'\n",
-    ],		"Warnings");
+    "Field 1 in record 3 contains formula '=1+2'\n",
+    "Field 2 in record 4 contains formula '=2+3'\n",
+    "Field 3 in record 5 contains formula '=3+4'\n",
+    ], "Warnings");
 
 is_deeply (parse (4), [
     [ "a",	"b",	"c",	],

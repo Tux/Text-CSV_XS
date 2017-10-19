@@ -776,7 +776,7 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	char  field[128];
 	SV  **svp;
 
-	if (csv->recno) sprintf (rec, " in record %d", csv->recno);
+	if (csv->recno) sprintf (rec, " in record %d", csv->recno + 1);
 	else           *rec = (char)0;
 
 	*field = (char)0;
