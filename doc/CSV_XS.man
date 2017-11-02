@@ -133,7 +133,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
    [1mBOM[0m
        BOM  (or Byte Order Mark)  handling is available only inside the
-       "header" method.   This method supports the following encoding:
+       "header" method.   This method supports the following encodings:
        "utf-8", "utf-1", "utf-32be", "utf-32le", "utf-16be", "utf-16le",
        "utf-ebcdic", "scsu", "bocu-1", and "gb-18030". See Wikipedia
        <https://en.wikipedia.org/wiki/Byte_order_mark>.

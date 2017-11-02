@@ -1493,7 +1493,7 @@ For complete control over encoding, please use L<Text::CSV::Encoded>:
 =head2 BOM
 
 BOM  (or Byte Order Mark)  handling is available only inside the L</header>
-method.   This method supports the following encoding:  C<utf-8>, C<utf-1>,
+method.   This method supports the following encodings: C<utf-8>, C<utf-1>,
 C<utf-32be>, C<utf-32le>, C<utf-16be>, C<utf-16le>, C<utf-ebcdic>, C<scsu>,
 C<bocu-1>, and C<gb-18030>. See L<Wikipedia|https://en.wikipedia.org/wiki/Byte_order_mark>.
 

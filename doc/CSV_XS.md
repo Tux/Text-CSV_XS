@@ -129,7 +129,7 @@ For complete control over encoding, please use [Text::CSV::Encoded](https://meta
 ## BOM
 
 BOM  (or Byte Order Mark)  handling is available only inside the ["header"](#header)
-method.   This method supports the following encoding:  `utf-8`, `utf-1`,
+method.   This method supports the following encodings: `utf-8`, `utf-1`,
 `utf-32be`, `utf-32le`, `utf-16be`, `utf-16le`, `utf-ebcdic`, `scsu`,
 `bocu-1`, and `gb-18030`. See [Wikipedia](https://en.wikipedia.org/wiki/Byte_order_mark).
 
