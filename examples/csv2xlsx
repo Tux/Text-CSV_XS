@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'17 [18 Oct 2017] Copyright H.M.Brand 2007-2017
+#	   (m)'17 [20 Oct 2017] Copyright H.M.Brand 2007-2017
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.02";
+our $VERSION = "1.03";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -126,7 +126,7 @@ $crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
 
 my @args = @ARGV ? @ARGV : ("");
 foreach my $csvf (@args) {
-    my $wks = $wbk->add_worksheet ($csvf =~ s{\.csv$}{}ir || "Sheet 1");
+    my $wks = $wbk->add_worksheet ($csvf =~ s{\.csv$}{}ir =~ s{.*/}{}r || "Sheet 1");
     my ($h, $w, @w) = (0, 1); # data height, -width, and default column widths
     my $row;
     my $firstline;
