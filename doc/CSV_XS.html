@@ -18,6 +18,7 @@
     <ul>
       <li><a href="#Embedded-newlines">Embedded newlines</a></li>
       <li><a href="#Unicode">Unicode</a></li>
+      <li><a href="#BOM">BOM</a></li>
     </ul>
   </li>
   <li><a href="#SPECIFICATION">SPECIFICATION</a></li>
@@ -240,6 +241,8 @@
 
 <p>Unicode is only tested to work with perl-5.8.2 and up.</p>
 
+<p>See also <a href="#BOM">&quot;BOM&quot;</a>.</p>
+
 <p>The simplest way to ensure the correct encoding is used for in- and output is by either setting layers on the filehandles, or setting the <a href="#encoding">&quot;encoding&quot;</a> argument for <a href="#csv">&quot;csv&quot;</a>.</p>
 
 <pre><code> open my $fh, &quot;&lt;:encoding(UTF-8)&quot;, &quot;in.csv&quot;  or die &quot;in.csv: $!&quot;;
@@ -271,6 +274,22 @@ or
  $csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; undef }); # default
  # combine () and print () accept UTF8 marked data
  # parse () and getline () return UTF8 marked data</code></pre>
+
+<h2 id="BOM">BOM</h2>
+
+<p>BOM (or Byte Order Mark) handling is available only inside the <a href="#header">&quot;header&quot;</a> method. This method supports the following encoding: <code>utf-8</code>, <code>utf-1</code>, <code>utf-32be</code>, <code>utf-32le</code>, <code>utf-16be</code>, <code>utf-16le</code>, <code>utf-ebcdic</code>, <code>scsu</code>, <code>bocu-1</code>, and <code>gb-18030</code>. See <a href="https://en.wikipedia.org/wiki/Byte_order_mark">Wikipedia</a>.</p>
+
+<p>If a file has a BOM, the easiest way to deal with that is</p>
+
+<pre><code> my $aoh = csv (in =&gt; $file, detect_bom =&gt; 1);</code></pre>
+
+<p>All records will be encoded based on the detected BOM.</p>
+
+<p>This implies a call to the <a href="#header">&quot;header&quot;</a> method, which defaults to also set the <a href="#column_names">&quot;column_names&quot;</a>. So this is <b>not</b> the same as</p>
+
+<pre><code> my $aoh = csv (in =&gt; $file, headers =&gt; &quot;auto&quot;);</code></pre>
+
+<p>which only reads the first record to set <a href="#column_names">&quot;column_names&quot;</a> but ignores any meaning of possible present BOM.</p>
 
 <h1 id="SPECIFICATION">SPECIFICATION</h1>
 
@@ -1068,7 +1087,7 @@ or
 
 <p>The first argument should be a file handle.</p>
 
-<p>This method resets some object properties, as it is supposed to be invoked only once per file or stream. It will leave attributes <code>column_names</code> and <code>bound_columns</code> alone of setting column names is disabled.</p>
+<p>This method resets some object properties, as it is supposed to be invoked only once per file or stream. It will leave attributes <code>column_names</code> and <code>bound_columns</code> alone of setting column names is disabled. Reading headers on previously process objects might fail on perl-5.8.0 and older.</p>
 
 <p>Assuming that the file opened for parsing has a header, and the header does not contain problematic characters like embedded newlines, read the first line from the open handle then auto-detect whether the header separates the column names with a character from the allowed separator list.</p>
 

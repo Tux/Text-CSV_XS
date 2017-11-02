@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2017-10-19" "perl v5.26.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2017-11-02" "perl v5.26.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -222,6 +222,8 @@ The old(er) way of using global file handles is still supported
 .IX Subsection "Unicode"
 Unicode is only tested to work with perl\-5.8.2 and up.
 .PP
+See also \*(L"\s-1BOM\*(R"\s0.
+.PP
 The simplest way to ensure the correct encoding is used for  in\- and output
 is by either setting layers on the filehandles, or setting the \*(L"encoding\*(R"
 argument for \*(L"csv\*(R".
@@ -268,6 +270,30 @@ For complete control over encoding, please use Text::CSV::Encoded:
 \& # combine () and print () accept UTF8 marked data
 \& # parse () and getline () return UTF8 marked data
 .Ve
+.SS "\s-1BOM\s0"
+.IX Subsection "BOM"
+\&\s-1BOM\s0  (or Byte Order Mark)  handling is available only inside the \*(L"header\*(R"
+method.   This method supports the following encoding:  \f(CW\*(C`utf\-8\*(C'\fR, \f(CW\*(C`utf\-1\*(C'\fR,
+\&\f(CW\*(C`utf\-32be\*(C'\fR, \f(CW\*(C`utf\-32le\*(C'\fR, \f(CW\*(C`utf\-16be\*(C'\fR, \f(CW\*(C`utf\-16le\*(C'\fR, \f(CW\*(C`utf\-ebcdic\*(C'\fR, \f(CW\*(C`scsu\*(C'\fR,
+\&\f(CW\*(C`bocu\-1\*(C'\fR, and \f(CW\*(C`gb\-18030\*(C'\fR. See Wikipedia <https://en.wikipedia.org/wiki/Byte_order_mark>.
+.PP
+If a file has a \s-1BOM,\s0 the easiest way to deal with that is
+.PP
+.Vb 1
+\& my $aoh = csv (in => $file, detect_bom => 1);
+.Ve
+.PP
+All records will be encoded based on the detected \s-1BOM.\s0
+.PP
+This implies a call to the  \*(L"header\*(R"  method,  which defaults to also set
+the \*(L"column_names\*(R". So this is \fBnot\fR the same as
+.PP
+.Vb 1
+\& my $aoh = csv (in => $file, headers => "auto");
+.Ve
+.PP
+which only reads the first record to set  \*(L"column_names\*(R"  but ignores any
+meaning of possible present \s-1BOM.\s0
 .SH "SPECIFICATION"
 .IX Header "SPECIFICATION"
 While no formal specification for \s-1CSV\s0 exists, \s-1RFC 4180\s0 <http://tools.ietf.org/html/rfc4180>
@@ -1463,7 +1489,8 @@ The first argument should be a file handle.
 .PP
 This method resets some object properties,  as it is supposed to be invoked
 only once per file or stream.  It will leave attributes \f(CW\*(C`column_names\*(C'\fR and
-\&\f(CW\*(C`bound_columns\*(C'\fR alone of setting column names is disabled.
+\&\f(CW\*(C`bound_columns\*(C'\fR alone of setting column names is disabled. Reading headers
+on previously process objects might fail on perl\-5.8.0 and older.
 .PP
 Assuming that the file opened for parsing has a header, and the header does
 not contain problematic characters like embedded newlines,   read the first

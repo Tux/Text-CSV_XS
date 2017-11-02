@@ -83,6 +83,8 @@ The old(er) way of using global file handles is still supported
 
 Unicode is only tested to work with perl-5.8.2 and up.
 
+See also ["BOM"](#bom).
+
 The simplest way to ensure the correct encoding is used for  in- and output
 is by either setting layers on the filehandles, or setting the ["encoding"](#encoding)
 argument for ["csv"](#csv).
@@ -123,6 +125,27 @@ For complete control over encoding, please use [Text::CSV::Encoded](https://meta
     $csv = Text::CSV::Encoded->new ({ encoding  => undef }); # default
     # combine () and print () accept UTF8 marked data
     # parse () and getline () return UTF8 marked data
+
+## BOM
+
+BOM  (or Byte Order Mark)  handling is available only inside the ["header"](#header)
+method.   This method supports the following encoding:  `utf-8`, `utf-1`,
+`utf-32be`, `utf-32le`, `utf-16be`, `utf-16le`, `utf-ebcdic`, `scsu`,
+`bocu-1`, and `gb-18030`. See [Wikipedia](https://en.wikipedia.org/wiki/Byte_order_mark).
+
+If a file has a BOM, the easiest way to deal with that is
+
+    my $aoh = csv (in => $file, detect_bom => 1);
+
+All records will be encoded based on the detected BOM.
+
+This implies a call to the  ["header"](#header)  method,  which defaults to also set
+the ["column\_names"](#column_names). So this is **not** the same as
+
+    my $aoh = csv (in => $file, headers => "auto");
+
+which only reads the first record to set  ["column\_names"](#column_names)  but ignores any
+meaning of possible present BOM.
 
 # SPECIFICATION
 
@@ -1128,7 +1151,8 @@ The first argument should be a file handle.
 
 This method resets some object properties,  as it is supposed to be invoked
 only once per file or stream.  It will leave attributes `column_names` and
-`bound_columns` alone of setting column names is disabled.
+`bound_columns` alone of setting column names is disabled. Reading headers
+on previously process objects might fail on perl-5.8.0 and older.
 
 Assuming that the file opened for parsing has a header, and the header does
 not contain problematic characters like embedded newlines,   read the first

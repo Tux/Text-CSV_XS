@@ -1447,6 +1447,8 @@ The old(er) way of using global file handles is still supported
 
 Unicode is only tested to work with perl-5.8.2 and up.
 
+See also L</BOM>.
+
 The simplest way to ensure the correct encoding is used for  in- and output
 is by either setting layers on the filehandles, or setting the L</encoding>
 argument for L</csv>.
@@ -1487,6 +1489,27 @@ For complete control over encoding, please use L<Text::CSV::Encoded>:
  $csv = Text::CSV::Encoded->new ({ encoding  => undef }); # default
  # combine () and print () accept UTF8 marked data
  # parse () and getline () return UTF8 marked data
+
+=head2 BOM
+
+BOM  (or Byte Order Mark)  handling is available only inside the L</header>
+method.   This method supports the following encoding:  C<utf-8>, C<utf-1>,
+C<utf-32be>, C<utf-32le>, C<utf-16be>, C<utf-16le>, C<utf-ebcdic>, C<scsu>,
+C<bocu-1>, and C<gb-18030>. See L<Wikipedia|https://en.wikipedia.org/wiki/Byte_order_mark>.
+
+If a file has a BOM, the easiest way to deal with that is
+
+ my $aoh = csv (in => $file, detect_bom => 1);
+
+All records will be encoded based on the detected BOM.
+
+This implies a call to the  L</header>  method,  which defaults to also set
+the L</column_names>. So this is B<not> the same as
+
+ my $aoh = csv (in => $file, headers => "auto");
+
+which only reads the first record to set  L</column_names>  but ignores any
+meaning of possible present BOM.
 
 =head1 SPECIFICATION
 
