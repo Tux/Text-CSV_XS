@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 1336;
+	my $n = 1340;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -86,6 +86,17 @@ foreach my $sep (",", ";") {
 	is_deeply (csv (in => $fh, munge => "uc", key => "BAR"),
 	    { 1 => { BAR => 1, FOO => 2 }, 3 => { BAR => 3, FOO => 4 }},
 	    "use header () from csv (key, uc) with $sep");
+	}
+
+    {   open my $fh, "<", \$data;
+	is_deeply (csv (in => $fh, set_column_names => 0),
+	    [[ "bar", "foo" ], [ 1, 2 ], [ 3, 4, 5 ]],
+	    "use header () from csv () with $sep to ARRAY not setting column names");
+	}
+    {   open my $fh, "<", \$data;
+	is_deeply (csv (in => $fh, set_column_names => 0, munge => "none"),
+	    [[ "bAr", "foo" ], [ 1, 2 ], [ 3, 4, 5 ]],
+	    "use header () from csv () with $sep to ARRAY not setting column names not lc");
 	}
     }
 

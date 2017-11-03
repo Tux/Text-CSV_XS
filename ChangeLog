@@ -4,6 +4,7 @@
     * Add a prominent section about BOM handling
     * Make sheet label more portable (csv2xlsx)
     * Allow munge => \%hash
+    * Preserve first row in csv (set_column_names => 0)
 
 1.33	- 2017-10-19, H.Merijn Brand
     * Small additional fix for eol = \r + BOM

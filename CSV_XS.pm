@@ -814,8 +814,8 @@ sub header {
 	}
 
     defined $args{detect_bom}         or $args{detect_bom}         = 1;
-    defined $args{munge_column_names} or $args{munge_column_names} = "lc";
     defined $args{set_column_names}   or $args{set_column_names}   = 1;
+    defined $args{munge_column_names} or $args{munge_column_names} = "lc";
 
     # Reset any previous leftovers
     $self->{_RECNO}		= 0;
@@ -1257,13 +1257,14 @@ sub csv {
 	return 1;
 	}
 
+    my @row1;
     if (defined $c->{hd_s} || defined $c->{hd_b} || defined $c->{hd_m} || defined $c->{hd_c}) {
 	my %harg;
 	defined $c->{hd_s} and $harg{set_set}            = $c->{hd_s};
 	defined $c->{hd_d} and $harg{detect_bom}         = $c->{hd_b};
 	defined $c->{hd_m} and $harg{munge_column_names} = $hdrs ? "none" : $c->{hd_m};
 	defined $c->{hd_c} and $harg{set_column_names}   = $hdrs ? 0      : $c->{hd_c};
-	$csv->header ($fh, \%harg);
+	@row1 = $csv->header ($fh, \%harg);
 	my @hdr = $csv->column_names;
 	@hdr and $hdrs ||= \@hdr;
 	}
@@ -1340,7 +1341,12 @@ sub csv {
 	: # aoa
 	    $frag ? $csv->fragment ($fh, $frag)
 		  : $csv->getline_all ($fh);
-    $ref or Text::CSV_XS->auto_diag;
+    if ($ref) {
+	@row1 && !$c->{hd_c} && !ref $hdrs and unshift @$ref, \@row1;
+	}
+    else {
+	Text::CSV_XS->auto_diag;
+	}
     $c->{cls} and close $fh;
     if ($ref and $c->{cbai} || $c->{cboi}) {
 	# Default is ARRAYref, but with key =>, you'll get a hashref
@@ -2677,6 +2683,8 @@ the method is successful,  so subsequent calls to L</getline_hr> can return
 a hash. Disable setting the header can be forced by using a false value for
 this option.
 
+As described in L</return value> above, content is lost in scalar context.
+
 =back
 
 =head3 Validation
@@ -3309,6 +3317,35 @@ X<set_column_names>
 
 If  C<set_column_names> is passed,  the method L</header> is invoked on the
 opened stream with all arguments meant for L</header>.
+
+If C<set_column_names> is passed as a false value, the content of the first
+row is only preserved if the output is AoA:
+
+With an inputfile like
+
+ bAr,foo
+ 1,2
+ 3,4,5
+
+This call
+
+ my $aoa = csv (in => $file, set_column_names => 0);
+
+will result in
+
+ [[ "bar", "foo"     ],
+  [ "1",   "2"       ],
+  [ "3",   "4",  "5" ]]
+
+and
+
+ my $aoa = csv (in => $file, set_column_names => 0, munge => "none");
+
+will result in
+
+ [[ "bAr", "foo"     ],
+  [ "1",   "2"       ],
+  [ "3",   "4",  "5" ]]
 
 =head2 Callbacks
 X<Callbacks>
