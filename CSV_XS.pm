@@ -897,7 +897,9 @@ sub header {
 
     my @hdr = @$row;
     ref $args{munge_column_names} eq "CODE" and
-	@hdr = map { $args{munge_column_names}->($_) } @hdr;
+	@hdr = map { $args{munge_column_names}->($_)       } @hdr;
+    ref $args{munge_column_names} eq "HASH" and
+	@hdr = map { $args{munge_column_names}->{$_} || $_ } @hdr;
     my %hdr = map { $_ => 1 } @hdr;
     exists $hdr{""}   and croak ($self->SetDiag (1012));
     keys %hdr == @hdr or  croak ($self->SetDiag (1013));
@@ -2599,6 +2601,7 @@ false.
 =over 2
 
 =item sep_set
+X<sep_set>
 
  $csv->header ($fh, { sep_set => [ ";", ",", "|", "\t" ] });
 
@@ -2612,6 +2615,7 @@ Multi-byte  sequences are allowed,  both multi-character and  Unicode.  See
 L<C<sep>|/sep>.
 
 =item detect_bom
+X<detect_bom>
 
  $csv->header ($fh, { detect_bom => 1 });
 
@@ -2629,6 +2633,7 @@ If the handle was opened in a (correct) encoding,  this method will  B<not>
 alter the encoding, as it checks the leading B<bytes> of the first line.
 
 =item munge_column_names
+X<munge_column_names>
 
 This option offers the means to modify the column names into something that
 is most useful to the application.   The default is to map all column names
@@ -2638,10 +2643,23 @@ to lower case.
 
 The following values are available:
 
-  lc   - lower case
-  uc   - upper case
-  none - do not change
-  \&cb - supply a callback
+  lc     - lower case
+  uc     - upper case
+  none   - do not change
+  \%hash - supply a mapping
+  \&cb   - supply a callback
+
+Literal:
+
+ $csv->header ($fh, { munge_column_names => "none" });
+
+Hash:
+
+ $csv->header ($fh, { munge_column_names => { foo => "sombrero" });
+
+if a value does not exist, the original value is used unchanged
+
+Callback:
 
  $csv->header ($fh, { munge_column_names => sub { fc } });
  $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
@@ -2650,6 +2668,7 @@ The following values are available:
 As this callback is called in a C<map>, you can use C<$_> directly.
 
 =item set_column_names
+X<set_column_names>
 
  $csv->header ($fh, { set_column_names => 1 });
 
