@@ -3,8 +3,7 @@
 use 5.16.2;
 use warnings;
 
-sub usage
-{
+sub usage {
     my $err = shift and select STDERR;
     say "usage: $0 [--list]";
     exit $err;
@@ -54,13 +53,16 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"App-Framework",			# Questions
 	"ASNMTAP",				# Questions
 	"Business-Shipping-DataTools",		# Questions and unmet prereqs
+	"Catalyst-TraitFor-Model-DBIC-Schema-QueryLog-AdoptPlack", # maint/Maker.pm
 	"CGI-Application-Framework",		# Unmet prerequisites
 	"chart",				# Questions (in Apache-Wyrd)
 	"CohortExplorer",			# Unmet prerequisites
 	"Connector",				# No Makefile.PL (in Annelidous)
+	"DBIx-Class-DigestColumns",		# unmet prereqs
 	"DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet prereqs
 	"DBIx-Class-FormTools",			# ::CSV POD
 	"DBIx-Class-FromSledge",		# ::CSV Spelling
+	"DBIx-Class-Graph",			# won't build at all
 	"DBIx-Class-InflateColumn-Serializer-CompressJSON",	# ::CSV POD
 	"DBIx-Class-Loader",			# ::CSV Deprecated
 	"DBIx-Class-QueryProfiler",		# ::CSV - Kwalitee test (2011)
@@ -75,6 +77,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"FormValidator-Nested",			# ::CSV - Questions
 	"FreeRADIUS-Database",			# ::CSV - Questions
 	"Fsdb",					# ::CSV -
+	"Geo-USCensus-Geocoding",		# '302 Found'
 	"Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
 	"Gtk2-Ex-Threads-DBI",			# Distribution is incomplete
 	"hwd",					# Own tests fail
@@ -84,6 +87,8 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Module-CPANTS-Site",			# ::CSV - Unmet prerequisites
 	"Net-IPFromZip",			# Missing zip file(s)
 	"Parse-CSV-Colnames",			# ::CSV - Fails because of Parse::CSV
+	"Plack-Middleware-DBIC-QueryLog",	# maint/Maker.pm
+	"Plack-Middleware-Debug-DBIC-QueryLog",	# maint/Maker.pm
 	"RDF-RDB2RDF",				# ::CSV - Bad tests
 	"RT-Extension-Assets-Import-CSV",	# Questions
 	"RT-View-ConciseSpreadsheet",		# Questions
@@ -95,6 +100,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Text-MeCab",				# Questions
 	"Text-TEI-Collate",			# Unmet prerequisites
 	"Text-Tradition",			# Unmet prerequisites
+	"Text-xSV-Slurp",			# 5.26 incompat, unmaintained
 	"Tripletail",				# Makefile.PL broken
 	"VANAMBURG-SEMPROG-SimpleGraph",	# Own tests fail
 	"WebService-FuncNet",			# ::CSV - WSDL 404, POD
@@ -120,28 +126,30 @@ my %add = (
 
 my $ua  = LWP::UserAgent->new (agent => "Opera/12.15");
 
-sub get_from_cpantesters
-{
+sub get_from_cpantesters {
     my $m = shift // $tm;
     warn "Get from cpantesters ...\n";
-    my $url = "http://deps.cpantesters.org/depended-on-by.pl?dist=$m";
-    my $rsp = $ua->request (HTTP::Request->new (GET => $url));
-    unless ($rsp->is_success) {
-	warn "deps failed: ", $rsp->status_line, "\n";
-	return;
-	}
-    my $tree = HTML::TreeBuilder->new;
-       $tree->parse_content ($rsp->content);
     my @h;
-    foreach my $a ($tree->look_down (_tag => "a", href => qr{query=})) {
-	(my $h = $a->attr ("href")) =~ s{.*=}{};
-	push @h, $h;
+    foreach my $url (
+	"http://deps.cpantesters.org/depended-on-by.pl?dist=$m",
+	"http://deps.cpantesters.org/depended-on-by.pl?module=$m",
+	) {
+	my $rsp = $ua->request (HTTP::Request->new (GET => $url));
+	unless ($rsp->is_success) {
+	    warn "deps failed: ", $rsp->status_line, "\n";
+	    next;
+	    }
+	my $tree = HTML::TreeBuilder->new;
+	   $tree->parse_content ($rsp->content);
+	foreach my $a ($tree->look_down (_tag => "a", href => qr{query=})) {
+	    (my $h = $a->attr ("href")) =~ s{.*=}{};
+	    push @h, $h;
+	    }
 	}
     return @h;
     } # get_from_cpantesters
 
-sub get_from_cpants
-{
+sub get_from_cpants {
     my $m = shift // $tm;
     warn "Get from cpants ...\n";
     my $url = "http://cpants.cpanauthors.org/dist/$m/used_by";
@@ -162,8 +170,7 @@ sub get_from_cpants
     return @h;
     } # get_from_cpants
 
-sub get_from_meta
-{
+sub get_from_meta {
     my $m = shift // $tm;
     warn "Get from meta ...\n";
     my $url = "https://metacpan.org/requires/distribution/$m";
@@ -184,9 +191,15 @@ sub get_from_meta
     return @h;
     } # get_from_meta
 
+sub get_from_sandbox {
+    open my $fh, "<", "sandbox/used-by.txt" or return;
+    map { chomp; $_ } <$fh>;
+    } # get_from_sandbox
+
 my @h = ( get_from_cpants (),
 	  get_from_cpantesters (),
 	  get_from_meta (),
+	  get_from_sandbox (),
 	  @{$add{$tm} || []});
 
 $tm eq "Text-CSV_XS" and push @h,
