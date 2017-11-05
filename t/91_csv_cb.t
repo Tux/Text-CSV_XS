@@ -81,9 +81,12 @@ is_deeply (csv (in => $tfn, headers => sub { lcfirst uc $_[0] }),
 	      { fOO => 2, bAR => "a b", bAZ => "" }],
 	    "AOH with mangled headers");
 
-is_deeply (csv (in => $tfn, munge => { bar => "boo" }),
-    [{ baz =>  3, boo => 2,     foo => 1 },
-     { baz => "", boo => "a b", foo => 2 }], "Munge with hash");
+SKIP: {
+    $] < 5.008001 and skip "No BOM support in $]", 1;
+    is_deeply (csv (in => $tfn, munge => { bar => "boo" }),
+	[{ baz =>  3, boo => 2,     foo => 1 },
+	 { baz => "", boo => "a b", foo => 2 }], "Munge with hash");
+    }
 
 open  FH, ">>", $tfn or die "$tfn: $!";
 print FH <<"EOD";
