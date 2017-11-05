@@ -3321,7 +3321,7 @@ opened stream with all arguments meant for L</header>.
 If C<set_column_names> is passed as a false value, the content of the first
 row is only preserved if the output is AoA:
 
-With an inputfile like
+With an input-file like
 
  bAr,foo
  1,2
