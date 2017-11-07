@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 228;
+use Test::More tests => 230;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -48,6 +48,7 @@ is ($csv->string,
     qq{"txt =, ""Hi!""",Yes,,2,,1.09,"\r",},	"string");
 
 is ($csv->sep_char (";"),		";",		"sep_char (;)");
+is ($csv->sep ("**"),			"**",		"sep (**)");
 is ($csv->sep (";"),			";",		"sep (;)");
 is ($csv->sep_char (),			";",		"sep_char ()");
 is ($csv->quote_char ("="),		"=",		"quote_char (=)");
@@ -86,6 +87,7 @@ is ($csv->diag_verbose ("false"),	0,		"diag_verbose (\"false\")");
 is ($csv->diag_verbose (undef),		0,		"diag_verbose (undef)");
 is ($csv->diag_verbose (""),		0,		"diag_verbose (\"\")");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
+is ($csv->formula ("diag"),		"diag",		"formula (\"diag\")");
 is ($csv->strict (1),			1,		"strict (1)");
 is ($csv->quote_space (1),		1,		"quote_space (1)");
 is ($csv->quote_empty (1),		1,		"quote_empty (1)");
