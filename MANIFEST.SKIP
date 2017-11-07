@@ -21,7 +21,6 @@ MANIFEST.SKIP
 pm_to_blib
 xt/
 ^xx
-META.yml
 valgrind.log
 pod2htmd.tmp
 \.aspell\.local\.pws
