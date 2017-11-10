@@ -610,7 +610,7 @@ sub error_diag {
     my @diag = (0 + $last_new_err, $last_new_err, 0, 0, 0);
 
     if ($self && ref $self && # Not a class method or direct call
-	 $self->isa (__PACKAGE__) && exists $self->{_ERROR_DIAG}) {
+	 UNIVERSAL::isa ($self, __PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	$diag[0] = 0 + $self->{_ERROR_DIAG};
 	$diag[1] =     $self->{_ERROR_DIAG};
 	$diag[2] = 1 + $self->{_ERROR_POS} if exists $self->{_ERROR_POS};
