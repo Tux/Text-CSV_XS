@@ -609,6 +609,8 @@ sub error_diag {
     my $self = shift;
     my @diag = (0 + $last_new_err, $last_new_err, 0, 0, 0);
 
+    # Docs state to NEVER use UNIVERSAL::isa, because it will *never* call an
+    # overridden isa method in any class. Well, that is exacly what I want here
     if ($self && ref $self && # Not a class method or direct call
 	 UNIVERSAL::isa ($self, __PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	$diag[0] = 0 + $self->{_ERROR_DIAG};
