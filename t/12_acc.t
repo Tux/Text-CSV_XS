@@ -250,6 +250,7 @@ my $attr = [ sort qw(
     verbatim strict formula
     types
     callbacks
+    ENCODING
     )];
 is_deeply ([ Text::CSV_XS::known_attributes () ],      $attr, "Known attributes (function)");
 is_deeply ([ Text::CSV_XS->known_attributes () ],      $attr, "Known attributes (class method)");

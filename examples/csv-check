@@ -11,7 +11,7 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode );
 
-our $VERSION = "2.0";	# 2017-10-18
+our $VERSION = "2.01";	# 2017-11-24
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -100,7 +100,7 @@ my $csv = $csvmod->new ({
     });
 
 sub done {
-    (my $file = $ARGV // "") =~ s{(\S)$}{$1 };
+    my $file = $ARGV // "STDIN";
     (my $pv = "$]0000000") =~ s{^([0-9]+)\.([0-9]{3})([0-9]{3})[0-9]*}
 			       {sprintf "%d.%d.%d",$1,$2,$3}e;
     my $uv = eval {
@@ -118,6 +118,7 @@ sub done {
 	$eol //= $csv->eol || "--unknown--";
 	print "OK: rows: $rows, columns: $cols\n";
 	print "    sep = <$sep>, quo = <$quo>, bin = <$bin>, eol = <$eol>\n";
+	print "    encoding = $csv->{ENCODING}\n" if $csv->{ENCODING};
 	if (@coll > 1) {
 	    print "multiple column lengths:\n";
 	    printf " %6d line%s with %4d field%s\n",

@@ -2,6 +2,7 @@
     * Remove META.yml from MANIFEST.skip
     * Use UNIVERSAL::isa to protect against unblessed references
     * -Wformat warning (RT#123729)
+    * Make detect_bom result available
 
 1.34	- 2017-11-05, H.Merijn Brand
     * Bad arg for formula (like "craok") will now die with error 1500

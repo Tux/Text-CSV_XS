@@ -91,6 +91,8 @@ my %def_attr = (
     _COLUMN_NAMES		=> undef,
     _BOUND_COLUMNS		=> undef,
     _AHEAD			=> undef,
+
+    ENCODING			=> undef,
     );
 my %attr_alias = (
     quote_always		=> "always_quote",
@@ -858,6 +860,8 @@ sub header {
 	elsif ($hdr =~ s/^\xfb\xee\x28//)     { $enc = "bocu-1"     }
 	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = "gb-18030"   }
 	elsif ($hdr =~ s/^\x{feff}//)         { $enc = ""           }
+
+	$self->{ENCODING} = uc $enc;
 
 	$hdr eq "" and croak ($self->SetDiag (1010));
 
@@ -2635,10 +2639,17 @@ Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE,  and
 UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
 but L<Encode> does not (yet). UTF-7 is not supported.
 
-The encoding is set using C<binmode> on C<$fh>.
+If a supported BOM was detected as start of the stream, it is stored in the
+abject attribute C<ENCODING>.
+
+ my $enc = $csv->{ENCODING};
+
+The encoding is used with C<binmode> on C<$fh>.
 
 If the handle was opened in a (correct) encoding,  this method will  B<not>
-alter the encoding, as it checks the leading B<bytes> of the first line.
+alter the encoding, as it checks the leading B<bytes> of the first line. In
+case the stream starts with a decode BOM (C<U+FEFF>), C<{ENCODING}> will be
+C<""> (empty) instead of the default C<undef>.
 
 =item munge_column_names
 X<munge_column_names>

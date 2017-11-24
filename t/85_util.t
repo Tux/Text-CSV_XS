@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 1340;
+	my $n = 1370;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -283,6 +283,7 @@ foreach my $irs ("\n", "\xaa") {
 		binmode $fh;
 		ok (1, "$fnm opened for enc $enc");
 		ok ($csv->header ($fh), "headers with BOM for $enc");
+		$enc =~ m/^utf/ and is ($csv->{ENCODING}, uc $enc, "Encoding inquirable");
 		is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
 		ok (my $row = $csv->getline_hr ($fh), "getline_hr");
 		is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
