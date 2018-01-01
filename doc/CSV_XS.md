@@ -1197,6 +1197,7 @@ false.
 
 - sep\_set
 
+
         $csv->header ($fh, { sep_set => [ ";", ",", "|", "\t" ] });
 
     The list of legal separators defaults to `[ ";", "," ]` and can be changed
@@ -1210,6 +1211,7 @@ false.
 
 - detect\_bom
 
+
         $csv->header ($fh, { detect_bom => 1 });
 
     The default behavior is to detect if the header line starts with a BOM.  If
@@ -1220,12 +1222,20 @@ false.
     UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
     but [Encode](https://metacpan.org/pod/Encode) does not (yet). UTF-7 is not supported.
 
-    The encoding is set using `binmode` on `$fh`.
+    If a supported BOM was detected as start of the stream, it is stored in the
+    abject attribute `ENCODING`.
+
+        my $enc = $csv->{ENCODING};
+
+    The encoding is used with `binmode` on `$fh`.
 
     If the handle was opened in a (correct) encoding,  this method will  **not**
-    alter the encoding, as it checks the leading **bytes** of the first line.
+    alter the encoding, as it checks the leading **bytes** of the first line. In
+    case the stream starts with a decode BOM (`U+FEFF`), `{ENCODING}` will be
+    `""` (empty) instead of the default `undef`.
 
 - munge\_column\_names
+
 
     This option offers the means to modify the column names into something that
     is most useful to the application.   The default is to map all column names
@@ -1235,10 +1245,23 @@ false.
 
     The following values are available:
 
-         lc   - lower case
-         uc   - upper case
-         none - do not change
-         \&cb - supply a callback
+        lc     - lower case
+        uc     - upper case
+        none   - do not change
+        \%hash - supply a mapping
+        \&cb   - supply a callback
+
+    Literal:
+
+        $csv->header ($fh, { munge_column_names => "none" });
+
+    Hash:
+
+        $csv->header ($fh, { munge_column_names => { foo => "sombrero" });
+
+    if a value does not exist, the original value is used unchanged
+
+    Callback:
 
         $csv->header ($fh, { munge_column_names => sub { fc } });
         $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
@@ -1248,12 +1271,15 @@ false.
 
 - set\_column\_names
 
+
         $csv->header ($fh, { set_column_names => 1 });
 
     The default is to set the instances column names using  ["column\_names"](#column_names) if
     the method is successful,  so subsequent calls to ["getline\_hr"](#getline_hr) can return
     a hash. Disable setting the header can be forced by using a false value for
     this option.
+
+    As described in ["return value"](#return-value) above, content is lost in scalar context.
 
 ### Validation
 
@@ -1873,6 +1899,35 @@ the headers.
 
 If  `set_column_names` is passed,  the method ["header"](#header) is invoked on the
 opened stream with all arguments meant for ["header"](#header).
+
+If `set_column_names` is passed as a false value, the content of the first
+row is only preserved if the output is AoA:
+
+With an input-file like
+
+    bAr,foo
+    1,2
+    3,4,5
+
+This call
+
+    my $aoa = csv (in => $file, set_column_names => 0);
+
+will result in
+
+    [[ "bar", "foo"     ],
+     [ "1",   "2"       ],
+     [ "3",   "4",  "5" ]]
+
+and
+
+    my $aoa = csv (in => $file, set_column_names => 0, munge => "none");
+
+will result in
+
+    [[ "bAr", "foo"     ],
+     [ "1",   "2"       ],
+     [ "3",   "4",  "5" ]]
 
 ## Callbacks
 
@@ -2833,7 +2888,7 @@ the documentation,   fixed most RT bugs,  added all the allow flags and the
 
 # COPYRIGHT AND LICENSE
 
-    Copyright (C) 2007-2017 H.Merijn Brand.  All rights reserved.
+    Copyright (C) 2007-2018 H.Merijn Brand.  All rights reserved.
     Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
     Copyright (C) 1997      Alan Citterman.  All rights reserved.
 

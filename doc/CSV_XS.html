@@ -1119,7 +1119,7 @@ or
 
 <dl>
 
-<dt id="sep_set">sep_set</dt>
+<dt id="sep_set">sep_set </dt>
 <dd>
 
 <pre><code> $csv-&gt;header ($fh, { sep_set =&gt; [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot; ] });</code></pre>
@@ -1131,7 +1131,7 @@ or
 <p>Multi-byte sequences are allowed, both multi-character and Unicode. See <a href="#sep"><code>sep</code></a>.</p>
 
 </dd>
-<dt id="detect_bom">detect_bom</dt>
+<dt id="detect_bom">detect_bom </dt>
 <dd>
 
 <pre><code> $csv-&gt;header ($fh, { detect_bom =&gt; 1 });</code></pre>
@@ -1140,12 +1140,16 @@ or
 
 <p>Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and UTF-32LE. BOM&#39;s also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030 but <a>Encode</a> does not (yet). UTF-7 is not supported.</p>
 
-<p>The encoding is set using <code>binmode</code> on <code>$fh</code>.</p>
+<p>If a supported BOM was detected as start of the stream, it is stored in the abject attribute <code>ENCODING</code>.</p>
 
-<p>If the handle was opened in a (correct) encoding, this method will <b>not</b> alter the encoding, as it checks the leading <b>bytes</b> of the first line.</p>
+<pre><code> my $enc = $csv-&gt;{ENCODING};</code></pre>
+
+<p>The encoding is used with <code>binmode</code> on <code>$fh</code>.</p>
+
+<p>If the handle was opened in a (correct) encoding, this method will <b>not</b> alter the encoding, as it checks the leading <b>bytes</b> of the first line. In case the stream starts with a decode BOM (<code>U+FEFF</code>), <code>{ENCODING}</code> will be <code>&quot;&quot;</code> (empty) instead of the default <code>undef</code>.</p>
 
 </dd>
-<dt id="munge_column_names">munge_column_names</dt>
+<dt id="munge_column_names">munge_column_names </dt>
 <dd>
 
 <p>This option offers the means to modify the column names into something that is most useful to the application. The default is to map all column names to lower case.</p>
@@ -1154,24 +1158,39 @@ or
 
 <p>The following values are available:</p>
 
-<pre><code>  lc   - lower case
-  uc   - upper case
-  none - do not change
-  \&amp;cb - supply a callback
+<pre><code>  lc     - lower case
+  uc     - upper case
+  none   - do not change
+  \%hash - supply a mapping
+  \&amp;cb   - supply a callback</code></pre>
 
- $csv-&gt;header ($fh, { munge_column_names =&gt; sub { fc } });
+<p>Literal:</p>
+
+<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;none&quot; });</code></pre>
+
+<p>Hash:</p>
+
+<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; { foo =&gt; &quot;sombrero&quot; });</code></pre>
+
+<p>if a value does not exist, the original value is used unchanged</p>
+
+<p>Callback:</p>
+
+<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; sub { fc } });
  $csv-&gt;header ($fh, { munge_column_names =&gt; sub { &quot;column_&quot;.$col++ } });
  $csv-&gt;header ($fh, { munge_column_names =&gt; sub { lc (s/\W+/_/gr) } });</code></pre>
 
 <p>As this callback is called in a <code>map</code>, you can use <code>$_</code> directly.</p>
 
 </dd>
-<dt id="set_column_names">set_column_names</dt>
+<dt id="set_column_names">set_column_names </dt>
 <dd>
 
 <pre><code> $csv-&gt;header ($fh, { set_column_names =&gt; 1 });</code></pre>
 
 <p>The default is to set the instances column names using <a href="#column_names">&quot;column_names&quot;</a> if the method is successful, so subsequent calls to <a href="#getline_hr">&quot;getline_hr&quot;</a> can return a hash. Disable setting the header can be forced by using a false value for this option.</p>
+
+<p>As described in <a href="#return-value">&quot;return value&quot;</a> above, content is lost in scalar context.</p>
 
 </dd>
 </dl>
@@ -1676,6 +1695,34 @@ or
 <h3 id="set_column_names1">set_column_names </h3>
 
 <p>If <code>set_column_names</code> is passed, the method <a href="#header">&quot;header&quot;</a> is invoked on the opened stream with all arguments meant for <a href="#header">&quot;header&quot;</a>.</p>
+
+<p>If <code>set_column_names</code> is passed as a false value, the content of the first row is only preserved if the output is AoA:</p>
+
+<p>With an input-file like</p>
+
+<pre><code> bAr,foo
+ 1,2
+ 3,4,5</code></pre>
+
+<p>This call</p>
+
+<pre><code> my $aoa = csv (in =&gt; $file, set_column_names =&gt; 0);</code></pre>
+
+<p>will result in</p>
+
+<pre><code> [[ &quot;bar&quot;, &quot;foo&quot;     ],
+  [ &quot;1&quot;,   &quot;2&quot;       ],
+  [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
+
+<p>and</p>
+
+<pre><code> my $aoa = csv (in =&gt; $file, set_column_names =&gt; 0, munge =&gt; &quot;none&quot;);</code></pre>
+
+<p>will result in</p>
+
+<pre><code> [[ &quot;bAr&quot;, &quot;foo&quot;     ],
+  [ &quot;1&quot;,   &quot;2&quot;       ],
+  [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
 
 <h2 id="Callbacks">Callbacks </h2>
 
@@ -2609,7 +2656,7 @@ or
 
 <h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
 
-<pre><code> Copyright (C) 2007-2017 H.Merijn Brand.  All rights reserved.
+<pre><code> Copyright (C) 2007-2018 H.Merijn Brand.  All rights reserved.
  Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
  Copyright (C) 1997      Alan Citterman.  All rights reserved.</code></pre>
 

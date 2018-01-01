@@ -1180,11 +1180,17 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
          BOCU-1,  and GB-18030 but Encode does not (yet). UTF-7 is not
          supported.
 
-         The encoding is set using "binmode" on $fh.
+         If a supported BOM was detected as start of the stream, it is stored
+         in the abject attribute "ENCODING".
+
+          my $enc = $csv->{ENCODING};
+
+         The encoding is used with "binmode" on $fh.
 
          If the handle was opened in a (correct) encoding,  this method will
          [1mnot [22malter the encoding, as it checks the leading [1mbytes [22mof the first
-         line.
+         line. In case the stream starts with a decode BOM ("U+FEFF"),
+         "{ENCODING}" will be "" (empty) instead of the default "undef".
 
        munge_column_names
          This option offers the means to modify the column names into
@@ -1195,10 +1201,23 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
          The following values are available:
 
-           lc   - lower case
-           uc   - upper case
-           none - do not change
-           \&cb - supply a callback
+           lc     - lower case
+           uc     - upper case
+           none   - do not change
+           \%hash - supply a mapping
+           \&cb   - supply a callback
+
+         Literal:
+
+          $csv->header ($fh, { munge_column_names => "none" });
+
+         Hash:
+
+          $csv->header ($fh, { munge_column_names => { foo => "sombrero" });
+
+         if a value does not exist, the original value is used unchanged
+
+         Callback:
 
           $csv->header ($fh, { munge_column_names => sub { fc } });
           $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
@@ -1213,6 +1232,9 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
          "column_names" if the method is successful,  so subsequent calls to
          "getline_hr" can return a hash. Disable setting the header can be
          forced by using a false value for this option.
+
+         As described in "return value" above, content is lost in scalar
+         context.
 
        [4mValidation[0m
 
@@ -1775,6 +1797,35 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        If  "set_column_names" is passed,  the method "header" is invoked on
        the opened stream with all arguments meant for "header".
+
+       If "set_column_names" is passed as a false value, the content of the
+       first row is only preserved if the output is AoA:
+
+       With an input-file like
+
+        bAr,foo
+        1,2
+        3,4,5
+
+       This call
+
+        my $aoa = csv (in => $file, set_column_names => 0);
+
+       will result in
+
+        [[ "bar", "foo"     ],
+         [ "1",   "2"       ],
+         [ "3",   "4",  "5" ]]
+
+       and
+
+        my $aoa = csv (in => $file, set_column_names => 0, munge => "none");
+
+       will result in
+
+        [[ "bAr", "foo"     ],
+         [ "1",   "2"       ],
+         [ "3",   "4",  "5" ]]
 
    [1mCallbacks[0m
        Callbacks enable actions triggered from the [4minside[24m of Text::CSV_XS.
@@ -2674,7 +2725,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        the "csv" function. See ChangeLog releases 0.25 and on.
 
 [1mCOPYRIGHT AND LICENSE[0m
-        Copyright (C) 2007-2017 H.Merijn Brand.  All rights reserved.
+        Copyright (C) 2007-2018 H.Merijn Brand.  All rights reserved.
         Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
         Copyright (C) 1997      Alan Citterman.  All rights reserved.
 
@@ -2683,4 +2734,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.26.0                      2017-11-02                          STDIN(1)
+perl v5.26.0                      2018-01-01                          STDIN(1)
