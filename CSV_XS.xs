@@ -724,7 +724,7 @@ static int cx_Print (pTHX_ csv_t *csv, SV *dst) {
     }
 
 #define bound_field(csv,i,keep)	cx_bound_field (aTHX_ csv, i, keep)
-static SV *cx_bound_field (pTHX_ csv_t *csv, int i, int keep) {
+static SV *cx_bound_field (pTHX_ csv_t *csv, SSize_t i, int keep) {
     SV *sv = csv->bound;
     AV *av;
 
@@ -961,7 +961,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
     } /* Combine */
 
 #define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos)
-static void cx_ParseError (pTHX_ csv_t *csv, int xse, int pos) {
+static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos) {
     (void)hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
     (void)hv_store (csv->self, "_ERROR_FLD", 10, newSViv (csv->fld_idx), 0);
     if (csv->tmp) {
