@@ -1085,9 +1085,11 @@ sub _csv_attr {
     $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
 
     my $fh;
-    my $cls = 0;	# If I open a file, I have to close it
-    my $in  = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
-    my $out = delete $attr{out} || delete $attr{file};
+    my $sink = 0;
+    my $cls  = 0;	# If I open a file, I have to close it
+    my $in   = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
+    my $out  = exists $attr{out} && !$attr{out} ? \"skip"
+	     : delete $attr{out} || delete $attr{file};
 
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
@@ -1096,17 +1098,23 @@ sub _csv_attr {
 	qq{ csv (in => csv (in => "$in"), out => "$out");\n};
 
     if ($out) {
-	if ((ref $out and ref $out ne "SCALAR") or "GLOB" eq ref \$out) {
+	if ((ref $out and "SCALAR" ne ref $out) or "GLOB" eq ref \$out) {
 	    $fh = $out;
+	    }
+	elsif (ref $out and "SCALAR" eq ref $out and defined $$out and $$out eq "skip") {
+	    delete $attr{out};
+	    $sink = 1;
 	    }
 	else {
 	    open $fh, ">", $out or croak "$out: $!";
 	    $cls = 1;
 	    }
-	$enc and binmode $fh, $enc;
-	unless (defined $attr{eol}) {
-	    my @layers = eval { PerlIO::get_layers ($fh) };
-	    $attr{eol} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
+	if ($fh) {
+	    $enc and binmode $fh, $enc;
+	    unless (defined $attr{eol}) {
+		my @layers = eval { PerlIO::get_layers ($fh) };
+		$attr{eol} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
+		}
 	    }
 	}
 
@@ -1131,7 +1139,7 @@ sub _csv_attr {
 	open $fh, "<$enc", $in or croak "$in: $!";
 	$cls = 1;
 	}
-    $fh or croak qq{No valid source passed. "in" is required};
+    $fh || $sink or croak qq{No valid source passed. "in" is required};
 
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
@@ -1189,6 +1197,7 @@ sub _csv_attr {
 	fh   => $fh,
 	cls  => $cls,
 	in   => $in,
+	sink => $sink,
 	out  => $out,
 	enc  => $enc,
 	hdrs => $hdrs,
@@ -1220,6 +1229,7 @@ sub csv {
 	}
 
     if ($c->{out}) {
+	$c->{sink} and return 1;
 	if (ref $in eq "CODE") {
 	    my $hdr = 1;
 	    while (my $row = $in->($csv)) {
@@ -3085,6 +3095,8 @@ X<out>
  csv (in => $aoa, out =>  *STDOUT);
  csv (in => $aoa, out => \*STDOUT);
  csv (in => $aoa, out => \my $data);
+ csv (in => $aoa, out =>  undef);
+ csv (in => $aoa, out => \"skip");
 
 In output mode, the default CSV options when producing CSV are
 
@@ -3105,6 +3117,18 @@ When a code-ref is used for C<in>, the output is generated  per invocation,
 so no buffering is involved. This implies that there is no size restriction
 on the number of records. The C<csv> function ends when the coderef returns
 a false value.
+
+If C<out> is set to a reference of the literal string C<"skip">, the output
+will be suppressed completely,  which might be useful in combination with a
+filter for side effects only.
+
+ my %cache;
+ csv (in    => "dump.csv",
+      out   => \"skip",
+      on_in => sub { $cache{$_[1][1]}++ });
+
+Currently,  setting C<out> to any false value  (C<undef>, C<"">, 0) will be
+equivalent to C<\"skip">.
 
 =head3 encoding
 X<encoding>
