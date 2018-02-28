@@ -1229,8 +1229,7 @@ sub csv {
 	$hdrs = "auto";
 	}
 
-    if ($c->{out}) {
-	$c->{sink} and return 1;
+    if ($c->{out} && !$c->{sink}) {
 	if (ref $in eq "CODE") {
 	    my $hdr = 1;
 	    while (my $row = $in->($csv)) {
@@ -1374,6 +1373,8 @@ sub csv {
 	    $c->{cboi} and $c->{cboi}->($csv, $r);
 	    }
 	}
+
+    $c->{sink} and return;
 
     defined wantarray or
 	return csv (%{$c->{attr}}, in => $ref, headers => $hdrs, %{$c->{attr}});

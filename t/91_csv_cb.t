@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 53;
+ use Test::More tests => 58;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -213,3 +213,38 @@ is_deeply (csv (in => $tfn, filter => sub {
 		grep { defined && m/\S/ } @{$_[1]} }),
 	    [[3,3,3],[5,7,9],[8,13,18]],
 	    "filter => filled");
+
+# Count rows in different ways
+open  FH, ">", $tfn or die "$tfn: $!";
+print FH <<"EOD";
+foo,bar,baz
+1,,3
+0,"d
+€",4
+999,999,
+EOD
+close FH;
+
+{   my $n = 0;
+    open my $fh, "<", $tfn;
+    my $csv = Text::CSV_XS->new ({ binary => 1 });
+    while (my $row = $csv->getline ($fh)) { $n++; }
+    close $fh;
+    is ($n, 4, "Count rows with getline");
+    }
+{   my $n = 0;
+    my $aoa = csv (in => $tfn, on_in => sub { $n++ });
+    is ($n, 4, "Count rows with on_in");
+    }
+{   my $n = 0;
+    my $aoa = csv (in => $tfn, filter => { 0 => sub { $n++; 0; }});
+    is ($n, 4, "Count rows with filter hash");
+    }
+{   my $n = 0;
+    my $aoa = csv (in => $tfn, filter => sub { $n++; 0; });
+    is ($n, 4, "Count rows with filter sub");
+    }
+{   my $n = 0;
+    csv (in => $tfn, on_in => sub { $n++; 0; }, out => \"skip");
+    is ($n, 4, "Count rows with on_in and skipped out");
+    }
