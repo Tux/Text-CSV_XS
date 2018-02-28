@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 52;
+ use Test::More tests => 53;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -206,5 +206,10 @@ is_deeply (csv (in => $tfn, filter => "not_empty"),
 	    [[3,3,3],[5,7,9],["",""," ",""],["",""," ",""],[8,13,18]],
 	    "filter => not_empty");
 is_deeply (csv (in => $tfn, filter => "filled"),
+	    [[3,3,3],[5,7,9],[8,13,18]],
+	    "filter => filled");
+
+is_deeply (csv (in => $tfn, filter => sub {
+		grep { defined && m/\S/ } @{$_[1]} }),
 	    [[3,3,3],[5,7,9],[8,13,18]],
 	    "filter => filled");

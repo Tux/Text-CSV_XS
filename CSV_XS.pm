@@ -1181,7 +1181,8 @@ sub _csv_attr {
 	);
     defined $fltr && !ref $fltr && exists $fltr{$fltr} and
 	$fltr = { 0 => $fltr{$fltr} };
-    ref $fltr eq "HASH" or $fltr = undef;
+    ref $fltr eq "CODE" and $fltr = { 0 => $fltr };
+    ref $fltr eq "HASH" or  $fltr = undef;
 
     exists $attr{formula} and
 	$attr{formula} = _supported_formula (undef, $attr{formula});
@@ -3532,25 +3533,26 @@ but only feature the L</csv> function.
 X<filter>
 
 This callback can be used to filter records.  It is called just after a new
-record has been scanned.  The callback accepts a hashref where the keys are
-the index to the row (the field number, 1-based) and the values are subs to
-return a true or false value.
+record has been scanned.  The callback accepts a:
+
+=over 2
+
+=item hashref
+
+The keys are the index to the row (the field name or field number, 1-based)
+and the values are subs to return a true or false value.
 
  csv (in => "file.csv", filter => {
             3 => sub { m/a/ },       # third field should contain an "a"
             5 => sub { length > 4 }, # length of the 5th field minimal 5
             });
 
- csv (in => "file.csv", filter => "not_blank");
- csv (in => "file.csv", filter => "not_empty");
- csv (in => "file.csv", filter => "filled");
+ csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
 If the keys to the filter hash contain any character that is not a digit it
 will also implicitly set L</headers> to C<"auto">  unless  L</headers>  was
 already passed as argument.  When headers are active, returning an array of
 hashes, the filter is not applicable to the header itself.
-
- csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
 All sub results should match, as in AND.
 
@@ -3575,7 +3577,26 @@ evaluates to false. To always accept, end with truth:
 
  filter => { 2 => sub { $_ = uc; 1 }}
 
-B<Predefined filters>
+=item coderef
+
+ csv (in => "file.csv", filter => sub { $n++; 0; });
+
+If the argument to C<filter> is a coderef,  it is an alias or shortcut to a
+filter on column 0:
+
+ csv (filter => sub { $n++; 0 });
+
+is equal to
+
+ csv (filter => { 0 => sub { $n++; 0 });
+
+=item filter-name
+
+ csv (in => "file.csv", filter => "not_blank");
+ csv (in => "file.csv", filter => "not_empty");
+ csv (in => "file.csv", filter => "filled");
+
+These are predefined filters
 
 Given a file like (line numbers prefixed for doc purpose only):
 
@@ -3629,6 +3650,8 @@ This filter rejects all lines that I<not> have at least one field that does
 not evaluate to the empty string.
 
 With the given example data, this filter would skip lines 2 through 8.
+
+=back
 
 =back
 
