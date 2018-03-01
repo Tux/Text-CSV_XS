@@ -34,7 +34,8 @@ diag ("Testing used-by for $tm\n");
 my %tm = map { $_ => 1 } qw( );
 
 $| = 1;
-$ENV{AUTOMATED_TESTING} = 1;
+$ENV{AUTOMATED_TESTING}   = 1;
+$ENV{PERL_USE_UNSAFE_INC} = 1; # My modules are not responsible
 # Skip all dists that
 # - are FAIL not due to the mudule being tested (e.g. POD or signature mismatch)
 # - that require interaction (not dealt with in distroprefs or %ENV)
