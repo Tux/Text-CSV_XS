@@ -1491,7 +1491,9 @@ or
  csv (in =&gt; $aoa, out =&gt;   STDOUT);
  csv (in =&gt; $aoa, out =&gt;  *STDOUT);
  csv (in =&gt; $aoa, out =&gt; \*STDOUT);
- csv (in =&gt; $aoa, out =&gt; \my $data);</code></pre>
+ csv (in =&gt; $aoa, out =&gt; \my $data);
+ csv (in =&gt; $aoa, out =&gt;  undef);
+ csv (in =&gt; $aoa, out =&gt; \&quot;skip&quot;);</code></pre>
 
 <p>In output mode, the default CSV options when producing CSV are</p>
 
@@ -1506,6 +1508,15 @@ or
       headers =&gt; $sth-&gt;{NAME_lc});</code></pre>
 
 <p>When a code-ref is used for <code>in</code>, the output is generated per invocation, so no buffering is involved. This implies that there is no size restriction on the number of records. The <code>csv</code> function ends when the coderef returns a false value.</p>
+
+<p>If <code>out</code> is set to a reference of the literal string <code>&quot;skip&quot;</code>, the output will be suppressed completely, which might be useful in combination with a filter for side effects only.</p>
+
+<pre><code> my %cache;
+ csv (in    =&gt; &quot;dump.csv&quot;,
+      out   =&gt; \&quot;skip&quot;,
+      on_in =&gt; sub { $cache{$_[1][1]}++ });</code></pre>
+
+<p>Currently, setting <code>out</code> to any false value (<code>undef</code>, <code>&quot;&quot;</code>, 0) will be equivalent to <code>\&quot;skip&quot;</code>.</p>
 
 <h3 id="encoding">encoding </h3>
 
@@ -1868,20 +1879,23 @@ or
 <dt id="filter">filter </dt>
 <dd>
 
-<p>This callback can be used to filter records. It is called just after a new record has been scanned. The callback accepts a hashref where the keys are the index to the row (the field number, 1-based) and the values are subs to return a true or false value.</p>
+<p>This callback can be used to filter records. It is called just after a new record has been scanned. The callback accepts a:</p>
+
+<dl>
+
+<dt id="hashref">hashref</dt>
+<dd>
+
+<p>The keys are the index to the row (the field name or field number, 1-based) and the values are subs to return a true or false value.</p>
 
 <pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; {
             3 =&gt; sub { m/a/ },       # third field should contain an &quot;a&quot;
             5 =&gt; sub { length &gt; 4 }, # length of the 5th field minimal 5
             });
 
- csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_blank&quot;);
- csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_empty&quot;);
- csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;filled&quot;);</code></pre>
+ csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { foo =&gt; sub { $_ &gt; 4 }});</code></pre>
 
 <p>If the keys to the filter hash contain any character that is not a digit it will also implicitly set <a href="#headers">&quot;headers&quot;</a> to <code>&quot;auto&quot;</code> unless <a href="#headers">&quot;headers&quot;</a> was already passed as argument. When headers are active, returning an array of hashes, the filter is not applicable to the header itself.</p>
-
-<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { foo =&gt; sub { $_ &gt; 4 }});</code></pre>
 
 <p>All sub results should match, as in AND.</p>
 
@@ -1901,7 +1915,29 @@ or
 
 <pre><code> filter =&gt; { 2 =&gt; sub { $_ = uc; 1 }}</code></pre>
 
-<p><b>Predefined filters</b></p>
+</dd>
+<dt id="coderef">coderef</dt>
+<dd>
+
+<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; sub { $n++; 0; });</code></pre>
+
+<p>If the argument to <code>filter</code> is a coderef, it is an alias or shortcut to a filter on column 0:</p>
+
+<pre><code> csv (filter =&gt; sub { $n++; 0 });</code></pre>
+
+<p>is equal to</p>
+
+<pre><code> csv (filter =&gt; { 0 =&gt; sub { $n++; 0 });</code></pre>
+
+</dd>
+<dt id="filter-name">filter-name</dt>
+<dd>
+
+<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_blank&quot;);
+ csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_empty&quot;);
+ csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;filled&quot;);</code></pre>
+
+<p>These are predefined filters</p>
 
 <p>Given a file like (line numbers prefixed for doc purpose only):</p>
 
@@ -1956,6 +1992,9 @@ or
 <p>This filter rejects all lines that <i>not</i> have at least one field that does not evaluate to the empty string.</p>
 
 <p>With the given example data, this filter would skip lines 2 through 8.</p>
+
+</dd>
+</dl>
 
 </dd>
 </dl>

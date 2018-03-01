@@ -1658,6 +1658,8 @@ where, in the absence of the `out` attribute, this is a shortcut to
     csv (in => $aoa, out =>  *STDOUT);
     csv (in => $aoa, out => \*STDOUT);
     csv (in => $aoa, out => \my $data);
+    csv (in => $aoa, out =>  undef);
+    csv (in => $aoa, out => \"skip");
 
 In output mode, the default CSV options when producing CSV are
 
@@ -1678,6 +1680,18 @@ When a code-ref is used for `in`, the output is generated  per invocation,
 so no buffering is involved. This implies that there is no size restriction
 on the number of records. The `csv` function ends when the coderef returns
 a false value.
+
+If `out` is set to a reference of the literal string `"skip"`, the output
+will be suppressed completely,  which might be useful in combination with a
+filter for side effects only.
+
+    my %cache;
+    csv (in    => "dump.csv",
+         out   => \"skip",
+         on_in => sub { $cache{$_[1][1]}++ });
+
+Currently,  setting `out` to any false value  (`undef`, `""`, 0) will be
+equivalent to `\"skip"`.
 
 ### encoding
 
@@ -2067,101 +2081,119 @@ but only feature the ["csv"](#csv) function.
 
 
     This callback can be used to filter records.  It is called just after a new
-    record has been scanned.  The callback accepts a hashref where the keys are
-    the index to the row (the field number, 1-based) and the values are subs to
-    return a true or false value.
+    record has been scanned.  The callback accepts a:
 
-        csv (in => "file.csv", filter => {
-                   3 => sub { m/a/ },       # third field should contain an "a"
-                   5 => sub { length > 4 }, # length of the 5th field minimal 5
-                   });
+    - hashref
 
-        csv (in => "file.csv", filter => "not_blank");
-        csv (in => "file.csv", filter => "not_empty");
-        csv (in => "file.csv", filter => "filled");
+        The keys are the index to the row (the field name or field number, 1-based)
+        and the values are subs to return a true or false value.
 
-    If the keys to the filter hash contain any character that is not a digit it
-    will also implicitly set ["headers"](#headers) to `"auto"`  unless  ["headers"](#headers)  was
-    already passed as argument.  When headers are active, returning an array of
-    hashes, the filter is not applicable to the header itself.
+            csv (in => "file.csv", filter => {
+                       3 => sub { m/a/ },       # third field should contain an "a"
+                       5 => sub { length > 4 }, # length of the 5th field minimal 5
+                       });
 
-        csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
+            csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
-    All sub results should match, as in AND.
+        If the keys to the filter hash contain any character that is not a digit it
+        will also implicitly set ["headers"](#headers) to `"auto"`  unless  ["headers"](#headers)  was
+        already passed as argument.  When headers are active, returning an array of
+        hashes, the filter is not applicable to the header itself.
 
-    The context of the callback sets  `$_` localized to the field indicated by
-    the filter. The two arguments are as with all other callbacks, so the other
-    fields in the current row can be seen:
+        All sub results should match, as in AND.
 
-        filter => { 3 => sub { $_ > 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}
+        The context of the callback sets  `$_` localized to the field indicated by
+        the filter. The two arguments are as with all other callbacks, so the other
+        fields in the current row can be seen:
 
-    If the context is set to return a list of hashes  (["headers"](#headers) is defined),
-    the current record will also be available in the localized `%_`:
+            filter => { 3 => sub { $_ > 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}
 
-        filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
+        If the context is set to return a list of hashes  (["headers"](#headers) is defined),
+        the current record will also be available in the localized `%_`:
 
-    If the filter is used to _alter_ the content by changing `$_`,  make sure
-    that the sub returns true in order not to have that record skipped:
+            filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
 
-        filter => { 2 => sub { $_ = uc }}
+        If the filter is used to _alter_ the content by changing `$_`,  make sure
+        that the sub returns true in order not to have that record skipped:
 
-    will upper-case the second field, and then skip it if the resulting content
-    evaluates to false. To always accept, end with truth:
+            filter => { 2 => sub { $_ = uc }}
 
-        filter => { 2 => sub { $_ = uc; 1 }}
+        will upper-case the second field, and then skip it if the resulting content
+        evaluates to false. To always accept, end with truth:
 
-    **Predefined filters**
+            filter => { 2 => sub { $_ = uc; 1 }}
 
-    Given a file like (line numbers prefixed for doc purpose only):
+    - coderef
 
-        1:1,2,3
-        2:
-        3:,
-        4:""
-        5:,,
-        6:, ,
-        7:"",
-        8:" "
-        9:4,5,6
+            csv (in => "file.csv", filter => sub { $n++; 0; });
 
-    - not\_blank
+        If the argument to `filter` is a coderef,  it is an alias or shortcut to a
+        filter on column 0:
 
-        Filter out the blank lines
+            csv (filter => sub { $n++; 0 });
 
-        This filter is a shortcut for
+        is equal to
 
-            filter => { 0 => sub { @{$_[1]} > 1 or
-                        defined $_[1][0] && $_[1][0] ne "" } }
+            csv (filter => { 0 => sub { $n++; 0 });
 
-        Due to the implementation,  it is currently impossible to also filter lines
-        that consists only of a quoted empty field. These lines are also considered
-        blank lines.
+    - filter-name
 
-        With the given example, lines 2 and 4 will be skipped.
+            csv (in => "file.csv", filter => "not_blank");
+            csv (in => "file.csv", filter => "not_empty");
+            csv (in => "file.csv", filter => "filled");
 
-    - not\_empty
+        These are predefined filters
 
-        Filter out lines where all the fields are empty.
+        Given a file like (line numbers prefixed for doc purpose only):
 
-        This filter is a shortcut for
+            1:1,2,3
+            2:
+            3:,
+            4:""
+            5:,,
+            6:, ,
+            7:"",
+            8:" "
+            9:4,5,6
 
-            filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
+        - not\_blank
 
-        A space is not regarded being empty, so given the example data, lines 2, 3,
-        4, 5, and 7 are skipped.
+            Filter out the blank lines
 
-    - filled
+            This filter is a shortcut for
 
-        Filter out lines that have no visible data
+                filter => { 0 => sub { @{$_[1]} > 1 or
+                            defined $_[1][0] && $_[1][0] ne "" } }
 
-        This filter is a shortcut for
+            Due to the implementation,  it is currently impossible to also filter lines
+            that consists only of a quoted empty field. These lines are also considered
+            blank lines.
 
-            filter => { 0 => sub { grep { defined && m/\S/ } @{$_[1]} } }
+            With the given example, lines 2 and 4 will be skipped.
 
-        This filter rejects all lines that _not_ have at least one field that does
-        not evaluate to the empty string.
+        - not\_empty
 
-        With the given example data, this filter would skip lines 2 through 8.
+            Filter out lines where all the fields are empty.
+
+            This filter is a shortcut for
+
+                filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
+
+            A space is not regarded being empty, so given the example data, lines 2, 3,
+            4, 5, and 7 are skipped.
+
+        - filled
+
+            Filter out lines that have no visible data
+
+            This filter is a shortcut for
+
+                filter => { 0 => sub { grep { defined && m/\S/ } @{$_[1]} } }
+
+            This filter rejects all lines that _not_ have at least one field that does
+            not evaluate to the empty string.
+
+            With the given example data, this filter would skip lines 2 through 8.
 
 - after\_in
 

@@ -1578,6 +1578,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         csv (in => $aoa, out =>  *STDOUT);
         csv (in => $aoa, out => \*STDOUT);
         csv (in => $aoa, out => \my $data);
+        csv (in => $aoa, out =>  undef);
+        csv (in => $aoa, out => \"skip");
 
        In output mode, the default CSV options when producing CSV are
 
@@ -1598,6 +1600,18 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        invocation, so no buffering is involved. This implies that there is no
        size restriction on the number of records. The "csv" function ends when
        the coderef returns a false value.
+
+       If "out" is set to a reference of the literal string "skip", the output
+       will be suppressed completely,  which might be useful in combination
+       with a filter for side effects only.
+
+        my %cache;
+        csv (in    => "dump.csv",
+             out   => \"skip",
+             on_in => sub { $cache{$_[1][1]}++ });
+
+       Currently,  setting "out" to any false value  ("undef", "", 0) will be
+       equivalent to "\"skip"".
 
        [4mencoding[0m
 
@@ -1955,101 +1969,117 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        filter
          This callback can be used to filter records.  It is called just after
-         a new record has been scanned.  The callback accepts a hashref where
-         the keys are the index to the row (the field number, 1-based) and the
-         values are subs to return a true or false value.
+         a new record has been scanned.  The callback accepts a:
 
-          csv (in => "file.csv", filter => {
-                     3 => sub { m/a/ },       # third field should contain an "a"
-                     5 => sub { length > 4 }, # length of the 5th field minimal 5
-                     });
+         hashref
+           The keys are the index to the row (the field name or field number,
+           1-based) and the values are subs to return a true or false value.
 
-          csv (in => "file.csv", filter => "not_blank");
-          csv (in => "file.csv", filter => "not_empty");
-          csv (in => "file.csv", filter => "filled");
+            csv (in => "file.csv", filter => {
+                       3 => sub { m/a/ },       # third field should contain an "a"
+                       5 => sub { length > 4 }, # length of the 5th field minimal 5
+                       });
 
-         If the keys to the filter hash contain any character that is not a
-         digit it will also implicitly set "headers" to "auto"  unless
-         "headers"  was already passed as argument.  When headers are active,
-         returning an array of hashes, the filter is not applicable to the
-         header itself.
+            csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
-          csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
+           If the keys to the filter hash contain any character that is not a
+           digit it will also implicitly set "headers" to "auto"  unless
+           "headers"  was already passed as argument.  When headers are
+           active, returning an array of hashes, the filter is not applicable
+           to the header itself.
 
-         All sub results should match, as in AND.
+           All sub results should match, as in AND.
 
-         The context of the callback sets  $_ localized to the field indicated
-         by the filter. The two arguments are as with all other callbacks, so
-         the other fields in the current row can be seen:
+           The context of the callback sets  $_ localized to the field
+           indicated by the filter. The two arguments are as with all other
+           callbacks, so the other fields in the current row can be seen:
 
-          filter => { 3 => sub { $_ > 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}
+            filter => { 3 => sub { $_ > 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}
 
-         If the context is set to return a list of hashes  ("headers" is
-         defined), the current record will also be available in the localized
-         %_:
+           If the context is set to return a list of hashes  ("headers" is
+           defined), the current record will also be available in the
+           localized %_:
 
-          filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
+            filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
 
-         If the filter is used to [4malter[24m the content by changing $_,  make sure
-         that the sub returns true in order not to have that record skipped:
+           If the filter is used to [4malter[24m the content by changing $_,  make
+           sure that the sub returns true in order not to have that record
+           skipped:
 
-          filter => { 2 => sub { $_ = uc }}
+            filter => { 2 => sub { $_ = uc }}
 
-         will upper-case the second field, and then skip it if the resulting
-         content evaluates to false. To always accept, end with truth:
+           will upper-case the second field, and then skip it if the resulting
+           content evaluates to false. To always accept, end with truth:
 
-          filter => { 2 => sub { $_ = uc; 1 }}
+            filter => { 2 => sub { $_ = uc; 1 }}
 
-         [1mPredefined filters[0m
+         coderef
+            csv (in => "file.csv", filter => sub { $n++; 0; });
 
-         Given a file like (line numbers prefixed for doc purpose only):
+           If the argument to "filter" is a coderef,  it is an alias or
+           shortcut to a filter on column 0:
 
-          1:1,2,3
-          2:
-          3:,
-          4:""
-          5:,,
-          6:, ,
-          7:"",
-          8:" "
-          9:4,5,6
+            csv (filter => sub { $n++; 0 });
 
-         not_blank
-           Filter out the blank lines
+           is equal to
 
-           This filter is a shortcut for
+            csv (filter => { 0 => sub { $n++; 0 });
 
-            filter => { 0 => sub { @{$_[1]} > 1 or
-                        defined $_[1][0] && $_[1][0] ne "" } }
+         filter-name
+            csv (in => "file.csv", filter => "not_blank");
+            csv (in => "file.csv", filter => "not_empty");
+            csv (in => "file.csv", filter => "filled");
 
-           Due to the implementation,  it is currently impossible to also
-           filter lines that consists only of a quoted empty field. These
-           lines are also considered blank lines.
+           These are predefined filters
 
-           With the given example, lines 2 and 4 will be skipped.
+           Given a file like (line numbers prefixed for doc purpose only):
 
-         not_empty
-           Filter out lines where all the fields are empty.
+            1:1,2,3
+            2:
+            3:,
+            4:""
+            5:,,
+            6:, ,
+            7:"",
+            8:" "
+            9:4,5,6
 
-           This filter is a shortcut for
+           not_blank
+             Filter out the blank lines
 
-            filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
+             This filter is a shortcut for
 
-           A space is not regarded being empty, so given the example data,
-           lines 2, 3, 4, 5, and 7 are skipped.
+              filter => { 0 => sub { @{$_[1]} > 1 or
+                          defined $_[1][0] && $_[1][0] ne "" } }
 
-         filled
-           Filter out lines that have no visible data
+             Due to the implementation,  it is currently impossible to also
+             filter lines that consists only of a quoted empty field. These
+             lines are also considered blank lines.
 
-           This filter is a shortcut for
+             With the given example, lines 2 and 4 will be skipped.
 
-            filter => { 0 => sub { grep { defined && m/\S/ } @{$_[1]} } }
+           not_empty
+             Filter out lines where all the fields are empty.
 
-           This filter rejects all lines that [4mnot[24m have at least one field that
-           does not evaluate to the empty string.
+             This filter is a shortcut for
 
-           With the given example data, this filter would skip lines 2 through
-           8.
+              filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
+
+             A space is not regarded being empty, so given the example data,
+             lines 2, 3, 4, 5, and 7 are skipped.
+
+           filled
+             Filter out lines that have no visible data
+
+             This filter is a shortcut for
+
+              filter => { 0 => sub { grep { defined && m/\S/ } @{$_[1]} } }
+
+             This filter rejects all lines that [4mnot[24m have at least one field
+             that does not evaluate to the empty string.
+
+             With the given example data, this filter would skip lines 2
+             through 8.
 
        after_in
          This callback is invoked for each record after all records have been
@@ -2734,4 +2764,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.26.0                      2018-01-01                          STDIN(1)
+perl v5.26.0                      2018-03-01                          STDIN(1)

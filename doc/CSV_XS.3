@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2018-01-01" "perl v5.26.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2018-03-01" "perl v5.26.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2064,13 +2064,15 @@ where, in the absence of the \f(CW\*(C`out\*(C'\fR attribute, this is a shortcut
 .IX Xref "out"
 .IX Subsection "out"
 .PP
-.Vb 6
+.Vb 8
 \& csv (in => $aoa, out => "file.csv");
 \& csv (in => $aoa, out => $fh);
 \& csv (in => $aoa, out =>   STDOUT);
 \& csv (in => $aoa, out =>  *STDOUT);
 \& csv (in => $aoa, out => \e*STDOUT);
 \& csv (in => $aoa, out => \emy $data);
+\& csv (in => $aoa, out =>  undef);
+\& csv (in => $aoa, out => \e"skip");
 .Ve
 .PP
 In output mode, the default \s-1CSV\s0 options when producing \s-1CSV\s0 are
@@ -2096,6 +2098,20 @@ When a code-ref is used for \f(CW\*(C`in\*(C'\fR, the output is generated  per i
 so no buffering is involved. This implies that there is no size restriction
 on the number of records. The \f(CW\*(C`csv\*(C'\fR function ends when the coderef returns
 a false value.
+.PP
+If \f(CW\*(C`out\*(C'\fR is set to a reference of the literal string \f(CW"skip"\fR, the output
+will be suppressed completely,  which might be useful in combination with a
+filter for side effects only.
+.PP
+.Vb 4
+\& my %cache;
+\& csv (in    => "dump.csv",
+\&      out   => \e"skip",
+\&      on_in => sub { $cache{$_[1][1]}++ });
+.Ve
+.PP
+Currently,  setting \f(CW\*(C`out\*(C'\fR to any false value  (\f(CW\*(C`undef\*(C'\fR, \f(CW""\fR, 0) will be
+equivalent to \f(CW\*(C`\e"skip"\*(C'\fR.
 .PP
 \fIencoding\fR
 .IX Xref "encoding"
@@ -2541,9 +2557,12 @@ but only feature the \*(L"csv\*(R" function.
 .IX Xref "filter"
 .IX Item "filter"
 This callback can be used to filter records.  It is called just after a new
-record has been scanned.  The callback accepts a hashref where the keys are
-the index to the row (the field number, 1\-based) and the values are subs to
-return a true or false value.
+record has been scanned.  The callback accepts a:
+.RS 2
+.IP "hashref" 2
+.IX Item "hashref"
+The keys are the index to the row (the field name or field number, 1\-based)
+and the values are subs to return a true or false value.
 .Sp
 .Vb 4
 \& csv (in => "file.csv", filter => {
@@ -2551,19 +2570,13 @@ return a true or false value.
 \&            5 => sub { length > 4 }, # length of the 5th field minimal 5
 \&            });
 \&
-\& csv (in => "file.csv", filter => "not_blank");
-\& csv (in => "file.csv", filter => "not_empty");
-\& csv (in => "file.csv", filter => "filled");
+\& csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 .Ve
 .Sp
 If the keys to the filter hash contain any character that is not a digit it
 will also implicitly set \*(L"headers\*(R" to \f(CW"auto"\fR  unless  \*(L"headers\*(R"  was
 already passed as argument.  When headers are active, returning an array of
 hashes, the filter is not applicable to the header itself.
-.Sp
-.Vb 1
-\& csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
-.Ve
 .Sp
 All sub results should match, as in \s-1AND.\s0
 .Sp
@@ -2595,8 +2608,33 @@ evaluates to false. To always accept, end with truth:
 .Vb 1
 \& filter => { 2 => sub { $_ = uc; 1 }}
 .Ve
+.IP "coderef" 2
+.IX Item "coderef"
+.Vb 1
+\& csv (in => "file.csv", filter => sub { $n++; 0; });
+.Ve
 .Sp
-\&\fBPredefined filters\fR
+If the argument to \f(CW\*(C`filter\*(C'\fR is a coderef,  it is an alias or shortcut to a
+filter on column 0:
+.Sp
+.Vb 1
+\& csv (filter => sub { $n++; 0 });
+.Ve
+.Sp
+is equal to
+.Sp
+.Vb 1
+\& csv (filter => { 0 => sub { $n++; 0 });
+.Ve
+.IP "filter-name" 2
+.IX Item "filter-name"
+.Vb 3
+\& csv (in => "file.csv", filter => "not_blank");
+\& csv (in => "file.csv", filter => "not_empty");
+\& csv (in => "file.csv", filter => "filled");
+.Ve
+.Sp
+These are predefined filters
 .Sp
 Given a file like (line numbers prefixed for doc purpose only):
 .Sp
@@ -2654,6 +2692,9 @@ This filter rejects all lines that \fInot\fR have at least one field that does
 not evaluate to the empty string.
 .Sp
 With the given example data, this filter would skip lines 2 through 8.
+.RE
+.RS 2
+.RE
 .RE
 .RS 2
 .RE
