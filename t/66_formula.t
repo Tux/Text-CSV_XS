@@ -141,7 +141,8 @@ is_deeply (parse (5), [
 
 sub writer {
     my $f = shift;
-    ok (my $csv = Text::CSV_XS->new ({ formula => $f, quote_empty => 1 }), "new $f");
+    ok (my $csv = Text::CSV_XS->new ({
+	formula_handling => $f, quote_empty => 1 }), "new $f");
     ok ($csv->combine ("1", "=2+3", "4"), "combine $f");
     $csv->string;
     } # writer
