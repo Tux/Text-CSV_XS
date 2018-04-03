@@ -1,3 +1,6 @@
+1.36	- 2018-03-21, H.Merijn Brand
+    * 
+
 1.35	- 2018-03-21, H.Merijn Brand
     * Remove META.yml from MANIFEST.skip
     * Use UNIVERSAL::isa to protect against unblessed references

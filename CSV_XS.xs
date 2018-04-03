@@ -601,7 +601,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	    }
 
 	if ((svp = hv_fetchs (self, "_is_bound",      FALSE)) && *svp && SvOK (*svp))
-	    csv->is_bound = SvIV(*svp);
+	    csv->is_bound = SvIV (*svp);
 	if ((svp = hv_fetchs (self, "callbacks",      FALSE)) && _is_hashref (*svp)) {
 	    HV *cb = (HV *)SvRV (*svp);
 	    if ((svp = hv_fetchs (cb, "after_parse",  FALSE)) && _is_coderef (*svp))
