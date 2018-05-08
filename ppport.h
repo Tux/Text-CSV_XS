@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.40
+    ppport.h -- Perl/Pollution/Portability Version 3.42
 
     Automatically created by Devel::PPPort running under perl 5.026002.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.40
+ppport.h - Perl/Pollution/Portability version 3.42
 
 =head1 SYNOPSIS
 
@@ -387,9 +387,9 @@ See L<Devel::PPPort>.
 use strict;
 
 # Disable broken TRIE-optimization
-BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if $] >= 5.009004 && $] <= 5.009005 }
+BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= 5.009004 && "$]" <= 5.009005 }
 
-my $VERSION = 3.40;
+my $VERSION = 3.42;
 
 my %opt = (
   quiet     => 0,
@@ -456,7 +456,6 @@ my %API = map { /^(\w+)\|([^|]*)\|([^|]*)\|(\w*)$/
                       (index($4, 'n') >= 0 ? ( nothxarg => 1  ) : ()),
                     } )
                 : die "invalid spec: $_" } qw(
-ASCII_TO_NEED||5.007001|n
 AvFILLp|5.004050||p
 AvFILL|||
 BhkDISABLE||5.024000|
@@ -558,7 +557,6 @@ MY_CXT_INIT|5.007003||p
 MY_CXT|5.007003||p
 MoveD|5.009002|5.004050|p
 Move|||
-NATIVE_TO_NEED||5.007001|n
 NOOP|5.005000||p
 NUM2PTR|5.006000||p
 NVTYPE|5.006000||p
@@ -827,7 +825,6 @@ PerlIO_stdout||5.007003|
 PerlIO_tell||5.007003|
 PerlIO_unread||5.007003|
 PerlIO_write||5.007003|
-Perl_signbit||5.009005|n
 PoisonFree|5.009004||p
 PoisonNew|5.009004||p
 PoisonWith|5.009004||p
@@ -1122,57 +1119,12 @@ XopFLAGS||5.013007|
 ZeroD|5.009002||p
 Zero|||
 _aMY_CXT|5.007003||p
-_add_range_to_invlist|||
-_append_range_to_invlist|||
 _core_swash_init|||
-_get_encoding|||
-_get_regclass_nonbitmap_data|||
-_get_swash_invlist|||
-_invlistEQ|||
-_invlist_array_init|||n
-_invlist_contains_cp|||n
-_invlist_dump|||
-_invlist_intersection_maybe_complement_2nd|||
-_invlist_intersection|||
-_invlist_invert|||
-_invlist_len|||n
-_invlist_populate_swatch|||n
-_invlist_search|||n
-_invlist_subtract|||
-_invlist_union_maybe_complement_2nd|||
-_invlist_union|||
-_is_cur_LC_category_utf8|||
-_is_in_locale_category||5.021001|
-_is_uni_FOO||5.017008|
-_is_uni_perl_idcont||5.017008|
-_is_uni_perl_idstart||5.017007|
-_is_utf8_FOO||5.017008|
-_is_utf8_char_slow||5.021001|n
-_is_utf8_idcont||5.021001|
-_is_utf8_idstart||5.021001|
-_is_utf8_mark||5.017008|
-_is_utf8_perl_idcont||5.017008|
-_is_utf8_perl_idstart||5.017007|
-_is_utf8_xidcont||5.021001|
-_is_utf8_xidstart||5.021001|
 _load_PL_utf8_foldclosures|||
-_make_exactf_invlist|||
-_new_invlist_C_array|||
-_new_invlist|||
 _pMY_CXT|5.007003||p
-_setlocale_debug_string|||n
-_setup_canned_invlist|||
-_swash_inversion_hash|||
-_swash_to_invlist|||
 _to_fold_latin1|||
-_to_uni_fold_flags||5.014000|
 _to_upper_title_latin1|||
 _to_utf8_case|||
-_to_utf8_fold_flags||5.019009|
-_to_utf8_lower_flags||5.019009|
-_to_utf8_title_flags||5.019009|
-_to_utf8_upper_flags||5.019009|
-_warn_problematic_locale|||n
 aMY_CXT_|5.007003||p
 aMY_CXT|5.007003||p
 aTHXR_|5.024000||p
@@ -1180,7 +1132,6 @@ aTHXR|5.024000||p
 aTHX_|5.006000||p
 aTHX|5.006000||p
 add_above_Latin1_folds|||
-add_cp_to_invlist|||
 add_data|||n
 add_multi_match|||
 add_utf16_textfilter|||
@@ -1189,7 +1140,6 @@ advance_one_LB|||
 advance_one_SB|||
 advance_one_WB|||
 alloc_maybe_populate_EXACT|||
-alloccopstash|||
 allocmy|||
 amagic_call|||
 amagic_cmp_locale|||
@@ -1201,9 +1151,7 @@ amagic_ncmp|||
 anonymise_cv_maybe|||
 any_dup|||
 ao|||
-append_utf8_from_native_byte||5.019004|n
 apply_attrs_my|||
-apply_attrs_string||5.006001|
 apply_attrs|||
 apply|||
 assert_uft8_cache_coherent|||
@@ -1212,8 +1160,6 @@ atfork_lock||5.007003|n
 atfork_unlock||5.007003|n
 av_arylen_p||5.009003|
 av_clear|||
-av_create_and_push||5.009005|
-av_create_and_unshift_one||5.009005|
 av_delete||5.006000|
 av_exists||5.006000|
 av_extend_guts|||
@@ -1248,8 +1194,6 @@ boot_core_PerlIO|||
 boot_core_UNIVERSAL|||
 boot_core_mro|||
 bytes_cmp_utf8||5.013007|
-bytes_from_utf8||5.007001|
-bytes_to_utf8||5.006001|
 cBOOL|5.013000||p
 call_argv|5.006000||p
 call_atexit||5.006000|
@@ -1264,10 +1208,8 @@ cast_i32||5.006000|n
 cast_iv||5.006000|n
 cast_ulong||5.006000|n
 cast_uv||5.006000|n
-check_locale_boundary_crossing|||
 check_type_and_open|||
 check_uni|||
-check_utf8_print|||
 checkcomma|||
 ckWARN|5.006000||p
 ck_entersub_args_core|||
@@ -1280,7 +1222,6 @@ ckwarn_common|||
 ckwarn_d||5.009003|
 ckwarn||5.009003|
 clear_defarray||5.023008|
-clear_placeholders|||
 clear_special_blocks|||
 clone_params_del|||n
 clone_params_new|||n
@@ -1288,14 +1229,12 @@ closest_cop|||
 cntrl_to_mnemonic|||n
 compute_EXACTish|||n
 construct_ahocorasick_from_trie|||
-cop_fetch_label||5.015001|
 cop_free|||
 cop_hints_2hv||5.013007|
 cop_hints_fetch_pvn||5.013007|
 cop_hints_fetch_pvs||5.013007|
 cop_hints_fetch_pv||5.013007|
 cop_hints_fetch_sv||5.013007|
-cop_store_label||5.015001|
 cophh_2hv||5.013007|
 cophh_copy||5.013007|
 cophh_delete_pvn||5.013007|
@@ -1315,7 +1254,6 @@ cophh_store_sv||5.013007|
 core_prototype|||
 coresub_op|||
 cr_textfilter|||
-create_eval_scope|||
 croak_memory_wrap|5.019003||pn
 croak_no_mem|||n
 croak_no_modify|5.013003||pn
@@ -1332,7 +1270,6 @@ custom_op_get_field|||
 custom_op_name||5.007003|
 custom_op_register||5.013007|
 custom_op_xop||5.013007|
-cv_ckproto_len_flags|||
 cv_clone_into|||
 cv_clone|||
 cv_const_sv_or_av|||n
@@ -1350,24 +1287,6 @@ cvgv_set|||
 cvstash_set|||
 cx_dump||5.005000|
 cx_dup|||
-cx_popblock||5.023008|
-cx_popeval||5.023008|
-cx_popformat||5.023008|
-cx_popgiven||5.023008|
-cx_poploop||5.023008|
-cx_popsub_args||5.023008|
-cx_popsub_common||5.023008|
-cx_popsub||5.023008|
-cx_popwhen||5.023008|
-cx_pushblock||5.023008|
-cx_pusheval||5.023008|
-cx_pushformat||5.023008|
-cx_pushgiven||5.023008|
-cx_pushloop_for||5.023008|
-cx_pushloop_plain||5.023008|
-cx_pushsub||5.023008|
-cx_pushwhen||5.023008|
-cx_topblock||5.023008|
 cxinc|||
 dAXMARK|5.009003||p
 dAX|5.007002||p
@@ -1403,7 +1322,6 @@ debug_start_match|||
 deb||5.007003|v
 defelem_target|||
 del_sv|||
-delete_eval_scope|||
 delimcpy||5.004000|n
 deprecate_commaless_var_list|||
 despatch_signals||5.007001|
@@ -1439,9 +1357,7 @@ do_msgsnd|||
 do_ncmp|||
 do_oddball|||
 do_op_dump||5.006000|
-do_open6|||
 do_open9||5.006000|
-do_open_raw|||
 do_openn||5.007001|
 do_open||5.003070|
 do_pmop_dump||5.006000|
@@ -1511,7 +1427,6 @@ dump_vindent||5.006000|
 dumpuntil|||
 dup_attrlist|||
 edit_distance|||n
-emulate_cop_io|||
 eval_pv|5.006000||p
 eval_sv|5.006000||p
 exec_failed|||
@@ -1535,15 +1450,12 @@ find_in_my_stash|||
 find_lexical_cv|||
 find_runcv_where|||
 find_runcv||5.008001|
-find_rundefsvoffset||5.009002|
 find_rundefsv||5.013002|
 find_script|||
-find_uninit_var|||
 first_symbol|||n
 fixup_errno_string|||
 foldEQ_latin1||5.013008|n
 foldEQ_locale||5.013002|n
-foldEQ_utf8_flags||5.013010|
 foldEQ_utf8||5.013002|
 foldEQ||5.013002|n
 fold_constants|||
@@ -1557,7 +1469,6 @@ force_version|||
 force_word|||
 forget_pmop|||
 form_nocontext|||vn
-form_short_octal_warning|||
 form||5.004000|v
 fp_dup|||
 fprintf_nocontext|||vn
@@ -1580,9 +1491,6 @@ get_db_sub|||
 get_debug_opts|||
 get_hash_seed|||
 get_hv|5.006000||p
-get_invlist_iter_addr|||n
-get_invlist_offset_addr|||n
-get_invlist_previous_index_addr|||n
 get_mstats|||
 get_no_modify|||
 get_num|||
@@ -1590,7 +1498,6 @@ get_op_descs||5.005000|
 get_op_names||5.005000|
 get_opargs|||
 get_ppaddr||5.006000|
-get_re_arg|||
 get_sv|5.006000||p
 get_vtbl||5.005030|
 getcwd_sv||5.007002|
@@ -1603,9 +1510,6 @@ gp_ref|||
 grok_atoUV|||n
 grok_bin|5.007003||p
 grok_bslash_N|||
-grok_bslash_c|||
-grok_bslash_o|||
-grok_bslash_x|||
 grok_hex|5.007003||p
 grok_infnan||5.021004|
 grok_number_flags||5.021002|
@@ -1639,9 +1543,6 @@ gv_fetchmeth_pv||5.015004|
 gv_fetchmeth_sv_autoload||5.015004|
 gv_fetchmeth_sv||5.015004|
 gv_fetchmethod_autoload||5.004000|
-gv_fetchmethod_pv_flags||5.015004|
-gv_fetchmethod_pvn_flags||5.015004|
-gv_fetchmethod_sv_flags||5.015004|
 gv_fetchmethod|||
 gv_fetchmeth|||
 gv_fetchpvn_flags|5.009002||p
@@ -1669,7 +1570,6 @@ gv_stashpvs|5.009003||p
 gv_stashpv|||
 gv_stashsvpvn_cached|||
 gv_stashsv|||
-gv_try_downgrade|||
 handle_named_backref|||
 handle_possible_posix|||
 handle_regex_sets|||
@@ -1680,14 +1580,12 @@ hsplit|||
 hv_assert|||
 hv_auxinit_internal|||n
 hv_auxinit|||
-hv_backreferences_p|||
 hv_clear_placeholders||5.009001|
 hv_clear|||
 hv_common_key_len||5.010000|
 hv_common||5.010000|
 hv_copy_hints_hv||5.009004|
 hv_delayfree_ent||5.004000|
-hv_delete_common|||
 hv_delete_ent||5.003070|
 hv_delete|||
 hv_eiter_p||5.009003|
@@ -1706,11 +1604,9 @@ hv_free_ent||5.004000|
 hv_iterinit|||
 hv_iterkeysv||5.003070|
 hv_iterkey|||
-hv_iternext_flags||5.008000|
 hv_iternextsv|||
 hv_iternext|||
 hv_iterval|||
-hv_kill_backrefs|||
 hv_ksplit||5.003070|
 hv_magic_check|||n
 hv_magic|||
@@ -1724,7 +1620,6 @@ hv_riter_p||5.009003|
 hv_riter_set||5.009003|
 hv_scalar||5.009001|
 hv_store_ent||5.003070|
-hv_store_flags||5.008000|
 hv_stores|5.009004||p
 hv_store|||
 hv_undef_flags|||
@@ -1742,8 +1637,6 @@ init_constants|||
 init_dbargs|||
 init_debugger|||
 init_global_struct|||
-init_i18nl10n||5.006000|
-init_i18nl14n||5.006000|
 init_ids|||
 init_interp|||
 init_main_stash|||
@@ -1758,26 +1651,9 @@ intro_my||5.004000|
 intuit_method|||
 intuit_more|||
 invert|||
-invlist_array|||n
-invlist_clear|||
-invlist_clone|||
-invlist_contents|||
-invlist_extend|||
-invlist_highest|||n
-invlist_is_iterating|||n
-invlist_iterfinish|||n
-invlist_iterinit|||n
-invlist_iternext|||n
-invlist_max|||n
-invlist_previous_index|||n
-invlist_replace_list_destroys_src|||
-invlist_set_len|||
-invlist_set_previous_index|||n
-invlist_trim|||n
 invoke_exception_hook|||
 io_close|||
 isALNUMC|5.006000||p
-isALNUM_lazy||5.021001|
 isALPHANUMERIC||5.017008|
 isALPHA|||
 isASCII|5.006000||p
@@ -1789,7 +1665,6 @@ isFOO_utf8_lc|||
 isGCB|||n
 isGRAPH|5.006000||p
 isIDCONT||5.017008|
-isIDFIRST_lazy||5.021001|
 isIDFIRST|||
 isLB|||
 isLOWER|||
@@ -1811,64 +1686,11 @@ is_invariant_string||5.021007|n
 is_lvalue_sub||5.007001|
 is_safe_syscall||5.019004|
 is_ssc_worth_it|||n
-is_uni_alnum_lc||5.006000|
-is_uni_alnumc_lc||5.017007|
-is_uni_alnumc||5.017007|
-is_uni_alnum||5.006000|
-is_uni_alpha_lc||5.006000|
-is_uni_alpha||5.006000|
-is_uni_ascii_lc||5.006000|
-is_uni_ascii||5.006000|
-is_uni_blank_lc||5.017002|
-is_uni_blank||5.017002|
-is_uni_cntrl_lc||5.006000|
-is_uni_cntrl||5.006000|
-is_uni_digit_lc||5.006000|
-is_uni_digit||5.006000|
-is_uni_graph_lc||5.006000|
-is_uni_graph||5.006000|
-is_uni_idfirst_lc||5.006000|
-is_uni_idfirst||5.006000|
-is_uni_lower_lc||5.006000|
-is_uni_lower||5.006000|
-is_uni_print_lc||5.006000|
-is_uni_print||5.006000|
-is_uni_punct_lc||5.006000|
-is_uni_punct||5.006000|
-is_uni_space_lc||5.006000|
-is_uni_space||5.006000|
-is_uni_upper_lc||5.006000|
-is_uni_upper||5.006000|
-is_uni_xdigit_lc||5.006000|
-is_uni_xdigit||5.006000|
-is_utf8_alnumc||5.017007|
-is_utf8_alnum||5.006000|
-is_utf8_alpha||5.006000|
-is_utf8_ascii||5.006000|
-is_utf8_blank||5.017002|
 is_utf8_char_buf||5.015008|n
-is_utf8_char||5.006000|n
-is_utf8_cntrl||5.006000|
 is_utf8_common|||
-is_utf8_digit||5.006000|
-is_utf8_graph||5.006000|
-is_utf8_idcont||5.008000|
-is_utf8_idfirst||5.006000|
-is_utf8_lower||5.006000|
-is_utf8_mark||5.006000|
-is_utf8_perl_space||5.011001|
-is_utf8_perl_word||5.011001|
-is_utf8_posix_digit||5.011001|
-is_utf8_print||5.006000|
-is_utf8_punct||5.006000|
-is_utf8_space||5.006000|
 is_utf8_string_loclen||5.009003|n
 is_utf8_string_loc||5.008001|n
 is_utf8_string||5.006001|n
-is_utf8_upper||5.006000|
-is_utf8_xdigit||5.006000|
-is_utf8_xidcont||5.013010|
-is_utf8_xidfirst||5.013010|
 isa_lookup|||
 isinfnansv|||
 isinfnan||5.021004|n
@@ -1878,22 +1700,8 @@ jmaybe|||
 join_exact|||
 keyword_plugin_standard|||
 keyword|||
-leave_adjust_stacks||5.023008|
 leave_scope|||
-lex_bufutf8||5.011002|
-lex_discard_to||5.011002|
-lex_grow_linestr||5.011002|
-lex_next_chunk||5.011002|
-lex_peek_unichar||5.011002|
-lex_read_space||5.011002|
-lex_read_to||5.011002|
-lex_read_unichar||5.011002|
-lex_start||5.009005|
-lex_stuff_pvn||5.011002|
 lex_stuff_pvs||5.013005|
-lex_stuff_pv||5.013006|
-lex_stuff_sv||5.011002|
-lex_unstuff||5.011002|
 listkids|||
 list|||
 load_module_nocontext|||vn
@@ -2003,7 +1811,6 @@ mg_find|||n
 mg_free_type||5.013006|
 mg_free|||
 mg_get|||
-mg_length||5.005000|
 mg_localize|||
 mg_magical|||n
 mg_set|||
@@ -2059,13 +1866,11 @@ my_pclose||5.003070|
 my_popen_list||5.007001|
 my_popen||5.003070|
 my_setenv|||
-my_setlocale|||
 my_snprintf|5.009004||pvn
 my_socketpair||5.007003|n
 my_sprintf|5.009003||pvn
 my_stat_flags|||
 my_stat||5.024000|
-my_strerror||5.021001|
 my_strftime||5.007002|
 my_strlcat|5.009004||pn
 my_strlcpy|5.009004||pn
@@ -2091,7 +1896,6 @@ newFORM|||
 newFOROP||5.013007|
 newGIVENOP||5.009003|
 newGIVWHENOP|||
-newGP|||
 newGVOP|||
 newGVREF|||
 newGVgen_flags||5.015004|
@@ -2110,9 +1914,6 @@ newMETHOP||5.021005|
 newMYSUB||5.017004|
 newNULLLIST|||
 newOP|||
-newPADNAMELIST||5.021007|n
-newPADNAMEouter||5.021007|n
-newPADNAMEpvn||5.021007|n
 newPADOP|||
 newPMOP|||
 newPROG|||
@@ -2153,19 +1954,14 @@ newUNOP|||
 newWHENOP||5.009003|
 newWHILEOP||5.013007|
 newXS_deffile|||
-newXS_flags||5.009004|
 newXS_len_flags|||
 newXSproto||5.006000|
 newXS||5.006000|
-new_collate||5.006000|
 new_constant|||
-new_ctype||5.006000|
 new_he|||
 new_logop|||
-new_numeric||5.006000|
 new_stackinfo||5.005000|
 new_version||5.009000|
-new_warnings_bitfield|||
 next_symbol|||
 nextargv|||
 nextchar|||
@@ -2191,19 +1987,14 @@ op_free|||
 op_integerize|||
 op_linklist||5.013006|
 op_lvalue_flags|||
-op_lvalue||5.013007|
 op_null||5.007002|
 op_parent|||n
 op_prepend_elem||5.013006|
-op_refcnt_dec|||
-op_refcnt_inc|||
 op_refcnt_lock||5.009002|
 op_refcnt_unlock||5.009002|
 op_relocate_sv|||
-op_scope||5.013007|
 op_sibling_splice||5.021002|n
 op_std_init|||
-op_unscope|||
 open_script|||
 openn_cleanup|||
 openn_setup|||
@@ -2229,7 +2020,6 @@ pad_add_name_pv||5.015001|
 pad_add_name_sv||5.015001|
 pad_add_weakref|||
 pad_alloc_name|||
-pad_alloc|||
 pad_block_start|||
 pad_check_dup|||
 pad_compname_type||5.009003|
@@ -2247,29 +2037,17 @@ pad_reset|||
 pad_setsv|||
 pad_sv|||
 pad_swipe|||
-pad_tidy||5.008001|
 padlist_dup|||
 padlist_store|||
 padname_dup|||
 padname_free|||
 padnamelist_dup|||
-padnamelist_fetch||5.021007|n
 padnamelist_free|||
-padnamelist_store||5.021007|
-parse_arithexpr||5.013008|
-parse_barestmt||5.013007|
-parse_block||5.013007|
 parse_body|||
-parse_fullexpr||5.013008|
-parse_fullstmt||5.013005|
 parse_gv_stash_name|||
 parse_ident|||
-parse_label||5.013007|
-parse_listexpr||5.013008|
 parse_lparen_question_flags|||
-parse_stmtseq||5.013006|
 parse_subsignature|||
-parse_termexpr||5.013008|
 parse_unicode_opts|||
 parser_dup|||
 parser_free_nexttoke_ops|||
@@ -2303,7 +2081,6 @@ printbuf|||
 printf_nocontext|||vn
 process_special_blocks|||
 ptr_hash|||n
-ptr_table_clear||5.009005|
 ptr_table_fetch||5.009005|
 ptr_table_find|||n
 ptr_table_free||5.009005|
@@ -2376,7 +2153,6 @@ reg_temp_copy|||
 reganode|||
 regatom|||
 regbranch|||
-regclass_swash||5.009004|
 regclass|||
 regcppop|||
 regcppush|||
@@ -2494,7 +2270,6 @@ savesharedsvpv||5.013006|
 savestack_grow_cnt||5.008001|
 savestack_grow|||
 savesvpv||5.009002|
-savetmps||5.023008|
 sawparens|||
 scalar_mod_type|||n
 scalarboolean|||
@@ -2559,7 +2334,6 @@ ssc_is_cp_posixl_init|||n
 ssc_or|||
 ssc_union|||
 stack_grow|||
-start_glob|||
 start_subparse||5.004000|
 stdize_locale|||
 strEQ|||
@@ -2586,7 +2360,6 @@ sv_2iuv_non_preserve|||
 sv_2iv_flags||5.009001|
 sv_2iv|||
 sv_2mortal|||
-sv_2num|||
 sv_2nv_flags||5.013001|
 sv_2pv_flags|5.007002||p
 sv_2pv_nolen|5.006000||p
@@ -2660,10 +2433,8 @@ sv_eq|||
 sv_exp_grow|||
 sv_force_normal_flags||5.007001|
 sv_force_normal||5.006000|
-sv_free2|||
 sv_free_arenas|||
 sv_free|||
-sv_get_backrefs||5.021008|n
 sv_gets||5.003070|
 sv_grow|||
 sv_i_ncmp|||
@@ -2674,7 +2445,6 @@ sv_insert|||
 sv_isa|||
 sv_isobject|||
 sv_iv||5.005000|
-sv_kill_backrefs|||
 sv_len_utf8_nomg|||
 sv_len_utf8||5.006000|
 sv_len|||
@@ -2744,7 +2514,6 @@ sv_setref_pvn|||
 sv_setref_pvs||5.024000|
 sv_setref_pv|||
 sv_setref_uv||5.007001|
-sv_setsv_cow|||
 sv_setsv_flags||5.007002|
 sv_setsv_mg|5.004050||p
 sv_setsv_nomg|5.007002||p
@@ -2765,8 +2534,6 @@ sv_upgrade|||
 sv_usepvn_flags||5.009004|
 sv_usepvn_mg|5.004050||p
 sv_usepvn|||
-sv_utf8_decode||5.006000|
-sv_utf8_downgrade||5.006000|
 sv_utf8_encode||5.006000|
 sv_utf8_upgrade_flags_grow||5.011000|
 sv_utf8_upgrade_flags||5.007002|
@@ -2782,9 +2549,6 @@ sv_vsetpvfn||5.004000|
 sv_vsetpvf|5.006000|5.004000|p
 svtype|||
 swallow_bom|||
-swash_fetch||5.007002|
-swash_init||5.006000|
-swash_scan_list_line|||
 swatch_get|||
 sync_locale||5.021004|
 sys_init3||5.010000|n
@@ -2813,14 +2577,6 @@ toUPPER_uvchr||5.023009|
 toUPPER|||
 to_byte_substr|||
 to_lower_latin1|||n
-to_uni_fold||5.007003|
-to_uni_lower_lc||5.006000|
-to_uni_lower||5.007003|
-to_uni_title_lc||5.006000|
-to_uni_title||5.007003|
-to_uni_upper_lc||5.006000|
-to_uni_upper||5.007003|
-to_utf8_case||5.007003|
 to_utf8_fold||5.015007|
 to_utf8_lower||5.015007|
 to_utf8_substr|||
@@ -2855,11 +2611,7 @@ utf8_hop||5.006000|n
 utf8_length||5.007001|
 utf8_mg_len_cache_update|||
 utf8_mg_pos_cache_update|||
-utf8_to_bytes||5.006001|
 utf8_to_uvchr_buf||5.015009|
-utf8_to_uvchr||5.007001|
-utf8_to_uvuni_buf||5.015009|
-utf8_to_uvuni||5.007001|
 utf8n_to_uvchr||5.007001|
 utf8n_to_uvuni||5.007001|
 utilize|||
@@ -2868,9 +2620,6 @@ uvchr_to_utf8||5.007001|
 uvoffuni_to_utf8_flags||5.019004|
 uvuni_to_utf8_flags||5.007003|
 uvuni_to_utf8||5.007001|
-valid_utf8_to_uvchr||5.015009|
-valid_utf8_to_uvuni||5.015009|
-validate_proto|||
 validate_suid|||
 varname|||
 vcmp||5.009000|
@@ -2881,7 +2630,7 @@ visit|||
 vivify_defelem|||
 vivify_ref|||
 vload_module|5.006000||p
-vmess|5.006000||p
+vmess|5.006000|5.006000|p
 vnewSVpvf|5.006000|5.004000|p
 vnormal||5.009002|
 vnumify||5.009000|
@@ -4208,28 +3957,6 @@ __DATA__
 #ifndef Newxz
 #  define Newxz(v,n,t)                   Newz(0,v,n,t)
 #endif
-#ifndef SvGETMAGIC
-#  define SvGETMAGIC(x)                  STMT_START { if (SvGMAGICAL(x)) mg_get(x); } STMT_END
-#endif
-
-/* Some random bits for sv_unmagicext. These should probably be pulled in for
-   real and organized at some point */
-#ifndef HEf_SVKEY
-#  define HEf_SVKEY                      -2
-#endif
-
-#ifndef MUTABLE_PTR
-#if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
-#  define MUTABLE_PTR(p) ({ void *_p = (p); _p; })
-#else
-#  define MUTABLE_PTR(p) ((void *) (p))
-#endif
-#endif
-#ifndef MUTABLE_SV
-#  define MUTABLE_SV(p)                  ((SV *)MUTABLE_PTR(p))
-#endif
-
-/* end of random bits */
 #ifndef PERL_MAGIC_sv
 #  define PERL_MAGIC_sv                  '\0'
 #endif
@@ -4385,261 +4112,6 @@ __DATA__
 #ifndef PERL_MAGIC_ext
 #  define PERL_MAGIC_ext                 '~'
 #endif
-
-/* That's the best we can do... */
-#ifndef sv_catpvn_nomg
-#  define sv_catpvn_nomg                 sv_catpvn
-#endif
-
-#ifndef sv_catsv_nomg
-#  define sv_catsv_nomg                  sv_catsv
-#endif
-
-#ifndef sv_setsv_nomg
-#  define sv_setsv_nomg                  sv_setsv
-#endif
-
-#ifndef sv_pvn_nomg
-#  define sv_pvn_nomg                    sv_pvn
-#endif
-
-#ifndef SvIV_nomg
-#  define SvIV_nomg                      SvIV
-#endif
-
-#ifndef SvUV_nomg
-#  define SvUV_nomg                      SvUV
-#endif
-
-#ifndef sv_catpv_mg
-#  define sv_catpv_mg(sv, ptr)          \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_catpv(TeMpSv,ptr);              \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_catpvn_mg
-#  define sv_catpvn_mg(sv, ptr, len)    \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_catpvn(TeMpSv,ptr,len);         \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_catsv_mg
-#  define sv_catsv_mg(dsv, ssv)         \
-   STMT_START {                         \
-     SV *TeMpSv = dsv;                  \
-     sv_catsv(TeMpSv,ssv);              \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_setiv_mg
-#  define sv_setiv_mg(sv, i)            \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_setiv(TeMpSv,i);                \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_setnv_mg
-#  define sv_setnv_mg(sv, num)          \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_setnv(TeMpSv,num);              \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_setpv_mg
-#  define sv_setpv_mg(sv, ptr)          \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_setpv(TeMpSv,ptr);              \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_setpvn_mg
-#  define sv_setpvn_mg(sv, ptr, len)    \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_setpvn(TeMpSv,ptr,len);         \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_setsv_mg
-#  define sv_setsv_mg(dsv, ssv)         \
-   STMT_START {                         \
-     SV *TeMpSv = dsv;                  \
-     sv_setsv(TeMpSv,ssv);              \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_setuv_mg
-#  define sv_setuv_mg(sv, i)            \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_setuv(TeMpSv,i);                \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-
-#ifndef sv_usepvn_mg
-#  define sv_usepvn_mg(sv, ptr, len)    \
-   STMT_START {                         \
-     SV *TeMpSv = sv;                   \
-     sv_usepvn(TeMpSv,ptr,len);         \
-     SvSETMAGIC(TeMpSv);                \
-   } STMT_END
-#endif
-#ifndef SvVSTRING_mg
-#  define SvVSTRING_mg(sv)               (SvMAGICAL(sv) ? mg_find(sv, PERL_MAGIC_vstring) : NULL)
-#endif
-
-/* Hint: sv_magic_portable
- * This is a compatibility function that is only available with
- * Devel::PPPort. It is NOT in the perl core.
- * Its purpose is to mimic the 5.8.0 behaviour of sv_magic() when
- * it is being passed a name pointer with namlen == 0. In that
- * case, perl 5.8.0 and later store the pointer, not a copy of it.
- * The compatibility can be provided back to perl 5.004. With
- * earlier versions, the code will not compile.
- */
-
-#if (PERL_BCDVERSION < 0x5004000)
-
-  /* code that uses sv_magic_portable will not compile */
-
-#elif (PERL_BCDVERSION < 0x5008000)
-
-#  define sv_magic_portable(sv, obj, how, name, namlen)     \
-   STMT_START {                                             \
-     SV *SvMp_sv = (sv);                                    \
-     char *SvMp_name = (char *) (name);                     \
-     I32 SvMp_namlen = (namlen);                            \
-     if (SvMp_name && SvMp_namlen == 0)                     \
-     {                                                      \
-       MAGIC *mg;                                           \
-       sv_magic(SvMp_sv, obj, how, 0, 0);                   \
-       mg = SvMAGIC(SvMp_sv);                               \
-       mg->mg_len = -42; /* XXX: this is the tricky part */ \
-       mg->mg_ptr = SvMp_name;                              \
-     }                                                      \
-     else                                                   \
-     {                                                      \
-       sv_magic(SvMp_sv, obj, how, SvMp_name, SvMp_namlen); \
-     }                                                      \
-   } STMT_END
-
-#else
-
-#  define sv_magic_portable(a, b, c, d, e)  sv_magic(a, b, c, d, e)
-
-#endif
-
-#if !defined(mg_findext)
-#if defined(NEED_mg_findext)
-static MAGIC * DPPP_(my_mg_findext)(SV * sv, int type, const MGVTBL *vtbl);
-static
-#else
-extern MAGIC * DPPP_(my_mg_findext)(SV * sv, int type, const MGVTBL *vtbl);
-#endif
-
-#if defined(NEED_mg_findext) || defined(NEED_mg_findext_GLOBAL)
-
-#define mg_findext DPPP_(my_mg_findext)
-#define Perl_mg_findext DPPP_(my_mg_findext)
-
-
-MAGIC *
-DPPP_(my_mg_findext)(SV * sv, int type, const MGVTBL *vtbl) {
-    if (sv) {
-        MAGIC *mg;
-
-#ifdef AvPAD_NAMELIST
-        assert(!(SvTYPE(sv) == SVt_PVAV && AvPAD_NAMELIST(sv)));
-#endif
-
-        for (mg = SvMAGIC (sv); mg; mg = mg->mg_moremagic) {
-            if (mg->mg_type == type && mg->mg_virtual == vtbl)
-                return mg;
-        }
-    }
-
-    return NULL;
-}
-
-#endif
-#endif
-
-#if !defined(sv_unmagicext)
-#if defined(NEED_sv_unmagicext)
-static int DPPP_(my_sv_unmagicext)(pTHX_ SV * const sv, const int type, MGVTBL * vtbl);
-static
-#else
-extern int DPPP_(my_sv_unmagicext)(pTHX_ SV * const sv, const int type, MGVTBL * vtbl);
-#endif
-
-#if defined(NEED_sv_unmagicext) || defined(NEED_sv_unmagicext_GLOBAL)
-
-#ifdef sv_unmagicext
-#  undef sv_unmagicext
-#endif
-#define sv_unmagicext(a,b,c) DPPP_(my_sv_unmagicext)(aTHX_ a,b,c)
-#define Perl_sv_unmagicext DPPP_(my_sv_unmagicext)
-
-
-int
-DPPP_(my_sv_unmagicext)(pTHX_ SV *const sv, const int type, MGVTBL *vtbl)
-{
-    MAGIC* mg;
-    MAGIC** mgp;
-
-    if (SvTYPE(sv) < SVt_PVMG || !SvMAGIC(sv))
-	return 0;
-    mgp = &(SvMAGIC(sv));
-    for (mg = *mgp; mg; mg = *mgp) {
-	const MGVTBL* const virt = mg->mg_virtual;
-	if (mg->mg_type == type && virt == vtbl) {
-	    *mgp = mg->mg_moremagic;
-	    if (virt && virt->svt_free)
-		virt->svt_free(aTHX_ sv, mg);
-	    if (mg->mg_ptr && mg->mg_type != PERL_MAGIC_regex_global) {
-		if (mg->mg_len > 0)
-		    Safefree(mg->mg_ptr);
-		else if (mg->mg_len == HEf_SVKEY) /* Questionable on older perls... */
-		    SvREFCNT_dec(MUTABLE_SV(mg->mg_ptr));
-		else if (mg->mg_type == PERL_MAGIC_utf8)
-		    Safefree(mg->mg_ptr);
-            }
-	    if (mg->mg_flags & MGf_REFCOUNTED)
-		SvREFCNT_dec(mg->mg_obj);
-	    Safefree(mg);
-	}
-	else
-	    mgp = &mg->mg_moremagic;
-    }
-    if (SvMAGIC(sv)) {
-	if (SvMAGICAL(sv))	/* if we're under save_magic, wait for restore_magic; */
-	    mg_magical(sv);	/*    else fix the flags now */
-    }
-    else {
-	SvMAGICAL_off(sv);
-	SvFLAGS(sv) |= (SvFLAGS(sv) & (SVp_IOK|SVp_NOK|SVp_POK)) >> PRIVSHIFT;
-    }
-    return 0;
-}
-
-#endif
-#endif
 #ifndef cBOOL
 #  define cBOOL(cbool)                   ((cbool) ? (bool)1 : (bool)0)
 #endif
@@ -4662,6 +4134,10 @@ DPPP_(my_sv_unmagicext)(pTHX_ SV *const sv, const int type, MGVTBL *vtbl)
 
 #ifndef OpMAYBESIB_set
 #  define OpMAYBESIB_set(o, sib, parent) ((o)->op_sibling = (sib))
+#endif
+
+#ifndef HEf_SVKEY
+#  define HEf_SVKEY                      -2
 #endif
 
 #ifndef SvRX
@@ -5084,36 +4560,15 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define C_ARRAY_END(a)                 ((a) + C_ARRAY_LENGTH(a))
 #endif
 
-#ifndef IVdf
-#  if IVSIZE == LONGSIZE
-#    define     IVdf      "ld"
-#    define     UVuf      "lu"
-#    define     UVof      "lo"
-#    define     UVxf      "lx"
-#    define     UVXf      "lX"
-#  elif IVSIZE == INTSIZE
-#    define   IVdf      "d"
-#    define   UVuf      "u"
-#    define   UVof      "o"
-#    define   UVxf      "x"
-#    define   UVXf      "X"
-#  else
-#    error "cannot define IV/UV formats"
-#  endif
+#ifndef MUTABLE_PTR
+#if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
+#  define MUTABLE_PTR(p) ({ void *_p = (p); _p; })
+#else
+#  define MUTABLE_PTR(p) ((void *) (p))
 #endif
-
-#ifndef NVef
-#  if defined(USE_LONG_DOUBLE) && defined(HAS_LONG_DOUBLE) && \
-      defined(PERL_PRIfldbl) && (PERL_BCDVERSION != 0x5006000)
-            /* Not very likely, but let's try anyway. */
-#    define NVef          PERL_PRIeldbl
-#    define NVff          PERL_PRIfldbl
-#    define NVgf          PERL_PRIgldbl
-#  else
-#    define NVef          "e"
-#    define NVff          "f"
-#    define NVgf          "g"
-#  endif
+#endif
+#ifndef MUTABLE_SV
+#  define MUTABLE_SV(p)                  ((SV *)MUTABLE_PTR(p))
 #endif
 
 #ifdef NEED_mess_sv
@@ -5969,6 +5424,38 @@ DPPP_(my_newCONSTSUB)(HV *stash, const char *name, SV *sv)
 #define MY_CXT_CLONE    NOOP
 #endif
 
+#endif
+
+#ifndef IVdf
+#  if IVSIZE == LONGSIZE
+#    define     IVdf      "ld"
+#    define     UVuf      "lu"
+#    define     UVof      "lo"
+#    define     UVxf      "lx"
+#    define     UVXf      "lX"
+#  elif IVSIZE == INTSIZE
+#    define   IVdf      "d"
+#    define   UVuf      "u"
+#    define   UVof      "o"
+#    define   UVxf      "x"
+#    define   UVXf      "X"
+#  else
+#    error "cannot define IV/UV formats"
+#  endif
+#endif
+
+#ifndef NVef
+#  if defined(USE_LONG_DOUBLE) && defined(HAS_LONG_DOUBLE) && \
+      defined(PERL_PRIfldbl) && (PERL_BCDVERSION != 0x5006000)
+            /* Not very likely, but let's try anyway. */
+#    define NVef          PERL_PRIeldbl
+#    define NVff          PERL_PRIfldbl
+#    define NVgf          PERL_PRIgldbl
+#  else
+#    define NVef          "e"
+#    define NVff          "f"
+#    define NVgf          "g"
+#  endif
 #endif
 
 #ifndef SvREFCNT_inc
@@ -7010,6 +6497,264 @@ DPPP_(my_warner)(U32 err, const char *pat, ...)
 #endif
 #ifndef get_cvs
 #  define get_cvs(name, flags)           get_cvn_flags(name "", sizeof(name)-1, flags)
+#endif
+#ifndef SvGETMAGIC
+#  define SvGETMAGIC(x)                  STMT_START { if (SvGMAGICAL(x)) mg_get(x); } STMT_END
+#endif
+
+/* That's the best we can do... */
+#ifndef sv_catpvn_nomg
+#  define sv_catpvn_nomg                 sv_catpvn
+#endif
+
+#ifndef sv_catsv_nomg
+#  define sv_catsv_nomg                  sv_catsv
+#endif
+
+#ifndef sv_setsv_nomg
+#  define sv_setsv_nomg                  sv_setsv
+#endif
+
+#ifndef sv_pvn_nomg
+#  define sv_pvn_nomg                    sv_pvn
+#endif
+
+#ifndef SvIV_nomg
+#  define SvIV_nomg                      SvIV
+#endif
+
+#ifndef SvUV_nomg
+#  define SvUV_nomg                      SvUV
+#endif
+
+#ifndef sv_catpv_mg
+#  define sv_catpv_mg(sv, ptr)          \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_catpv(TeMpSv,ptr);              \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_catpvn_mg
+#  define sv_catpvn_mg(sv, ptr, len)    \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_catpvn(TeMpSv,ptr,len);         \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_catsv_mg
+#  define sv_catsv_mg(dsv, ssv)         \
+   STMT_START {                         \
+     SV *TeMpSv = dsv;                  \
+     sv_catsv(TeMpSv,ssv);              \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_setiv_mg
+#  define sv_setiv_mg(sv, i)            \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_setiv(TeMpSv,i);                \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_setnv_mg
+#  define sv_setnv_mg(sv, num)          \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_setnv(TeMpSv,num);              \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_setpv_mg
+#  define sv_setpv_mg(sv, ptr)          \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_setpv(TeMpSv,ptr);              \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_setpvn_mg
+#  define sv_setpvn_mg(sv, ptr, len)    \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_setpvn(TeMpSv,ptr,len);         \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_setsv_mg
+#  define sv_setsv_mg(dsv, ssv)         \
+   STMT_START {                         \
+     SV *TeMpSv = dsv;                  \
+     sv_setsv(TeMpSv,ssv);              \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_setuv_mg
+#  define sv_setuv_mg(sv, i)            \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_setuv(TeMpSv,i);                \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+
+#ifndef sv_usepvn_mg
+#  define sv_usepvn_mg(sv, ptr, len)    \
+   STMT_START {                         \
+     SV *TeMpSv = sv;                   \
+     sv_usepvn(TeMpSv,ptr,len);         \
+     SvSETMAGIC(TeMpSv);                \
+   } STMT_END
+#endif
+#ifndef SvVSTRING_mg
+#  define SvVSTRING_mg(sv)               (SvMAGICAL(sv) ? mg_find(sv, PERL_MAGIC_vstring) : NULL)
+#endif
+
+/* Hint: sv_magic_portable
+ * This is a compatibility function that is only available with
+ * Devel::PPPort. It is NOT in the perl core.
+ * Its purpose is to mimic the 5.8.0 behaviour of sv_magic() when
+ * it is being passed a name pointer with namlen == 0. In that
+ * case, perl 5.8.0 and later store the pointer, not a copy of it.
+ * The compatibility can be provided back to perl 5.004. With
+ * earlier versions, the code will not compile.
+ */
+
+#if (PERL_BCDVERSION < 0x5004000)
+
+  /* code that uses sv_magic_portable will not compile */
+
+#elif (PERL_BCDVERSION < 0x5008000)
+
+#  define sv_magic_portable(sv, obj, how, name, namlen)     \
+   STMT_START {                                             \
+     SV *SvMp_sv = (sv);                                    \
+     char *SvMp_name = (char *) (name);                     \
+     I32 SvMp_namlen = (namlen);                            \
+     if (SvMp_name && SvMp_namlen == 0)                     \
+     {                                                      \
+       MAGIC *mg;                                           \
+       sv_magic(SvMp_sv, obj, how, 0, 0);                   \
+       mg = SvMAGIC(SvMp_sv);                               \
+       mg->mg_len = -42; /* XXX: this is the tricky part */ \
+       mg->mg_ptr = SvMp_name;                              \
+     }                                                      \
+     else                                                   \
+     {                                                      \
+       sv_magic(SvMp_sv, obj, how, SvMp_name, SvMp_namlen); \
+     }                                                      \
+   } STMT_END
+
+#else
+
+#  define sv_magic_portable(a, b, c, d, e)  sv_magic(a, b, c, d, e)
+
+#endif
+
+#if !defined(mg_findext)
+#if defined(NEED_mg_findext)
+static MAGIC * DPPP_(my_mg_findext)(SV * sv, int type, const MGVTBL *vtbl);
+static
+#else
+extern MAGIC * DPPP_(my_mg_findext)(SV * sv, int type, const MGVTBL *vtbl);
+#endif
+
+#if defined(NEED_mg_findext) || defined(NEED_mg_findext_GLOBAL)
+
+#define mg_findext DPPP_(my_mg_findext)
+#define Perl_mg_findext DPPP_(my_mg_findext)
+
+
+MAGIC *
+DPPP_(my_mg_findext)(SV * sv, int type, const MGVTBL *vtbl) {
+    if (sv) {
+        MAGIC *mg;
+
+#ifdef AvPAD_NAMELIST
+        assert(!(SvTYPE(sv) == SVt_PVAV && AvPAD_NAMELIST(sv)));
+#endif
+
+        for (mg = SvMAGIC (sv); mg; mg = mg->mg_moremagic) {
+            if (mg->mg_type == type && mg->mg_virtual == vtbl)
+                return mg;
+        }
+    }
+
+    return NULL;
+}
+
+#endif
+#endif
+
+#if !defined(sv_unmagicext)
+#if defined(NEED_sv_unmagicext)
+static int DPPP_(my_sv_unmagicext)(pTHX_ SV * const sv, const int type, MGVTBL * vtbl);
+static
+#else
+extern int DPPP_(my_sv_unmagicext)(pTHX_ SV * const sv, const int type, MGVTBL * vtbl);
+#endif
+
+#if defined(NEED_sv_unmagicext) || defined(NEED_sv_unmagicext_GLOBAL)
+
+#ifdef sv_unmagicext
+#  undef sv_unmagicext
+#endif
+#define sv_unmagicext(a,b,c) DPPP_(my_sv_unmagicext)(aTHX_ a,b,c)
+#define Perl_sv_unmagicext DPPP_(my_sv_unmagicext)
+
+
+int
+DPPP_(my_sv_unmagicext)(pTHX_ SV *const sv, const int type, MGVTBL *vtbl)
+{
+    MAGIC* mg;
+    MAGIC** mgp;
+
+    if (SvTYPE(sv) < SVt_PVMG || !SvMAGIC(sv))
+	return 0;
+    mgp = &(SvMAGIC(sv));
+    for (mg = *mgp; mg; mg = *mgp) {
+	const MGVTBL* const virt = mg->mg_virtual;
+	if (mg->mg_type == type && virt == vtbl) {
+	    *mgp = mg->mg_moremagic;
+	    if (virt && virt->svt_free)
+		virt->svt_free(aTHX_ sv, mg);
+	    if (mg->mg_ptr && mg->mg_type != PERL_MAGIC_regex_global) {
+		if (mg->mg_len > 0)
+		    Safefree(mg->mg_ptr);
+		else if (mg->mg_len == HEf_SVKEY) /* Questionable on older perls... */
+		    SvREFCNT_dec(MUTABLE_SV(mg->mg_ptr));
+		else if (mg->mg_type == PERL_MAGIC_utf8)
+		    Safefree(mg->mg_ptr);
+            }
+	    if (mg->mg_flags & MGf_REFCOUNTED)
+		SvREFCNT_dec(mg->mg_obj);
+	    Safefree(mg);
+	}
+	else
+	    mgp = &mg->mg_moremagic;
+    }
+    if (SvMAGIC(sv)) {
+	if (SvMAGICAL(sv))	/* if we're under save_magic, wait for restore_magic; */
+	    mg_magical(sv);	/*    else fix the flags now */
+    }
+    else {
+	SvMAGICAL_off(sv);
+	SvFLAGS(sv) |= (SvFLAGS(sv) & (SVp_IOK|SVp_NOK|SVp_POK)) >> PRIVSHIFT;
+    }
+    return 0;
+}
+
+#endif
 #endif
 
 #ifdef USE_ITHREADS

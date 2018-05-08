@@ -1,5 +1,5 @@
-1.36	- 2018-03-21, H.Merijn Brand
-    * 
+1.36	- 2018-05-08, H.Merijn Brand
+    * Update to Devel::PPPort-3.42
 
 1.35	- 2018-03-21, H.Merijn Brand
     * Remove META.yml from MANIFEST.skip
