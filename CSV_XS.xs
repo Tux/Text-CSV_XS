@@ -1873,8 +1873,8 @@ static int hook (pTHX_ HV *hv, char *cb_name, AV *av) {
 	ENTER;
 	SAVETMPS;
 	PUSHMARK (SP);
-	XPUSHs (newRV_noinc ((SV *)hv));
-	XPUSHs (newRV_noinc ((SV *)av));
+	mXPUSHs (newRV_inc ((SV *)hv));
+	mXPUSHs (newRV_inc ((SV *)av));
 	PUTBACK;
 	res = call_sv (*svp, G_SCALAR);
 	SPAGAIN;
