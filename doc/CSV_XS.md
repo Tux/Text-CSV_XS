@@ -741,7 +741,7 @@ record (unless quotation was added because of other reasons).
             $csv->undef_str (undef);
     my $s = $csv->undef_str;
 
-This attribute optionally defined the output of undefined fields. The value
+This attribute optionally defines the output of undefined fields. The value
 passed is not changed at all, so if it needs quotation, the quotation needs
 to be included in the value of the attribute.  Use with caution, as passing
 a value like `",",,,,"""` will for sure mess up your output.
