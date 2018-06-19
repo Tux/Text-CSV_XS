@@ -97,6 +97,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"RDF-RDB2RDF",				# ::CSV - Bad tests
 	"RT-Extension-Assets-Import-CSV",	# Questions
 	"RT-View-ConciseSpreadsheet",		# Questions
+	"Serge",				# Questions in Build.PL ?
 	"Test-DBIC",				# ::CSV - Insecure -T in C3
 #	"Text-CSV-Encoded",			# ::CSV - Encoding, patch filed at RT
 	"Text-CSV_PP-Simple",			# ::CSV - Syntax errors, bad archive
