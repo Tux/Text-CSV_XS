@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 231;
+use Test::More tests => 234;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -40,6 +40,7 @@ is ($csv->quote_null,			1,		"quote_null");
 is ($csv->quote_binary,			1,		"quote_binary");
 is ($csv->record_number,		0,		"record_number");
 is ($csv->decode_utf8,			1,		"decode_utf8");
+is ($csv->undef_str,			undef,		"undef_str");
 
 is ($csv->binary (1),			1,		"binary (1)");
 my @fld = ( 'txt =, "Hi!"', "Yes", "", 2, undef, "1.09", "\r", undef );
@@ -99,6 +100,7 @@ is ($csv->escape_char ("\\"),		"\\",		"escape_char (\\)");
 ok ($csv->combine (@fld),				"combine");
 is ($csv->string,
     qq{=txt \\=, "Hi!"=;=Yes=;==;=2=;;=1.09=;=\r=;\r},	"string");
+is ($csv->undef_str ("-"),		"-",		"undef_str");
 
 is ($csv->allow_whitespace (0),		0,		"allow_whitespace (0)");
 is ($csv->quote_space (0),		0,		"quote_space (0)");
@@ -111,6 +113,7 @@ is ($csv->sep ("--"),			"--",		"sep (\"--\")");
 is ($csv->sep_char (),			"\0",		"sep_char");
 is ($csv->quote ("++"),			"++",		"quote (\"++\")");
 is ($csv->quote_char (),		"\0",		"quote_char");
+is ($csv->undef_str (undef),		undef,		"undef_str");
 
 # Test single-byte specials in UTF-8 mode
 is ($csv->sep ("|"),			"|",		"sep |");
@@ -248,6 +251,7 @@ my $attr = [ sort qw(
     escape_null
     keep_meta_info
     verbatim strict formula
+    undef_str
     types
     callbacks
     ENCODING

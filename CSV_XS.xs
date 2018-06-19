@@ -110,6 +110,7 @@
 #define CACHE_ID__has_hooks		36
 #define CACHE_ID_formula		38
 #define CACHE_ID_strict			42
+#define CACHE_ID_undef_str		46
 
 #define	byte	unsigned char
 #define ulng	unsigned long
@@ -174,6 +175,7 @@ typedef struct {
     int		eol_pos;
     STRLEN	size;
     STRLEN	used;
+    SV *	undef_str;
     byte	eol[MAX_ATTR_LEN];
     byte	sep[MAX_ATTR_LEN];
     byte	quo[MAX_ATTR_LEN];
@@ -446,6 +448,10 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	    csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
 	    break;
 
+	case CACHE_ID_undef_str:
+	    csv->undef_str = val;
+	    break;
+
 	default:
 	    warn ("Unknown cache index %d ignored\n", idx);
 	}
@@ -594,6 +600,9 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	    if (len == 1 && *csv->eol == CH_CR)
 		csv->eol_is_cr = 1;
 	    }
+
+	if (svp = hv_fetchs (self, "undef_str",      FALSE))
+	    csv->undef_str = *svp;
 
 	if ((svp = hv_fetchs (self, "_types",         FALSE)) && *svp && SvOK (*svp)) {
 	    csv->types = SvPV (*svp, len);
@@ -858,10 +867,21 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 	    STRLEN  len;
 	    char   *ptr;
 	    int	    quoteMe;
+	    int     is_defined =  (SvOK (sv) || (
+			(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))));
 
-	    unless ((SvOK (sv) || (
-		    (SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv)))
-		    )) continue;
+	    unless (is_defined) {
+		if ((sv = csv->undef_str) && (SvOK (sv) || (
+			(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))))) {
+		    STRLEN len;
+		    byte  *ptr = SvPV (sv, len);
+
+		    while (len--)
+			CSV_PUT (csv, dst, *ptr++);
+		    }
+		continue;
+		}
+
 	    ptr = SvPV (sv, len);
 	    if (*ptr == '=' && csv->formula) {
 		unless (ptr = _formula (csv, sv, &len, i))
