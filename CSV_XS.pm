@@ -2178,7 +2178,8 @@ X<undef_str>
 This attribute optionally defines the output of undefined fields. The value
 passed is not changed at all, so if it needs quotation, the quotation needs
 to be included in the value of the attribute.  Use with caution, as passing
-a value like C<",",,,,"""> will for sure mess up your output.
+a value like  C<",",,,,""">  will for sure mess up your output. The default
+for this attribute is C<undef>, meaning no special treatment.
 
 This attribute is useful when exporting  CSV data  to be imported in custom
 loaders, like for MySQL, that recognize special sequences for C<NULL> data.

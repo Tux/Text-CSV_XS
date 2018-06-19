@@ -876,6 +876,11 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 		    STRLEN len;
 		    byte  *ptr = SvPV (sv, len);
 
+		    if (SvUTF8 (sv))  {
+			csv->utf8   = 1;
+			csv->binary = 1;
+			}
+
 		    while (len--)
 			CSV_PUT (csv, dst, *ptr++);
 		    }

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 41;
+ use Test::More tests => 44;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -58,10 +58,10 @@ close $fh;
 $csv->eol (undef);
 ok ($csv->combine ("us", undef, 3),	"Combine with undef");
 is ($csv->string, "us,,3",		"Default");
-foreach my $us ("\\N", 1, ",,,", "", "\xe2\x80\xa2") {
-    ok (defined ($csv->undef_str ($us)),"Set undef_str to '$us'");
+foreach my $us ("\\N", 1, ",,,", "", "\xe2\x80\xa2", "\x{2205}") {
+    ok (defined ($csv->undef_str ($us)),"Set undef_str with method");
     ok ($csv->combine ("us", undef, 3),	"Combine with undef");
-    is ($csv->string, "us,$us,3",	"String after method");
+    is ($csv->string, "us,$us,3",		"String after method");
     }
 
 tie my $us, "Bar";
