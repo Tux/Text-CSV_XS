@@ -1,6 +1,7 @@
-1.36	- 2018-05-08, H.Merijn Brand
+1.36	- 2018-06-19, H.Merijn Brand
     * Now also tested on FreeBSD-11.1
     * Update to Devel::PPPort-3.42
+    * Fixed memory leak (Thanks DaveM)
 
 1.35	- 2018-03-21, H.Merijn Brand
     * Remove META.yml from MANIFEST.skip
