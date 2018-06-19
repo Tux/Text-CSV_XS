@@ -52,6 +52,7 @@
           <li><a href="#quote_binary">quote_binary </a></li>
           <li><a href="#escape_null">escape_null  </a></li>
           <li><a href="#keep_meta_info">keep_meta_info </a></li>
+          <li><a href="#undef_str">undef_str </a></li>
           <li><a href="#verbatim">verbatim </a></li>
           <li><a href="#types">types</a></li>
           <li><a href="#callbacks">callbacks </a></li>
@@ -754,6 +755,16 @@ or
  $csv-&gt;print (*STDOUT, \@row);
  # 1,,&quot;&quot;, ,&quot; &quot;,f,&quot;g&quot;,&quot;h&quot;&quot;h&quot;,help,&quot;help&quot;</code></pre>
 
+<h3 id="undef_str">undef_str </h3>
+
+<pre><code> my $csv = Text::CSV_XS-&gt;new ({ undef_str =&gt; &quot;\\N&quot; });
+         $csv-&gt;undef_str (undef);
+ my $s = $csv-&gt;undef_str;</code></pre>
+
+<p>This attribute optionally defined the output of undefined fields. The value passed is not changed at all, so if it needs quotation, the quotation needs to be included in the value of the attribute. Use with caution, as passing a value like <code>&quot;,&quot;,,,,&quot;&quot;&quot;</code> will for sure mess up your output.</p>
+
+<p>This attribute is useful when exporting CSV data to be imported in custom loaders, like for MySQL, that recognize special sequences for <code>NULL</code> data.</p>
+
 <h3 id="verbatim">verbatim </h3>
 
 <pre><code> my $csv = Text::CSV_XS-&gt;new ({ verbatim =&gt; 1 });
@@ -816,6 +827,7 @@ or
      quote_binary          =&gt; 1,
      keep_meta_info        =&gt; 0,
      verbatim              =&gt; 0,
+     undef_str             =&gt; undef,
      types                 =&gt; undef,
      callbacks             =&gt; undef,
      });</code></pre>
@@ -2240,6 +2252,8 @@ or
  while (my $row = $sth-&gt;fetch) {
      $csv-&gt;print ($fh, [ map { $_ // &quot;\\N&quot; } @$row ]);
      }</code></pre>
+
+<p>note that this will not work as expected when choosing the backslash (<code>\</code>) as <code>escape_char</code>, as that will cause the <code>\</code> to need to be escaped by yet another <code>\</code>, which will cause the field to need quotation and thus ending up as <code>&quot;\\N&quot;</code> instead of <code>\N</code>. See also <a href="#undef_str"><code>undef_str</code></a>.</p>
 
 <p>these special sequences are not recognized by Text::CSV_XS on parsing the CSV generated like this, but map and filter are your friends again</p>
 

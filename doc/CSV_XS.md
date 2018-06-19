@@ -734,6 +734,21 @@ record (unless quotation was added because of other reasons).
     $csv->print (*STDOUT, \@row);
     # 1,,"", ," ",f,"g","h""h",help,"help"
 
+### undef\_str
+
+
+    my $csv = Text::CSV_XS->new ({ undef_str => "\\N" });
+            $csv->undef_str (undef);
+    my $s = $csv->undef_str;
+
+This attribute optionally defined the output of undefined fields. The value
+passed is not changed at all, so if it needs quotation, the quotation needs
+to be included in the value of the attribute.  Use with caution, as passing
+a value like `",",,,,"""` will for sure mess up your output.
+
+This attribute is useful when exporting  CSV data  to be imported in custom
+loaders, like for MySQL, that recognize special sequences for `NULL` data.
+
 ### verbatim
 
 
@@ -813,6 +828,7 @@ is equivalent to
         quote_binary          => 1,
         keep_meta_info        => 0,
         verbatim              => 0,
+        undef_str             => undef,
         types                 => undef,
         callbacks             => undef,
         });
@@ -2444,6 +2460,11 @@ or a map
     while (my $row = $sth->fetch) {
         $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
         }
+
+note that this will not work as expected when choosing the backslash (`\`)
+as `escape_char`, as that will cause the `\` to need to be escaped by yet
+another `\`,  which will cause the field to need quotation and thus ending
+up as `"\\N"` instead of `\N`. See also [`undef_str`](#undef_str).
 
 these special sequences are not recognized by  Text::CSV\_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
