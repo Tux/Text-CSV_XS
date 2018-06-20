@@ -172,10 +172,11 @@ typedef struct {
     byte	utf8;
     byte	has_ahead;
     byte	eolx;
+    byte	undef_flg;
+    char *	undef_str;
     int		eol_pos;
     STRLEN	size;
     STRLEN	used;
-    SV *	undef_str;
     byte	eol[MAX_ATTR_LEN];
     byte	sep[MAX_ATTR_LEN];
     byte	quo[MAX_ATTR_LEN];
@@ -449,7 +450,15 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	    break;
 
 	case CACHE_ID_undef_str:
-	    csv->undef_str = val;
+	    if (*cp) {
+		csv->undef_str = cp;
+		if (SvUTF8 (val))
+		    csv->undef_flg = 3;
+		}
+	    else {
+		csv->undef_str = NULL;
+		csv->undef_flg = 0;
+		}
 	    break;
 
 	default:
@@ -601,8 +610,17 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 		csv->eol_is_cr = 1;
 	    }
 
-	if (svp = hv_fetchs (self, "undef_str",      FALSE))
-	    csv->undef_str = *svp;
+	csv->undef_flg = 0;
+	if ((svp = hv_fetchs (self, "undef_str",      FALSE)) && *svp && SvOK (*svp)) {
+		/*if (sv && (SvOK (sv) || (
+			(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))))) {*/
+	    // warn ("undef_str set from HASH\n");
+	    csv->undef_str = SvPV_nolen (*svp);
+	    if (SvUTF8 (*svp))
+		csv->undef_flg = 3;
+	    }
+	else
+	    csv->undef_str = NULL;
 
 	if ((svp = hv_fetchs (self, "_types",         FALSE)) && *svp && SvOK (*svp)) {
 	    csv->types = SvPV (*svp, len);
@@ -845,7 +863,9 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 	}
 
     for (i = 0; i <= n; i++) {
-	SV    *sv;
+	SV     *sv;
+	STRLEN  len = 0;
+	char   *ptr = NULL;
 
 	if (i > 0) {
 	    CSV_PUT (csv, dst, CH_SEP);
@@ -863,31 +883,13 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 	    sv = svp && *svp ? *svp : NULL;
 	    }
 
-	if (sv) {
-	    STRLEN  len;
-	    char   *ptr;
+	if (sv && (SvOK (sv) || (
+		(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))))) {
+
 	    int	    quoteMe;
-	    int     is_defined =  (SvOK (sv) || (
-			(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))));
-
-	    unless (is_defined) {
-		if ((sv = csv->undef_str) && (SvOK (sv) || (
-			(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))))) {
-		    STRLEN len;
-		    byte  *ptr = SvPV (sv, len);
-
-		    if (SvUTF8 (sv))  {
-			csv->utf8   = 1;
-			csv->binary = 1;
-			}
-
-		    while (len--)
-			CSV_PUT (csv, dst, *ptr++);
-		    }
-		continue;
-		}
 
 	    ptr = SvPV (sv, len);
+
 	    if (*ptr == '=' && csv->formula) {
 		unless (ptr = _formula (csv, sv, &len, i))
 		    continue;
@@ -972,6 +974,22 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 		    for (x = 1; x < (int)csv->quo_len; x++)
 			CSV_PUT (csv, dst, csv->quo[x]);
 		    }
+		}
+	    }
+	else {
+	    // warn ("UNDEFINED!!!\n");
+	    if (csv->undef_str) {
+		byte  *ptr = csv->undef_str;
+		STRLEN len = strlen (ptr);
+
+		// warn ("With undef_str set\n");
+		if (csv->undef_flg) {
+		    csv->utf8   = 1;
+		    csv->binary = 1;
+		    }
+
+		while (len--)
+		    CSV_PUT (csv, dst, *ptr++);
 		}
 	    }
 	}

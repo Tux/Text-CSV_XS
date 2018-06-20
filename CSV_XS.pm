@@ -522,7 +522,8 @@ sub verbatim {
 sub undef_str {
     my $self = shift;
     if (@_) {
-	$self->{undef_str} = shift;
+	my $v = shift;
+	$self->{undef_str} = defined $v ? "$v" : undef;
 	$self->_cache_set ($_cache_id{undef_str}, $self->{undef_str});
 	}
     $self->{undef_str};
