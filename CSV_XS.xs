@@ -173,7 +173,7 @@ typedef struct {
     byte	has_ahead;
     byte	eolx;
     byte	undef_flg;
-    char *	undef_str;
+    byte *	undef_str;
     int		eol_pos;
     STRLEN	size;
     STRLEN	used;
@@ -451,7 +451,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 
 	case CACHE_ID_undef_str:
 	    if (*cp) {
-		csv->undef_str = cp;
+		csv->undef_str = (byte *)cp;
 		if (SvUTF8 (val))
 		    csv->undef_flg = 3;
 		}
@@ -615,7 +615,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 		/*if (sv && (SvOK (sv) || (
 			(SvGMAGICAL (sv) && (mg_get (sv), 1) && SvOK (sv))))) {*/
 	    // warn ("undef_str set from HASH\n");
-	    csv->undef_str = SvPV_nolen (*svp);
+	    csv->undef_str = (byte *)SvPV_nolen (*svp);
 	    if (SvUTF8 (*svp))
 		csv->undef_flg = 3;
 	    }
@@ -980,7 +980,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 	    // warn ("UNDEFINED!!!\n");
 	    if (csv->undef_str) {
 		byte  *ptr = csv->undef_str;
-		STRLEN len = strlen (ptr);
+		STRLEN len = strlen ((char *)ptr);
 
 		// warn ("With undef_str set\n");
 		if (csv->undef_flg) {
