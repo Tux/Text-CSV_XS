@@ -68,7 +68,7 @@ provides:
         version:         VERSION
 requires:
     perl:                5.006001
-    DynaLoader:          0
+    XSLoader:            0
     IO::Handle:          0
 recommends:
     Encode:              2.98

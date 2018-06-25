@@ -22,14 +22,14 @@ use strict;
 use warnings;
 
 require Exporter;
-use DynaLoader ();
+use XSLoader;
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
 $VERSION   = "1.36";
-@ISA       = qw( DynaLoader Exporter );
+@ISA       = qw( Exporter );
 @EXPORT_OK = qw( csv );
-bootstrap Text::CSV_XS $VERSION;
+XSLoader::load "Text::CSV_XS", $VERSION;
 
 sub PV { 0 }
 sub IV { 1 }

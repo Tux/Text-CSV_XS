@@ -13,7 +13,7 @@ my %wm = (
     ABSTRACT     => "Comma-Separated Values manipulation routines",
     AUTHOR       => "H.Merijn Brand <h.m.brand\@xs4all.nl>",
     VERSION_FROM => "CSV_XS.pm",
-    PREREQ_PM	 => { "DynaLoader"	=> 0,
+    PREREQ_PM	 => { "XSLoader"	=> 0,
 		      "Config"		=> 0,
 		      "IO::Handle"	=> 0,
 		      "Test::More"	=> 0,
