@@ -1,10 +1,11 @@
-1.36	- 2018-06-25, H.Merijn Brand
+1.36	- 2018-06-26, H.Merijn Brand
     * Now also tested on FreeBSD-11.1
     * Update to Devel::PPPort-3.42
     * Fixed memory leak (Thanks DaveM)
     * Add undef_str attribute
     * Tested against perl-5.28.0
     * Move from DynaLoader to XSLoader
+    * Tested on Synology DSM
 
 1.35	- 2018-03-21, H.Merijn Brand
     * Remove META.yml from MANIFEST.skip
