@@ -761,7 +761,7 @@ or
          $csv-&gt;undef_str (undef);
  my $s = $csv-&gt;undef_str;</code></pre>
 
-<p>This attribute optionally defines the output of undefined fields. The value passed is not changed at all, so if it needs quotation, the quotation needs to be included in the value of the attribute. Use with caution, as passing a value like <code>&quot;,&quot;,,,,&quot;&quot;&quot;</code> will for sure mess up your output.</p>
+<p>This attribute optionally defines the output of undefined fields. The value passed is not changed at all, so if it needs quotation, the quotation needs to be included in the value of the attribute. Use with caution, as passing a value like <code>&quot;,&quot;,,,,&quot;&quot;&quot;</code> will for sure mess up your output. The default for this attribute is <code>undef</code>, meaning no special treatment.</p>
 
 <p>This attribute is useful when exporting CSV data to be imported in custom loaders, like for MySQL, that recognize special sequences for <code>NULL</code> data.</p>
 

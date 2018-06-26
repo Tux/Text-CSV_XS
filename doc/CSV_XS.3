@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2018-06-19" "perl v5.26.2" "User Contributed Perl Documentation"
+.TH STDIN 1 "2018-06-26" "perl v5.26.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1024,7 +1024,8 @@ record (unless quotation was added because of other reasons).
 This attribute optionally defines the output of undefined fields. The value
 passed is not changed at all, so if it needs quotation, the quotation needs
 to be included in the value of the attribute.  Use with caution, as passing
-a value like \f(CW",",,,,"""\fR will for sure mess up your output.
+a value like  \f(CW",",,,,"""\fR  will for sure mess up your output. The default
+for this attribute is \f(CW\*(C`undef\*(C'\fR, meaning no special treatment.
 .PP
 This attribute is useful when exporting  \s-1CSV\s0 data  to be imported in custom
 loaders, like for MySQL, that recognize special sequences for \f(CW\*(C`NULL\*(C'\fR data.

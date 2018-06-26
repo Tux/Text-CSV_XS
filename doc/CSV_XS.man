@@ -725,8 +725,9 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        This attribute optionally defines the output of undefined fields. The
        value passed is not changed at all, so if it needs quotation, the
        quotation needs to be included in the value of the attribute.  Use with
-       caution, as passing a value like ",",,,,""" will for sure mess up your
-       output.
+       caution, as passing a value like  ",",,,,"""  will for sure mess up
+       your output. The default for this attribute is "undef", meaning no
+       special treatment.
 
        This attribute is useful when exporting  CSV data  to be imported in
        custom loaders, like for MySQL, that recognize special sequences for
@@ -2787,4 +2788,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.26.2                      2018-06-19                          STDIN(1)
+perl v5.26.2                      2018-06-26                          STDIN(1)
