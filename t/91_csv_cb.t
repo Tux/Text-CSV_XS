@@ -17,9 +17,9 @@ my $data =
     "foo,bar,baz\n".
     "1,2,3\n".
     "2,a b,\n";
-open  FH, ">", $tfn or die "$tfn: $!";
-print FH $data;
-close FH;
+open  my $fh, ">", $tfn or die "$tfn: $!";
+print $fh $data;
+close $fh;
 
 my $aoa = [
     [qw( foo bar baz )],
@@ -88,8 +88,8 @@ SKIP: {
 	 { baz => "", boo => "a b", foo => 2 }], "Munge with hash");
     }
 
-open  FH, ">>", $tfn or die "$tfn: $!";
-print FH <<"EOD";
+open  $fh, ">>", $tfn or die "$tfn: $!";
+print $fh <<"EOD";
 3,3,3
 4,5,6
 5,7,9
@@ -97,7 +97,7 @@ print FH <<"EOD";
 7,11,15
 8,13,18
 EOD
-close FH;
+close $fh;
 
 is_deeply (csv (in => $tfn,
 	filter => { foo => sub { $_ > 2 && $_[1][2] - $_[1][1] < 4 }}), [
@@ -183,8 +183,8 @@ SKIP: {
 	"on_in with key works");
     }
 
-open  FH, ">", $tfn or die "$tfn: $!";
-print FH <<"EOD";
+open  $fh, ">", $tfn or die "$tfn: $!";
+print $fh <<"EOD";
 3,3,3
 
 5,7,9
@@ -196,7 +196,7 @@ print FH <<"EOD";
 ""
 8,13,18
 EOD
-close FH;
+close $fh;
 
 is_deeply (csv (in => $tfn, filter => "not_blank"),
 	    [[3,3,3],[5,7,9],["",""],["",""],["",""," ",""],
@@ -215,15 +215,15 @@ is_deeply (csv (in => $tfn, filter => sub {
 	    "filter => filled");
 
 # Count rows in different ways
-open  FH, ">", $tfn or die "$tfn: $!";
-print FH <<"EOD";
+open  $fh, ">", $tfn or die "$tfn: $!";
+print $fh <<"EOD";
 foo,bar,baz
 1,,3
 0,"d
 €",4
 999,999,
 EOD
-close FH;
+close $fh;
 
 {   my $n = 0;
     open my $fh, "<", $tfn;
