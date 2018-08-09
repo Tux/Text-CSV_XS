@@ -13,10 +13,11 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     require "./t/util.pl";
 
-    open XS, "<", "CSV_XS.xs" or die "Cannot read error messages from XS\n";
-    while (<XS>) {
+    open my $fh, "<", "CSV_XS.xs" or die "Cannot read error messages from XS\n";
+    while (<$fh>) {
 	m/^    \{ ([0-9]{4}), "([^"]+)"\s+\}/ and $err{$1} = $2;
 	}
+    close ($fh);
     }
 
 $| = 1;
