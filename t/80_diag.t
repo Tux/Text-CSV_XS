@@ -17,7 +17,7 @@ BEGIN {
     while (<$fh>) {
 	m/^    \{ ([0-9]{4}), "([^"]+)"\s+\}/ and $err{$1} = $2;
 	}
-    close ($fh);
+    close $fh;
     }
 
 $| = 1;
