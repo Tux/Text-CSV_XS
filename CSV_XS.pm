@@ -2292,8 +2292,8 @@ L</error_diag> will return a string like
 =head2 known_attributes
 X<known_attributes>
 
- @attr = Text::CSV_CS->known_attributes;
- @attr = Text::CSV_CS::known_attributes;
+ @attr = Text::CSV_XS->known_attributes;
+ @attr = Text::CSV_XS::known_attributes;
  @attr = $csv->known_attributes;
 
 This method will return an ordered list of all the supported  attributes as
