@@ -6,8 +6,6 @@ CSV_XS.pm		Perl part of the module
 CSV_XS.xs		C part of the module
 Makefile.PL		Makefile generator
 ppport.h		Perl/Pollution/Portability script/include file
-t/00_pod.t		Check if pod is valid
-t/01_pod.t		Check if pod covers all
 t/10_base.t		Base tests (combine and parse only)
 t/12_acc.t		Accessor methods
 t/15_flags.t		Basic flag tests
