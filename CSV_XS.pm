@@ -829,6 +829,8 @@ sub header {
 	croak (q{usage: $csv->header ($fh, [ seps ], { options })});
 	}
 
+    defined $args{munge} && !defined $args{munge_column_names} and
+	$args{munge_column_names} = $args{munge}; # munge as alias
     defined $args{detect_bom}         or $args{detect_bom}         = 1;
     defined $args{set_column_names}   or $args{set_column_names}   = 1;
     defined $args{munge_column_names} or $args{munge_column_names} = "lc";
