@@ -1,6 +1,7 @@
-1.37	- 2018-09-13, H.Merijn Brand
+1.37	- 2018-09-19, H.Merijn Brand
     * Moved pod-tests from t to xt
     * Add munge as alias for munge_column_names
+    * Update Devel::PPPort
 
 1.36	- 2018-06-26, H.Merijn Brand
     * Now also tested on FreeBSD-11.1
