@@ -56,6 +56,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
     "Text-CSV_XS" => [
 	"ACME-QuoteDB",				# ::CSV Possible precedence issues
 	"App-Framework",			# Questions
+	"App-mojopaste",			# failing internet connections
 	"ASNMTAP",				# Questions
 	"Business-Shipping-DataTools",		# Questions and unmet prereqs
 	"Catalyst-TraitFor-Model-DBIC-Schema-QueryLog-AdoptPlack", # maint/Maker.pm
@@ -98,6 +99,8 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"RT-Extension-Assets-Import-CSV",	# Questions
 	"RT-View-ConciseSpreadsheet",		# Questions
 	"Serge",				# Questions in Build.PL ?
+	"Template-Provider-DBIC",		# weird
+	"Template-Provider-PrefixDBIC",		# weird
 	"Test-DBIC",				# ::CSV - Insecure -T in C3
 #	"Text-CSV-Encoded",			# ::CSV - Encoding, patch filed at RT
 	"Text-CSV_PP-Simple",			# ::CSV - Syntax errors, bad archive

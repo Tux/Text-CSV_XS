@@ -27,7 +27,6 @@ App-jsonschema
 App-jt
 App-lcpan-CmdBundle-cpanratings
 App-Mimosa
-App-mojopaste
 App-Netdisco
 App-Office-Contacts
 App-Office-Contacts-Donations
@@ -879,9 +878,6 @@ Task-WebGUI8
 Task-Yeb
 Template-Plugin-CSV
 Template-Provider-CustomDBIC
-Template-Provider-DBIC
-Template-Provider-PerContextDBIC
-Template-Provider-PrefixDBIC
 Test-Chado
 Test-DBIC
 Test-DBIC-ExpectedQueries
