@@ -1,8 +1,9 @@
-1.37	- 2018-09-24, H.Merijn Brand
+1.37	- 2018-09-27, H.Merijn Brand
     * Moved pod-tests from t to xt
     * Add munge as alias for munge_column_names
     * Update Devel::PPPort
     * Simplified ref-check defines in XS (issue 12, thanks pali)
+    * Tested against perl-5.29.3
 
 1.36	- 2018-06-26, H.Merijn Brand
     * Now also tested on FreeBSD-11.1

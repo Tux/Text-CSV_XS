@@ -58,7 +58,7 @@
 #define unless(expr)	if (!(expr))
 
 #define _is_reftype(f,x) \
-    (f && (SvGETMAGIC (f), 1) && SvROK (f) && SvTYPE (SvRV (f)) == x)
+    (f && ((SvGMAGICAL (f) && mg_get (f)) || 1) && SvROK (f) && SvTYPE (SvRV (f)) == x)
 #define _is_arrayref(f) _is_reftype (f, SVt_PVAV)
 #define _is_hashref(f)  _is_reftype (f, SVt_PVHV)
 #define _is_coderef(f)  _is_reftype (f, SVt_PVCV)
