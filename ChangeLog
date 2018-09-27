@@ -1,3 +1,6 @@
+1.38	- 2018-09-27, H.Merijn Brand
+    * 
+
 1.37	- 2018-09-27, H.Merijn Brand
     * Moved pod-tests from t to xt
     * Add munge as alias for munge_column_names
