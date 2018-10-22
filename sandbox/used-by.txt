@@ -903,6 +903,7 @@ Text-CSV-R
 Text-CSV-Simple
 Text-CSV-Slurp
 Text-CSV-Track
+Text-CSV-Unicode
 Text-ECSV
 Text-TEI-Collate
 Text-Tradition
