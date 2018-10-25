@@ -920,9 +920,12 @@ sub header {
 	@hdr = map { $args{munge_column_names}->($_)       } @hdr;
     ref $args{munge_column_names} eq "HASH" and
 	@hdr = map { $args{munge_column_names}->{$_} || $_ } @hdr;
-    my %hdr = map { $_ => 1 } @hdr;
-    exists $hdr{""}   and croak ($self->SetDiag (1012));
-    keys %hdr == @hdr or  croak ($self->SetDiag (1013));
+    my %hdr; $hdr{$_}++ for @hdr;
+    exists $hdr{""} and croak ($self->SetDiag (1012));
+    unless (keys %hdr == @hdr) {
+	croak ($self->SetDiag (1013, join ", " =>
+	    map { "$_ ($hdr{$_})" } grep { $hdr{$_} > 1 } keys %hdr));
+	}
     $args{set_column_names} and $self->column_names (@hdr);
     wantarray ? @hdr : $self;
     } # header
