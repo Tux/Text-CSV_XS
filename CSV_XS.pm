@@ -2253,6 +2253,8 @@ is equivalent to
      quote                 => undef,
      escape_char           => '"',
      binary                => 0,
+     strict                => 0,
+     formula               => 0,
      decode_utf8           => 1,
      auto_diag             => 0,
      diag_verbose          => 0,
