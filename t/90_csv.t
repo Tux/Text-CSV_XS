@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 88;
+ use Test::More tests => 94;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -116,11 +116,17 @@ unlink $tfn;
 
 # Basic "key" checks
 SKIP: {
-    $] < 5.008 and skip "No ScalarIO support for $]", 2;
+    $] < 5.008 and skip "No ScalarIO support for $]", 4;
+    # Simple key
     is_deeply (csv (in => \"key,value\n1,2\n", key => "key"),
 		    { 1 => { key => 1, value => 2 }}, "key");
     is_deeply (csv (in => \"1,2\n", key => "key", headers => [qw( key value )]),
 		    { 1 => { key => 1, value => 2 }}, "key");
+    # Combined key
+    is_deeply (csv (in => \"a,b,value\n1,1,2\n", key => [ ":" => "a", "b" ]),
+		    { "1:1" => { a => 1, b => 1, value => 2 }}, "key list");
+    is_deeply (csv (in => \"2,3,2\n", key => [ ":" => "a", "b" ], headers => [qw( a b value )]),
+		    { "2:3" => { a => 2, b => 3, value => 2 }}, "key list");
     }
 
 # Some "out" checks
@@ -170,8 +176,18 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     like ($err, qr{^usage:}, "error");
     undef $err;
 
-    $r = eval { csv (in => $tfn, key => ["foo"], auto_diag => 0); };
-    is ($r, undef, "Fail call with bad key type");
+    $r = eval { csv (in => $tfn, key => [ ":" ], auto_diag => 0); };
+    is ($r, undef, "Fail call with key with not enough fields");
+    like ($err, qr{1501 - PRM}, "Error 1501");
+    undef $err;
+
+    $r = eval { csv (in => $tfn, key => { "fx" => 1 }, auto_diag => 0); };
+    is ($r, undef, "Fail call with unsupported key type");
+    like ($err, qr{1501 - PRM}, "Error 1501");
+    undef $err;
+
+    $r = eval { csv (in => $tfn, key => sub { "foo" }, auto_diag => 0); };
+    is ($r, undef, "Fail call with bad unsupported type");
     like ($err, qr{1501 - PRM}, "Error 1501");
     undef $err;
 

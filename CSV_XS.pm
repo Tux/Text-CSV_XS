@@ -1309,7 +1309,7 @@ sub csv {
 
     my $key = $c->{key};
     if ($key) {
-	ref $key and croak ($csv->SetDiag (1501, "1501 - PRM"));
+	!ref $key or ref $key eq "ARRAY" && @$key > 1 or croak ($csv->SetDiag (1501, "1501 - PRM"));
 	$hdrs ||= "auto";
 	}
 
@@ -1368,7 +1368,13 @@ sub csv {
 	  do {
 	    $csv->column_names ($hdrs);
 	    $frag ? $csv->fragment ($fh, $frag) :
-	    $key  ? { map { $_->{$key} => $_ } @{$csv->getline_hr_all ($fh)} }
+	    $key  ? do {
+			my ($k, $j, @f) = ref $key ? (undef, @$key) : ($key);
+			+{ map {
+			    my $K = defined $k ? $_->{$k} : join $j => @{$_}{@f};
+			    ( $K => $_ );
+			    } @{$csv->getline_hr_all ($fh)} }
+			}
 		  : $csv->getline_hr_all ($fh);
 	    }
 	: # aoa
@@ -3301,9 +3307,12 @@ C<munge_column_names> can be abbreviated to C<munge>.
 X<key>
 
 If passed,  will default  L<C<headers>|/headers>  to C<"auto"> and return a
-hashref instead of an array of hashes.
+hashref instead of an array of hashes. Allowed values are simple scalars or
+array-references where the first element is the joiner and the rest are the
+fields to join to combine the key.
 
  my $ref = csv (in => "test.csv", key => "code");
+ my $ref = csv (in => "test.csv", key => [ ":" => "code", "color" ]);
 
 with test.csv like
 
@@ -3312,7 +3321,7 @@ with test.csv like
  2,keyboard,12,white
  3,mouse,5,black
 
-will return
+the first example will return
 
   { 1   => {
         code    => 1,
@@ -3327,6 +3336,28 @@ will return
         product => 'keyboard'
         },
     3   => {
+        code    => 3,
+        color   => 'black',
+        price   => 5,
+        product => 'mouse'
+        }
+    }
+
+the second example will return
+
+  { "1:gray"    => {
+        code    => 1,
+        color   => 'gray',
+        price   => 850,
+        product => 'pc'
+        },
+    "2:white"   => {
+        code    => 2,
+        color   => 'white',
+        price   => 12,
+        product => 'keyboard'
+        },
+    "3:black"   => {
         code    => 3,
         color   => 'black',
         price   => 5,
