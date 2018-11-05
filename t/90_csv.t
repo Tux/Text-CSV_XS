@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 94;
+ use Test::More tests => 100;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -169,34 +169,56 @@ close $fh;
 $] < 5.008 and unlink glob "SCALAR(*)";
 
 # errors
-{   my $err;
+{   my $err = "";
     local $SIG{__DIE__} = sub { $err = shift; };
     my $r = eval { csv (in => undef); };
     is ($r, undef, "csv needs in or file");
     like ($err, qr{^usage:}, "error");
-    undef $err;
+    $err = "";
 
     $r = eval { csv (in => $tfn, key => [ ":" ], auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with key with not enough fields");
-    like ($err, qr{1501 - PRM}, "Error 1501");
-    undef $err;
+    like ($err, qr{1501 - PRM}, $err);
+    $err = "";
 
     $r = eval { csv (in => $tfn, key => { "fx" => 1 }, auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with unsupported key type");
-    like ($err, qr{1501 - PRM}, "Error 1501");
-    undef $err;
+    like ($err, qr{1501 - PRM}, $err);
+    $err = "";
 
     $r = eval { csv (in => $tfn, key => sub { "foo" }, auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with bad unsupported type");
-    like ($err, qr{1501 - PRM}, "Error 1501");
-    undef $err;
+    like ($err, qr{1501 - PRM}, $err);
+    $err = "";
+
+    $r = eval { csv (in => $tfn, key => "xyz", auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
+    is ($r, undef, "Fail call with nonexisting key");
+    like ($err, qr{4001 - PRM}, $err);
+    $err = "";
+
+    $r = eval { csv (in => $tfn, key => [ "x" ], auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
+    is ($r, undef, "Fail call with no key in keylist");
+    like ($err, qr{1501 - PRM}, $err);
+    $err = "";
+
+    $r = eval { csv (in => $tfn, key => [ ":", "a", "xyz" ], auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
+    is ($r, undef, "Fail call with nonexisting key in keylist");
+    like ($err, qr{4001 - PRM}, $err);
+    $err = "";
 
     local $SIG{__DIE__} = sub { $err = shift; };
     foreach my $hr (1, "foo", \my %hr, sub { 42; }, *STDOUT) {
 	$r = eval { csv (in => $tfn, kh => $hr, auto_diag => 0); };
+	$err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
 	is ($r, undef, "Fail call with bad keep_header type");
-	like ($err, qr{1501 - PRM}, "Error 1501");
-	undef $err;
+	like ($err, qr{1501 - PRM}, $err);
+	$err = "";
 	}
 
 #   $r = eval { csv (in => +{}, auto_diag => 0); };
@@ -205,42 +227,49 @@ $] < 5.008 and unlink glob "SCALAR(*)";
 #   undef $err;
 
     $r = eval { csv (in => undef, auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot read from undef");
     like ($err, qr{^usage}, "Remind them of correct syntax");
-    undef $err;
+    $err = "";
 
     $r = eval { csv (in => "", auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot read from empty");
     like ($err, qr{^usage}, "Remind them of correct syntax");
-    undef $err;
+    $err = "";
 
     my $fn = "./dev/foo/bar/\x99\x99/\x88\x88/".
 	(join "\x99" => map { chr (128 + int rand 128) } 0..100).".csv";
     $r = eval { csv (in => $fn, auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot read from impossible file");
     like ($err, qr{/foo/bar}, "No such file or directory");
-    undef $err;
+    $err = "";
 
     $r = eval { csv (in => [[1,2]], out => $fn, auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot write to impossible file");
     like ($err, qr{/foo/bar}, "No such file or directory");
-    undef $err;
+    $err = "";
 
     my %x;
     $r = eval { csv (in => $tfn, out => \%x, auto_diag => 0); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot write to hashref");
     like ($err, qr{Not a GLOB}i, "Not a GLOB");
-    undef $err;
+    $err = "";
 
     $r = eval { csv (); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Needs arguments");
     like ($err, qr{^usage}i, "Don't know what to do");
-    undef $err;
+    $err = "";
 
     $r = eval { csv (in => "in.csv", out => "out.csv"); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot use strings for both");
     like ($err, qr{^cannot}i, "Explicitely unsupported");
-    undef $err;
+    $err = "";
     }
 
 eval {

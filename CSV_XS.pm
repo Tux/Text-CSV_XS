@@ -1366,10 +1366,14 @@ sub csv {
     my $ref = ref $hdrs
 	? # aoh
 	  do {
-	    $csv->column_names ($hdrs);
+	    my %h = map { $_ => 1 } $csv->column_names ($hdrs);
 	    $frag ? $csv->fragment ($fh, $frag) :
 	    $key  ? do {
 			my ($k, $j, @f) = ref $key ? (undef, @$key) : ($key);
+			if (my @mk = grep { !exists $h{$_} } grep { defined } $k, @f) {
+			    local $" = ", ";
+			    croak ($csv->SetDiag (4001, "4001 - PRM key does not exist: @mk\n"));
+			    }
 			+{ map {
 			    my $K = defined $k ? $_->{$k} : join $j => @{$_}{@f};
 			    ( $K => $_ );

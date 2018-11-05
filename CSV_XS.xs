@@ -255,6 +255,8 @@ static const xs_error_t xs_errors[] =  {
     { 3009, "EHR - print_hr () called before column_names ()"			},
     { 3010, "EHR - print_hr () called with invalid arguments"			},
 
+    { 4001, "PRM - The key does not exist as field in the data"			},
+
     {    0, "" },
     };
 
