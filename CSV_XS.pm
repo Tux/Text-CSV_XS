@@ -434,8 +434,9 @@ sub _SetDiagInfo {
     my ($self, $err, $msg) = @_;
     $self->SetDiag ($err);
     my $em  = $self->error_diag;
+    $em =~ s/^\d+$// and $msg =~ s/^/# /;
     my $sep = $em =~ m/[;\n]$/ ? "\n\t" : ": ";
-    join $sep => $em, $msg;
+    join $sep => grep m/\S\S\S/ => $em, $msg;
     } # _SetDiagInfo
 
 sub _supported_formula {
