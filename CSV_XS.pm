@@ -430,6 +430,14 @@ sub strict {
     $self->{strict};
     } # always_quote
 
+sub _SetDiagInfo {
+    my ($self, $err, $msg) = @_;
+    $self->SetDiag ($err);
+    my $em  = $self->error_diag;
+    my $sep = $em =~ m/[;\n]$/ ? "\n\t" : ": ";
+    join $sep => $em, $msg;
+    } # _SetDiagInfo
+
 sub _supported_formula {
     my ($self, $f) = @_;
     defined $f or return 5;
@@ -440,8 +448,7 @@ sub _supported_formula {
     $f =~ m/^(?: 4 | empty | )$/xi ? 4 :
     $f =~ m/^(?: 5 | undef   )$/xi ? 5 : do {
 	$self ||= "Text::CSV_XS";
-	$self->SetDiag (1500);
-	croak "formula-handling '$f' is not supported\n";
+	croak ($self->_SetDiagInfo (1500, "formula-handling '$f' is not supported"));
 	};
     } # _supported_formula
 
@@ -843,7 +850,7 @@ sub header {
 
     if (defined $args{sep_set}) {
 	ref $args{sep_set} eq "ARRAY" or
-	    croak ($self->SetDiag (1500, "sep_set should be an array ref"));
+	    croak ($self->_SetDiagInfo (1500, "sep_set should be an array ref"));
 	@seps =  @{$args{sep_set}};
 	}
 
@@ -923,7 +930,7 @@ sub header {
     my %hdr; $hdr{$_}++ for @hdr;
     exists $hdr{""} and croak ($self->SetDiag (1012));
     unless (keys %hdr == @hdr) {
-	croak ($self->SetDiag (1013, join ", " =>
+	croak ($self->_SetDiagInfo (1013, join ", " =>
 	    map { "$_ ($hdr{$_})" } grep { $hdr{$_} > 1 } keys %hdr));
 	}
     $args{set_column_names} and $self->column_names (@hdr);
@@ -1303,13 +1310,13 @@ sub csv {
 	}
 
     if ($c->{kh}) {
-	ref $c->{kh} eq "ARRAY" or croak ($csv->SetDiag (1501, "1501 - PRM"));
+	ref $c->{kh} eq "ARRAY" or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
 
     my $key = $c->{key};
     if ($key) {
-	!ref $key or ref $key eq "ARRAY" && @$key > 1 or croak ($csv->SetDiag (1501, "1501 - PRM"));
+	!ref $key or ref $key eq "ARRAY" && @$key > 1 or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
 
@@ -1366,13 +1373,18 @@ sub csv {
     my $ref = ref $hdrs
 	? # aoh
 	  do {
-	    my %h = map { $_ => 1 } $csv->column_names ($hdrs);
+	    my @h = $csv->column_names ($hdrs);
+	    my %h; $h{$_}++ for @h;
+	    exists $h{""} and croak ($csv->SetDiag (1012));
+	    unless (keys %h == @h) {
+		croak ($csv->_SetDiagInfo (1013, join ", " =>
+		    map { "$_ ($h{$_})" } grep { $h{$_} > 1 } keys %h));
+		}
 	    $frag ? $csv->fragment ($fh, $frag) :
 	    $key  ? do {
 			my ($k, $j, @f) = ref $key ? (undef, @$key) : ($key);
 			if (my @mk = grep { !exists $h{$_} } grep { defined } $k, @f) {
-			    local $" = ", ";
-			    croak ($csv->SetDiag (4001, "4001 - PRM key does not exist: @mk\n"));
+			    croak ($csv->_SetDiagInfo (4001, join ", " => @mk));
 			    }
 			+{ map {
 			    my $K = defined $k ? $_->{$k} : join $j => @{$_}{@f};

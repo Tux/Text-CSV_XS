@@ -179,37 +179,37 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     $r = eval { csv (in => $tfn, key => [ ":" ], auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with key with not enough fields");
-    like ($err, qr{1501 - PRM}, $err);
+    like ($err, qr{PRM.*unsupported type}, $err);
     $err = "";
 
     $r = eval { csv (in => $tfn, key => { "fx" => 1 }, auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with unsupported key type");
-    like ($err, qr{1501 - PRM}, $err);
+    like ($err, qr{PRM.*unsupported type}, $err);
     $err = "";
 
     $r = eval { csv (in => $tfn, key => sub { "foo" }, auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with bad unsupported type");
-    like ($err, qr{1501 - PRM}, $err);
+    like ($err, qr{PRM.*unsupported type}, $err);
     $err = "";
 
     $r = eval { csv (in => $tfn, key => "xyz", auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with nonexisting key");
-    like ($err, qr{4001 - PRM}, $err);
+    like ($err, qr{PRM.*xyz}, $err);
     $err = "";
 
     $r = eval { csv (in => $tfn, key => [ "x" ], auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with no key in keylist");
-    like ($err, qr{1501 - PRM}, $err);
+    like ($err, qr{PRM.*unsupported type}, $err);
     $err = "";
 
     $r = eval { csv (in => $tfn, key => [ ":", "a", "xyz" ], auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Fail call with nonexisting key in keylist");
-    like ($err, qr{4001 - PRM}, $err);
+    like ($err, qr{PRM.*xyz}, $err);
     $err = "";
 
     local $SIG{__DIE__} = sub { $err = shift; };
@@ -217,7 +217,7 @@ $] < 5.008 and unlink glob "SCALAR(*)";
 	$r = eval { csv (in => $tfn, kh => $hr, auto_diag => 0); };
 	$err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
 	is ($r, undef, "Fail call with bad keep_header type");
-	like ($err, qr{1501 - PRM}, $err);
+	like ($err, qr{PRM.*unsupported type}, $err);
 	$err = "";
 	}
 
