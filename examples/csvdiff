@@ -12,7 +12,7 @@ sub usage {
     } # usage
 
 use Getopt::Long qw(:config bundling nopermute );
-my $opt_c = 1;
+my $opt_c = !$ENV{NO_COLOR};
 my $opt_h = 0;
 my $opt_o = "";
 GetOptions (
