@@ -1,4 +1,4 @@
-1.38	- 2018-12-03, H.Merijn Brand
+1.38	- 2018-12-20, H.Merijn Brand
     * Name the duplicate headers on error 1013
     * Add missing attributes to default list (doc only, David H. Gutteridge)
     * Add support for combined keys

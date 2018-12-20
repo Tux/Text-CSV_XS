@@ -2213,6 +2213,8 @@ for this attribute is C<undef>, meaning no special treatment.
 This attribute is useful when exporting  CSV data  to be imported in custom
 loaders, like for MySQL, that recognize special sequences for C<NULL> data.
 
+This attribute has no meaning when parsing CSV data.
+
 =head3 verbatim
 X<verbatim>
 
@@ -4001,6 +4003,8 @@ note that this will not work as expected when choosing the backslash (C<\>)
 as C<escape_char>, as that will cause the C<\> to need to be escaped by yet
 another C<\>,  which will cause the field to need quotation and thus ending
 up as C<"\\N"> instead of C<\N>. See also L<C<undef_str>|/undef_str>.
+
+ csv (out => "foo.csv", in => sub { $sth->fetch }, undef_str => "\\N");
 
 these special sequences are not recognized by  Text::CSV_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
