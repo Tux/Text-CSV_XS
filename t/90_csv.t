@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 100;
+ use Test::More tests => 105;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -127,6 +127,24 @@ SKIP: {
 		    { "1:1" => { a => 1, b => 1, value => 2 }}, "key list");
     is_deeply (csv (in => \"2,3,2\n", key => [ ":" => "a", "b" ], headers => [qw( a b value )]),
 		    { "2:3" => { a => 2, b => 3, value => 2 }}, "key list");
+    }
+# Basic "value" checks
+SKIP: {
+    $] < 5.008 and skip "No ScalarIO support for $]", 4;
+    # Simple key simple value
+    is_deeply (csv (in => \"key,value\n1,2\n", key => "key", value => "value"),
+		    { 1 => 2 }, "key:value");
+    is_deeply (csv (in => \"1,2\n", key => "key", headers => [qw( key value )], value => "value"),
+		    { 1 => 2 }, "key:value");
+    # Simple key combined value
+    is_deeply (csv (in => \"key,v1,v2\n1,2,3\n", key => "key", value => [ "v1", "v2" ]),
+		    { 1 => { v1 => 2, v2 => 3 }}, "key:value");
+    # Combined key simple value
+    is_deeply (csv (in => \"a,b,value\n1,1,2\n", key => [ ":" => "a", "b" ], value => "value"),
+		    { "1:1" => 2 }, "[key]:value");
+    # Combined key combined value
+    is_deeply (csv (in => \"a,b,v1,v2\n1,1,2,2\n", key => [ ":" => "a", "b" ], value => [ "v1", "v2" ]),
+		    { "1:1" => { v1 => 2, v2 => 2 }}, "[key]:[value]");
     }
 
 # Some "out" checks

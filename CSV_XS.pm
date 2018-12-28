@@ -1169,6 +1169,7 @@ sub _csv_attr {
     my $hdrs = delete $attr{headers};
     my $frag = delete $attr{fragment};
     my $key  = delete $attr{key};
+    my $val  = delete $attr{value};
     my $kh   = delete $attr{keep_headers}	    ||
 	       delete $attr{keep_column_names}      ||
 	       delete $attr{kh};
@@ -1228,6 +1229,7 @@ sub _csv_attr {
 	enc  => $enc,
 	hdrs => $hdrs,
 	key  => $key,
+	val  => $val,
 	kh   => $kh,
 	frag => $frag,
 	fltr => $fltr,
@@ -1320,6 +1322,11 @@ sub csv {
 	!ref $key or ref $key eq "ARRAY" && @$key > 1 or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
+    my $val = $c->{val};
+    if ($val) {
+	$key					      or croak ($csv->SetDiag (1502));
+	!ref $val or ref $val eq "ARRAY" && @$val > 0 or croak ($csv->SetDiag (1503));
+	}
 
     $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
     if (defined $hdrs) {
@@ -1388,8 +1395,14 @@ sub csv {
 			    croak ($csv->_SetDiagInfo (4001, join ", " => @mk));
 			    }
 			+{ map {
-			    my $K = defined $k ? $_->{$k} : join $j => @{$_}{@f};
-			    ( $K => $_ );
+			    my $r = $_;
+			    my $K = defined $k ? $r->{$k} : join $j => @{$r}{@f};
+			    ( $K => (
+			    $val
+				? ref $val
+				    ? { map { $_ => $r->{$_} } @$val }
+				    : $r->{$val}
+			        : $r ));
 			    } @{$csv->getline_hr_all ($fh)} }
 			}
 		  : $csv->getline_hr_all ($fh);
@@ -3393,6 +3406,77 @@ date that has no header line, like
      key     =>     "c_foo",
      );
 
+=head3 value
+X<value>
+
+Used to create key-value hashes.
+
+Only allowed when C<key> is valid. A C<value> can be either a single column
+label or an anonymous list of column labels.  In the first case,  the value
+will be a simple scalar value, in the latter case, it will be a hashref.
+
+ my $ref = csv (in => "test.csv", key   => "code",
+                                  value => "price");
+ my $ref = csv (in => "test.csv", key   => "code",
+                                  value => [ "product", "price" ]);
+ my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+                                  value => "price");
+ my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+                                  value => [ "product", "price" ]);
+
+with test.csv like
+
+ code,product,price,color
+ 1,pc,850,gray
+ 2,keyboard,12,white
+ 3,mouse,5,black
+
+the first example will return
+
+  { 1 => 850,
+    2 =>  12,
+    3 =>   5,
+    }
+
+the second example will return
+
+  { 1   => {
+        price   => 850,
+        product => 'pc'
+        },
+    2   => {
+        price   => 12,
+        product => 'keyboard'
+        },
+    3   => {
+        price   => 5,
+        product => 'mouse'
+        }
+    }
+
+the third example will return
+
+  { "1:gray"    => 850,
+    "2:white"   =>  12,
+    "3:black"   =>   5,
+    }
+
+the fourth example will return
+
+  { "1:gray"    => {
+        price   => 850,
+        product => 'pc'
+        },
+    "2:white"   => {
+        price   => 12,
+        product => 'keyboard'
+        },
+    "3:black"   => {
+        price   => 5,
+        product => 'mouse'
+        }
+    }
+
 =head3 keep_headers
 X<keep_headers>
 X<keep_column_names>
@@ -4379,6 +4463,18 @@ Function or method called with invalid argument(s) or parameter(s).
 X<1501>
 
 The C<key> attribute is of an unsupported type.
+
+=item *
+1502 "PRM - The value attribute is passed without the key attribute"
+X<1502>
+
+The C<value> attribute is only allowed when a valid key is given.
+
+=item *
+1503 "PRM - The value attribute is passed as an unsupported type"
+X<1503>
+
+The C<value> attribute is of an unsupported type.
 
 =item *
 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
