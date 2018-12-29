@@ -279,27 +279,30 @@ unlink $diag_file;
 	}
     }
 
-foreach my $key ({}, sub {}, []) {
-    my $csv = Text::CSV_XS->new;
-    my $x = eval { $csv->csv (in => \"a,b", key => $key) };
-    is ($x, undef, "Invalid key");
-    my @diag = $csv->error_diag;
-    is ($diag[0], 1501, "Invalid key type");
-    }
+SKIP: {
+    $] < 5.008 and skip qq{$] does not support ScalarIO}, 14;
+    foreach my $key ({}, sub {}, []) {
+	my $csv = Text::CSV_XS->new;
+	my $x = eval { $csv->csv (in => \"a,b", key => $key) };
+	is ($x, undef, "Invalid key");
+	my @diag = $csv->error_diag;
+	is ($diag[0], 1501, "Invalid key type");
+	}
 
-{   my $csv = Text::CSV_XS->new;
-    my $x = eval { $csv->csv (in => \"a,b", value => "b") };
-    is ($x, undef, "Value without key");
-    my @diag = $csv->error_diag;
-    is ($diag[0], 1502, "No key");
-    }
+    {   my $csv = Text::CSV_XS->new;
+	my $x = eval { $csv->csv (in => \"a,b", value => "b") };
+	is ($x, undef, "Value without key");
+	my @diag = $csv->error_diag;
+	is ($diag[0], 1502, "No key");
+	}
 
-foreach my $val ({}, sub {}, []) {
-    my $csv = Text::CSV_XS->new;
-    my $x = eval { $csv->csv (in => \"a,b", key => "a", value => $val) };
-    is ($x, undef, "Invalid value");
-    my @diag = $csv->error_diag;
-    is ($diag[0], 1503, "Invalid value type");
+    foreach my $val ({}, sub {}, []) {
+	my $csv = Text::CSV_XS->new;
+	my $x = eval { $csv->csv (in => \"a,b", key => "a", value => $val) };
+	is ($x, undef, "Invalid value");
+	my @diag = $csv->error_diag;
+	is ($diag[0], 1503, "Invalid value type");
+	}
     }
 
 1;

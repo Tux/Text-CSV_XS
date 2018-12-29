@@ -130,7 +130,7 @@ SKIP: {
     }
 # Basic "value" checks
 SKIP: {
-    $] < 5.008 and skip "No ScalarIO support for $]", 4;
+    $] < 5.008 and skip "No ScalarIO support for $]", 5;
     # Simple key simple value
     is_deeply (csv (in => \"key,value\n1,2\n", key => "key", value => "value"),
 		    { 1 => 2 }, "key:value");
