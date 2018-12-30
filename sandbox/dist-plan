@@ -18,8 +18,11 @@ scp -p Text-CSV_XS.tgz ...
 - openSUSE 15.0
 - openSUSE 42.3
 - Windows 7
-- MacOSX
 - FreeBSD
 - NetBSD
+- CentOS
+- Oracle Linux
+- Debian
+- MacOSX
 
 GO!
