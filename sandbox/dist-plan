@@ -1,0 +1,25 @@
+perl Makefile.PL
+make test
+make tgzdist
+
+release -t
+
+perl Makefile.PL
+make test
+make install UNINST=1
+perl sandbox/used_by.pl
+
+scp -p Text-CSV_XS.tgz ...
+- HP-UX 11.31 ia
+- HP-UX 11.23 ia
+- HP-UX 11.23 pa
+- HP-UX 11.11 ps
+- AIX 5.2
+- openSUSE 15.0
+- openSUSE 42.3
+- Windows 7
+- MacOSX
+- FreeBSD
+- NetBSD
+
+GO!
