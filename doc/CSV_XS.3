@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2018-06-26" "perl v5.26.2" "User Contributed Perl Documentation"
+.TH STDIN 1 "2019-01-01" "perl v5.28.1" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1030,6 +1030,8 @@ for this attribute is \f(CW\*(C`undef\*(C'\fR, meaning no special treatment.
 This attribute is useful when exporting  \s-1CSV\s0 data  to be imported in custom
 loaders, like for MySQL, that recognize special sequences for \f(CW\*(C`NULL\*(C'\fR data.
 .PP
+This attribute has no meaning when parsing \s-1CSV\s0 data.
+.PP
 \fIverbatim\fR
 .IX Xref "verbatim"
 .IX Subsection "verbatim"
@@ -1119,6 +1121,8 @@ is equivalent to
 \&     escape_null           => 1,
 \&     quote_binary          => 1,
 \&     keep_meta_info        => 0,
+\&     strict                => 0,
+\&     formula               => 0,
 \&     verbatim              => 0,
 \&     undef_str             => undef,
 \&     types                 => undef,
@@ -1155,8 +1159,8 @@ fail reason available through the \*(L"error_diag\*(R" method.
 .IX Xref "known_attributes"
 .IX Subsection "known_attributes"
 .Vb 3
-\& @attr = Text::CSV_CS\->known_attributes;
-\& @attr = Text::CSV_CS::known_attributes;
+\& @attr = Text::CSV_XS\->known_attributes;
+\& @attr = Text::CSV_XS::known_attributes;
 \& @attr = $csv\->known_attributes;
 .Ve
 .PP
@@ -2278,10 +2282,13 @@ opened stream with all matching arguments to detect and set the headers.
 .IX Subsection "key"
 .PP
 If passed,  will default  \f(CW\*(C`headers\*(C'\fR  to \f(CW"auto"\fR and return a
-hashref instead of an array of hashes.
+hashref instead of an array of hashes. Allowed values are simple scalars or
+array-references where the first element is the joiner and the rest are the
+fields to join to combine the key.
 .PP
-.Vb 1
+.Vb 2
 \& my $ref = csv (in => "test.csv", key => "code");
+\& my $ref = csv (in => "test.csv", key => [ ":" => "code", "color" ]);
 .Ve
 .PP
 with test.csv like
@@ -2293,7 +2300,7 @@ with test.csv like
 \& 3,mouse,5,black
 .Ve
 .PP
-will return
+the first example will return
 .PP
 .Vb 10
 \&  { 1   => {
@@ -2317,6 +2324,30 @@ will return
 \&    }
 .Ve
 .PP
+the second example will return
+.PP
+.Vb 10
+\&  { "1:gray"    => {
+\&        code    => 1,
+\&        color   => \*(Aqgray\*(Aq,
+\&        price   => 850,
+\&        product => \*(Aqpc\*(Aq
+\&        },
+\&    "2:white"   => {
+\&        code    => 2,
+\&        color   => \*(Aqwhite\*(Aq,
+\&        price   => 12,
+\&        product => \*(Aqkeyboard\*(Aq
+\&        },
+\&    "3:black"   => {
+\&        code    => 3,
+\&        color   => \*(Aqblack\*(Aq,
+\&        price   => 5,
+\&        product => \*(Aqmouse\*(Aq
+\&        }
+\&    }
+.Ve
+.PP
 The \f(CW\*(C`key\*(C'\fR attribute can be combined with \f(CW\*(C`headers\*(C'\fR for \f(CW\*(C`CSV\*(C'\fR
 date that has no header line, like
 .PP
@@ -2326,6 +2357,90 @@ date that has no header line, like
 \&     headers => [qw( c_foo foo bar description stock )],
 \&     key     =>     "c_foo",
 \&     );
+.Ve
+.PP
+\fIvalue\fR
+.IX Xref "value"
+.IX Subsection "value"
+.PP
+Used to create key-value hashes.
+.PP
+Only allowed when \f(CW\*(C`key\*(C'\fR is valid. A \f(CW\*(C`value\*(C'\fR can be either a single column
+label or an anonymous list of column labels.  In the first case,  the value
+will be a simple scalar value, in the latter case, it will be a hashref.
+.PP
+.Vb 8
+\& my $ref = csv (in => "test.csv", key   => "code",
+\&                                  value => "price");
+\& my $ref = csv (in => "test.csv", key   => "code",
+\&                                  value => [ "product", "price" ]);
+\& my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+\&                                  value => "price");
+\& my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+\&                                  value => [ "product", "price" ]);
+.Ve
+.PP
+with test.csv like
+.PP
+.Vb 4
+\& code,product,price,color
+\& 1,pc,850,gray
+\& 2,keyboard,12,white
+\& 3,mouse,5,black
+.Ve
+.PP
+the first example will return
+.PP
+.Vb 4
+\&  { 1 => 850,
+\&    2 =>  12,
+\&    3 =>   5,
+\&    }
+.Ve
+.PP
+the second example will return
+.PP
+.Vb 10
+\&  { 1   => {
+\&        price   => 850,
+\&        product => \*(Aqpc\*(Aq
+\&        },
+\&    2   => {
+\&        price   => 12,
+\&        product => \*(Aqkeyboard\*(Aq
+\&        },
+\&    3   => {
+\&        price   => 5,
+\&        product => \*(Aqmouse\*(Aq
+\&        }
+\&    }
+.Ve
+.PP
+the third example will return
+.PP
+.Vb 4
+\&  { "1:gray"    => 850,
+\&    "2:white"   =>  12,
+\&    "3:black"   =>   5,
+\&    }
+.Ve
+.PP
+the fourth example will return
+.PP
+.Vb 10
+\&  { "1:gray"    => {
+\&        price   => 850,
+\&        product => \*(Aqpc\*(Aq
+\&        },
+\&    "2:white"   => {
+\&        price   => 12,
+\&        product => \*(Aqkeyboard\*(Aq
+\&        },
+\&    "3:black"   => {
+\&        price   => 5,
+\&        product => \*(Aqmouse\*(Aq
+\&        }
+\&    }
 .Ve
 .PP
 \fIkeep_headers\fR
@@ -3007,6 +3122,10 @@ as \f(CW\*(C`escape_char\*(C'\fR, as that will cause the \f(CW\*(C`\e\*(C'\fR to
 another \f(CW\*(C`\e\*(C'\fR,  which will cause the field to need quotation and thus ending
 up as \f(CW"\e\eN"\fR instead of \f(CW\*(C`\eN\*(C'\fR. See also \f(CW\*(C`undef_str\*(C'\fR.
 .PP
+.Vb 1
+\& csv (out => "foo.csv", in => sub { $sth\->fetch }, undef_str => "\e\eN");
+.Ve
+.PP
 these special sequences are not recognized by  Text::CSV_XS  on parsing the
 \&\s-1CSV\s0 generated like this, but map and filter are your friends again
 .PP
@@ -3336,6 +3455,16 @@ Function or method called with invalid argument(s) or parameter(s).
 .Sp
 The \f(CW\*(C`key\*(C'\fR attribute is of an unsupported type.
 .IP "\(bu" 2
+1502 \*(L"\s-1PRM\s0 \- The value attribute is passed without the key attribute\*(R"
+.IX Xref "1502"
+.Sp
+The \f(CW\*(C`value\*(C'\fR attribute is only allowed when a valid key is given.
+.IP "\(bu" 2
+1503 \*(L"\s-1PRM\s0 \- The value attribute is passed as an unsupported type\*(R"
+.IX Xref "1503"
+.Sp
+The \f(CW\*(C`value\*(C'\fR attribute is of an unsupported type.
+.IP "\(bu" 2
 2010 \*(L"\s-1ECR\s0 \- \s-1QUO\s0 char inside quotes followed by \s-1CR\s0 not part of \s-1EOL\*(R"\s0
 .IX Xref "2010"
 .Sp
@@ -3500,7 +3629,7 @@ the documentation,   fixed most \s-1RT\s0 bugs,  added all the allow flags and t
 .SH "COPYRIGHT AND LICENSE"
 .IX Header "COPYRIGHT AND LICENSE"
 .Vb 3
-\& Copyright (C) 2007\-2018 H.Merijn Brand.  All rights reserved.
+\& Copyright (C) 2007\-2019 H.Merijn Brand.  All rights reserved.
 \& Copyright (C) 1998\-2001 Jochen Wiedmann. All rights reserved.
 \& Copyright (C) 1997      Alan Citterman.  All rights reserved.
 .Ve

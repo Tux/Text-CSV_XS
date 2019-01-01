@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
+<title>Text::CSV_XS - comma-separated values manipulation routines</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:hmbrand@cpan.org" />
 </head>
@@ -105,6 +105,7 @@
           <li><a href="#headers">headers </a></li>
           <li><a href="#munge_column_names1">munge_column_names </a></li>
           <li><a href="#key">key </a></li>
+          <li><a href="#value">value </a></li>
           <li><a href="#keep_headers">keep_headers   </a></li>
           <li><a href="#fragment1">fragment </a></li>
           <li><a href="#sep_set1">sep_set  </a></li>
@@ -765,6 +766,8 @@ or
 
 <p>This attribute is useful when exporting CSV data to be imported in custom loaders, like for MySQL, that recognize special sequences for <code>NULL</code> data.</p>
 
+<p>This attribute has no meaning when parsing CSV data.</p>
+
 <h3 id="verbatim">verbatim </h3>
 
 <pre><code> my $csv = Text::CSV_XS-&gt;new ({ verbatim =&gt; 1 });
@@ -826,6 +829,8 @@ or
      escape_null           =&gt; 1,
      quote_binary          =&gt; 1,
      keep_meta_info        =&gt; 0,
+     strict                =&gt; 0,
+     formula               =&gt; 0,
      verbatim              =&gt; 0,
      undef_str             =&gt; undef,
      types                 =&gt; undef,
@@ -850,8 +855,8 @@ or
 
 <h2 id="known_attributes">known_attributes </h2>
 
-<pre><code> @attr = Text::CSV_CS-&gt;known_attributes;
- @attr = Text::CSV_CS::known_attributes;
+<pre><code> @attr = Text::CSV_XS-&gt;known_attributes;
+ @attr = Text::CSV_XS::known_attributes;
  @attr = $csv-&gt;known_attributes;</code></pre>
 
 <p>This method will return an ordered list of all the supported attributes as described above. This can be useful for knowing what attributes are valid in classes that use or extend Text::CSV_XS.</p>
@@ -1640,9 +1645,10 @@ or
 
 <h3 id="key">key </h3>
 
-<p>If passed, will default <a href="#headers"><code>headers</code></a> to <code>&quot;auto&quot;</code> and return a hashref instead of an array of hashes.</p>
+<p>If passed, will default <a href="#headers"><code>headers</code></a> to <code>&quot;auto&quot;</code> and return a hashref instead of an array of hashes. Allowed values are simple scalars or array-references where the first element is the joiner and the rest are the fields to join to combine the key.</p>
 
-<pre><code> my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; &quot;code&quot;);</code></pre>
+<pre><code> my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; &quot;code&quot;);
+ my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ]);</code></pre>
 
 <p>with test.csv like</p>
 
@@ -1651,7 +1657,7 @@ or
  2,keyboard,12,white
  3,mouse,5,black</code></pre>
 
-<p>will return</p>
+<p>the first example will return</p>
 
 <pre><code>  { 1   =&gt; {
         code    =&gt; 1,
@@ -1673,6 +1679,28 @@ or
         }
     }</code></pre>
 
+<p>the second example will return</p>
+
+<pre><code>  { &quot;1:gray&quot;    =&gt; {
+        code    =&gt; 1,
+        color   =&gt; &#39;gray&#39;,
+        price   =&gt; 850,
+        product =&gt; &#39;pc&#39;
+        },
+    &quot;2:white&quot;   =&gt; {
+        code    =&gt; 2,
+        color   =&gt; &#39;white&#39;,
+        price   =&gt; 12,
+        product =&gt; &#39;keyboard&#39;
+        },
+    &quot;3:black&quot;   =&gt; {
+        code    =&gt; 3,
+        color   =&gt; &#39;black&#39;,
+        price   =&gt; 5,
+        product =&gt; &#39;mouse&#39;
+        }
+    }</code></pre>
+
 <p>The <code>key</code> attribute can be combined with <a href="#headers"><code>headers</code></a> for <code>CSV</code> date that has no header line, like</p>
 
 <pre><code> my $ref = csv (
@@ -1680,6 +1708,74 @@ or
      headers =&gt; [qw( c_foo foo bar description stock )],
      key     =&gt;     &quot;c_foo&quot;,
      );</code></pre>
+
+<h3 id="value">value </h3>
+
+<p>Used to create key-value hashes.</p>
+
+<p>Only allowed when <code>key</code> is valid. A <code>value</code> can be either a single column label or an anonymous list of column labels. In the first case, the value will be a simple scalar value, in the latter case, it will be a hashref.</p>
+
+<pre><code> my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; &quot;code&quot;,
+                                  value =&gt; &quot;price&quot;);
+ my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; &quot;code&quot;,
+                                  value =&gt; [ &quot;product&quot;, &quot;price&quot; ]);
+ my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ],
+                                  value =&gt; &quot;price&quot;);
+ my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ],
+                                  value =&gt; [ &quot;product&quot;, &quot;price&quot; ]);</code></pre>
+
+<p>with test.csv like</p>
+
+<pre><code> code,product,price,color
+ 1,pc,850,gray
+ 2,keyboard,12,white
+ 3,mouse,5,black</code></pre>
+
+<p>the first example will return</p>
+
+<pre><code>  { 1 =&gt; 850,
+    2 =&gt;  12,
+    3 =&gt;   5,
+    }</code></pre>
+
+<p>the second example will return</p>
+
+<pre><code>  { 1   =&gt; {
+        price   =&gt; 850,
+        product =&gt; &#39;pc&#39;
+        },
+    2   =&gt; {
+        price   =&gt; 12,
+        product =&gt; &#39;keyboard&#39;
+        },
+    3   =&gt; {
+        price   =&gt; 5,
+        product =&gt; &#39;mouse&#39;
+        }
+    }</code></pre>
+
+<p>the third example will return</p>
+
+<pre><code>  { &quot;1:gray&quot;    =&gt; 850,
+    &quot;2:white&quot;   =&gt;  12,
+    &quot;3:black&quot;   =&gt;   5,
+    }</code></pre>
+
+<p>the fourth example will return</p>
+
+<pre><code>  { &quot;1:gray&quot;    =&gt; {
+        price   =&gt; 850,
+        product =&gt; &#39;pc&#39;
+        },
+    &quot;2:white&quot;   =&gt; {
+        price   =&gt; 12,
+        product =&gt; &#39;keyboard&#39;
+        },
+    &quot;3:black&quot;   =&gt; {
+        price   =&gt; 5,
+        product =&gt; &#39;mouse&#39;
+        }
+    }</code></pre>
 
 <h3 id="keep_headers">keep_headers   </h3>
 
@@ -2255,6 +2351,8 @@ or
 
 <p>note that this will not work as expected when choosing the backslash (<code>\</code>) as <code>escape_char</code>, as that will cause the <code>\</code> to need to be escaped by yet another <code>\</code>, which will cause the field to need quotation and thus ending up as <code>&quot;\\N&quot;</code> instead of <code>\N</code>. See also <a href="#undef_str"><code>undef_str</code></a>.</p>
 
+<pre><code> csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch }, undef_str =&gt; &quot;\\N&quot;);</code></pre>
+
 <p>these special sequences are not recognized by Text::CSV_XS on parsing the CSV generated like this, but map and filter are your friends again</p>
 
 <pre><code> while (my $row = $csv-&gt;getline ($fh)) {
@@ -2569,6 +2667,16 @@ or
 <p>The <code>key</code> attribute is of an unsupported type.</p>
 
 </li>
+<li><p>1502 &quot;PRM - The value attribute is passed without the key attribute&quot; </p>
+
+<p>The <code>value</code> attribute is only allowed when a valid key is given.</p>
+
+</li>
+<li><p>1503 &quot;PRM - The value attribute is passed as an unsupported type&quot; </p>
+
+<p>The <code>value</code> attribute is of an unsupported type.</p>
+
+</li>
 <li><p>2010 &quot;ECR - QUO char inside quotes followed by CR not part of EOL&quot; </p>
 
 <p>When <a href="#eol"><code>eol</code></a> has been set to anything but the default, like <code>&quot;\r\t\n&quot;</code>, and the <code>&quot;\r&quot;</code> is following the <b>second</b> (closing) <a href="#quote_char"><code>quote_char</code></a>, where the characters following the <code>&quot;\r&quot;</code> do not make up the <a href="#eol"><code>eol</code></a> sequence, this is an error.</p>
@@ -2709,7 +2817,7 @@ or
 
 <h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
 
-<pre><code> Copyright (C) 2007-2018 H.Merijn Brand.  All rights reserved.
+<pre><code> Copyright (C) 2007-2019 H.Merijn Brand.  All rights reserved.
  Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
  Copyright (C) 1997      Alan Citterman.  All rights reserved.</code></pre>
 

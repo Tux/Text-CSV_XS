@@ -733,6 +733,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        custom loaders, like for MySQL, that recognize special sequences for
        "NULL" data.
 
+       This attribute has no meaning when parsing CSV data.
+
        [4mverbatim[0m
 
         my $csv = Text::CSV_XS->new ({ verbatim => 1 });
@@ -810,6 +812,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
             escape_null           => 1,
             quote_binary          => 1,
             keep_meta_info        => 0,
+            strict                => 0,
+            formula               => 0,
             verbatim              => 0,
             undef_str             => undef,
             types                 => undef,
@@ -837,8 +841,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         "INI - Unknown attribute 'ecs_char'"
 
    [1mknown_attributes[0m
-        @attr = Text::CSV_CS->known_attributes;
-        @attr = Text::CSV_CS::known_attributes;
+        @attr = Text::CSV_XS->known_attributes;
+        @attr = Text::CSV_XS::known_attributes;
         @attr = $csv->known_attributes;
 
        This method will return an ordered list of all the supported
@@ -1744,9 +1748,12 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        [4mkey[0m
 
        If passed,  will default  "headers"  to "auto" and return a hashref
-       instead of an array of hashes.
+       instead of an array of hashes. Allowed values are simple scalars or
+       array-references where the first element is the joiner and the rest are
+       the fields to join to combine the key.
 
         my $ref = csv (in => "test.csv", key => "code");
+        my $ref = csv (in => "test.csv", key => [ ":" => "code", "color" ]);
 
        with test.csv like
 
@@ -1755,7 +1762,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         2,keyboard,12,white
         3,mouse,5,black
 
-       will return
+       the first example will return
 
          { 1   => {
                code    => 1,
@@ -1777,6 +1784,28 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
                }
            }
 
+       the second example will return
+
+         { "1:gray"    => {
+               code    => 1,
+               color   => 'gray',
+               price   => 850,
+               product => 'pc'
+               },
+           "2:white"   => {
+               code    => 2,
+               color   => 'white',
+               price   => 12,
+               product => 'keyboard'
+               },
+           "3:black"   => {
+               code    => 3,
+               color   => 'black',
+               price   => 5,
+               product => 'mouse'
+               }
+           }
+
        The "key" attribute can be combined with "headers" for "CSV" date that
        has no header line, like
 
@@ -1785,6 +1814,77 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
             headers => [qw( c_foo foo bar description stock )],
             key     =>     "c_foo",
             );
+
+       [4mvalue[0m
+
+       Used to create key-value hashes.
+
+       Only allowed when "key" is valid. A "value" can be either a single
+       column label or an anonymous list of column labels.  In the first case,
+       the value will be a simple scalar value, in the latter case, it will be
+       a hashref.
+
+        my $ref = csv (in => "test.csv", key   => "code",
+                                         value => "price");
+        my $ref = csv (in => "test.csv", key   => "code",
+                                         value => [ "product", "price" ]);
+        my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+                                         value => "price");
+        my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+                                         value => [ "product", "price" ]);
+
+       with test.csv like
+
+        code,product,price,color
+        1,pc,850,gray
+        2,keyboard,12,white
+        3,mouse,5,black
+
+       the first example will return
+
+         { 1 => 850,
+           2 =>  12,
+           3 =>   5,
+           }
+
+       the second example will return
+
+         { 1   => {
+               price   => 850,
+               product => 'pc'
+               },
+           2   => {
+               price   => 12,
+               product => 'keyboard'
+               },
+           3   => {
+               price   => 5,
+               product => 'mouse'
+               }
+           }
+
+       the third example will return
+
+         { "1:gray"    => 850,
+           "2:white"   =>  12,
+           "3:black"   =>   5,
+           }
+
+       the fourth example will return
+
+         { "1:gray"    => {
+               price   => 850,
+               product => 'pc'
+               },
+           "2:white"   => {
+               price   => 12,
+               product => 'keyboard'
+               },
+           "3:black"   => {
+               price   => 5,
+               product => 'mouse'
+               }
+           }
 
        [4mkeep_headers[0m
 
@@ -2346,6 +2446,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        quotation and thus ending up as "\\N" instead of "\N". See also
        "undef_str".
 
+        csv (out => "foo.csv", in => sub { $sth->fetch }, undef_str => "\\N");
+
        these special sequences are not recognized by  Text::CSV_XS  on parsing
        the CSV generated like this, but map and filter are your friends again
 
@@ -2641,6 +2743,14 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
          The "key" attribute is of an unsupported type.
 
+       · 1502 "PRM - The value attribute is passed without the key attribute"
+
+         The "value" attribute is only allowed when a valid key is given.
+
+       · 1503 "PRM - The value attribute is passed as an unsupported type"
+
+         The "value" attribute is of an unsupported type.
+
        · 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 
          When  "eol"  has  been  set  to  anything  but the  default,  like
@@ -2779,7 +2889,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        the "csv" function. See ChangeLog releases 0.25 and on.
 
 [1mCOPYRIGHT AND LICENSE[0m
-        Copyright (C) 2007-2018 H.Merijn Brand.  All rights reserved.
+        Copyright (C) 2007-2019 H.Merijn Brand.  All rights reserved.
         Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
         Copyright (C) 1997      Alan Citterman.  All rights reserved.
 
@@ -2788,4 +2898,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.26.2                      2018-06-26                          STDIN(1)
+perl v5.28.1                      2019-01-01                          STDIN(1)

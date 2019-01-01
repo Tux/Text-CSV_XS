@@ -750,6 +750,8 @@ for this attribute is `undef`, meaning no special treatment.
 This attribute is useful when exporting  CSV data  to be imported in custom
 loaders, like for MySQL, that recognize special sequences for `NULL` data.
 
+This attribute has no meaning when parsing CSV data.
+
 ### verbatim
 
 
@@ -828,6 +830,8 @@ is equivalent to
         escape_null           => 1,
         quote_binary          => 1,
         keep_meta_info        => 0,
+        strict                => 0,
+        formula               => 0,
         verbatim              => 0,
         undef_str             => undef,
         types                 => undef,
@@ -857,8 +861,8 @@ fail reason available through the ["error\_diag"](#error_diag) method.
 ## known\_attributes
 
 
-    @attr = Text::CSV_CS->known_attributes;
-    @attr = Text::CSV_CS::known_attributes;
+    @attr = Text::CSV_XS->known_attributes;
+    @attr = Text::CSV_XS::known_attributes;
     @attr = $csv->known_attributes;
 
 This method will return an ordered list of all the supported  attributes as
@@ -1839,9 +1843,12 @@ opened stream with all matching arguments to detect and set the headers.
 
 
 If passed,  will default  [`headers`](#headers)  to `"auto"` and return a
-hashref instead of an array of hashes.
+hashref instead of an array of hashes. Allowed values are simple scalars or
+array-references where the first element is the joiner and the rest are the
+fields to join to combine the key.
 
     my $ref = csv (in => "test.csv", key => "code");
+    my $ref = csv (in => "test.csv", key => [ ":" => "code", "color" ]);
 
 with test.csv like
 
@@ -1850,7 +1857,7 @@ with test.csv like
     2,keyboard,12,white
     3,mouse,5,black
 
-will return
+the first example will return
 
     { 1   => {
           code    => 1,
@@ -1872,6 +1879,28 @@ will return
           }
       }
 
+the second example will return
+
+    { "1:gray"    => {
+          code    => 1,
+          color   => 'gray',
+          price   => 850,
+          product => 'pc'
+          },
+      "2:white"   => {
+          code    => 2,
+          color   => 'white',
+          price   => 12,
+          product => 'keyboard'
+          },
+      "3:black"   => {
+          code    => 3,
+          color   => 'black',
+          price   => 5,
+          product => 'mouse'
+          }
+      }
+
 The `key` attribute can be combined with [`headers`](#headers) for `CSV`
 date that has no header line, like
 
@@ -1880,6 +1909,77 @@ date that has no header line, like
         headers => [qw( c_foo foo bar description stock )],
         key     =>     "c_foo",
         );
+
+### value
+
+
+Used to create key-value hashes.
+
+Only allowed when `key` is valid. A `value` can be either a single column
+label or an anonymous list of column labels.  In the first case,  the value
+will be a simple scalar value, in the latter case, it will be a hashref.
+
+    my $ref = csv (in => "test.csv", key   => "code",
+                                     value => "price");
+    my $ref = csv (in => "test.csv", key   => "code",
+                                     value => [ "product", "price" ]);
+    my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+                                     value => "price");
+    my $ref = csv (in => "test.csv", key   => [ ":" => "code", "color" ],
+                                     value => [ "product", "price" ]);
+
+with test.csv like
+
+    code,product,price,color
+    1,pc,850,gray
+    2,keyboard,12,white
+    3,mouse,5,black
+
+the first example will return
+
+    { 1 => 850,
+      2 =>  12,
+      3 =>   5,
+      }
+
+the second example will return
+
+    { 1   => {
+          price   => 850,
+          product => 'pc'
+          },
+      2   => {
+          price   => 12,
+          product => 'keyboard'
+          },
+      3   => {
+          price   => 5,
+          product => 'mouse'
+          }
+      }
+
+the third example will return
+
+    { "1:gray"    => 850,
+      "2:white"   =>  12,
+      "3:black"   =>   5,
+      }
+
+the fourth example will return
+
+    { "1:gray"    => {
+          price   => 850,
+          product => 'pc'
+          },
+      "2:white"   => {
+          price   => 12,
+          product => 'keyboard'
+          },
+      "3:black"   => {
+          price   => 5,
+          product => 'mouse'
+          }
+      }
 
 ### keep\_headers
 
@@ -2467,6 +2567,8 @@ as `escape_char`, as that will cause the `\` to need to be escaped by yet
 another `\`,  which will cause the field to need quotation and thus ending
 up as `"\\N"` instead of `\N`. See also [`undef_str`](#undef_str).
 
+    csv (out => "foo.csv", in => sub { $sth->fetch }, undef_str => "\\N");
+
 these special sequences are not recognized by  Text::CSV\_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
 
@@ -2795,6 +2897,16 @@ And below should be the complete list of error codes that can be returned:
 
     The `key` attribute is of an unsupported type.
 
+- 1502 "PRM - The value attribute is passed without the key attribute"
+
+
+    The `value` attribute is only allowed when a valid key is given.
+
+- 1503 "PRM - The value attribute is passed as an unsupported type"
+
+
+    The `value` attribute is of an unsupported type.
+
 - 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 
 
@@ -2942,7 +3054,7 @@ the documentation,   fixed most RT bugs,  added all the allow flags and the
 
 # COPYRIGHT AND LICENSE
 
-    Copyright (C) 2007-2018 H.Merijn Brand.  All rights reserved.
+    Copyright (C) 2007-2019 H.Merijn Brand.  All rights reserved.
     Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
     Copyright (C) 1997      Alan Citterman.  All rights reserved.
 
