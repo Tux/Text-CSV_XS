@@ -24,5 +24,6 @@ scp -p Text-CSV_XS.tgz ...
 - Oracle Linux
 - Debian
 - MacOSX
+- Synology
 
 GO!
