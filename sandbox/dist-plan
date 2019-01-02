@@ -25,5 +25,6 @@ scp -p Text-CSV_XS.tgz ...
 - Debian
 - MacOSX
 - Synology
+- Hercules / ZDOlinux
 
 GO!
