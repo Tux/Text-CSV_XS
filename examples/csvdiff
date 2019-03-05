@@ -155,8 +155,8 @@ while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
     my @v0 = @r0;
     my @v1 = @r1;
     $opt_Z and s/[\r\n\s]+\z// for @v0, @v1;
-    $opt_b and s/[\r\n\s]+/ /  for @v0, @v1;
-    $opt_w and s/[\r\n\s]+//   for @v0, @v1;
+    $opt_b and s/[\r\n\s]+/ /g for @v0, @v1;
+    $opt_w and s/[\r\n\s]+//g  for @v0, @v1;
 
     {	local $" = "\xFF";
 	"@v0" eq "@v1" and $i[0]++, $i[1]++, next;
