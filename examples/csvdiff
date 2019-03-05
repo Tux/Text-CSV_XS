@@ -110,7 +110,7 @@ my %cls;
 
 sub show {
     my ($pfx, $x) = @_;
-    my $row = $f[$x][$i[$x]++];
+    my $row = $f[$x][$i[$x]++] or return;
 
     if ($opt_h) {
 	my $bg = $cls{$pfx}->();
