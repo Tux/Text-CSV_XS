@@ -3,25 +3,36 @@
 use strict;
 use warnings;
 
+our $VERSION = "1.02 - 20190305";
+
 sub usage {
     my $err = shift and select STDERR;
-    print "usage: csvdiff [--no-color] [--html] file.csv file.csv\n",
+    print "usage: csvdiff [--no-color] [--html] [-w|-b|-Z] file.csv file.csv\n",
 	"  provides colorized diff on sorted CSV files\n",
-	"  assuming first line is header and first field is the key\n";
+	"  assuming first line is header and first field is the key\n",
+	"          --no-color               do not use colors\n",
+	"    -h    --html                   produce HTML output\n",
+	"    -w    --ignore-all-space       ignore all whistespace is all fields\n",
+	"    -b    --ignore-space-change    ignore whitespace length changes\n",
+	"    -Z    --ignore-trailing-space  ignore trailing whitespace per field\n",
+	"    -o F  --output=F               send output to file F\n";
     exit $err;
     } # usage
 
 use Getopt::Long qw(:config bundling nopermute );
 my $opt_c = !$ENV{NO_COLOR};
-my $opt_h = 0;
-my $opt_o = "";
 GetOptions (
     "help|?"		=> sub { usage (0); },
+    "V|version"		=> sub { print "csvdiff [$VERSION]\n"; exit 0 },
 
-    "c|color|colour!"	=> \$opt_c,
-    "h|html"		=> \$opt_h,
+    "w|ignore-all-space!"		=> \my $opt_w,
+    "b|ignore-ws|ignore-space-change!"	=> \my $opt_b,
+    "Z|ignore-trailing-space!"		=> \my $opt_Z,
 
-    "o|output=s"	=> \$opt_o,
+    "c|color|colour!"			=> \   $opt_c,
+    "h|html"				=> \my $opt_h,
+
+    "o|output=s"			=> \my $opt_o,
     ) or usage (1);
 
 @ARGV == 2 or usage (1);
@@ -141,7 +152,15 @@ while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
 	$r0[0] gt $r1[0] and show ("+", 1), next;
 	}
 
-    "@r0" eq "@r1" and $i[0]++, $i[1]++, next;
+    my @v0 = @r0;
+    my @v1 = @r1;
+    $opt_Z and s/[\r\n\s]+\z// for @v0, @v1;
+    $opt_b and s/[\r\n\s]+/ /  for @v0, @v1;
+    $opt_w and s/[\r\n\s]+//   for @v0, @v1;
+
+    {	local $" = "\xFF";
+	"@v0" eq "@v1" and $i[0]++, $i[1]++, next;
+	}
 
     foreach my $c (1 .. $#h0) {
 	my ($L, $R) = map { $_ // "" } $r0[$c], $r1[$c];

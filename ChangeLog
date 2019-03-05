@@ -1,8 +1,9 @@
-1.39	- 2019-01-15, H.Merijn Brand
+1.39	- 2019-03-05, H.Merijn Brand
     * It's 2019
     * Fix tests to skip on Encode failing (PR#17 charsbar + klapperl)
     * Tested on Z/OS (s390x - Hercules) :)
     * Test with new Module::CPANTS::Analyse
+    * Add options -w/-b/-Z to csvdiff
 
 1.38	- 2018-12-30, H.Merijn Brand
     * Name the duplicate headers on error 1013
