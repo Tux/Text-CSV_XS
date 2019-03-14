@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 303;
+ use Test::More tests => 310;
 #use Test::More "no_plan";
 
 my %err;
@@ -20,6 +20,7 @@ BEGIN {
     close $fh;
     }
 
+my $tfn = "_80test.csv"; END { -f $tfn and unlink $tfn; }
 $| = 1;
 
 my $csv = Text::CSV_XS->new ();
@@ -261,6 +262,19 @@ unlink $diag_file;
     ok ($csv->parse ("1,2,3"), "Set strict to 3 columns");
     is ($csv->parse ("3,4,5,6"), 0, "Too many columns");
     is (0 + $csv->error_diag, 2014, "Error set correctly");
+    }
+{   my $csv = Text::CSV_XS->new ({ strict => 1 });
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    ok ($csv->say ($fh, [ 1, 2, 3 ]), "Write line 1");
+    ok ($csv->say ($fh, [ 1, 2, 3 ]), "Write line 2");
+    close $fh;
+    open my $fh, "<", $tfn or die "$tfn: $!\n";
+    ok ((my $r = $csv->getline ($fh)),	"Get line 1 under strict");
+    ok ((   $r = $csv->getline ($fh)),	"Get line 3 under strict");
+    is ($csv->getline ($fh), undef,	"EOF under strict");
+    is (0 + $csv->error_diag, 2012,	"Error is 2012 instead of 2014");
+    ok ($csv->eof,			"EOF is set");
+    close $fh;
     }
 
 {   my $csv = Text::CSV_XS->new;

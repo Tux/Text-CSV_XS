@@ -1821,7 +1821,8 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     if (csv.strict) {
 	unless (csv.strict_n) csv.strict_n = (short)csv.fld_idx;
 	if (csv.fld_idx != csv.strict_n) {
-	    ParseError (&csv, 2014, csv.used);
+	    unless (csv.useIO & useIO_EOF)
+		ParseError (&csv, 2014, csv.used);
 	    result = FALSE;
 	    }
 	}
