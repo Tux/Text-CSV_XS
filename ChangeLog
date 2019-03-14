@@ -5,6 +5,7 @@
     * Test with new Module::CPANTS::Analyse
     * Add options -w/-b/-Z to csvdiff
     * Fix strict on streaming EOF
+    * Now also tested with cperl
 
 1.38	- 2018-12-30, H.Merijn Brand
     * Name the duplicate headers on error 1013
