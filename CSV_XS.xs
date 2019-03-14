@@ -350,12 +350,10 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
 	(void)hv_store (csv->self, "_EOF",          4, &PL_sv_yes,   0);
     if (csv->pself && csv->auto_diag) {
 	ENTER;
-	SAVETMPS;
 	PUSHMARK (SP);
 	XPUSHs (csv->pself);
 	PUTBACK;
 	call_pv ("Text::CSV_XS::error_diag", G_VOID | G_DISCARD);
-	FREETMPS;
 	LEAVE;
 	}
     return (err);
