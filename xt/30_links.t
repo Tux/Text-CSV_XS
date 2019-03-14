@@ -2,10 +2,8 @@
 
 use strict;
 use warnings;
+use Test::More;
 
 eval "use Test::Pod::Links";
-if ($@) {
-    print "1..0 # Test::Pod::Links required for this test\n";
-    exit 0;
-    }
+plan skip_all => "Test::Pod::Links required for testing POD links" if $@;
 Test::Pod::Links->new->all_pod_files_ok;

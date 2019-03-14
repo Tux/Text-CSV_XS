@@ -1,9 +1,11 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Test::More;
+
 eval "use Test::Portability::Files";
- 
-if ($@) {
-    print "1..0 # No file name checks available\n";
-    exit 0;
-    }
+plan skip_all => "1..0 # Test::Portability::Files required for these tests\n" if $@;
 
 BEGIN { $ENV{RELEASE_TESTING} = 1; }
 
