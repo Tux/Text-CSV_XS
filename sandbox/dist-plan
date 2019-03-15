@@ -7,7 +7,7 @@ release -t
 perl Makefile.PL
 make test
 make install UNINST=1
-perl sandbox/used_by.pl
+perl sandbox/used-by.pl
 
 scp -p Text-CSV_XS.tgz ...
 - HP-UX 11.31 ia
