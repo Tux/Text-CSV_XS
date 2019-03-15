@@ -93,6 +93,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Module-CPANTS-Site",			# ::CSV - Unmet prerequisites
 	"Net-IPFromZip",			# Missing zip file(s)
 	"Parse-CSV-Colnames",			# ::CSV - Fails because of Parse::CSV
+	"Pcore",				# Unmet prereqs (common::header)
 	"Plack-Middleware-DBIC-QueryLog",	# maint/Maker.pm
 	"Plack-Middleware-Debug-DBIC-QueryLog",	# maint/Maker.pm
 	"RDF-RDB2RDF",				# ::CSV - Bad tests
@@ -114,6 +115,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"VANAMBURG-SEMPROG-SimpleGraph",	# Own tests fail
 	"WebService-FuncNet",			# ::CSV - WSDL 404, POD
 	"Webservice-InterMine",			# Unmet prerequisites
+	"WebService-ReutersConnect",		# XML errors
 	"WWW-Analytics-MultiTouch",		# Unmet prerequisites
 	"XAS",					# ::CSV - No STOMP MQ
 	"XAS-Model",				# ::CSV - No STOMP MQ
