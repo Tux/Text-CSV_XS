@@ -2968,7 +2968,7 @@ And below should be the complete list of error codes that can be returned:
     An escape character should escape only characters that need escaping.
 
     Allowing  the escape  for other characters  is possible  with the attribute
-    ["allow\_loose\_escape"](#allow_loose_escape).
+    ["allow\_loose\_escapes"](#allow_loose_escapes).
 
 - 2026 "EIQ - Binary character inside quoted field, binary off"
 
