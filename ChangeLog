@@ -1,3 +1,6 @@
+1.40	- 2019-03-16, H.Merijn Brand
+    * 
+
 1.39	- 2019-03-15, H.Merijn Brand
     * It's 2019
     * Fix tests to skip on Encode failing (PR#17 charsbar + klapperl)
