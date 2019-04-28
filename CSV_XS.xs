@@ -8,6 +8,7 @@
 #include <perl.h>
 #include <XSUB.h>
 #define DPPP_PL_parser_NO_DUMMY
+#define NEED_utf8_to_uvchr_buf
 #define NEED_my_snprintf
 #define NEED_pv_escape
 #define NEED_pv_pretty
