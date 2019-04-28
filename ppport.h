@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.47
+    ppport.h -- Perl/Pollution/Portability Version 3.48
 
     Automatically created by Devel::PPPort running under perl 5.028002.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.47
+ppport.h - Perl/Pollution/Portability version 3.48
 
 =head1 SYNOPSIS
 
@@ -391,7 +391,7 @@ use strict;
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= 5.009004 && "$]" <= 5.009005 }
 
-my $VERSION = 3.47;
+my $VERSION = 3.48;
 
 my %opt = (
   quiet     => 0,
@@ -3980,551 +3980,6 @@ __DATA__
 #ifndef UVSIZE
 #  define UVSIZE                         IVSIZE
 #endif
-
-#define _ppport_MIN(a,b) (((a) <= (b)) ? (a) : (b))
-#ifndef sv_setuv
-#  define sv_setuv(sv, uv)               \
-               STMT_START {                         \
-                 UV TeMpUv = uv;                    \
-                 if (TeMpUv <= IV_MAX)              \
-                   sv_setiv(sv, TeMpUv);            \
-                 else                               \
-                   sv_setnv(sv, (double)TeMpUv);    \
-               } STMT_END
-#endif
-#ifndef newSVuv
-#  define newSVuv(uv)                    ((uv) <= IV_MAX ? newSViv((IV)uv) : newSVnv((NV)uv))
-#endif
-#ifndef sv_2uv
-#  define sv_2uv(sv)                     ((PL_Sv = (sv)), (UV) (SvNOK(PL_Sv) ? SvNV(PL_Sv) : sv_2nv(PL_Sv)))
-#endif
-
-#ifndef SvUVX
-#  define SvUVX(sv)                      ((UV)SvIVX(sv))
-#endif
-
-#ifndef SvUVXx
-#  define SvUVXx(sv)                     SvUVX(sv)
-#endif
-
-#ifndef SvUV
-#  define SvUV(sv)                       (SvIOK(sv) ? SvUVX(sv) : sv_2uv(sv))
-#endif
-
-#ifndef SvUVx
-#  define SvUVx(sv)                      ((PL_Sv = (sv)), SvUV(PL_Sv))
-#endif
-
-/* Hint: sv_uv
- * Always use the SvUVx() macro instead of sv_uv().
- */
-#ifndef sv_uv
-#  define sv_uv(sv)                      SvUVx(sv)
-#endif
-
-#if !defined(SvUOK) && defined(SvIOK_UV)
-#  define SvUOK(sv) SvIOK_UV(sv)
-#endif
-#ifndef XST_mUV
-#  define XST_mUV(i,v)                   (ST(i) = sv_2mortal(newSVuv(v))  )
-#endif
-
-#ifndef XSRETURN_UV
-#  define XSRETURN_UV(v)                 STMT_START { XST_mUV(0,v);  XSRETURN(1); } STMT_END
-#endif
-#ifndef PUSHu
-#  define PUSHu(u)                       STMT_START { sv_setuv(TARG, (UV)(u)); PUSHTARG;  } STMT_END
-#endif
-
-#ifndef XPUSHu
-#  define XPUSHu(u)                      STMT_START { sv_setuv(TARG, (UV)(u)); XPUSHTARG; } STMT_END
-#endif
-
-#if defined UTF8SKIP
-
-/* Don't use official version because it uses MIN, which may not be available */
-#undef UTF8_SAFE_SKIP
-#ifndef UTF8_SAFE_SKIP
-#  define UTF8_SAFE_SKIP(s, e)           (                                          \
-                                      ((((e) - (s)) <= 0)                       \
-                                      ? 0                                       \
-                                      : _ppport_MIN(((e) - (s)), UTF8SKIP(s))))
-#endif
-
-#endif
-
-#if !defined(my_strnlen)
-#if defined(NEED_my_strnlen)
-static STRLEN DPPP_(my_my_strnlen)(const char *str, Size_t maxlen);
-static
-#else
-extern STRLEN DPPP_(my_my_strnlen)(const char *str, Size_t maxlen);
-#endif
-
-#if defined(NEED_my_strnlen) || defined(NEED_my_strnlen_GLOBAL)
-
-#define my_strnlen DPPP_(my_my_strnlen)
-#define Perl_my_strnlen DPPP_(my_my_strnlen)
-
-
-STRLEN
-DPPP_(my_my_strnlen)(const char *str, Size_t maxlen)
-{
-    const char *p = str;
-
-    while(maxlen-- && *p)
-        p++;
-
-    return p - str;
-}
-
-#endif
-#endif
-
-#if (PERL_BCDVERSION < 0x5030000)
-        /* Versions prior to this accepted things that are now considered
-         * malformations, and didn't return -1 on error with warnings enabled
-         * */
-#  undef utf8_to_uvchr_buf
-#endif
-
-/* This implementation brings modern, generally more restricted standards to
- * utf8_to_uvchr_buf.  Some of these are security related, and clearly must
- * be done.  But its arguable that the others need not, and hence should not.
- * The reason they're here is that a module that intends to play with the
- * latest perls shoud be able to work the same in all releases.  An example is
- * that perl no longer accepts any UV for a code point, but limits them to
- * IV_MAX or below.  This is for future internal use of the larger code points.
- * If it turns out that some of these changes are breaking code that isn't
- * intended to work with modern perls, the tighter restrictions could be
- * relaxed.  khw thinks this is unlikely, but has been wrong in the past. */
-
-#ifndef utf8_to_uvchr_buf
-   /* Choose which underlying implementation to use.  At least one must be
-    * present or the perl is too early to handle this function */
-#  if defined(utf8n_to_uvchr) || defined(utf8_to_uv)
-#    if defined(utf8n_to_uvchr)   /* This is the preferred implementation */
-#      define _ppport_utf8_to_uvchr_buf_callee utf8n_to_uvchr
-#    else
-#      define _ppport_utf8_to_uvchr_buf_callee utf8_to_uv
-#    endif
-
-#  endif
-
-#ifdef _ppport_utf8_to_uvchr_buf_callee
-#  if defined(NEED_utf8_to_uvchr_buf)
-static UV DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 * s, const U8 * send, STRLEN * retlen);
-static
-#else
-extern UV DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 * s, const U8 * send, STRLEN * retlen);
-#endif
-
-#if defined(NEED_utf8_to_uvchr_buf) || defined(NEED_utf8_to_uvchr_buf_GLOBAL)
-
-#ifdef utf8_to_uvchr_buf
-#  undef utf8_to_uvchr_buf
-#endif
-#define utf8_to_uvchr_buf(a,b,c) DPPP_(my_utf8_to_uvchr_buf)(aTHX_ a,b,c)
-#define Perl_utf8_to_uvchr_buf DPPP_(my_utf8_to_uvchr_buf)
-
-
-UV
-DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
-{
-    UV ret;
-    STRLEN curlen;
-    bool overflows = 0;
-    const U8 *cur_s = s;
-    const bool do_warnings = ckWARN_d(WARN_UTF8);
-
-    if (send > s) {
-        curlen = send - s;
-    }
-    else {
-        assert(0);  /* Modern perls die under this circumstance */
-        curlen = 0;
-        if (! do_warnings) {    /* Handle empty here if no warnings needed */
-            if (retlen) *retlen = 0;
-            return UNICODE_REPLACEMENT;
-        }
-    }
-
-    /* The modern version allows anything that evaluates to a legal UV, but not
-     * overlongs nor an empty input */
-    ret = _ppport_utf8_to_uvchr_buf_callee(
-                s, curlen, retlen,   (UTF8_ALLOW_ANYUV
-                                  & ~(UTF8_ALLOW_LONG|UTF8_ALLOW_EMPTY)));
-
-    /* But actually, modern versions restrict the UV to being no more than what
-     * an IV can hold */
-    if (ret > PERL_INT_MAX) {
-        overflows = 1;
-    }
-
-#    if (PERL_BCDVERSION < 0x5026000)
-#      ifndef EBCDIC
-
-        /* There are bugs in versions earlier than this on non-EBCDIC platforms
-         * in which it did not detect all instances of overflow, which could be
-         * a security hole.  Also, earlier versions did not allow the overflow
-         * malformation under any circumstances, and modern ones do.  So we
-         * need to check here.  */
-
-    else if (curlen > 0 && *s >= 0xFE) {
-
-        /* If the main routine detected overflow, great; it returned 0.  But if the
-         * input's first byte indicates it could overflow, we need to verify.
-         * First, on a 32-bit machine the first byte being at least \xFE
-         * automatically is overflow */
-        if (sizeof(ret) < 8) {
-            overflows = 1;
-        }
-        else {
-            const U8 highest[] =    /* 2*63-1 */
-                        "\xFF\x80\x87\xBF\xBF\xBF\xBF\xBF\xBF\xBF\xBF\xBF\xBF";
-            const U8 *cur_h = highest;
-
-            for (cur_s = s; cur_s < send; cur_s++, cur_h++) {
-                if (UNLIKELY(*cur_s == *cur_h)) {
-                    continue;
-                }
-
-                /* If this byte is larger than the corresponding highest UTF-8
-                * byte, the sequence overflows; otherwise the byte is less than
-                * (as we handled the equality case above), and so the sequence
-                * doesn't overflow */
-                overflows = *cur_s > *cur_h;
-                break;
-
-            }
-
-            /* Here, either we set the bool and broke out of the loop, or got
-             * to the end and all bytes are the same which indicates it doesn't
-             * overflow. */
-        }
-    }
-
-#      endif
-#    endif  /* < 5.26 */
-
-    if (UNLIKELY(overflows)) {
-        if (! do_warnings) {
-            if (retlen) {
-                *retlen = _ppport_MIN(*retlen, UTF8SKIP(s));
-                *retlen = _ppport_MIN(*retlen, curlen);
-            }
-            return UNICODE_REPLACEMENT;
-        }
-        else {
-
-            /* On versions that correctly detect overflow, but forbid it
-             * always, 0 will be returned, but also a warning will have been
-             * raised.  Don't repeat it */
-            if (ret != 0) {
-                /* We use the error message in use from 5.8-5.14 */
-                Perl_warner(aTHX_ packWARN(WARN_UTF8),
-                    "Malformed UTF-8 character (overflow at 0x%" UVxf
-                    ", byte 0x%02x, after start byte 0x%02x)",
-                    ret, *cur_s, *s);
-            }
-            if (retlen) {
-                *retlen = (STRLEN) -1;
-            }
-            return 0;
-        }
-    }
-
-    /* If failed and warnings are off, to emulate the behavior of the real
-     * utf8_to_uvchr(), try again, allowing anything.  (Note a return of 0 is
-     * ok if the input was '\0') */
-    if (UNLIKELY(ret == 0 && (curlen == 0 || *s != '\0'))) {
-
-        /* If curlen is 0, we already handled the case where warnings are
-         * disabled, so this 'if' will be true, and we won't look at the
-         * contents of 's' */
-        if (do_warnings) {
-            *retlen = (STRLEN) -1;
-        }
-        else {
-            ret = _ppport_utf8_to_uvchr_buf_callee(
-                                            s, curlen, retlen, UTF8_ALLOW_ANY);
-            /* Override with the REPLACEMENT character, as that is what the
-             * modern version of this function returns */
-            ret = UNICODE_REPLACEMENT;
-
-#           if (PERL_BCDVERSION < 0x5016000)
-
-            /* Versions earlier than this don't necessarily return the proper
-             * length.  It should not extend past the end of string, nor past
-             * what the first byte indicates the length is, nor past the
-             * continuation characters */
-            if (retlen && *retlen >= 0) {
-                *retlen = _ppport_MIN(*retlen, curlen);
-                *retlen = _ppport_MIN(*retlen, UTF8SKIP(s));
-                unsigned int i = 1;
-                do {
-                    if (s[i] < 0x80 || s[i] > 0xBF) {
-                        *retlen = i;
-                        break;
-                    }
-                } while (++i < *retlen);
-            }
-
-#           endif
-
-        }
-    }
-
-    return ret;
-}
-
-#  endif
-#endif
-#endif
-
-#if defined(UTF8SKIP) && defined(utf8_to_uvchr_buf)
-#undef utf8_to_uvchr /* Always redefine this unsafe function so that it refuses
-                        to read past a NUL, making it much less likely to read
-                        off the end of the buffer.  A NUL indicates the start
-                        of the next character anyway.  If the input isn't
-                        NUL-terminated, the function remains unsafe, as it
-                        always has been. */
-#ifndef utf8_to_uvchr
-#  define utf8_to_uvchr(s, lp)           \
-    ((*(s) == '\0')                                                             \
-    ? utf8_to_uvchr_buf(s,((s)+1), lp) /* Handle single NUL specially */        \
-    : utf8_to_uvchr_buf(s, (s) + my_strnlen((char *) (s), UTF8SKIP(s)), (lp)))
-#endif
-
-#endif
-
-#ifdef HAS_MEMCMP
-#ifndef memNE
-#  define memNE(s1,s2,l)                 (memcmp(s1,s2,l))
-#endif
-
-#ifndef memEQ
-#  define memEQ(s1,s2,l)                 (!memcmp(s1,s2,l))
-#endif
-
-#else
-#ifndef memNE
-#  define memNE(s1,s2,l)                 (bcmp(s1,s2,l))
-#endif
-
-#ifndef memEQ
-#  define memEQ(s1,s2,l)                 (!bcmp(s1,s2,l))
-#endif
-
-#endif
-#ifndef memEQs
-#  define memEQs(s1, l, s2)              \
-                   (sizeof(s2)-1 == l && memEQ(s1, (s2 ""), (sizeof(s2)-1)))
-#endif
-
-#ifndef memNEs
-#  define memNEs(s1, l, s2)              !memEQs(s1, l, s2)
-#endif
-#ifndef MoveD
-#  define MoveD(s,d,n,t)                 memmove((char*)(d),(char*)(s), (n) * sizeof(t))
-#endif
-
-#ifndef CopyD
-#  define CopyD(s,d,n,t)                 memcpy((char*)(d),(char*)(s), (n) * sizeof(t))
-#endif
-
-#ifdef HAS_MEMSET
-#ifndef ZeroD
-#  define ZeroD(d,n,t)                   memzero((char*)(d), (n) * sizeof(t))
-#endif
-
-#else
-#ifndef ZeroD
-#  define ZeroD(d,n,t)                   ((void)memzero((char*)(d), (n) * sizeof(t)), d)
-#endif
-
-#endif
-#ifndef PoisonWith
-#  define PoisonWith(d,n,t,b)            (void)memset((char*)(d), (U8)(b), (n) * sizeof(t))
-#endif
-
-#ifndef PoisonNew
-#  define PoisonNew(d,n,t)               PoisonWith(d,n,t,0xAB)
-#endif
-
-#ifndef PoisonFree
-#  define PoisonFree(d,n,t)              PoisonWith(d,n,t,0xEF)
-#endif
-
-#ifndef Poison
-#  define Poison(d,n,t)                  PoisonFree(d,n,t)
-#endif
-#ifndef Newx
-#  define Newx(v,n,t)                    New(0,v,n,t)
-#endif
-
-#ifndef Newxc
-#  define Newxc(v,n,t,c)                 Newc(0,v,n,t,c)
-#endif
-
-#ifndef Newxz
-#  define Newxz(v,n,t)                   Newz(0,v,n,t)
-#endif
-#ifndef PERL_MAGIC_sv
-#  define PERL_MAGIC_sv                  '\0'
-#endif
-
-#ifndef PERL_MAGIC_overload
-#  define PERL_MAGIC_overload            'A'
-#endif
-
-#ifndef PERL_MAGIC_overload_elem
-#  define PERL_MAGIC_overload_elem       'a'
-#endif
-
-#ifndef PERL_MAGIC_overload_table
-#  define PERL_MAGIC_overload_table      'c'
-#endif
-
-#ifndef PERL_MAGIC_bm
-#  define PERL_MAGIC_bm                  'B'
-#endif
-
-#ifndef PERL_MAGIC_regdata
-#  define PERL_MAGIC_regdata             'D'
-#endif
-
-#ifndef PERL_MAGIC_regdatum
-#  define PERL_MAGIC_regdatum            'd'
-#endif
-
-#ifndef PERL_MAGIC_env
-#  define PERL_MAGIC_env                 'E'
-#endif
-
-#ifndef PERL_MAGIC_envelem
-#  define PERL_MAGIC_envelem             'e'
-#endif
-
-#ifndef PERL_MAGIC_fm
-#  define PERL_MAGIC_fm                  'f'
-#endif
-
-#ifndef PERL_MAGIC_regex_global
-#  define PERL_MAGIC_regex_global        'g'
-#endif
-
-#ifndef PERL_MAGIC_isa
-#  define PERL_MAGIC_isa                 'I'
-#endif
-
-#ifndef PERL_MAGIC_isaelem
-#  define PERL_MAGIC_isaelem             'i'
-#endif
-
-#ifndef PERL_MAGIC_nkeys
-#  define PERL_MAGIC_nkeys               'k'
-#endif
-
-#ifndef PERL_MAGIC_dbfile
-#  define PERL_MAGIC_dbfile              'L'
-#endif
-
-#ifndef PERL_MAGIC_dbline
-#  define PERL_MAGIC_dbline              'l'
-#endif
-
-#ifndef PERL_MAGIC_mutex
-#  define PERL_MAGIC_mutex               'm'
-#endif
-
-#ifndef PERL_MAGIC_shared
-#  define PERL_MAGIC_shared              'N'
-#endif
-
-#ifndef PERL_MAGIC_shared_scalar
-#  define PERL_MAGIC_shared_scalar       'n'
-#endif
-
-#ifndef PERL_MAGIC_collxfrm
-#  define PERL_MAGIC_collxfrm            'o'
-#endif
-
-#ifndef PERL_MAGIC_tied
-#  define PERL_MAGIC_tied                'P'
-#endif
-
-#ifndef PERL_MAGIC_tiedelem
-#  define PERL_MAGIC_tiedelem            'p'
-#endif
-
-#ifndef PERL_MAGIC_tiedscalar
-#  define PERL_MAGIC_tiedscalar          'q'
-#endif
-
-#ifndef PERL_MAGIC_qr
-#  define PERL_MAGIC_qr                  'r'
-#endif
-
-#ifndef PERL_MAGIC_sig
-#  define PERL_MAGIC_sig                 'S'
-#endif
-
-#ifndef PERL_MAGIC_sigelem
-#  define PERL_MAGIC_sigelem             's'
-#endif
-
-#ifndef PERL_MAGIC_taint
-#  define PERL_MAGIC_taint               't'
-#endif
-
-#ifndef PERL_MAGIC_uvar
-#  define PERL_MAGIC_uvar                'U'
-#endif
-
-#ifndef PERL_MAGIC_uvar_elem
-#  define PERL_MAGIC_uvar_elem           'u'
-#endif
-
-#ifndef PERL_MAGIC_vstring
-#  define PERL_MAGIC_vstring             'V'
-#endif
-
-#ifndef PERL_MAGIC_vec
-#  define PERL_MAGIC_vec                 'v'
-#endif
-
-#ifndef PERL_MAGIC_utf8
-#  define PERL_MAGIC_utf8                'w'
-#endif
-
-#ifndef PERL_MAGIC_substr
-#  define PERL_MAGIC_substr              'x'
-#endif
-
-#ifndef PERL_MAGIC_defelem
-#  define PERL_MAGIC_defelem             'y'
-#endif
-
-#ifndef PERL_MAGIC_glob
-#  define PERL_MAGIC_glob                '*'
-#endif
-
-#ifndef PERL_MAGIC_arylen
-#  define PERL_MAGIC_arylen              '#'
-#endif
-
-#ifndef PERL_MAGIC_pos
-#  define PERL_MAGIC_pos                 '.'
-#endif
-
-#ifndef PERL_MAGIC_backref
-#  define PERL_MAGIC_backref             '<'
-#endif
-
-#ifndef PERL_MAGIC_ext
-#  define PERL_MAGIC_ext                 '~'
-#endif
 #ifndef cBOOL
 #  define cBOOL(cbool)                   ((cbool) ? (bool)1 : (bool)0)
 #endif
@@ -5251,6 +4706,551 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #endif
 #ifndef MUTABLE_SV
 #  define MUTABLE_SV(p)                  ((SV *)MUTABLE_PTR(p))
+#endif
+
+#define _ppport_MIN(a,b) (((a) <= (b)) ? (a) : (b))
+#ifndef sv_setuv
+#  define sv_setuv(sv, uv)               \
+               STMT_START {                         \
+                 UV TeMpUv = uv;                    \
+                 if (TeMpUv <= IV_MAX)              \
+                   sv_setiv(sv, TeMpUv);            \
+                 else                               \
+                   sv_setnv(sv, (double)TeMpUv);    \
+               } STMT_END
+#endif
+#ifndef newSVuv
+#  define newSVuv(uv)                    ((uv) <= IV_MAX ? newSViv((IV)uv) : newSVnv((NV)uv))
+#endif
+#ifndef sv_2uv
+#  define sv_2uv(sv)                     ((PL_Sv = (sv)), (UV) (SvNOK(PL_Sv) ? SvNV(PL_Sv) : sv_2nv(PL_Sv)))
+#endif
+
+#ifndef SvUVX
+#  define SvUVX(sv)                      ((UV)SvIVX(sv))
+#endif
+
+#ifndef SvUVXx
+#  define SvUVXx(sv)                     SvUVX(sv)
+#endif
+
+#ifndef SvUV
+#  define SvUV(sv)                       (SvIOK(sv) ? SvUVX(sv) : sv_2uv(sv))
+#endif
+
+#ifndef SvUVx
+#  define SvUVx(sv)                      ((PL_Sv = (sv)), SvUV(PL_Sv))
+#endif
+
+/* Hint: sv_uv
+ * Always use the SvUVx() macro instead of sv_uv().
+ */
+#ifndef sv_uv
+#  define sv_uv(sv)                      SvUVx(sv)
+#endif
+
+#if !defined(SvUOK) && defined(SvIOK_UV)
+#  define SvUOK(sv) SvIOK_UV(sv)
+#endif
+#ifndef XST_mUV
+#  define XST_mUV(i,v)                   (ST(i) = sv_2mortal(newSVuv(v))  )
+#endif
+
+#ifndef XSRETURN_UV
+#  define XSRETURN_UV(v)                 STMT_START { XST_mUV(0,v);  XSRETURN(1); } STMT_END
+#endif
+#ifndef PUSHu
+#  define PUSHu(u)                       STMT_START { sv_setuv(TARG, (UV)(u)); PUSHTARG;  } STMT_END
+#endif
+
+#ifndef XPUSHu
+#  define XPUSHu(u)                      STMT_START { sv_setuv(TARG, (UV)(u)); XPUSHTARG; } STMT_END
+#endif
+
+#if defined UTF8SKIP
+
+/* Don't use official version because it uses MIN, which may not be available */
+#undef UTF8_SAFE_SKIP
+#ifndef UTF8_SAFE_SKIP
+#  define UTF8_SAFE_SKIP(s, e)           (                                          \
+                                      ((((e) - (s)) <= 0)                       \
+                                      ? 0                                       \
+                                      : _ppport_MIN(((e) - (s)), UTF8SKIP(s))))
+#endif
+
+#endif
+
+#if !defined(my_strnlen)
+#if defined(NEED_my_strnlen)
+static STRLEN DPPP_(my_my_strnlen)(const char *str, Size_t maxlen);
+static
+#else
+extern STRLEN DPPP_(my_my_strnlen)(const char *str, Size_t maxlen);
+#endif
+
+#if defined(NEED_my_strnlen) || defined(NEED_my_strnlen_GLOBAL)
+
+#define my_strnlen DPPP_(my_my_strnlen)
+#define Perl_my_strnlen DPPP_(my_my_strnlen)
+
+
+STRLEN
+DPPP_(my_my_strnlen)(const char *str, Size_t maxlen)
+{
+    const char *p = str;
+
+    while(maxlen-- && *p)
+        p++;
+
+    return p - str;
+}
+
+#endif
+#endif
+
+#if (PERL_BCDVERSION < 0x5030000)
+        /* Versions prior to this accepted things that are now considered
+         * malformations, and didn't return -1 on error with warnings enabled
+         * */
+#  undef utf8_to_uvchr_buf
+#endif
+
+/* This implementation brings modern, generally more restricted standards to
+ * utf8_to_uvchr_buf.  Some of these are security related, and clearly must
+ * be done.  But its arguable that the others need not, and hence should not.
+ * The reason they're here is that a module that intends to play with the
+ * latest perls shoud be able to work the same in all releases.  An example is
+ * that perl no longer accepts any UV for a code point, but limits them to
+ * IV_MAX or below.  This is for future internal use of the larger code points.
+ * If it turns out that some of these changes are breaking code that isn't
+ * intended to work with modern perls, the tighter restrictions could be
+ * relaxed.  khw thinks this is unlikely, but has been wrong in the past. */
+
+#ifndef utf8_to_uvchr_buf
+   /* Choose which underlying implementation to use.  At least one must be
+    * present or the perl is too early to handle this function */
+#  if defined(utf8n_to_uvchr) || defined(utf8_to_uv)
+#    if defined(utf8n_to_uvchr)   /* This is the preferred implementation */
+#      define _ppport_utf8_to_uvchr_buf_callee utf8n_to_uvchr
+#    else
+#      define _ppport_utf8_to_uvchr_buf_callee utf8_to_uv
+#    endif
+
+#  endif
+
+#ifdef _ppport_utf8_to_uvchr_buf_callee
+#  if defined(NEED_utf8_to_uvchr_buf)
+static UV DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 * s, const U8 * send, STRLEN * retlen);
+static
+#else
+extern UV DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 * s, const U8 * send, STRLEN * retlen);
+#endif
+
+#if defined(NEED_utf8_to_uvchr_buf) || defined(NEED_utf8_to_uvchr_buf_GLOBAL)
+
+#ifdef utf8_to_uvchr_buf
+#  undef utf8_to_uvchr_buf
+#endif
+#define utf8_to_uvchr_buf(a,b,c) DPPP_(my_utf8_to_uvchr_buf)(aTHX_ a,b,c)
+#define Perl_utf8_to_uvchr_buf DPPP_(my_utf8_to_uvchr_buf)
+
+
+UV
+DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
+{
+    UV ret;
+    STRLEN curlen;
+    bool overflows = 0;
+    const U8 *cur_s = s;
+    const bool do_warnings = ckWARN_d(WARN_UTF8);
+
+    if (send > s) {
+        curlen = send - s;
+    }
+    else {
+        assert(0);  /* Modern perls die under this circumstance */
+        curlen = 0;
+        if (! do_warnings) {    /* Handle empty here if no warnings needed */
+            if (retlen) *retlen = 0;
+            return UNICODE_REPLACEMENT;
+        }
+    }
+
+    /* The modern version allows anything that evaluates to a legal UV, but not
+     * overlongs nor an empty input */
+    ret = _ppport_utf8_to_uvchr_buf_callee(
+                s, curlen, retlen,   (UTF8_ALLOW_ANYUV
+                                  & ~(UTF8_ALLOW_LONG|UTF8_ALLOW_EMPTY)));
+
+    /* But actually, modern versions restrict the UV to being no more than what
+     * an IV can hold */
+    if (ret > PERL_INT_MAX) {
+        overflows = 1;
+    }
+
+#    if (PERL_BCDVERSION < 0x5026000)
+#      ifndef EBCDIC
+
+        /* There are bugs in versions earlier than this on non-EBCDIC platforms
+         * in which it did not detect all instances of overflow, which could be
+         * a security hole.  Also, earlier versions did not allow the overflow
+         * malformation under any circumstances, and modern ones do.  So we
+         * need to check here.  */
+
+    else if (curlen > 0 && *s >= 0xFE) {
+
+        /* If the main routine detected overflow, great; it returned 0.  But if the
+         * input's first byte indicates it could overflow, we need to verify.
+         * First, on a 32-bit machine the first byte being at least \xFE
+         * automatically is overflow */
+        if (sizeof(ret) < 8) {
+            overflows = 1;
+        }
+        else {
+            const U8 highest[] =    /* 2*63-1 */
+                        "\xFF\x80\x87\xBF\xBF\xBF\xBF\xBF\xBF\xBF\xBF\xBF\xBF";
+            const U8 *cur_h = highest;
+
+            for (cur_s = s; cur_s < send; cur_s++, cur_h++) {
+                if (UNLIKELY(*cur_s == *cur_h)) {
+                    continue;
+                }
+
+                /* If this byte is larger than the corresponding highest UTF-8
+                * byte, the sequence overflows; otherwise the byte is less than
+                * (as we handled the equality case above), and so the sequence
+                * doesn't overflow */
+                overflows = *cur_s > *cur_h;
+                break;
+
+            }
+
+            /* Here, either we set the bool and broke out of the loop, or got
+             * to the end and all bytes are the same which indicates it doesn't
+             * overflow. */
+        }
+    }
+
+#      endif
+#    endif  /* < 5.26 */
+
+    if (UNLIKELY(overflows)) {
+        if (! do_warnings) {
+            if (retlen) {
+                *retlen = _ppport_MIN(*retlen, UTF8SKIP(s));
+                *retlen = _ppport_MIN(*retlen, curlen);
+            }
+            return UNICODE_REPLACEMENT;
+        }
+        else {
+
+            /* On versions that correctly detect overflow, but forbid it
+             * always, 0 will be returned, but also a warning will have been
+             * raised.  Don't repeat it */
+            if (ret != 0) {
+                /* We use the error message in use from 5.8-5.14 */
+                Perl_warner(aTHX_ packWARN(WARN_UTF8),
+                    "Malformed UTF-8 character (overflow at 0x%" UVxf
+                    ", byte 0x%02x, after start byte 0x%02x)",
+                    ret, *cur_s, *s);
+            }
+            if (retlen) {
+                *retlen = (STRLEN) -1;
+            }
+            return 0;
+        }
+    }
+
+    /* If failed and warnings are off, to emulate the behavior of the real
+     * utf8_to_uvchr(), try again, allowing anything.  (Note a return of 0 is
+     * ok if the input was '\0') */
+    if (UNLIKELY(ret == 0 && (curlen == 0 || *s != '\0'))) {
+
+        /* If curlen is 0, we already handled the case where warnings are
+         * disabled, so this 'if' will be true, and we won't look at the
+         * contents of 's' */
+        if (do_warnings) {
+            *retlen = (STRLEN) -1;
+        }
+        else {
+            ret = _ppport_utf8_to_uvchr_buf_callee(
+                                            s, curlen, retlen, UTF8_ALLOW_ANY);
+            /* Override with the REPLACEMENT character, as that is what the
+             * modern version of this function returns */
+            ret = UNICODE_REPLACEMENT;
+
+#           if (PERL_BCDVERSION < 0x5016000)
+
+            /* Versions earlier than this don't necessarily return the proper
+             * length.  It should not extend past the end of string, nor past
+             * what the first byte indicates the length is, nor past the
+             * continuation characters */
+            if (retlen && *retlen >= 0) {
+                *retlen = _ppport_MIN(*retlen, curlen);
+                *retlen = _ppport_MIN(*retlen, UTF8SKIP(s));
+                unsigned int i = 1;
+                do {
+                    if (s[i] < 0x80 || s[i] > 0xBF) {
+                        *retlen = i;
+                        break;
+                    }
+                } while (++i < *retlen);
+            }
+
+#           endif
+
+        }
+    }
+
+    return ret;
+}
+
+#  endif
+#endif
+#endif
+
+#if defined(UTF8SKIP) && defined(utf8_to_uvchr_buf)
+#undef utf8_to_uvchr /* Always redefine this unsafe function so that it refuses
+                        to read past a NUL, making it much less likely to read
+                        off the end of the buffer.  A NUL indicates the start
+                        of the next character anyway.  If the input isn't
+                        NUL-terminated, the function remains unsafe, as it
+                        always has been. */
+#ifndef utf8_to_uvchr
+#  define utf8_to_uvchr(s, lp)           \
+    ((*(s) == '\0')                                                             \
+    ? utf8_to_uvchr_buf(s,((s)+1), lp) /* Handle single NUL specially */        \
+    : utf8_to_uvchr_buf(s, (s) + my_strnlen((char *) (s), UTF8SKIP(s)), (lp)))
+#endif
+
+#endif
+
+#ifdef HAS_MEMCMP
+#ifndef memNE
+#  define memNE(s1,s2,l)                 (memcmp(s1,s2,l))
+#endif
+
+#ifndef memEQ
+#  define memEQ(s1,s2,l)                 (!memcmp(s1,s2,l))
+#endif
+
+#else
+#ifndef memNE
+#  define memNE(s1,s2,l)                 (bcmp(s1,s2,l))
+#endif
+
+#ifndef memEQ
+#  define memEQ(s1,s2,l)                 (!bcmp(s1,s2,l))
+#endif
+
+#endif
+#ifndef memEQs
+#  define memEQs(s1, l, s2)              \
+                   (sizeof(s2)-1 == l && memEQ(s1, (s2 ""), (sizeof(s2)-1)))
+#endif
+
+#ifndef memNEs
+#  define memNEs(s1, l, s2)              !memEQs(s1, l, s2)
+#endif
+#ifndef MoveD
+#  define MoveD(s,d,n,t)                 memmove((char*)(d),(char*)(s), (n) * sizeof(t))
+#endif
+
+#ifndef CopyD
+#  define CopyD(s,d,n,t)                 memcpy((char*)(d),(char*)(s), (n) * sizeof(t))
+#endif
+
+#ifdef HAS_MEMSET
+#ifndef ZeroD
+#  define ZeroD(d,n,t)                   memzero((char*)(d), (n) * sizeof(t))
+#endif
+
+#else
+#ifndef ZeroD
+#  define ZeroD(d,n,t)                   ((void)memzero((char*)(d), (n) * sizeof(t)), d)
+#endif
+
+#endif
+#ifndef PoisonWith
+#  define PoisonWith(d,n,t,b)            (void)memset((char*)(d), (U8)(b), (n) * sizeof(t))
+#endif
+
+#ifndef PoisonNew
+#  define PoisonNew(d,n,t)               PoisonWith(d,n,t,0xAB)
+#endif
+
+#ifndef PoisonFree
+#  define PoisonFree(d,n,t)              PoisonWith(d,n,t,0xEF)
+#endif
+
+#ifndef Poison
+#  define Poison(d,n,t)                  PoisonFree(d,n,t)
+#endif
+#ifndef Newx
+#  define Newx(v,n,t)                    New(0,v,n,t)
+#endif
+
+#ifndef Newxc
+#  define Newxc(v,n,t,c)                 Newc(0,v,n,t,c)
+#endif
+
+#ifndef Newxz
+#  define Newxz(v,n,t)                   Newz(0,v,n,t)
+#endif
+#ifndef PERL_MAGIC_sv
+#  define PERL_MAGIC_sv                  '\0'
+#endif
+
+#ifndef PERL_MAGIC_overload
+#  define PERL_MAGIC_overload            'A'
+#endif
+
+#ifndef PERL_MAGIC_overload_elem
+#  define PERL_MAGIC_overload_elem       'a'
+#endif
+
+#ifndef PERL_MAGIC_overload_table
+#  define PERL_MAGIC_overload_table      'c'
+#endif
+
+#ifndef PERL_MAGIC_bm
+#  define PERL_MAGIC_bm                  'B'
+#endif
+
+#ifndef PERL_MAGIC_regdata
+#  define PERL_MAGIC_regdata             'D'
+#endif
+
+#ifndef PERL_MAGIC_regdatum
+#  define PERL_MAGIC_regdatum            'd'
+#endif
+
+#ifndef PERL_MAGIC_env
+#  define PERL_MAGIC_env                 'E'
+#endif
+
+#ifndef PERL_MAGIC_envelem
+#  define PERL_MAGIC_envelem             'e'
+#endif
+
+#ifndef PERL_MAGIC_fm
+#  define PERL_MAGIC_fm                  'f'
+#endif
+
+#ifndef PERL_MAGIC_regex_global
+#  define PERL_MAGIC_regex_global        'g'
+#endif
+
+#ifndef PERL_MAGIC_isa
+#  define PERL_MAGIC_isa                 'I'
+#endif
+
+#ifndef PERL_MAGIC_isaelem
+#  define PERL_MAGIC_isaelem             'i'
+#endif
+
+#ifndef PERL_MAGIC_nkeys
+#  define PERL_MAGIC_nkeys               'k'
+#endif
+
+#ifndef PERL_MAGIC_dbfile
+#  define PERL_MAGIC_dbfile              'L'
+#endif
+
+#ifndef PERL_MAGIC_dbline
+#  define PERL_MAGIC_dbline              'l'
+#endif
+
+#ifndef PERL_MAGIC_mutex
+#  define PERL_MAGIC_mutex               'm'
+#endif
+
+#ifndef PERL_MAGIC_shared
+#  define PERL_MAGIC_shared              'N'
+#endif
+
+#ifndef PERL_MAGIC_shared_scalar
+#  define PERL_MAGIC_shared_scalar       'n'
+#endif
+
+#ifndef PERL_MAGIC_collxfrm
+#  define PERL_MAGIC_collxfrm            'o'
+#endif
+
+#ifndef PERL_MAGIC_tied
+#  define PERL_MAGIC_tied                'P'
+#endif
+
+#ifndef PERL_MAGIC_tiedelem
+#  define PERL_MAGIC_tiedelem            'p'
+#endif
+
+#ifndef PERL_MAGIC_tiedscalar
+#  define PERL_MAGIC_tiedscalar          'q'
+#endif
+
+#ifndef PERL_MAGIC_qr
+#  define PERL_MAGIC_qr                  'r'
+#endif
+
+#ifndef PERL_MAGIC_sig
+#  define PERL_MAGIC_sig                 'S'
+#endif
+
+#ifndef PERL_MAGIC_sigelem
+#  define PERL_MAGIC_sigelem             's'
+#endif
+
+#ifndef PERL_MAGIC_taint
+#  define PERL_MAGIC_taint               't'
+#endif
+
+#ifndef PERL_MAGIC_uvar
+#  define PERL_MAGIC_uvar                'U'
+#endif
+
+#ifndef PERL_MAGIC_uvar_elem
+#  define PERL_MAGIC_uvar_elem           'u'
+#endif
+
+#ifndef PERL_MAGIC_vstring
+#  define PERL_MAGIC_vstring             'V'
+#endif
+
+#ifndef PERL_MAGIC_vec
+#  define PERL_MAGIC_vec                 'v'
+#endif
+
+#ifndef PERL_MAGIC_utf8
+#  define PERL_MAGIC_utf8                'w'
+#endif
+
+#ifndef PERL_MAGIC_substr
+#  define PERL_MAGIC_substr              'x'
+#endif
+
+#ifndef PERL_MAGIC_defelem
+#  define PERL_MAGIC_defelem             'y'
+#endif
+
+#ifndef PERL_MAGIC_glob
+#  define PERL_MAGIC_glob                '*'
+#endif
+
+#ifndef PERL_MAGIC_arylen
+#  define PERL_MAGIC_arylen              '#'
+#endif
+
+#ifndef PERL_MAGIC_pos
+#  define PERL_MAGIC_pos                 '.'
+#endif
+
+#ifndef PERL_MAGIC_backref
+#  define PERL_MAGIC_backref             '<'
+#endif
+
+#ifndef PERL_MAGIC_ext
+#  define PERL_MAGIC_ext                 '~'
 #endif
 
 #ifdef NEED_mess_sv
