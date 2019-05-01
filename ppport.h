@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.48
+    ppport.h -- Perl/Pollution/Portability Version 3.51
 
     Automatically created by Devel::PPPort running under perl 5.028002.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.48
+ppport.h - Perl/Pollution/Portability version 3.51
 
 =head1 SYNOPSIS
 
@@ -391,7 +391,7 @@ use strict;
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= 5.009004 && "$]" <= 5.009005 }
 
-my $VERSION = 3.48;
+my $VERSION = 3.51;
 
 my %opt = (
   quiet     => 0,
@@ -4707,6 +4707,239 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #ifndef MUTABLE_SV
 #  define MUTABLE_SV(p)                  ((SV *)MUTABLE_PTR(p))
 #endif
+#ifndef WARN_ALL
+#  define WARN_ALL                       0
+#endif
+
+#ifndef WARN_CLOSURE
+#  define WARN_CLOSURE                   1
+#endif
+
+#ifndef WARN_DEPRECATED
+#  define WARN_DEPRECATED                2
+#endif
+
+#ifndef WARN_EXITING
+#  define WARN_EXITING                   3
+#endif
+
+#ifndef WARN_GLOB
+#  define WARN_GLOB                      4
+#endif
+
+#ifndef WARN_IO
+#  define WARN_IO                        5
+#endif
+
+#ifndef WARN_CLOSED
+#  define WARN_CLOSED                    6
+#endif
+
+#ifndef WARN_EXEC
+#  define WARN_EXEC                      7
+#endif
+
+#ifndef WARN_LAYER
+#  define WARN_LAYER                     8
+#endif
+
+#ifndef WARN_NEWLINE
+#  define WARN_NEWLINE                   9
+#endif
+
+#ifndef WARN_PIPE
+#  define WARN_PIPE                      10
+#endif
+
+#ifndef WARN_UNOPENED
+#  define WARN_UNOPENED                  11
+#endif
+
+#ifndef WARN_MISC
+#  define WARN_MISC                      12
+#endif
+
+#ifndef WARN_NUMERIC
+#  define WARN_NUMERIC                   13
+#endif
+
+#ifndef WARN_ONCE
+#  define WARN_ONCE                      14
+#endif
+
+#ifndef WARN_OVERFLOW
+#  define WARN_OVERFLOW                  15
+#endif
+
+#ifndef WARN_PACK
+#  define WARN_PACK                      16
+#endif
+
+#ifndef WARN_PORTABLE
+#  define WARN_PORTABLE                  17
+#endif
+
+#ifndef WARN_RECURSION
+#  define WARN_RECURSION                 18
+#endif
+
+#ifndef WARN_REDEFINE
+#  define WARN_REDEFINE                  19
+#endif
+
+#ifndef WARN_REGEXP
+#  define WARN_REGEXP                    20
+#endif
+
+#ifndef WARN_SEVERE
+#  define WARN_SEVERE                    21
+#endif
+
+#ifndef WARN_DEBUGGING
+#  define WARN_DEBUGGING                 22
+#endif
+
+#ifndef WARN_INPLACE
+#  define WARN_INPLACE                   23
+#endif
+
+#ifndef WARN_INTERNAL
+#  define WARN_INTERNAL                  24
+#endif
+
+#ifndef WARN_MALLOC
+#  define WARN_MALLOC                    25
+#endif
+
+#ifndef WARN_SIGNAL
+#  define WARN_SIGNAL                    26
+#endif
+
+#ifndef WARN_SUBSTR
+#  define WARN_SUBSTR                    27
+#endif
+
+#ifndef WARN_SYNTAX
+#  define WARN_SYNTAX                    28
+#endif
+
+#ifndef WARN_AMBIGUOUS
+#  define WARN_AMBIGUOUS                 29
+#endif
+
+#ifndef WARN_BAREWORD
+#  define WARN_BAREWORD                  30
+#endif
+
+#ifndef WARN_DIGIT
+#  define WARN_DIGIT                     31
+#endif
+
+#ifndef WARN_PARENTHESIS
+#  define WARN_PARENTHESIS               32
+#endif
+
+#ifndef WARN_PRECEDENCE
+#  define WARN_PRECEDENCE                33
+#endif
+
+#ifndef WARN_PRINTF
+#  define WARN_PRINTF                    34
+#endif
+
+#ifndef WARN_PROTOTYPE
+#  define WARN_PROTOTYPE                 35
+#endif
+
+#ifndef WARN_QW
+#  define WARN_QW                        36
+#endif
+
+#ifndef WARN_RESERVED
+#  define WARN_RESERVED                  37
+#endif
+
+#ifndef WARN_SEMICOLON
+#  define WARN_SEMICOLON                 38
+#endif
+
+#ifndef WARN_TAINT
+#  define WARN_TAINT                     39
+#endif
+
+#ifndef WARN_THREADS
+#  define WARN_THREADS                   40
+#endif
+
+#ifndef WARN_UNINITIALIZED
+#  define WARN_UNINITIALIZED             41
+#endif
+
+#ifndef WARN_UNPACK
+#  define WARN_UNPACK                    42
+#endif
+
+#ifndef WARN_UNTIE
+#  define WARN_UNTIE                     43
+#endif
+
+#ifndef WARN_UTF8
+#  define WARN_UTF8                      44
+#endif
+
+#ifndef WARN_VOID
+#  define WARN_VOID                      45
+#endif
+
+#ifndef WARN_ASSERTIONS
+#  define WARN_ASSERTIONS                46
+#endif
+#ifndef packWARN
+#  define packWARN(a)                    (a)
+#endif
+
+#ifndef ckWARN
+#  ifdef G_WARN_ON
+#    define  ckWARN(a)                  (PL_dowarn & G_WARN_ON)
+#  else
+#    define  ckWARN(a)                  PL_dowarn
+#  endif
+#endif
+
+#if (PERL_BCDVERSION >= 0x5004000) && !defined(warner)
+#if defined(NEED_warner)
+static void DPPP_(my_warner)(U32 err, const char *pat, ...);
+static
+#else
+extern void DPPP_(my_warner)(U32 err, const char *pat, ...);
+#endif
+
+#if defined(NEED_warner) || defined(NEED_warner_GLOBAL)
+
+#define Perl_warner DPPP_(my_warner)
+
+
+void
+DPPP_(my_warner)(U32 err, const char *pat, ...)
+{
+  SV *sv;
+  va_list args;
+
+  PERL_UNUSED_ARG(err);
+
+  va_start(args, pat);
+  sv = vnewSVpvf(pat, &args);
+  va_end(args);
+  sv_2mortal(sv);
+  warn("%s", SvPV_nolen(sv));
+}
+
+#define warner  Perl_warner
+
+#define Perl_warner_nocontext  Perl_warner
+
+#endif
+#endif
 
 #define _ppport_MIN(a,b) (((a) <= (b)) ? (a) : (b))
 #ifndef sv_setuv
@@ -6901,239 +7134,6 @@ DPPP_(my_gv_fetchpvn_flags)(pTHX_ const char* name, STRLEN len, int flags, int t
 
 #ifndef gv_init_pvn
 #  define gv_init_pvn(gv, stash, ptr, len, flags) gv_init(gv, stash, ptr, len, flags & GV_ADDMULTI ? TRUE : FALSE)
-#endif
-#ifndef WARN_ALL
-#  define WARN_ALL                       0
-#endif
-
-#ifndef WARN_CLOSURE
-#  define WARN_CLOSURE                   1
-#endif
-
-#ifndef WARN_DEPRECATED
-#  define WARN_DEPRECATED                2
-#endif
-
-#ifndef WARN_EXITING
-#  define WARN_EXITING                   3
-#endif
-
-#ifndef WARN_GLOB
-#  define WARN_GLOB                      4
-#endif
-
-#ifndef WARN_IO
-#  define WARN_IO                        5
-#endif
-
-#ifndef WARN_CLOSED
-#  define WARN_CLOSED                    6
-#endif
-
-#ifndef WARN_EXEC
-#  define WARN_EXEC                      7
-#endif
-
-#ifndef WARN_LAYER
-#  define WARN_LAYER                     8
-#endif
-
-#ifndef WARN_NEWLINE
-#  define WARN_NEWLINE                   9
-#endif
-
-#ifndef WARN_PIPE
-#  define WARN_PIPE                      10
-#endif
-
-#ifndef WARN_UNOPENED
-#  define WARN_UNOPENED                  11
-#endif
-
-#ifndef WARN_MISC
-#  define WARN_MISC                      12
-#endif
-
-#ifndef WARN_NUMERIC
-#  define WARN_NUMERIC                   13
-#endif
-
-#ifndef WARN_ONCE
-#  define WARN_ONCE                      14
-#endif
-
-#ifndef WARN_OVERFLOW
-#  define WARN_OVERFLOW                  15
-#endif
-
-#ifndef WARN_PACK
-#  define WARN_PACK                      16
-#endif
-
-#ifndef WARN_PORTABLE
-#  define WARN_PORTABLE                  17
-#endif
-
-#ifndef WARN_RECURSION
-#  define WARN_RECURSION                 18
-#endif
-
-#ifndef WARN_REDEFINE
-#  define WARN_REDEFINE                  19
-#endif
-
-#ifndef WARN_REGEXP
-#  define WARN_REGEXP                    20
-#endif
-
-#ifndef WARN_SEVERE
-#  define WARN_SEVERE                    21
-#endif
-
-#ifndef WARN_DEBUGGING
-#  define WARN_DEBUGGING                 22
-#endif
-
-#ifndef WARN_INPLACE
-#  define WARN_INPLACE                   23
-#endif
-
-#ifndef WARN_INTERNAL
-#  define WARN_INTERNAL                  24
-#endif
-
-#ifndef WARN_MALLOC
-#  define WARN_MALLOC                    25
-#endif
-
-#ifndef WARN_SIGNAL
-#  define WARN_SIGNAL                    26
-#endif
-
-#ifndef WARN_SUBSTR
-#  define WARN_SUBSTR                    27
-#endif
-
-#ifndef WARN_SYNTAX
-#  define WARN_SYNTAX                    28
-#endif
-
-#ifndef WARN_AMBIGUOUS
-#  define WARN_AMBIGUOUS                 29
-#endif
-
-#ifndef WARN_BAREWORD
-#  define WARN_BAREWORD                  30
-#endif
-
-#ifndef WARN_DIGIT
-#  define WARN_DIGIT                     31
-#endif
-
-#ifndef WARN_PARENTHESIS
-#  define WARN_PARENTHESIS               32
-#endif
-
-#ifndef WARN_PRECEDENCE
-#  define WARN_PRECEDENCE                33
-#endif
-
-#ifndef WARN_PRINTF
-#  define WARN_PRINTF                    34
-#endif
-
-#ifndef WARN_PROTOTYPE
-#  define WARN_PROTOTYPE                 35
-#endif
-
-#ifndef WARN_QW
-#  define WARN_QW                        36
-#endif
-
-#ifndef WARN_RESERVED
-#  define WARN_RESERVED                  37
-#endif
-
-#ifndef WARN_SEMICOLON
-#  define WARN_SEMICOLON                 38
-#endif
-
-#ifndef WARN_TAINT
-#  define WARN_TAINT                     39
-#endif
-
-#ifndef WARN_THREADS
-#  define WARN_THREADS                   40
-#endif
-
-#ifndef WARN_UNINITIALIZED
-#  define WARN_UNINITIALIZED             41
-#endif
-
-#ifndef WARN_UNPACK
-#  define WARN_UNPACK                    42
-#endif
-
-#ifndef WARN_UNTIE
-#  define WARN_UNTIE                     43
-#endif
-
-#ifndef WARN_UTF8
-#  define WARN_UTF8                      44
-#endif
-
-#ifndef WARN_VOID
-#  define WARN_VOID                      45
-#endif
-
-#ifndef WARN_ASSERTIONS
-#  define WARN_ASSERTIONS                46
-#endif
-#ifndef packWARN
-#  define packWARN(a)                    (a)
-#endif
-
-#ifndef ckWARN
-#  ifdef G_WARN_ON
-#    define  ckWARN(a)                  (PL_dowarn & G_WARN_ON)
-#  else
-#    define  ckWARN(a)                  PL_dowarn
-#  endif
-#endif
-
-#if (PERL_BCDVERSION >= 0x5004000) && !defined(warner)
-#if defined(NEED_warner)
-static void DPPP_(my_warner)(U32 err, const char *pat, ...);
-static
-#else
-extern void DPPP_(my_warner)(U32 err, const char *pat, ...);
-#endif
-
-#if defined(NEED_warner) || defined(NEED_warner_GLOBAL)
-
-#define Perl_warner DPPP_(my_warner)
-
-
-void
-DPPP_(my_warner)(U32 err, const char *pat, ...)
-{
-  SV *sv;
-  va_list args;
-
-  PERL_UNUSED_ARG(err);
-
-  va_start(args, pat);
-  sv = vnewSVpvf(pat, &args);
-  va_end(args);
-  sv_2mortal(sv);
-  warn("%s", SvPV_nolen(sv));
-}
-
-#define warner  Perl_warner
-
-#define Perl_warner_nocontext  Perl_warner
-
-#endif
 #endif
 
 /* concatenating with "" ensures that only literal strings are accepted as argument
