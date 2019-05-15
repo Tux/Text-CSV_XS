@@ -29,6 +29,7 @@ scp -p Text-CSV_XS.tgz ...
 - Debian
 - MacOSX
 - Synology
+- Oracle Solaris 11.4
 - Hercules / ZDOlinux
 
 GO!
