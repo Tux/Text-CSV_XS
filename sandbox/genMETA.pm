@@ -453,4 +453,60 @@ sub fix_meta {
     unlink glob "MYMETA*";
     } # fix_meta
 
+sub gen_cpanfile {
+    my $self = shift;
+
+    open my $fh, ">", "cpanfile";
+
+    my $jsn = $self->{h};
+    foreach my $sct_ ("", "configure_", "build_", "test_", "runtime_") {
+
+	my $sct = $sct_ =~ s/_$//r;
+
+	open my $sh, ">", \my $b;
+	my $sep = "";
+	for (qw( requires recommends suggests )) {
+	    my $s = $jsn->{"$sct_$_"} or next;
+	    print $sh $sep;
+	    foreach my $m (sort keys %$s) {
+		$m eq "perl" and next;
+		my $v = $s->{$m};
+		print $sh qq|$_\t"$m"|;
+		print $sh qq|\t=> "$v"| if $v;
+		say $sh ";";
+		}
+	    $sep = "\n";
+	    }
+	close $sh;
+
+	$b or next;
+
+	if ($sct) {
+	    $b .= "};";
+	    say $fh qq/\non "$sct" => sub {/;
+	    say $fh $b =~ s/^/    /gmr;
+	    }
+	else {
+	    print $fh $b;
+	    }
+	}
+
+    # optional features do not yet know about requires and/or recommends diirectly
+    if (my $of = $jsn->{optional_features}) {
+	foreach my $f (keys %$of) {
+	    if (my $r = delete $of->{$f}{requires}) {
+		#$jsn->{prereqs}{runtime}{recommends}{$_} //= $r->{$_} for keys %$r;
+		$of->{$f}{prereqs}{runtime}{requires} = $r;
+		DDumper { feat_req => { feat => $f, r => $r }};
+		}
+	    if (my $r = delete $of->{$f}{recommends}) {
+		#$jsn->{prereqs}{runtime}{recommends}{$_} //= $r->{$_} for keys %$r;
+		$of->{$f}{prereqs}{runtime}{recommends} = $r;
+		DDumper { feat_rec => { feat => $f, r => $r }};
+		}
+	    }
+	}
+    close $fh;
+    } # gen_cpanfile
+
 1;

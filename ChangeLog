@@ -1,7 +1,8 @@
-1.40	- 2019-05-07, H.Merijn Brand
+1.40	- 2019-05-31, H.Merijn Brand
     * Update to Devel::PPPort-3.51
     * Development perl is now 5.28.2
     * [csv2xlsx] sheetnames are restricted to 31 characters
+    * Generate cpanfile
 
 1.39	- 2019-03-15, H.Merijn Brand
     * It's 2019
