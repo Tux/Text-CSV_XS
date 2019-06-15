@@ -2,7 +2,7 @@
 
 package genMETA;
 
-our $VERSION = "1.08-20160520";
+our $VERSION = "1.09-20190531";
 
 use 5.14.1;
 use warnings;
@@ -453,6 +453,29 @@ sub fix_meta {
     unlink glob "MYMETA*";
     } # fix_meta
 
+sub _cpfd {
+    my ($jsn, $sct, $f) = @_;
+
+    open my $sh, ">", \my $b;
+    my $sep = "";
+    for (qw( requires recommends suggests )) {
+	my $s = $jsn->{"$sct$_"} or next;
+	print $sh $sep;
+	foreach my $m (sort keys %$s) {
+	    $m eq "perl" and next;
+	    my $v = $s->{$m};
+	    printf $sh qq{%-10s "%s"}, $_, $m;
+	    my $aw = (24 - length $m); $aw < 0 and $aw = 0;
+	    printf $sh qq{%s => "%s"}, " " x $aw, $v if $v;
+	    say $sh ";";
+	    }
+	$sep = "\n";
+	}
+    close $sh;
+    $sct || $f and $b and $b .= "};";
+    return $b;
+    } # _cpfd
+
 sub gen_cpanfile {
     my $self = shift;
 
@@ -463,26 +486,9 @@ sub gen_cpanfile {
 
 	my $sct = $sct_ =~ s/_$//r;
 
-	open my $sh, ">", \my $b;
-	my $sep = "";
-	for (qw( requires recommends suggests )) {
-	    my $s = $jsn->{"$sct_$_"} or next;
-	    print $sh $sep;
-	    foreach my $m (sort keys %$s) {
-		$m eq "perl" and next;
-		my $v = $s->{$m};
-		print $sh qq|$_\t"$m"|;
-		print $sh qq|\t=> "$v"| if $v;
-		say $sh ";";
-		}
-	    $sep = "\n";
-	    }
-	close $sh;
-
-	$b or next;
+	my $b = _cpfd ($jsn, $sct_, 0) or next;
 
 	if ($sct) {
-	    $b .= "};";
 	    say $fh qq/\non "$sct" => sub {/;
 	    say $fh $b =~ s/^/    /gmr;
 	    }
@@ -491,21 +497,14 @@ sub gen_cpanfile {
 	    }
 	}
 
-    # optional features do not yet know about requires and/or recommends diirectly
     if (my $of = $jsn->{optional_features}) {
-	foreach my $f (keys %$of) {
-	    if (my $r = delete $of->{$f}{requires}) {
-		#$jsn->{prereqs}{runtime}{recommends}{$_} //= $r->{$_} for keys %$r;
-		$of->{$f}{prereqs}{runtime}{requires} = $r;
-		DDumper { feat_req => { feat => $f, r => $r }};
-		}
-	    if (my $r = delete $of->{$f}{recommends}) {
-		#$jsn->{prereqs}{runtime}{recommends}{$_} //= $r->{$_} for keys %$r;
-		$of->{$f}{prereqs}{runtime}{recommends} = $r;
-		DDumper { feat_rec => { feat => $f, r => $r }};
-		}
+	foreach my $f (sort keys %$of) {
+	    my $fs = $of->{$f};
+	    say $fh qq/\nfeature "$f", "$fs->{description}" => sub {/;
+	    say $fh _cpfd ($fs, "", 1) =~ s/^/    /gmr;
 	    }
 	}
+
     close $fh;
     } # gen_cpanfile
 
