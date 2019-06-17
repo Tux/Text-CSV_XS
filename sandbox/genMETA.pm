@@ -141,6 +141,14 @@ sub check_required {
 	    @rec{keys %c} = values %c;
 	    }
 	}
+    if (my $of = $yml->{prereqs}) {
+	foreach my $f (values %{$of}) {
+	    my %q = map { %{$f->{$_}} } grep m/requires/   => keys %{$f};
+	    my %c = map { %{$f->{$_}} } grep m/recommends/ => keys %{$f};
+	    @req{keys %q} = values %q;
+	    @rec{keys %c} = values %c;
+	    }
+	}
     my %vsn = ( %req, %rec );
     delete @vsn{qw( perl version )};
     for (sort keys %vsn) {
@@ -203,7 +211,7 @@ sub check_yaml {
 
 sub check_minimum {
     my $self = shift;
-    my $reqv = $self->{h}{requires}{perl};
+    my $reqv = $self->{h}{requires}{perl} || $self->{h}{prereqs}{runtime}{requires}{perl};
     my $locs;
 
     for (@_) {
@@ -352,8 +360,13 @@ sub fix_meta {
 	$jsn->{resources}{license} = [ $jsn->{resources}{license} ];
     delete $jsn->{distribution_type};
     if (exists $jsn->{license}) {
-	$jsn->{license} =~ s/^perl$/perl_5/;
-	$jsn->{license} = [ $jsn->{license} ];
+	if (ref $jsn->{license} eq "ARRAY") {
+	    $jsn->{license}[0] =~ s/^perl$/perl_5/i;
+	    }
+	else {
+	    $jsn->{license}    =~ s/^perl$/perl_5/i;
+	    $jsn->{license}    = [ $jsn->{license} ];
+	    }
 	}
     if (exists $jsn->{resources}{repository}) {
 	my $url = $jsn->{resources}{repository};
@@ -396,7 +409,7 @@ sub fix_meta {
 	croak join "\n" => RED, "META Validator found fail:\n", $cmv->errors, RESET, "";
 
     unless ($yf) {
-	my @my = glob "*/META.yml" or croak "No META files";
+	my @my = grep { -s } glob ("*/META.yml"), "META.yml" or croak "No META files";
 	$yf = $my[0];
 	}
     my $jf = $yf =~ s/yml$/json/r;
