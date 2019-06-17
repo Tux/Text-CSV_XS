@@ -1,17 +1,17 @@
-requires	"IO::Handle";
-requires	"XSLoader";
+requires   "IO::Handle";
+requires   "XSLoader";
 
-recommends	"Encode"	=> "3.01";
+recommends "Encode"                   => "3.01";
 
 on "configure" => sub {
-    requires	"ExtUtils::MakeMaker";
+    requires   "ExtUtils::MakeMaker";
     };
 
 on "build" => sub {
-    requires	"Config";
+    requires   "Config";
     };
 
 on "test" => sub {
-    requires	"Test::More";
-    requires	"Tie::Scalar";
+    requires   "Test::More";
+    requires   "Tie::Scalar";
     };

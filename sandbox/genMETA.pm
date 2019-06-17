@@ -2,7 +2,7 @@
 
 package genMETA;
 
-our $VERSION = "1.09-20190531";
+our $VERSION = "1.10-20190617";
 
 use 5.14.1;
 use warnings;
@@ -490,7 +490,7 @@ sub gen_cpanfile {
 
 	if ($sct) {
 	    say $fh qq/\non "$sct" => sub {/;
-	    say $fh $b =~ s/^/    /gmr;
+	    say $fh $b =~ s/^(?=\S)/    /gmr;
 	    }
 	else {
 	    print $fh $b;

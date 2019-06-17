@@ -9,6 +9,7 @@
 \.releaserc
 \.exrc$
 \.travis.yml
+\.whitesource
 ^00ideas
 ^blib/
 ^cover_db/
