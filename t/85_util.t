@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 1442;
+	my $n = 1446;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -222,11 +222,11 @@ foreach my $dta ("", "\xfe\xff", "\xf7\x64\x4c", "\xdd\x73\x66\x73",
     }
 
 my $n;
-for ([ undef, "bar" ], [ "lc", "bar" ], [ "uc", "BAR" ], [ "none", "bAr" ],
-     [ sub { "column_".$n++ }, "column_0" ]) {
+for ([ undef, "_bar" ], [ "lc", "_bar" ], [ "uc", "_BAR" ], [ "none", "_bAr" ],
+     [ sub { "column_".$n++ }, "column_0" ], [ "db", "bar" ]) {
     my ($munge, $hdr) = @$_;
 
-    my $data = "bAr,foo\n1,2\n3,4,5\n";
+    my $data = "_bAr,foo\n1,2\n3,4,5\n";
     my $how  = defined $munge ? ref $munge ? "CB" : $munge : "undef";
 
     $n = 0;

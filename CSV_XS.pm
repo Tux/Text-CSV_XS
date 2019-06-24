@@ -917,6 +917,14 @@ sub header {
     my $row = $self->getline ($h) or croak;
     close $h;
 
+    if ($args{munge_column_names} eq "db") {
+	for (@$row) {
+	    s/\W+/_/g;
+	    s/^_+//;
+	    $_ = lc;
+	    }
+	}
+
     if ($ahead) { # Must be after getline, which creates the cache
 	$self->_cache_set ($_cache_id{_has_ahead}, 1);
 	$self->{_AHEAD} = $ahead;
@@ -2750,27 +2758,70 @@ The following values are available:
 
   lc     - lower case
   uc     - upper case
+  db     - valid DB field names
   none   - do not change
   \%hash - supply a mapping
   \&cb   - supply a callback
 
-Literal:
+=over 2
+
+=item Lower case
+
+ $csv->header ($fh, { munge_column_names => "lc" });
+
+The header is changed to all lower-case
+
+ $_ = lc;
+
+=item Upper case
+
+ $csv->header ($fh, { munge_column_names => "uc" });
+
+The header is changed to all upper-case
+
+ $_ = uc;
+
+=item Literal
 
  $csv->header ($fh, { munge_column_names => "none" });
 
-Hash:
+=item Hash
 
  $csv->header ($fh, { munge_column_names => { foo => "sombrero" });
 
 if a value does not exist, the original value is used unchanged
 
-Callback:
+=item Database
+
+ $csv->header ($fh, { munge_column_names => "db" });
+
+=over 2
+
+=item -
+
+lower-case
+
+=item -
+
+all sequences of non-word chacracters are replaced with an underscore
+
+=item -
+
+all leading underscores are removed
+
+=back
+
+ $_ = lc (s/\W+/_/gr =~ s/^_+//r);
+
+=item Callback
 
  $csv->header ($fh, { munge_column_names => sub { fc } });
  $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
  $csv->header ($fh, { munge_column_names => sub { lc (s/\W+/_/gr) } });
 
 As this callback is called in a C<map>, you can use C<$_> directly.
+
+=back
 
 =item set_column_names
 X<set_column_names>
