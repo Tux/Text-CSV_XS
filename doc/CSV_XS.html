@@ -1177,27 +1177,88 @@ or
 
 <pre><code>  lc     - lower case
   uc     - upper case
+  db     - valid DB field names
   none   - do not change
   \%hash - supply a mapping
   \&amp;cb   - supply a callback</code></pre>
 
-<p>Literal:</p>
+<dl>
+
+<dt id="Lower-case">Lower case</dt>
+<dd>
+
+<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;lc&quot; });</code></pre>
+
+<p>The header is changed to all lower-case</p>
+
+<pre><code> $_ = lc;</code></pre>
+
+</dd>
+<dt id="Upper-case">Upper case</dt>
+<dd>
+
+<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;uc&quot; });</code></pre>
+
+<p>The header is changed to all upper-case</p>
+
+<pre><code> $_ = uc;</code></pre>
+
+</dd>
+<dt id="Literal">Literal</dt>
+<dd>
 
 <pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;none&quot; });</code></pre>
 
-<p>Hash:</p>
+</dd>
+<dt id="Hash">Hash</dt>
+<dd>
 
 <pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; { foo =&gt; &quot;sombrero&quot; });</code></pre>
 
 <p>if a value does not exist, the original value is used unchanged</p>
 
-<p>Callback:</p>
+</dd>
+<dt id="Database">Database</dt>
+<dd>
+
+<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;db&quot; });</code></pre>
+
+<dl>
+
+<dt id="pod">-</dt>
+<dd>
+
+<p>lower-case</p>
+
+</dd>
+<dt id="pod1">-</dt>
+<dd>
+
+<p>all sequences of non-word characters are replaced with an underscore</p>
+
+</dd>
+<dt id="pod2">-</dt>
+<dd>
+
+<p>all leading underscores are removed</p>
+
+</dd>
+</dl>
+
+<pre><code> $_ = lc (s/\W+/_/gr =~ s/^_+//r);</code></pre>
+
+</dd>
+<dt id="Callback">Callback</dt>
+<dd>
 
 <pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; sub { fc } });
  $csv-&gt;header ($fh, { munge_column_names =&gt; sub { &quot;column_&quot;.$col++ } });
  $csv-&gt;header ($fh, { munge_column_names =&gt; sub { lc (s/\W+/_/gr) } });</code></pre>
 
 <p>As this callback is called in a <code>map</code>, you can use <code>$_</code> directly.</p>
+
+</dd>
+</dl>
 
 </dd>
 <dt id="set_column_names">set_column_names </dt>

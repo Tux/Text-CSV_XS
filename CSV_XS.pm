@@ -2803,7 +2803,7 @@ lower-case
 
 =item -
 
-all sequences of non-word chacracters are replaced with an underscore
+all sequences of non-word characters are replaced with an underscore
 
 =item -
 

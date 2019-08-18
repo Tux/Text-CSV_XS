@@ -1268,27 +1268,62 @@ false.
 
         lc     - lower case
         uc     - upper case
+        db     - valid DB field names
         none   - do not change
         \%hash - supply a mapping
         \&cb   - supply a callback
 
-    Literal:
+    - Lower case
 
-        $csv->header ($fh, { munge_column_names => "none" });
+            $csv->header ($fh, { munge_column_names => "lc" });
 
-    Hash:
+        The header is changed to all lower-case
 
-        $csv->header ($fh, { munge_column_names => { foo => "sombrero" });
+            $_ = lc;
 
-    if a value does not exist, the original value is used unchanged
+    - Upper case
 
-    Callback:
+            $csv->header ($fh, { munge_column_names => "uc" });
 
-        $csv->header ($fh, { munge_column_names => sub { fc } });
-        $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
-        $csv->header ($fh, { munge_column_names => sub { lc (s/\W+/_/gr) } });
+        The header is changed to all upper-case
 
-    As this callback is called in a `map`, you can use `$_` directly.
+            $_ = uc;
+
+    - Literal
+
+            $csv->header ($fh, { munge_column_names => "none" });
+
+    - Hash
+
+            $csv->header ($fh, { munge_column_names => { foo => "sombrero" });
+
+        if a value does not exist, the original value is used unchanged
+
+    - Database
+
+            $csv->header ($fh, { munge_column_names => "db" });
+
+        - -
+
+            lower-case
+
+        - -
+
+            all sequences of non-word characters are replaced with an underscore
+
+        - -
+
+            all leading underscores are removed
+
+            $_ = lc (s/\W+/_/gr =~ s/^_+//r);
+
+    - Callback
+
+            $csv->header ($fh, { munge_column_names => sub { fc } });
+            $csv->header ($fh, { munge_column_names => sub { "column_".$col++ } });
+            $csv->header ($fh, { munge_column_names => sub { lc (s/\W+/_/gr) } });
+
+        As this callback is called in a `map`, you can use `$_` directly.
 
 - set\_column\_names
 
