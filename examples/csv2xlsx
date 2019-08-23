@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'19 [07 May 2019] Copyright H.M.Brand 2007-2019
+#	   (m)'19 [23 Aug 2019] Copyright H.M.Brand 2007-2019
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.04";
+our $VERSION = "1.05";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -164,6 +164,7 @@ foreach my $csvf (@args) {
 	    $firstline = $_;
 	    last;
 	    }
+	$firstline or die "The sourcefile does not contain any usable data\n";
 	}
     my $csv = Text::CSV_XS-> new ({
 	sep_char       => $Sep eq "tab"   ? "\t"  : $Sep,
