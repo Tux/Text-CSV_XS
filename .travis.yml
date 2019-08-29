@@ -1,6 +1,7 @@
 language: perl
 os:
   - linux
+dist: trusty
 perl:
   - "5.30"
   - "5.28"
@@ -15,6 +16,11 @@ perl:
   - "5.12"
   - "5.10"
   - "5.8"
+env:
+  global:
+    - AUTOMATED_TESTING=1
+install:
+  - cpanm --quiet --installdeps --with-all-features --notest . || true
 notifications:
   irc:
     channels:
