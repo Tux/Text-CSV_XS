@@ -92,6 +92,7 @@ my %def_attr = (
     _COLUMN_NAMES		=> undef,
     _BOUND_COLUMNS		=> undef,
     _AHEAD			=> undef,
+    _FORMULA_CB			=> undef,
 
     ENCODING			=> undef,
     );
@@ -183,8 +184,8 @@ sub new {
 	}
     exists $attr{formula_handling} and
 	$attr{formula} = delete $attr{formula_handling};
-    exists $attr{formula} and
-	$attr{formula} = _supported_formula (undef, $attr{formula});
+    my $attr_formula = delete $attr{formula};
+
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
 	    # uncoverable condition false
@@ -232,6 +233,7 @@ sub new {
     defined $\ && !exists $attr{eol} and $self->{eol} = $\;
     bless $self, $class;
     defined $self->{types} and $self->types ($self->{types});
+    defined $attr_formula  and $self->{formula} = _supported_formula ($self, $attr_formula);
     $self;
     } # new
 
@@ -442,12 +444,17 @@ sub _SetDiagInfo {
 sub _supported_formula {
     my ($self, $f) = @_;
     defined $f or return 5;
+    if ($self && $f && ref $f && ref $f eq "CODE") {
+	$self->{_FORMULA_CB} = $f;
+	return 6;
+	}
     $f =~ m/^(?: 0 | none    )$/xi ? 0 :
     $f =~ m/^(?: 1 | die     )$/xi ? 1 :
     $f =~ m/^(?: 2 | croak   )$/xi ? 2 :
     $f =~ m/^(?: 3 | diag    )$/xi ? 3 :
     $f =~ m/^(?: 4 | empty | )$/xi ? 4 :
-    $f =~ m/^(?: 5 | undef   )$/xi ? 5 : do {
+    $f =~ m/^(?: 5 | undef   )$/xi ? 5 :
+    $f =~ m/^(?: 6 | cb      )$/xi ? 6 : do {
 	$self ||= "Text::CSV_XS";
 	croak ($self->_SetDiagInfo (1500, "formula-handling '$f' is not supported"));
 	};
@@ -456,7 +463,8 @@ sub _supported_formula {
 sub formula {
     my $self = shift;
     @_ and $self->_set_attr_N ("formula", _supported_formula ($self, shift));
-    [qw( none die croak diag empty undef )]->[_supported_formula ($self, $self->{formula})];
+    $self->{formula} == 6 or $self->{_FORMULA_CB} = undef;
+    [qw( none die croak diag empty undef cb )]->[_supported_formula ($self, $self->{formula})];
     } # always_quote
 sub formula_handling {
     my $self = shift;
@@ -1906,6 +1914,14 @@ Replace the content of fields that start with a C<=> with C<undef>.
 
  $csv->formula ("undef");
  $csv->formula (undef);
+
+=item a callback
+
+Modify the content of a fields that start with a C<=> inside the callback.
+The field content is locally aliassed to $_;
+
+ $csv->formula (sub { s/^=(\d+\+\d+)$/$1/e }); # Allow =4+12
+ $csv->formula (sub {});
 
 =back
 

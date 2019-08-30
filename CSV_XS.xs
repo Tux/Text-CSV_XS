@@ -832,6 +832,20 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	return NULL;
 	}
 
+    if (fa == 6) {
+	SV **svp = hv_fetchs (csv->self, "_FORMULA_CB", FALSE);
+	if (svp && _is_coderef (*svp)) {
+	    dSP;
+	    ENTER;
+	    SAVE_DEFSV; /* local $_ */
+	    DEFSV = sv;
+	    PUSHMARK (SP);
+	    call_sv (*svp, G_SCALAR);
+	    LEAVE;
+	    }
+	return len ? SvPV (sv, *len) : SvPV_nolen (sv);
+	}
+
     /* So far undefined behavior */
     return NULL;
     } /* _formula */
