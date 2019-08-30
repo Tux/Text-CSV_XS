@@ -1226,13 +1226,13 @@ sub _csv_attr {
     ref $fltr eq "CODE" and $fltr = { 0 => $fltr };
     ref $fltr eq "HASH" or  $fltr = undef;
 
-    exists $attr{formula} and
-	$attr{formula} = _supported_formula (undef, $attr{formula});
+    my $form = delete $attr{formula};
 
     defined $attr{auto_diag}   or $attr{auto_diag}   = 1;
     defined $attr{escape_null} or $attr{escape_null} = 0;
     my $csv = delete $attr{csv} || Text::CSV_XS->new (\%attr)
 	or croak $last_new_err;
+    defined $form and $csv->formula ($form);
 
     return {
 	csv  => $csv,
@@ -1265,7 +1265,7 @@ sub csv {
 
     my $c = _csv_attr (@_);
 
-    my ($csv, $in, $fh, $hdrs) = @{$c}{"csv", "in", "fh", "hdrs"};
+    my ($csv, $in, $fh, $hdrs) = @{$c}{qw( csv in fh hdrs )};
     my %hdr;
     if (ref $hdrs eq "HASH") {
 	%hdr  = %$hdrs;

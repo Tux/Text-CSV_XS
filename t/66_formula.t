@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 118;
+use Test::More tests => 119;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -190,3 +190,7 @@ is (       writer ("diag"),	q{1,=2+3,4}, "Out diag");
 is (       writer ("empty"),	q{1,"",4},   "Out empty");
 is (       writer ("undef"),	q{1,,4},     "Out undef");
 is_deeply (\@m,  [ "Field 1 contains formula '=2+3'\n" ], "Warning diag");
+
+is_deeply (Text::CSV_XS::csv (in => \qq{1,"=1+1"\n"=2-(5-3)",3\n},
+	    formula => sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ }),
+    [[1,2],[0,3]], "Formula calc from csv function");
