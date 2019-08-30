@@ -1917,11 +1917,21 @@ Replace the content of fields that start with a C<=> with C<undef>.
 
 =item a callback
 
-Modify the content of a fields that start with a C<=> inside the callback.
-The field content is locally aliassed to $_;
+Modify the content of fields that start with a  C<=>  with the return-value
+of the callback.  The original content of the field is available inside the
+callback as C<$_>;
 
- $csv->formula (sub { s/^=(\d+\+\d+)$/$1/e }); # Allow =4+12
- $csv->formula (sub {});
+ # Replace all formula's with 42
+ $csv->formula (sub { 42; });
+
+ # same as $csv->formula ("empty") but slower
+ $csv->formula (sub { "" });
+
+ # Allow =4+12
+ $csv->formula (sub { s/^=(\d+\+\d+)$/$1/eer });
+
+ # Allow more complex calculations
+ $csv->formula (sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ });
 
 =back
 

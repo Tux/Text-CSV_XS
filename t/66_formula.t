@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 112;
+use Test::More tests => 118;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -133,13 +133,26 @@ is_deeply (parse (5), [
     [ "1",	"2",	undef,	],
     ], "Undef");
 
-is_deeply (parse (sub { $_ = 42; }), [
+for ([ "Callback return",	sub {      42; }	],
+     [ "Callback assign",	sub { $_ = 42; }	],
+     [ "Callback subst",	sub { s/.*/42/; $_ }	], # s///r requires 5.13.2
+     ) {
+    my ($msg, $cb) = @$_;
+    is_deeply (parse ($cb), [
+	[ "a",	"b",	"c",	],
+	[ "1",	"2",	"3",	],
+	[ "42",	"3",	"4",	],
+	[ "1",	"42",	"4",	],
+	[ "1",	"2",	"42",	],
+	], $msg);
+    }
+is_deeply (parse (sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ }), [
     [ "a",	"b",	"c",	],
     [ "1",	"2",	"3",	],
-    [ "42",	"3",	"4",	],
-    [ "1",	"42",	"4",	],
-    [ "1",	"2",	"42",	],
-    ], "Callback simple");
+    [ "3",	"3",	"4",	],
+    [ "1",	"5",	"4",	],
+    [ "1",	"2",	"7",	],
+    ], "Callback calculations");
 
 {   @m = ();
     ok (my $csv = Text::CSV_XS->new ({ formula => 3 }), "new 3 hr");
