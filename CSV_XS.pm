@@ -902,7 +902,7 @@ sub header {
 		$hdr .= "\0" x $l;
 		read $fh, $x, $l;
 		}
-	    if ($enc ne "utf-8") {
+	    if ($enc && $enc ne "utf-8") {
 		require Encode;
 		$hdr = Encode::decode ($enc, $hdr);
 		}
@@ -1123,7 +1123,9 @@ sub _csv_attr {
 
     my $enc = delete $attr{enc} || delete $attr{encoding} || "";
     $enc eq "auto" and ($attr{detect_bom}, $enc) = (1, "");
+    my $stack = $enc =~ s/(:\w.*)// ? $1 : "";
     $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
+    $enc .= $stack;
 
     my $fh;
     my $sink = 0;
@@ -1151,7 +1153,10 @@ sub _csv_attr {
 	    $cls = 1;
 	    }
 	if ($fh) {
-	    $enc and binmode $fh, $enc;
+	    if ($enc) {
+		binmode $fh, $enc;
+		my $fn = fileno $fh; # This is a workaround for a bug in PerlIO::via::gzip
+		}
 	    unless (defined $attr{eol}) {
 		my @layers = eval { PerlIO::get_layers ($fh) };
 		$attr{eol} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
@@ -3295,6 +3300,22 @@ If C<encoding> is set to the literal value C<"auto">, the method L</header>
 will be invoked on the opened stream to check if there is a BOM and set the
 encoding accordingly.   This is equal to passing a true value in the option
 L<C<detect_bom>|/detect_bom>.
+
+Encodings can be stacked, as supported by C<binmode>:
+
+ # Using PerlIO::via::gzip
+ csv (in       => \@csv,
+      out      => "test.csv:via.gz",
+      encoding => ":via(gzip):encoding(utf-8)",
+      );
+ $aoa = csv (in => "test.csv:via.gz",  encoding => ":via(gzip)");
+
+ # Using PerlIO::gzip
+ csv (in       => \@csv,
+      out      => "test.csv:via.gz",
+      encoding => ":gzip:encoding(utf-8)",
+      );
+ $aoa = csv (in => "test.csv:gzip.gz", encoding => ":gzip");
 
 =head3 detect_bom
 X<detect_bom>
