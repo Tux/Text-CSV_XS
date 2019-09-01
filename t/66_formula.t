@@ -9,6 +9,7 @@ BEGIN {
     use_ok "Text::CSV_XS", ();
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
+my $tfn = "_66test.csv"; END { -f $tfn and unlink $tfn; }
 
 ok (my $csv = Text::CSV_XS->new,		"new");
 
@@ -191,6 +192,15 @@ is (       writer ("empty"),	q{1,"",4},   "Out empty");
 is (       writer ("undef"),	q{1,,4},     "Out undef");
 is_deeply (\@m,  [ "Field 1 contains formula '=2+3'\n" ], "Warning diag");
 
-is_deeply (Text::CSV_XS::csv (in => \qq{1,"=1+1"\n"=2-(5-3)",3\n},
+open my $fh, ">", $tfn;
+printf $fh <<"EOC";
+1,2,3
+=1+2,3,4
+1,=12-6,5
+1,2,=4+(9-1)/2
+EOC
+close $fh;
+
+is_deeply (Text::CSV_XS::csv (in => $tfn,
 	    formula => sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ }),
-    [[1,2],[0,3]], "Formula calc from csv function");
+    [[1,2,3],[3,3,4],[1,6,5],[1,2,8]], "Formula calc from csv function");
