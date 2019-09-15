@@ -425,6 +425,24 @@ Possible values for this attribute are
         $csv->formula ("undef");
         $csv->formula (undef);
 
+- a callback
+
+    Modify the content of fields that start with a  `=`  with the return-value
+    of the callback.  The original content of the field is available inside the
+    callback as `$_`;
+
+        # Replace all formula's with 42
+        $csv->formula (sub { 42; });
+
+        # same as $csv->formula ("empty") but slower
+        $csv->formula (sub { "" });
+
+        # Allow =4+12
+        $csv->formula (sub { s/^=(\d+\+\d+)$/$1/eer });
+
+        # Allow more complex calculations
+        $csv->formula (sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ });
+
 All other values will give a warning and then fallback to `diag`.
 
 ### decode\_utf8
@@ -1761,6 +1779,22 @@ If `encoding` is set to the literal value `"auto"`, the method ["header"](#heade
 will be invoked on the opened stream to check if there is a BOM and set the
 encoding accordingly.   This is equal to passing a true value in the option
 [`detect_bom`](#detect_bom).
+
+Encodings can be stacked, as supported by `binmode`:
+
+    # Using PerlIO::via::gzip
+    csv (in       => \@csv,
+         out      => "test.csv:via.gz",
+         encoding => ":via(gzip):encoding(utf-8)",
+         );
+    $aoa = csv (in => "test.csv:via.gz",  encoding => ":via(gzip)");
+
+    # Using PerlIO::gzip
+    csv (in       => \@csv,
+         out      => "test.csv:via.gz",
+         encoding => ":gzip:encoding(utf-8)",
+         );
+    $aoa = csv (in => "test.csv:gzip.gz", encoding => ":gzip");
 
 ### detect\_bom
 

@@ -144,7 +144,7 @@ sub postamble
 	'test_used:	test',
 	'	prove -vwb sandbox/used-by.pl',
 	'',
-	'doc:			doc/CSV_XS.md doc/CSV_XS.html doc/CSV_XS.man',
+	'doc docs:		doc/CSV_XS.md doc/CSV_XS.html doc/CSV_XS.man',
 	'doc/CSV_XS.md:		CSV_XS.pm',
 	'	pod2markdown  < $? > $@',
 	'doc/CSV_XS.html:	CSV_XS.pm',
