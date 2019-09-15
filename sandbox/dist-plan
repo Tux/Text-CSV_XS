@@ -19,6 +19,7 @@ scp -p Text-CSV_XS.tgz ...
 - HP-UX 11.11 ps
 - AIX 5.2
 - openSUSE TW
+- openSUSE 15.1
 - openSUSE 15.0
 - openSUSE 42.3
 - Windows 7
