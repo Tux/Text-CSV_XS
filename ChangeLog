@@ -1,3 +1,6 @@
+1.41	- 2019-09-28, H.Merijn Brand
+    * Update to Devel::PPPort-3.54
+
 1.40	- 2019-09-15, H.Merijn Brand
     * Update to Devel::PPPort-3.52
     * Development perl is now 5.28.2
