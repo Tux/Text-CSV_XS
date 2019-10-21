@@ -42,11 +42,19 @@
 #define HOOK_AFTER_PARSE	0x0002
 #define HOOK_BEFORE_PRINT	0x0004
 
+#ifdef __THW_370__
+#define CH_TAB		'\005'
+#define CH_NL		'\025'
+#define CH_CR		'\015'
+#define CH_SPACE	'\100'
+#define CH_DEL		'\007'
+#else
 #define CH_TAB		'\011'
 #define CH_NL		'\012'
 #define CH_CR		'\015'
 #define CH_SPACE	'\040'
 #define CH_DEL		'\177'
+#endif
 #define CH_EOLX		1215
 #define CH_EOL		*csv->eol
 #define CH_SEPX		8888
