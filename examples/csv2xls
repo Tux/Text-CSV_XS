@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'19 [23 Aug 2019] Copyright H.M.Brand 2007-2019
+#	   (m)'19 [21 Oct 2019] Copyright H.M.Brand 2007-2019
 
 use 5.12.0;
 use warnings;
 
-our $VERSION = "1.78";
+our $VERSION = "1.79";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -95,7 +95,12 @@ use Spreadsheet::WriteExcel;
 use Encode qw( from_to );
 
 my $wbk = Spreadsheet::WriteExcel->new ($xls);
-my $wks = $wbk->add_worksheet ();
+my $snm = $title;
+   $snm =~ s{\.csv$}{}i;
+   $snm =~ s{.*/}{};
+   $snm ||= "Sheet 1";
+($_ = length $snm) > 31 and substr $snm, 31, $_ - 31, "";
+my $wks = $wbk->add_worksheet ($snm);
    $dtf =~ s/j/y/g;
 my %fmt = (
     date => $wbk->add_format (align => "center", num_format => $dtf),
