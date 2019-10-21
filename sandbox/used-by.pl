@@ -3,7 +3,7 @@
 use 5.16.2;
 use warnings;
 
-our $VERSION = "1.03 - 20180301";
+our $VERSION = "1.04 - 20190915";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -66,6 +66,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } @{{
 	"Connector",				# No Makefile.PL (in Annelidous)
 	"DBIx-Class-DigestColumns",		# unmet prereqs
 	"DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet prereqs
+#	"DBIx-Class-EncodedColumn",		# Busted configuration
 	"DBIx-Class-FormTools",			# ::CSV POD
 	"DBIx-Class-FromSledge",		# ::CSV Spelling
 	"DBIx-Class-Graph",			# won't build at all
