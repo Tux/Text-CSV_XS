@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'19 [23 Aug 2019] Copyright H.M.Brand 2007-2019
+#	   (m)'19 [28 Nov 2019] Copyright H.M.Brand 2007-2019
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.05";
+our $VERSION = "1.06";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -86,7 +86,7 @@ if ($mrg) {
 	    $xls = $_;
 	    next;
 	    }
-	if (m/\.csv$/i && -s) {
+	if (m/\.(csv|png|jpe?g|bmp|gif|tiff|xpm)$/i && -s) {
 	    push @csv, $_;
 	    next;
 	    }
@@ -126,10 +126,15 @@ $crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
 
 my @args = @ARGV ? @ARGV : ("");
 foreach my $csvf (@args) {
-    my $sheetname = $csvf =~ s{\.csv$}{}ir =~ s{.*/}{}r || "Sheet 1";
+    my $sheetname = $csvf =~ s{\.\w+$}{}ir =~ s{.*/}{}r || "Sheet 1";
     ($_ = length $sheetname) > 31 and substr $sheetname, 31, $_ - 31, "";
-    #say "$sheetname (", length ($sheetname), ") << $csvf";
     my $wks = $wbk->add_worksheet ($sheetname);
+
+    if ($csvf =~ m/\.(png|jpe?g|bmp|gif|tiff|xpm)$/i) {
+	$wks->insert_image (1, 1, $csvf);
+	next;
+	}
+
     my ($h, $w, @w) = (0, 1); # data height, -width, and default column widths
     my $row;
     my $firstline;

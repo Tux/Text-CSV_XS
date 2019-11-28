@@ -1,6 +1,7 @@
-1.41	- 2019-10-21, H.Merijn Brand
+1.41	- 2019-11-28, H.Merijn Brand
     * Update to Devel::PPPort-3.54
     * csv2xls uses sheetname as csv2xlsx
+    * csv2xlsx: support images (each image gets its own tab)
 
 1.40	- 2019-09-15, H.Merijn Brand
     * Update to Devel::PPPort-3.52
