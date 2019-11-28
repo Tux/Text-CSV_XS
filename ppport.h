@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.54
+    ppport.h -- Perl/Pollution/Portability Version 3.56
 
     Automatically created by Devel::PPPort running under perl 5.030000.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.54
+ppport.h - Perl/Pollution/Portability version 3.56
 
 =head1 SYNOPSIS
 
@@ -56,7 +56,7 @@ ppport.h - Perl/Pollution/Portability version 3.54
 =head1 COMPATIBILITY
 
 This version of F<ppport.h> is designed to support operation with Perl
-installations back to 5.003_07, and has been tested up to 5.31.4.
+installations back to 5.003_07, and has been tested up to 5.31.6.
 
 =head1 OPTIONS
 
@@ -403,8 +403,8 @@ sub format_version
 
 sub parse_version
 {
-  # Returns a triplet, (5, major, minor) from the input, which can be in any
-  # of several typical formats
+  # Returns a triplet, (5, major, minor) from the input, treated as a string,
+  # which can be in any of several typical formats.
 
   my $ver = shift;
   $ver = "" unless defined $ver;
@@ -429,6 +429,19 @@ sub parse_version
     return (5, 0 + $v, 0 + $s);
   }
 
+  # For some safety, don't assume something is a version number if it has a
+  # literal dot as one of the three characters.  This will have to be fixed
+  # when we reach 5.46
+  if ($ver !~ /\./ && (($r, $v, $s) = $ver =~ /^(.)(.)(.)$/))  # vstring 5.25.7
+  {
+    $r = ord $r;
+    $v = ord $v;
+    $s = ord $s;
+
+    die "Only Perl 5 is supported '$ver'\n" if $r != 5;
+    return (5, $v, $s);
+  }
+
   my $mesg = "";
   $mesg = ".  (In 5.00x_yz, x must be 1-5.)" if $ver =~ /_/;
   die "Invalid version number format: '$ver'$mesg\n";
@@ -440,6 +453,11 @@ sub int_parse_version
     # names in parts/todo parts/base.
 
     return 0 + join "", map { sprintf("%03d", $_) } parse_version(shift);
+}
+
+sub ivers    # Shorter name for int_parse_version
+{
+    return int_parse_version(shift);
 }
 
 sub format_version_line
@@ -496,7 +514,7 @@ use strict;
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= 5.009004 && "$]" <= 5.009005 }
 
-my $VERSION = 3.54;
+my $VERSION = 3.56;
 
 my %opt = (
   quiet     => 0,
@@ -661,7 +679,7 @@ boolSV|5.004000|5.003007|p
 boot_core_mro|5.009005||Viu
 boot_core_PerlIO|5.007002||Viu
 boot_core_UNIVERSAL|5.003007||Viu
-_byte_dump_string|5.025006||Viu
+_byte_dump_string|5.025006||cViu
 BYTEORDER|5.003007|5.003007|
 bytes_cmp_utf8|5.013007|5.013007|
 bytes_from_utf8|5.007001|5.007001|x
@@ -688,7 +706,6 @@ category_name|5.027008||nViu
 cBOOL|5.013000|5.003007|p
 change_engine_size|5.029004||Viu
 CHARBITS|5.011002|5.011002|
-check_and_deprecate|5.025009||Viu
 checkcomma|5.003007||Viu
 check_locale_boundary_crossing|5.015006||Viu
 check_type_and_open|5.009003||Viu
@@ -780,7 +797,9 @@ croak_popstack|5.017008||ncViu
 croak_sv|5.013001|5.003007|p
 croak_xs_usage|5.010001|5.003007|pn
 cr_textfilter|5.006000||Viu
-csighandler|5.009003|5.009003|nu
+csighandler1|||nu
+csighandler3|||nu
+csighandler|||nu
 current_re_engine|5.017001||cViu
 curse|5.013009||Viu
 custom_op_desc|5.007003|5.007003|d
@@ -929,11 +948,10 @@ do_sysseek|5.004000||Viu
 do_tell|5.003007||Viu
 do_trans|5.003007||Viu
 do_trans_complex|5.006001||Viu
-do_trans_complex_utf8|5.006001||Viu
 do_trans_count|5.006001||Viu
-do_trans_count_utf8|5.006001||Viu
+do_trans_count_invmap|5.031006||Viu
+do_trans_invmap|5.031006||Viu
 do_trans_simple|5.006001||Viu
-do_trans_simple_utf8|5.006001||Viu
 DOUBLEINFBYTES|5.023000|5.023000|
 DOUBLEKIND|5.021006|5.021006|
 DOUBLEMANTBITS|5.023000|5.023000|
@@ -1002,7 +1020,6 @@ EXTERN_C|5.005000|5.003007|poVu
 F0convert|5.009003||nViu
 fbm_compile|5.005000|5.005000|
 fbm_instr|5.005000|5.005000|
-feature_is_enabled|||ciu
 filter_add|5.003007|5.003007|
 filter_del|5.003007|5.003007|u
 filter_gets|5.005000||Viu
@@ -1014,6 +1031,7 @@ find_array_subscript|5.009004||Viu
 find_beginning|5.005000||Viu
 find_byclass|5.006000||Viu
 find_default_stash|5.019004||Viu
+find_first_differing_byte_pos|||nViu
 find_hash_subscript|5.009004||Viu
 find_in_my_stash|5.006001||Viu
 find_lexical_cv|5.019001||Viu
@@ -1095,6 +1113,7 @@ get_vtbl|5.005003|5.005003|u
 G_EVAL|5.003007|5.003007|
 GIMME|5.003007|5.003007|
 GIMME_V|5.004000|5.004000|
+gimme_V|5.031005|5.031005|xu
 glob_2number|5.009004||Viu
 glob_assign_glob|5.009004||Viu
 G_METHOD|5.006001|5.003007|p
@@ -1103,6 +1122,7 @@ G_NOARGS|5.003007|5.003007|
 gp_dup|5.007003|5.007003|u
 gp_free|5.003007|5.003007|u
 gp_ref|5.003007|5.003007|u
+G_RETHROW||5.003007|p
 grok_atoUV|5.021010||ncVi
 grok_bin|5.007003|5.003007|p
 grok_bslash_c|5.013001||cViu
@@ -1329,6 +1349,7 @@ invlist_iterfinish|5.017008||nViu
 invlist_iterinit|5.015001||nViu
 invlist_iternext|5.015001||nViu
 _invlist_len|5.017004||nViu
+invlist_lowest|||nxViu
 invlist_max|5.013010||nViu
 invlist_previous_index|5.017004||nViu
 invlist_replace_list_destroys_src|5.023009||Viu
@@ -1339,6 +1360,7 @@ _invlist_subtract|5.015001||Viu
 invlist_trim|5.013010||nViu
 _invlist_union|5.015001||cVu
 _invlist_union_maybe_complement_2nd|5.015008||cViu
+invmap_dump|5.031006||Viu
 invoke_exception_hook|5.013001||Viu
 io_close|5.003007||Viu
 isALNUM|5.003007|5.003007|p
@@ -1348,7 +1370,6 @@ isALNUMC_A|5.013006|5.003007|p
 isALNUMC_L1|5.013006|5.003007|p
 isALNUMC_LC|5.006000|5.006000|
 isALNUMC_LC_uvchr|5.017007|5.017007|
-isALNUM_lazy|5.017008||dcVu
 isALNUM_LC|5.004000|5.004000|
 isALNUM_LC_uvchr|5.007001|5.007001|
 isa_lookup|5.005000||Viu
@@ -1356,40 +1377,40 @@ isALPHA|5.003007|5.003007|p
 isALPHA_A|5.013006|5.003007|p
 isALPHA_L1|5.013006|5.003007|p
 isALPHA_LC|5.004000|5.004000|
-isALPHA_LC_utf8_safe|5.025009|5.025009|
+isALPHA_LC_utf8_safe|5.025009|5.006000|p
 isALPHA_LC_uvchr|5.007001|5.007001|
 isALPHANUMERIC|5.017008|5.003007|p
 isALPHANUMERIC_A|5.017008|5.003007|p
 isALPHANUMERIC_L1|5.017008|5.003007|p
-isALPHANUMERIC_LC|5.017008|5.017008|
-isALPHANUMERIC_LC_utf8_safe|5.025009|5.025009|
+isALPHANUMERIC_LC|5.017008|5.004000|p
+isALPHANUMERIC_LC_utf8_safe|5.025009|5.006000|p
 isALPHANUMERIC_LC_uvchr|5.017008|5.017008|
-isALPHANUMERIC_utf8|5.017008|5.017008|
-isALPHANUMERIC_utf8_safe|5.025009|5.025009|
-isALPHANUMERIC_uvchr|5.023009|5.023009|
-isALPHA_utf8|5.006000|5.006000|
-isALPHA_utf8_safe|5.025009|5.025009|
-isALPHA_uvchr|5.023009|5.023009|
+isALPHANUMERIC_utf8|5.031005|5.031005|
+isALPHANUMERIC_utf8_safe|5.025009|5.006000|p
+isALPHANUMERIC_uvchr|5.023009|5.006000|p
+isALPHA_utf8|5.031005|5.031005|
+isALPHA_utf8_safe|5.025009|5.006000|p
+isALPHA_uvchr|5.023009|5.006000|p
 is_an_int|5.005000||Viu
 isASCII|5.006000|5.003007|p
 isASCII_A|5.013006|5.003007|p
 isASCII_L1|5.015004|5.003007|p
-isASCII_LC|5.015008|5.015008|
+isASCII_LC|5.015008|5.003007|p
 isASCII_LC_utf8_safe|5.025009|5.025009|
 isASCII_LC_uvchr|5.017007|5.017007|
 is_ascii_string|5.011000|5.011000|n
-isASCII_utf8|5.006000|5.006000|
-isASCII_utf8_safe|5.025009|5.025009|
-isASCII_uvchr|5.023009|5.023009|
+isASCII_utf8|5.031005|5.031005|
+isASCII_utf8_safe|5.025009|5.003007|p
+isASCII_uvchr|5.023009|5.003007|p
 isBLANK|5.006001|5.003007|p
 isBLANK_A|5.013006|5.003007|p
 isBLANK_L1|5.013006|5.003007|p
-isBLANK_LC|5.006001|5.006001|
-isBLANK_LC_utf8_safe|5.025009|5.025009|
+isBLANK_LC|5.006001|5.003007|p
+isBLANK_LC_utf8_safe|5.025009|5.006000|p
 isBLANK_LC_uvchr|5.017007|5.017007|
-isBLANK_utf8|5.006001|5.006001|
-isBLANK_utf8_safe|5.025009|5.025009|
-isBLANK_uvchr|5.023009|5.023009|
+isBLANK_utf8|5.031005|5.031005|
+isBLANK_utf8_safe|5.025009|5.006000|p
+isBLANK_uvchr|5.023009|5.006000|p
 isC9_STRICT_UTF8_CHAR|5.025005|5.025005|n
 is_c9strict_utf8_string|5.025006|5.025006|n
 is_c9strict_utf8_string_loc|5.025006|5.025006|n
@@ -1398,21 +1419,21 @@ isCNTRL|5.006000|5.003007|p
 isCNTRL_A|5.013006|5.003007|p
 isCNTRL_L1|5.013006|5.003007|p
 isCNTRL_LC|5.006000|5.006000|
-isCNTRL_LC_utf8_safe|5.025009|5.025009|
+isCNTRL_LC_utf8_safe|5.025009|5.006000|p
 isCNTRL_LC_uvchr|5.007001|5.007001|
-isCNTRL_utf8|5.006000|5.006000|
-isCNTRL_utf8_safe|5.025009|5.025009|
-isCNTRL_uvchr|5.023009|5.023009|
+isCNTRL_utf8|5.031005|5.031005|
+isCNTRL_utf8_safe|5.025009|5.006000|p
+isCNTRL_uvchr|5.023009|5.006000|p
 _is_cur_LC_category_utf8|5.021001||cVu
 isDIGIT|5.003007|5.003007|p
 isDIGIT_A|5.013006|5.003007|p
 isDIGIT_L1|5.013006|5.003007|p
 isDIGIT_LC|5.004000|5.004000|
-isDIGIT_LC_utf8_safe|5.025009|5.025009|
+isDIGIT_LC_utf8_safe|5.025009|5.006000|p
 isDIGIT_LC_uvchr|5.007001|5.007001|
-isDIGIT_utf8|5.006000|5.006000|
-isDIGIT_utf8_safe|5.025009|5.025009|
-isDIGIT_uvchr|5.023009|5.023009|
+isDIGIT_utf8|5.031005|5.031005|
+isDIGIT_utf8_safe|5.025009|5.006000|p
+isDIGIT_uvchr|5.023009|5.006000|p
 isFF_OVERLONG|5.025007||nViu
 isFOO_lc|5.017007||cViu
 isFOO_utf8_lc|5.017008||Viu
@@ -1422,32 +1443,31 @@ isGRAPH_A|5.013006|5.003007|p
 _is_grapheme|5.025009||Viu
 isGRAPH_L1|5.013006|5.003007|p
 isGRAPH_LC|5.006000|5.006000|
-isGRAPH_LC_utf8_safe|5.025009|5.025009|
+isGRAPH_LC_utf8_safe|5.025009|5.006000|p
 isGRAPH_LC_uvchr|5.007001|5.007001|
-isGRAPH_utf8|5.006000|5.006000|
-isGRAPH_utf8_safe|5.025009|5.025009|
-isGRAPH_uvchr|5.023009|5.023009|
+isGRAPH_utf8|5.031005|5.031005|
+isGRAPH_utf8_safe|5.025009|5.006000|p
+isGRAPH_uvchr|5.023009|5.006000|p
 isGV_with_GP|5.009004||pVu
 is_handle_constructor|5.006000||nViu
 isIDCONT|5.017008|5.003007|p
 isIDCONT_A|5.017008|5.003007|p
 isIDCONT_L1|5.017008|5.003007|p
-isIDCONT_LC|5.017008|5.017008|
-isIDCONT_LC_utf8_safe|5.025009|5.025009|
+isIDCONT_LC|5.017008|5.004000|p
+isIDCONT_LC_utf8_safe|5.025009|5.006000|p
 isIDCONT_LC_uvchr|5.017008|5.017008|
-isIDCONT_utf8|5.013010|5.013010|
-isIDCONT_utf8_safe|5.025009|5.025009|
-isIDCONT_uvchr|5.023009|5.023009|
+isIDCONT_utf8|5.031005|5.031005|
+isIDCONT_utf8_safe|5.025009|5.006000|p
+isIDCONT_uvchr|5.023009|5.006000|p
 isIDFIRST|5.003007|5.003007|p
 isIDFIRST_A|5.013006|5.003007|p
 isIDFIRST_L1|5.013006|5.003007|p
-isIDFIRST_lazy|5.017008||dcVu
-isIDFIRST_LC|5.004000|5.004000|
-isIDFIRST_LC_utf8_safe|5.025009|5.025009|
+isIDFIRST_LC|5.004000|5.004000|p
+isIDFIRST_LC_utf8_safe|5.025009|5.006000|p
 isIDFIRST_LC_uvchr|5.007001|5.007001|
-isIDFIRST_utf8|5.006000|5.006000|
-isIDFIRST_utf8_safe|5.025009|5.025009|
-isIDFIRST_uvchr|5.023009|5.023009|
+isIDFIRST_utf8|5.031005|5.031005|
+isIDFIRST_utf8_safe|5.025009|5.006000|p
+isIDFIRST_uvchr|5.023009|5.006000|p
 isinfnan|5.021004|5.021004|n
 isinfnansv|5.021005||Viu
 _is_in_locale_category|5.021001||cViu
@@ -1458,11 +1478,11 @@ isLOWER|5.003007|5.003007|p
 isLOWER_A|5.013006|5.003007|p
 isLOWER_L1|5.013006|5.003007|p
 isLOWER_LC|5.004000|5.004000|
-isLOWER_LC_utf8_safe|5.025009|5.025009|
+isLOWER_LC_utf8_safe|5.025009|5.006000|p
 isLOWER_LC_uvchr|5.007001|5.007001|
-isLOWER_utf8|5.006000|5.006000|
-isLOWER_utf8_safe|5.025009|5.025009|
-isLOWER_uvchr|5.023009|5.023009|
+isLOWER_utf8|5.031005|5.031005|
+isLOWER_utf8_safe|5.025009|5.006000|p
+isLOWER_uvchr|5.023009|5.006000|p
 is_lvalue_sub|5.007001|5.007001|u
 IS_NUMBER_GREATER_THAN_UV_MAX|5.007002|5.003007|p
 IS_NUMBER_INFINITY|5.007002|5.003007|p
@@ -1477,29 +1497,29 @@ isPRINT|5.004000|5.003007|p
 isPRINT_A|5.013006|5.003007|p
 isPRINT_L1|5.013006|5.003007|p
 isPRINT_LC|5.004000|5.004000|
-isPRINT_LC_utf8_safe|5.025009|5.025009|
+isPRINT_LC_utf8_safe|5.025009|5.006000|p
 isPRINT_LC_uvchr|5.007001|5.007001|
-isPRINT_utf8|5.006000|5.006000|
-isPRINT_utf8_safe|5.025009|5.025009|
-isPRINT_uvchr|5.023009|5.023009|
+isPRINT_utf8|5.031005|5.031005|
+isPRINT_utf8_safe|5.025009|5.006000|p
+isPRINT_uvchr|5.023009|5.006000|p
 isPSXSPC|5.006001|5.003007|p
 isPSXSPC_A|5.013006|5.003007|p
 isPSXSPC_L1|5.013006|5.003007|p
 isPSXSPC_LC|5.006001|5.006001|
-isPSXSPC_LC_utf8_safe|5.025009|5.025009|
+isPSXSPC_LC_utf8_safe|5.025009|5.006000|p
 isPSXSPC_LC_uvchr|5.017007|5.017007|
-isPSXSPC_utf8|5.006001|5.006001|
-isPSXSPC_utf8_safe|5.025009|5.025009|
-isPSXSPC_uvchr|5.023009|5.023009|
+isPSXSPC_utf8|5.031005|5.031005|
+isPSXSPC_utf8_safe|5.025009|5.006000|p
+isPSXSPC_uvchr|5.023009|5.006000|p
 isPUNCT|5.006000|5.003007|p
 isPUNCT_A|5.013006|5.003007|p
 isPUNCT_L1|5.013006|5.003007|p
 isPUNCT_LC|5.006000|5.006000|
-isPUNCT_LC_utf8_safe|5.025009|5.025009|
+isPUNCT_LC_utf8_safe|5.025009|5.006000|p
 isPUNCT_LC_uvchr|5.007001|5.007001|
-isPUNCT_utf8|5.006000|5.006000|
-isPUNCT_utf8_safe|5.025009|5.025009|
-isPUNCT_uvchr|5.023009|5.023009|
+isPUNCT_utf8|5.031005|5.031005|
+isPUNCT_utf8_safe|5.025009|5.006000|p
+isPUNCT_uvchr|5.023009|5.006000|p
 IS_SAFE_SYSCALL|5.019004|5.019004|
 is_safe_syscall|5.019004|5.019004|
 isSB|5.021009||Viu
@@ -1508,131 +1528,72 @@ isSPACE|5.003007|5.003007|p
 isSPACE_A|5.013006|5.003007|p
 isSPACE_L1|5.013006|5.003007|p
 isSPACE_LC|5.004000|5.004000|
-isSPACE_LC_utf8_safe|5.025009|5.025009|
+isSPACE_LC_utf8_safe|5.025009|5.006000|p
 isSPACE_LC_uvchr|5.007001|5.007001|
-isSPACE_utf8|5.006000|5.006000|
-isSPACE_utf8_safe|5.025009|5.025009|
-isSPACE_uvchr|5.023009|5.023009|
+isSPACE_utf8|5.031005|5.031005|
+isSPACE_utf8_safe|5.025009|5.006000|p
+isSPACE_uvchr|5.023009|5.006000|p
 is_ssc_worth_it|5.021005||nViu
 isSTRICT_UTF8_CHAR|5.025005|5.025005|n
 is_strict_utf8_string|5.025006|5.025006|n
 is_strict_utf8_string_loc|5.025006|5.025006|n
 is_strict_utf8_string_loclen|5.025006|5.025006|n
-is_uni_alnum|5.006000||dcVu
-is_uni_alnumc|5.017007||dcVu
-is_uni_alnumc_lc|5.017007||dcVu
-is_uni_alnum_lc|5.006000||dcVu
-is_uni_alpha|5.006000||dcVu
-is_uni_alpha_lc|5.006000||dcVu
-is_uni_ascii|5.006000||dcVu
-is_uni_ascii_lc|5.006000||dcVu
-is_uni_blank|5.017002||dcVu
-is_uni_blank_lc|5.017007||dcVu
-is_uni_cntrl|5.006000||dcVu
-is_uni_cntrl_lc|5.006000||dcVu
-is_uni_digit|5.006000||dcVu
-is_uni_digit_lc|5.006000||dcVu
 _is_uni_FOO|5.017008||cVu
-is_uni_graph|5.006000||dcVu
-is_uni_graph_lc|5.006000||dcVu
-is_uni_idfirst|5.006000||dcVu
-is_uni_idfirst_lc|5.006000||dcVu
-is_uni_lower|5.006000||dcVu
-is_uni_lower_lc|5.006000||dcVu
 _is_uni_perl_idcont|5.017008||cVu
 _is_uni_perl_idstart|5.017007||cVu
-is_uni_print|5.006000||dcVu
-is_uni_print_lc|5.006000||dcVu
-is_uni_punct|5.006000||dcVu
-is_uni_punct_lc|5.006000||dcVu
-is_uni_space|5.006000||dcVu
-is_uni_space_lc|5.006000||dcVu
-is_uni_upper|5.006000||dcVu
-is_uni_upper_lc|5.006000||dcVu
-is_uni_xdigit|5.006000||dcVu
-is_uni_xdigit_lc|5.006000||dcVu
 isUPPER|5.003007|5.003007|p
 isUPPER_A|5.013006|5.003007|p
 isUPPER_L1|5.013006|5.003007|p
 isUPPER_LC|5.004000|5.004000|
-isUPPER_LC_utf8_safe|5.025009|5.025009|
+isUPPER_LC_utf8_safe|5.025009|5.006000|p
 isUPPER_LC_uvchr|5.007001|5.007001|
-isUPPER_utf8|5.006000|5.006000|
-isUPPER_utf8_safe|5.025009|5.025009|
-isUPPER_uvchr|5.023009|5.023009|
-is_utf8_alnum|5.006000||dcVu
-is_utf8_alnumc|5.017007||dcVu
-is_utf8_alpha|5.006000||dcVu
-is_utf8_ascii|5.006000||dcVu
-is_utf8_blank|5.017002||dcVu
+isUPPER_utf8|5.031005|5.031005|
+isUPPER_utf8_safe|5.025009|5.006000|p
+isUPPER_uvchr|5.023009|5.006000|p
 is_utf8_char|5.006000|5.006000|nd
 isUTF8_CHAR|5.021001|5.006001|pn
 is_utf8_char_buf|5.015008|5.015008|n
 isUTF8_CHAR_flags|5.025005|5.025005|
 is_utf8_char_helper|5.031004||ncVu
-is_utf8_cntrl|5.006000||dcVu
 is_utf8_common|5.009003||Viu
-is_utf8_common_with_len|5.025009||Viu
 is_utf8_cp_above_31_bits|5.025005||nViu
-is_utf8_digit|5.006000||dcVu
 is_utf8_fixed_width_buf_flags|5.025006|5.025006|n
 is_utf8_fixed_width_buf_loc_flags|5.025006|5.025006|n
 is_utf8_fixed_width_buf_loclen_flags|5.025006|5.025006|n
-_is_utf8_FOO|5.017008||cVu
-_is_utf8_FOO_with_len|5.025009||cVu
-is_utf8_graph|5.006000||dcVu
-is_utf8_idcont|5.008000||dcVu
-_is_utf8_idcont|5.021001||cVu
-is_utf8_idfirst|5.006000||dcVu
-_is_utf8_idstart|5.021001||cVu
+_is_utf8_FOO|5.031006||cVu
 is_utf8_invariant_string|5.025005|5.011000|pn
 is_utf8_invariant_string_loc|5.027001|5.027001|n
-is_utf8_lower|5.006000||dcVu
-is_utf8_mark|5.006000|5.006000|dxu
-_is_utf8_mark|5.017008||cVu
 is_utf8_non_invariant_string|5.027007||ncVi
 is_utf8_overlong_given_start_byte_ok|5.025006||nViu
-_is_utf8_perl_idcont_with_len|5.025009||cVu
-_is_utf8_perl_idstart_with_len|5.025009||cVu
-is_utf8_perl_space|5.011001||dcVu
-is_utf8_perl_word|5.011001||dcVu
-is_utf8_posix_digit|5.011001||dcVu
-is_utf8_print|5.006000||dcVu
-is_utf8_punct|5.006000||dcVu
-is_utf8_space|5.006000||dcVu
+_is_utf8_perl_idcont|5.031006||cVu
+_is_utf8_perl_idstart|5.031006||cVu
 is_utf8_string|5.006001|5.006001|n
 is_utf8_string_flags|5.025006|5.025006|n
 is_utf8_string_loc|5.008001|5.008001|n
 is_utf8_string_loc_flags|5.025006|5.025006|n
 is_utf8_string_loclen|5.009003|5.009003|n
 is_utf8_string_loclen_flags|5.025006|5.025006|n
-is_utf8_upper|5.006000||dcVu
 is_utf8_valid_partial_char|5.025005|5.025005|n
 is_utf8_valid_partial_char_flags|5.025005|5.025005|n
-is_utf8_xdigit|5.006000||dcVu
-is_utf8_xidcont|5.013010||dcVu
-_is_utf8_xidcont|5.021001||cVu
-is_utf8_xidfirst|5.013010||dcVu
-_is_utf8_xidstart|5.021001||cVu
 isWB|5.021009||Viu
 isWORDCHAR|5.013006|5.003007|p
 isWORDCHAR_A|5.013006|5.003007|p
 isWORDCHAR_L1|5.013006|5.003007|p
-isWORDCHAR_LC|5.017007|5.017007|
-isWORDCHAR_LC_utf8_safe|5.025009|5.025009|
+isWORDCHAR_LC|5.017007|5.004000|p
+isWORDCHAR_LC_utf8_safe|5.025009|5.006000|p
 isWORDCHAR_LC_uvchr|5.017007|5.017007|
-isWORDCHAR_utf8|5.017006|5.017006|
-isWORDCHAR_utf8_safe|5.025009|5.025009|
-isWORDCHAR_uvchr|5.023009|5.023009|
+isWORDCHAR_utf8|5.031005|5.031005|
+isWORDCHAR_utf8_safe|5.025009|5.006000|p
+isWORDCHAR_uvchr|5.023009|5.006000|p
 isXDIGIT|5.006000|5.003007|p
 isXDIGIT_A|5.013006|5.003007|p
 isXDIGIT_L1|5.013006|5.003007|p
-isXDIGIT_LC|5.017007|5.017007|
-isXDIGIT_LC_utf8_safe|5.025009|5.025009|
+isXDIGIT_LC|5.017007|5.003007|p
+isXDIGIT_LC_utf8_safe|5.025009|5.006000|p
 isXDIGIT_LC_uvchr|5.017007|5.017007|
-isXDIGIT_utf8|5.006000|5.006000|
-isXDIGIT_utf8_safe|5.025009|5.025009|
-isXDIGIT_uvchr|5.023009|5.023009|
+isXDIGIT_utf8|5.031005|5.031005|
+isXDIGIT_utf8_safe|5.025009|5.006000|p
+isXDIGIT_uvchr|5.023009|5.006000|p
 items|5.003007|5.003007|V
 IVdf|5.006000|5.003007|p
 IVSIZE|5.006000|5.003007|p
@@ -1737,7 +1698,7 @@ magic_setuvar|5.003007||Viu
 magic_setvec|5.003007||Viu
 magic_sizepack|5.005000||Viu
 magic_wipepack|5.003007||Viu
-_make_exactf_invlist|5.021007||Viu
+make_exactf_invlist|5.031006||Viu
 make_matcher|5.027008||Viu
 make_trie|5.009002||Viu
 malloc|5.007002|5.007002|n
@@ -1866,7 +1827,7 @@ my_unexec|5.003007||Viu
 my_vsnprintf|5.009004|5.009004|n
 NATIVE_TO_LATIN1|5.019004|5.003007|p
 NATIVE_TO_NEED|5.019004||ndcVu
-NATIVE_TO_UNI|5.007001|5.007001|
+NATIVE_TO_UNI|5.007001|5.003007|p
 need_utf8|5.009003||nViu
 newANONATTRSUB|5.006000|5.006000|u
 newANONHASH|5.003007|5.003007|u
@@ -2326,6 +2287,7 @@ PERL_USE_GCC_BRACE_GROUPS|5.009004|5.004000|poVu
 PERL_USHORT_MAX|5.003007|5.003007|p
 PERL_USHORT_MIN|5.003007|5.003007|p
 PERL_VERSION|5.006000|5.003007|p
+perly_sighandler|||nu
 pidgone|5.003007||Viu
 PL_bufend||5.003007|pou
 PL_bufptr||5.003007|pou
@@ -2463,8 +2425,8 @@ pv_escape|5.009004|5.003007|p
 pv_pretty|5.009004|5.003007|p
 pv_uni_display|5.007003|5.007003|
 qerror|5.006000||cViu
-quadmath_format_needed|5.021004||nV
-quadmath_format_single|5.021004||nV
+quadmath_format_needed|5.021004||nVi
+quadmath_format_valid|||nVi
 RANDBITS|5.003007|5.003007|
 READ_XDIGIT|5.017006|5.017006|
 realloc|5.007002|5.007002|n
@@ -2703,6 +2665,8 @@ share_hek_flags|5.008000||Viu
 SHORTSIZE|5.004000|5.004000|
 should_warn_nl|5.021001||nViu
 si_dup|5.007003|5.007003|u
+sighandler1|||nViu
+sighandler3|||nViu
 sighandler|5.003007||nViu
 simplify_sort|5.006000||Viu
 SITELIB|5.003007|5.003007|
@@ -2844,6 +2808,7 @@ sv_derived_from|5.004000|5.004000|
 sv_derived_from_pv|5.015004|5.015004|
 sv_derived_from_pvn|5.015004|5.015004|
 sv_derived_from_sv|5.015004|5.015004|
+sv_derived_from_svpvn|5.031006||Viu
 sv_destroyable|5.010000|5.010000|
 sv_display|5.021002||Viu
 sv_does|5.009004|5.009004|
@@ -2860,7 +2825,7 @@ sv_eq|5.003007|5.003007|
 sv_eq_flags|5.013006|5.013006|
 sv_exp_grow|5.009003||Viu
 SVf|5.006000|5.003007|poVu
-SVfARG|5.009005||pVu
+SVfARG|5.009005|5.003007|pV
 sv_force_normal|5.006000|5.006000|
 sv_force_normal_flags|5.007001|5.007001|
 sv_free2|||xciu
@@ -2904,7 +2869,7 @@ sv_len|5.003007|5.003007|
 SvLEN|5.003007|5.003007|
 SvLEN_set|5.003007|5.003007|
 sv_len_utf8|5.006000|5.006000|p
-sv_len_utf8_nomg|5.017004||pViu
+sv_len_utf8_nomg|5.017004||pVu
 SvLOCK|5.007003|5.007003|
 sv_magic|5.003007|5.003007|
 sv_magicext|5.007003|5.007003|
@@ -3157,10 +3122,6 @@ sv_vsetpvf_mg|5.006000|5.004000|p
 sv_vsetpvfn|5.004000|5.004000|
 SvVSTRING_mg|5.009004||pVu
 swallow_bom|5.006001||Viu
-swash_fetch|5.006000||cViu
-swash_init|5.006000||cViu
-swash_scan_list_line|5.021001||Viu
-swatch_get|5.015007||Viu
 switch_category_locale_to_template|5.027009||Viu
 switch_to_global_locale|5.027009|5.003007|pn
 sync_locale|5.027009|5.003007|pn
@@ -3180,9 +3141,9 @@ tmps_grow_p|5.021005||cViu
 to_byte_substr|5.008000||Viu
 toFOLD|5.019001|5.019001|
 _to_fold_latin1|5.015005||ncViu
-toFOLD_utf8|5.019001|5.019001|
-toFOLD_utf8_safe|5.025009|5.025009|
-toFOLD_uvchr|5.023009|5.023009|
+toFOLD_utf8|5.031005|5.031005|
+toFOLD_utf8_safe|5.025009|5.006000|p
+toFOLD_uvchr|5.023009|5.006000|p
 tokenize_use|5.009003||Viu
 tokeq|5.005000||Viu
 tokereport|5.007001||Viu
@@ -3190,38 +3151,31 @@ toLOWER|5.003007|5.003007|
 toLOWER_L1|5.019001|5.019001|
 to_lower_latin1|5.015005||nViu
 toLOWER_LC|5.004000|5.004000|
-toLOWER_utf8|5.015007|5.015007|
-toLOWER_utf8_safe|5.025009|5.025009|
-toLOWER_uvchr|5.023009|5.023009|
+toLOWER_utf8|5.031005|5.031005|
+toLOWER_utf8_safe|5.025009|5.006000|p
+toLOWER_uvchr|5.023009|5.006000|p
 too_few_arguments_pv|5.016000||Viu
 too_many_arguments_pv|5.016000||Viu
 TOPMARK|||ciu
 toTITLE|5.019001|5.019001|
-toTITLE_utf8|5.015007|5.015007|
-toTITLE_utf8_safe|5.025009|5.025009|
-toTITLE_uvchr|5.023009|5.023009|
+toTITLE_utf8|5.031005|5.031005|
+toTITLE_utf8_safe|5.025009|5.006000|p
+toTITLE_uvchr|5.023009|5.006000|p
 to_uni_fold|5.031004||cVu
 _to_uni_fold_flags|5.014000||cVu
 to_uni_lower|5.006000||cVu
-to_uni_lower_lc|5.006000||dcVu
 to_uni_title|5.006000||cVu
-to_uni_title_lc|5.006000||dcVu
 to_uni_upper|5.006000||cVu
-to_uni_upper_lc|5.006000||dcVu
 toUPPER|5.003007|5.003007|
 _to_upper_title_latin1|5.015005||Viu
-toUPPER_utf8|5.015007|5.015007|
-toUPPER_utf8_safe|5.025009|5.025009|
-toUPPER_uvchr|5.023009|5.023009|
+toUPPER_utf8|5.031005|5.031005|
+toUPPER_utf8_safe|5.025009|5.006000|p
+toUPPER_uvchr|5.023009|5.006000|p
 _to_utf8_case|5.023006||Viu
-to_utf8_fold|5.015007|5.015007|d
 _to_utf8_fold_flags|5.014000||cVu
-to_utf8_lower|5.015007|5.015007|d
 _to_utf8_lower_flags|5.015006||cVu
 to_utf8_substr|5.008000||Viu
-to_utf8_title|5.015007|5.015007|d
 _to_utf8_title_flags|5.015006||cVu
-to_utf8_upper|5.015007|5.015007|d
 _to_utf8_upper_flags|5.015006||cVu
 translate_substr_offsets|5.015006||nViu
 traverse_op_tree|5.029008||Vi
@@ -3240,7 +3194,7 @@ uiv_2buf|5.009003||nViu
 UNDERBAR|5.009002|5.003007|p
 unexpected_non_continuation_text|5.025006||Viu
 UNICODE_REPLACEMENT|5.007001|5.003007|p
-UNI_TO_NATIVE|5.007001|5.007001|
+UNI_TO_NATIVE|5.007001|5.003007|p
 UNLIKELY|5.009004|5.003007|p
 unlnk|5.003007||Vu
 unpack_rec|5.008001||Viu
@@ -3257,7 +3211,10 @@ usage|5.005000||Viu
 utf16_textfilter|5.011001||Viu
 utf16_to_utf8|5.006000||cViu
 utf16_to_utf8_reversed|5.006000||cViu
+UTF8_CHK_SKIP|5.031006|5.006000|p
 utf8_distance|5.006000|5.006000|
+UTF8f|5.019001|5.019001|
+UTF8fARG|5.019002|5.019002|
 utf8_hop|5.006000|5.006000|n
 utf8_hop_back|5.025007|5.025007|n
 utf8_hop_forward|5.025007|5.025007|n
@@ -3268,6 +3225,7 @@ UTF8_IS_SUPER|5.023002|5.023002|
 UTF8_IS_SURROGATE|5.023002|5.023002|
 utf8_length|5.007001|5.007001|
 UTF8_MAXBYTES|5.009002|5.006000|p
+UTF8_MAXBYTES_CASE|5.009002|5.003007|p
 utf8_mg_len_cache_update|5.013003||Viu
 utf8_mg_pos_cache_update|5.009004||Viu
 utf8n_to_uvchr|5.007001|5.007001|n
@@ -3277,6 +3235,7 @@ _utf8n_to_uvchr_msgs_helper|5.029001||ncVu
 utf8n_to_uvuni|5.007001||cV
 UTF8_SAFE_SKIP|5.029009|5.006000|p
 UTF8SKIP|5.006000|5.006000|
+UTF8_SKIP|5.023002|5.006000|p
 utf8_to_bytes|5.006001|5.006001|x
 utf8_to_uvchr|5.007001|5.006001|pd
 utf8_to_uvchr_buf|5.015009|5.006001|p
@@ -5198,6 +5157,81 @@ DPPP_(my_newCONSTSUB)(HV *stash, const char *name, SV *sv)
 #endif
 
 #endif
+
+/* These could become provided when they become part of the public API */
+#ifndef withinCOUNT
+#  define withinCOUNT(c, l, n)           \
+   (((WIDEST_UTYPE) (((c)) - ((l) | 0))) <= (((WIDEST_UTYPE) ((n) | 0))))
+#endif
+
+#ifndef inRANGE
+#  define inRANGE(c, l, u)               \
+   (  (sizeof(c) == sizeof(U8))  ? withinCOUNT(((U8)  (c)), (l), ((u) - (l)))  \
+    : (sizeof(c) == sizeof(U16)) ? withinCOUNT(((U16) (c)), (l), ((u) - (l)))  \
+    : (sizeof(c) == sizeof(U32)) ? withinCOUNT(((U32) (c)), (l), ((u) - (l)))  \
+    : (withinCOUNT(((WIDEST_UTYPE) (c)), (l), ((u) - (l)))))
+#endif
+
+/* Create the macro for "is'macro'_utf8_safe(s, e)".  For code points below
+ * 256, it calls the equivalent _L1 macro by converting the UTF-8 to code
+ * point.  That is so that it can automatically get the bug fixes done in this
+ * file. */
+#define D_PPP_IS_GENERIC_UTF8_SAFE(s, e, macro)                             \
+   (((e) - (s)) <= 0                                                        \
+     ? 0                                                                    \
+     : UTF8_IS_INVARIANT((s)[0])                                            \
+       ? is ## macro ## _L1((s)[0])                                         \
+       : (((e) - (s)) < UTF8SKIP(s))                                        \
+          ? 0                                                               \
+          : UTF8_IS_DOWNGRADEABLE_START((s)[0])                             \
+              /* The cast in the line below is only to silence warnings */  \
+            ? is ## macro ## _L1((WIDEST_UTYPE) LATIN1_TO_NATIVE(           \
+                                  UTF8_ACCUMULATE(NATIVE_UTF8_TO_I8((s)[0]) \
+                                                     & UTF_START_MASK(2),   \
+                                                  (s)[1])))                 \
+            : is ## macro ## _utf8(s))
+
+/* Create the macro for "is'macro'_LC_utf8_safe(s, e)".  For code points below
+ * 256, it calls the equivalent _L1 macro by converting the UTF-8 to code
+ * point.  That is so that it can automatically get the bug fixes done in this
+ * file. */
+#define D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, macro)                          \
+   (((e) - (s)) <= 0                                                        \
+     ? 0                                                                    \
+     : UTF8_IS_INVARIANT((s)[0])                                            \
+       ? is ## macro ## _LC((s)[0])                                         \
+       : (((e) - (s)) < UTF8SKIP(s))                                        \
+          ? 0                                                               \
+          : UTF8_IS_DOWNGRADEABLE_START((s)[0])                             \
+              /* The cast in the line below is only to silence warnings */  \
+            ? is ## macro ## _LC((WIDEST_UTYPE) LATIN1_TO_NATIVE(           \
+                                  UTF8_ACCUMULATE(NATIVE_UTF8_TO_I8((s)[0]) \
+                                                     & UTF_START_MASK(2),   \
+                                                  (s)[1])))                 \
+            : is ## macro ## _utf8(s))
+
+/* A few of the early functions are broken.  For these and the non-LC case,
+ * machine generated code is substituted.  But that code doesn't work for
+ * locales.  This is just like the above macro, but at the end, we call the
+ * macro we've generated for the above 255 case, which is correct since locale
+ * isn't involved.  This will generate extra code to handle the 0-255 inputs,
+ * but hopefully it will be optimized out by the C compiler.  But just in case
+ * it isn't, this macro is only used on the few versions that are broken */
+
+#define D_PPP_IS_GENERIC_LC_UTF8_SAFE_BROKEN(s, e, macro)                   \
+   (((e) - (s)) <= 0                                                        \
+     ? 0                                                                    \
+     : UTF8_IS_INVARIANT((s)[0])                                            \
+       ? is ## macro ## _LC((s)[0])                                         \
+       : (((e) - (s)) < UTF8SKIP(s))                                        \
+          ? 0                                                               \
+          : UTF8_IS_DOWNGRADEABLE_START((s)[0])                             \
+              /* The cast in the line below is only to silence warnings */  \
+            ? is ## macro ## _LC((WIDEST_UTYPE) LATIN1_TO_NATIVE(           \
+                                  UTF8_ACCUMULATE(NATIVE_UTF8_TO_I8((s)[0]) \
+                                                     & UTF_START_MASK(2),   \
+                                                  (s)[1])))                 \
+            : is ## macro ## _utf8_safe(s, e))
 #ifndef SvRX
 #  define SvRX(rv)                       (SvROK((rv)) ? (SvMAGICAL(SvRV((rv))) ? (mg_find(SvRV((rv)), PERL_MAGIC_qr) ? mg_find(SvRV((rv)), PERL_MAGIC_qr)->mg_obj : NULL) : NULL) : NULL)
 #endif
@@ -5505,10 +5539,22 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 # endif
 #endif
 
-/* On versions without this, only ASCII is supported */
-#ifdef NATIVE_TO_ASCII
+/* On versions without NATIVE_TO_ASCII, only ASCII is supported */
+#if defined(EBCDIC) && defined(NATIVE_TO_ASCI)
 #ifndef NATIVE_TO_LATIN1
 #  define NATIVE_TO_LATIN1(c)            NATIVE_TO_ASCII(c)
+#endif
+
+#ifndef LATIN1_TO_NATIVE
+#  define LATIN1_TO_NATIVE(c)            ASCII_TO_NATIVE(c)
+#endif
+
+#ifndef NATIVE_TO_UNI
+#  define NATIVE_TO_UNI(c)               ((c) > 255 ? (c) : NATIVE_TO_LATIN1(c))
+#endif
+
+#ifndef UNI_TO_NATIVE
+#  define UNI_TO_NATIVE(c)               ((c) > 255 ? (c) : LATIN1_TO_NATIVE(c))
 #endif
 
 #else
@@ -5516,23 +5562,40 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define NATIVE_TO_LATIN1(c)            (c)
 #endif
 
-#endif
-
-#ifdef ASCII_TO_NATIVE
-#ifndef LATIN1_TO_NATIVE
-#  define LATIN1_TO_NATIVE(c)            ASCII_TO_NATIVE(c)
-#endif
-
-#else
 #ifndef LATIN1_TO_NATIVE
 #  define LATIN1_TO_NATIVE(c)            (c)
 #endif
 
+#ifndef NATIVE_TO_UNI
+#  define NATIVE_TO_UNI(c)               (c)
 #endif
 
-/* Warning: LATIN1_TO_NATIVE, NATIVE_TO_LATIN1
+#ifndef UNI_TO_NATIVE
+#  define UNI_TO_NATIVE(c)               (c)
+#endif
+
+#endif
+
+/* Warning: LATIN1_TO_NATIVE, NATIVE_TO_LATIN1 NATIVE_TO_UNI UNI_TO_NATIVE
    EBCDIC is not supported on versions earlier than 5.7.1
  */
+
+/* The meaning of this changed; use the modern version */
+#undef isPSXSPC
+#undef isPSXSPC_A
+#undef isPSXSPC_L1
+
+/* Hint: isPSXSPC, isPSXSPC_A, isPSXSPC_L1, isPSXSPC_utf8_safe
+    This is equivalent to the corresponding isSPACE-type macro.  On perls
+    before 5.18, this matched a vertical tab and SPACE didn't.  But the
+    ppport.h SPACE version does match VT in all perl releases.  Since VT's are
+    extremely rarely found in real-life files, this difference effectively
+    doesn't matter */
+
+/* Hint: isSPACE, isSPACE_A, isSPACE_L1, isSPACE_utf8_safe
+    Until Perl 5.18, this did not match the vertical tab (VT).  The ppport.h
+    version does match it in all perl releases. Since VT's are extremely rarely
+    found in real-life files, this difference effectively doesn't matter */
 
 #ifdef EBCDIC
 
@@ -5582,9 +5645,6 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  undef isPRINT
 #  undef isPRINT_A
 #  undef isPRINT_L1
-#  undef isPSXSPC
-#  undef isPSXSPC_A
-#  undef isPSXSPC_L1
 #  undef isPUNCT
 #  undef isPUNCT_A
 #  undef isPUNCT_L1
@@ -5642,7 +5702,6 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
                           || (WIDEST_UTYPE) (c) == D_PPP_OUTLIER_CONTROL)
 #endif
 
-                            )
 /* The ordering of the tests in this and isUPPER are to exclude most characters
  * early */
 #ifndef isLOWER
@@ -5677,6 +5736,10 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  undef isUPPER
 #  undef isUPPER_A
 # endif
+
+#  if (PERL_BCDVERSION == 0x5007000) /* this perl made space GRAPH */
+#    undef isGRAPH
+#  endif
 
 # if (PERL_BCDVERSION < 0x5008000) /* earlier perls omitted DEL */
 #  undef isCNTRL
@@ -5736,6 +5799,10 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define isASCII_L1(c)                  isASCII(c)
 #endif
 
+#ifndef isASCII_LC
+#  define isASCII_LC(c)                  isASCII(c)
+#endif
+
 #ifndef isALNUM
 #  define isALNUM(c)                     isWORDCHAR(c)
 #endif
@@ -5764,6 +5831,10 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define isALPHANUMERIC_L1(c)           (isALPHA_L1(c) || isDIGIT(c))
 #endif
 
+#ifndef isALPHANUMERIC_LC
+#  define isALPHANUMERIC_LC(c)           (isALPHA_LC(c) || isDIGIT_LC(c))
+#endif
+
 #ifndef isBLANK
 #  define isBLANK(c)                     ((c) == ' ' || (c) == '\t')
 #endif
@@ -5772,6 +5843,10 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define isBLANK_L1(c)                  (    isBLANK(c)                                    \
                              || (   (WIDEST_UTYPE) (c) < 256                   \
                                  && NATIVE_TO_LATIN1((U8) c) == 0xA0))
+#endif
+
+#ifndef isBLANK_LC
+#  define isBLANK_LC(c)                  isBLANK(c)
 #endif
 
 #ifndef isDIGIT
@@ -5787,7 +5862,9 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #endif
 
 #ifndef isGRAPH_L1
-#  define isGRAPH_L1(c)                  (isPRINT_L1(c) && (c) != ' ')
+#  define isGRAPH_L1(c)                  (   isPRINT_L1(c)                              \
+                                 && (c) != ' '                                 \
+                                 && NATIVE_TO_LATIN1((U8) c) != 0xA0)
 #endif
 
 #ifndef isIDCONT
@@ -5798,12 +5875,20 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define isIDCONT_L1(c)                 isWORDCHAR_L1(c)
 #endif
 
+#ifndef isIDCONT_LC
+#  define isIDCONT_LC(c)                 isWORDCHAR_LC(c)
+#endif
+
 #ifndef isIDFIRST
 #  define isIDFIRST(c)                   (isALPHA(c) || (c) == '_')
 #endif
 
 #ifndef isIDFIRST_L1
-#  define isIDFIRST_L1(c)                (isALPHA_L1(c) || NATIVE_TO_LATIN1(c) == '_')
+#  define isIDFIRST_L1(c)                (isALPHA_L1(c) || (U8) (c) == '_')
+#endif
+
+#ifndef isIDFIRST_LC
+#  define isIDFIRST_LC(c)                (isALPHA_LC(c) || (U8) (c) == '_')
 #endif
 
 #ifndef isLOWER_L1
@@ -5894,6 +5979,10 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define isWORDCHAR_L1(c)               (isIDFIRST_L1(c) || isDIGIT(c))
 #endif
 
+#ifndef isWORDCHAR_LC
+#  define isWORDCHAR_LC(c)               (isIDFIRST_LC(c) || isDIGIT_LC(c))
+#endif
+
 #ifndef isXDIGIT
 #  define isXDIGIT(c)                    (   isDIGIT(c)                                 \
                                  || ((c) >= 'a' && (c) <= 'f')                 \
@@ -5902,6 +5991,10 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 
 #ifndef isXDIGIT_L1
 #  define isXDIGIT_L1(c)                 isXDIGIT(c)
+#endif
+
+#ifndef isXDIGIT_LC
+#  define isXDIGIT_LC(c)                 isxdigit(c)
 #endif
 #ifndef isALNUM_A
 #  define isALNUM_A(c)                   isALNUM(c)
@@ -5981,6 +6074,582 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 
 #ifndef isXDIGIT_A
 #  define isXDIGIT_A(c)                  isXDIGIT(c)
+#endif
+#ifndef isASCII_utf8_safe
+#  define isASCII_utf8_safe(s,e)         (((e) - (s)) <= 0 ? 0 : isASCII(*(s)))
+#endif
+
+#ifndef isASCII_uvchr
+#  define isASCII_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isASCII_L1(c) : 0)
+#endif
+
+#if (PERL_BCDVERSION >= 0x5006000)
+#ifndef isALPHA_uvchr
+#  define isALPHA_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isALPHA_L1(c) : is_uni_alpha((UV) (c)))
+#endif
+
+#ifndef isALPHANUMERIC_uvchr
+#  define isALPHANUMERIC_uvchr(c)        ((WIDEST_UTYPE) (c) < 256                 \
+    ? isALPHANUMERIC_L1(c) : (is_uni_alpha((UV) (c)) || is_uni_digit((UV) (c))))
+#endif
+
+#  ifdef is_uni_blank
+#ifndef isBLANK_uvchr
+#  define isBLANK_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isBLANK_L1(c) : is_uni_blank((UV) (c)))
+#endif
+
+#  else
+#ifndef isBLANK_uvchr
+#  define isBLANK_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                   \
+                                 ? isBLANK_L1(c)                            \
+                                 : (   (UV) (c) == 0x1680 /* Unicode 3.0 */ \
+                                    || inRANGE((UV) (c), 0x2000, 0x200A)    \
+                                    || (UV) (c) == 0x202F  /* Unicode 3.0 */\
+                                    || (UV) (c) == 0x205F  /* Unicode 3.2 */\
+                                    || (UV) (c) == 0x3000))
+#endif
+
+#  endif
+#ifndef isCNTRL_uvchr
+#  define isCNTRL_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isCNTRL_L1(c) : is_uni_cntrl((UV) (c)))
+#endif
+
+#ifndef isDIGIT_uvchr
+#  define isDIGIT_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isDIGIT_L1(c) : is_uni_digit((UV) (c)))
+#endif
+
+#ifndef isGRAPH_uvchr
+#  define isGRAPH_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isGRAPH_L1(c) : is_uni_graph((UV) (c)))
+#endif
+
+#ifndef isIDCONT_uvchr
+#  define isIDCONT_uvchr(c)              isWORDCHAR_uvchr(c)
+#endif
+
+#ifndef isIDFIRST_uvchr
+#  define isIDFIRST_uvchr(c)             ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isIDFIRST_L1(c) : is_uni_idfirst((UV) (c)))
+#endif
+
+#ifndef isLOWER_uvchr
+#  define isLOWER_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isLOWER_L1(c) : is_uni_lower((UV) (c)))
+#endif
+
+#ifndef isPRINT_uvchr
+#  define isPRINT_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isPRINT_L1(c) : is_uni_print((UV) (c)))
+#endif
+
+#ifndef isPSXSPC_uvchr
+#  define isPSXSPC_uvchr(c)              isSPACE_uvchr(c)
+#endif
+
+#ifndef isPUNCT_uvchr
+#  define isPUNCT_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isPUNCT_L1(c) : is_uni_punct((UV) (c)))
+#endif
+
+#ifndef isSPACE_uvchr
+#  define isSPACE_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isSPACE_L1(c) : is_uni_space((UV) (c)))
+#endif
+
+#ifndef isUPPER_uvchr
+#  define isUPPER_uvchr(c)               ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isUPPER_L1(c) : is_uni_upper((UV) (c)))
+#endif
+
+#ifndef isXDIGIT_uvchr
+#  define isXDIGIT_uvchr(c)              ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isXDIGIT_L1(c) : is_uni_xdigit((UV) (c)))
+#endif
+
+#ifndef isWORDCHAR_uvchr
+#  define isWORDCHAR_uvchr(c)            ((WIDEST_UTYPE) (c) < 256                 \
+                                   ? isWORDCHAR_L1(c) : is_uni_alnum((UV) (c)))
+#endif
+#ifndef isALPHA_utf8_safe
+#  define isALPHA_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, ALPHA)
+#endif
+
+#  ifdef isALPHANUMERIC_utf8
+#ifndef isALPHANUMERIC_utf8_safe
+#  define isALPHANUMERIC_utf8_safe(s,e)  \
+                                D_PPP_IS_GENERIC_UTF8_SAFE(s, e, ALPHANUMERIC)
+#endif
+
+#  else
+#ifndef isALPHANUMERIC_utf8_safe
+#  define isALPHANUMERIC_utf8_safe(s,e)  \
+                        (isALPHA_utf8_safe(s,e) || isDIGIT_utf8_safe(s,e))
+#endif
+
+#  endif
+
+/* This was broken before 5.18, and just use this instead of worrying about
+ * which releases the official works on */
+#  if 'A' == 65
+#ifndef isBLANK_utf8_safe
+#  define isBLANK_utf8_safe(s,e)         \
+( ( LIKELY((e) > (s)) ) ?   /* Machine generated */                         \
+    ( ( 0x09 == ((const U8*)s)[0] || 0x20 == ((const U8*)s)[0] ) ? 1        \
+    : ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) ?                              \
+	    ( ( 0xC2 == ((const U8*)s)[0] ) ?                               \
+		( ( 0xA0 == ((const U8*)s)[1] ) ? 2 : 0 )                   \
+	    : ( 0xE1 == ((const U8*)s)[0] ) ?                               \
+		( ( ( 0x9A == ((const U8*)s)[1] ) && ( 0x80 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( 0xE2 == ((const U8*)s)[0] ) ?                               \
+		( ( 0x80 == ((const U8*)s)[1] ) ?                           \
+		    ( ( inRANGE(((const U8*)s)[2], 0x80, 0x8A ) || 0xAF == ((const U8*)s)[2] ) ? 3 : 0 )\
+		: ( ( 0x81 == ((const U8*)s)[1] ) && ( 0x9F == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( ( ( 0xE3 == ((const U8*)s)[0] ) && ( 0x80 == ((const U8*)s)[1] ) ) && ( 0x80 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	: 0 )                                                               \
+ : 0 )
+#endif
+
+#  elif 'A' == 193  && '^' == 95 /* EBCDIC 1047 */
+#ifndef isBLANK_utf8_safe
+#  define isBLANK_utf8_safe(s,e)         \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( 0x05 == ((const U8*)s)[0] || 0x40 == ((const U8*)s)[0] ) ? 1        \
+    : ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) ?                              \
+	    ( ( 0x80 == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ? 2 : 0 )                   \
+	    : ( 0xBC == ((const U8*)s)[0] ) ?                               \
+		( ( ( 0x63 == ((const U8*)s)[1] ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( 0xCA == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ?                           \
+		    ( ( inRANGE(((const U8*)s)[2], 0x41, 0x4A ) || 0x51 == ((const U8*)s)[2] ) ? 3 : 0 )\
+		: ( 0x42 == ((const U8*)s)[1] ) ?                           \
+		    ( ( 0x56 == ((const U8*)s)[2] ) ? 3 : 0 )               \
+		: ( ( 0x43 == ((const U8*)s)[1] ) && ( 0x73 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( ( ( 0xCE == ((const U8*)s)[0] ) && ( 0x41 == ((const U8*)s)[1] ) ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	: 0 )                                                               \
+: 0 )
+#endif
+
+#  elif 'A' == 193  && '^' == 176 /* EBCDIC 037 */
+#ifndef isBLANK_utf8_safe
+#  define isBLANK_utf8_safe(s,e)         \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( 0x05 == ((const U8*)s)[0] || 0x40 == ((const U8*)s)[0] ) ? 1        \
+    : ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) ?                              \
+	    ( ( 0x78 == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ? 2 : 0 )                   \
+	    : ( 0xBD == ((const U8*)s)[0] ) ?                               \
+		( ( ( 0x62 == ((const U8*)s)[1] ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( 0xCA == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ?                           \
+		    ( ( inRANGE(((const U8*)s)[2], 0x41, 0x4A ) || 0x51 == ((const U8*)s)[2] ) ? 3 : 0 )\
+		: ( 0x42 == ((const U8*)s)[1] ) ?                           \
+		    ( ( 0x56 == ((const U8*)s)[2] ) ? 3 : 0 )               \
+		: ( ( 0x43 == ((const U8*)s)[1] ) && ( 0x72 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( ( ( 0xCE == ((const U8*)s)[0] ) && ( 0x41 == ((const U8*)s)[1] ) ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	: 0 )                                                               \
+: 0 )
+#endif
+
+#  else
+#    error Unknown character set
+#  endif
+#ifndef isCNTRL_utf8_safe
+#  define isCNTRL_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, CNTRL)
+#endif
+
+#ifndef isDIGIT_utf8_safe
+#  define isDIGIT_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, DIGIT)
+#endif
+
+#ifndef isGRAPH_utf8_safe
+#  define isGRAPH_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, GRAPH)
+#endif
+
+#  ifdef isIDCONT_utf8
+#ifndef isIDCONT_utf8_safe
+#  define isIDCONT_utf8_safe(s,e)        D_PPP_IS_GENERIC_UTF8_SAFE(s, e, IDCONT)
+#endif
+
+#  else
+#ifndef isIDCONT_utf8_safe
+#  define isIDCONT_utf8_safe(s,e)        isWORDCHAR_utf8_safe(s,e)
+#endif
+
+#  endif
+#ifndef isIDFIRST_utf8_safe
+#  define isIDFIRST_utf8_safe(s,e)       D_PPP_IS_GENERIC_UTF8_SAFE(s, e, IDFIRST)
+#endif
+
+#ifndef isLOWER_utf8_safe
+#  define isLOWER_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, LOWER)
+#endif
+
+#ifndef isPRINT_utf8_safe
+#  define isPRINT_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, PRINT)
+#endif
+
+#  undef isPSXSPC_utf8_safe   /* Use the modern definition */
+#ifndef isPSXSPC_utf8_safe
+#  define isPSXSPC_utf8_safe(s,e)        isSPACE_utf8_safe(s,e)
+#endif
+#ifndef isPUNCT_utf8_safe
+#  define isPUNCT_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, PUNCT)
+#endif
+
+#ifndef isSPACE_utf8_safe
+#  define isSPACE_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, SPACE)
+#endif
+
+#ifndef isUPPER_utf8_safe
+#  define isUPPER_utf8_safe(s,e)         D_PPP_IS_GENERIC_UTF8_SAFE(s, e, UPPER)
+#endif
+
+#  ifdef isWORDCHAR_utf8
+#ifndef isWORDCHAR_utf8_safe
+#  define isWORDCHAR_utf8_safe(s,e)      D_PPP_IS_GENERIC_UTF8_SAFE(s, e, WORDCHAR)
+#endif
+
+#  else
+#ifndef isWORDCHAR_utf8_safe
+#  define isWORDCHAR_utf8_safe(s,e)      \
+                               (isALPHANUMERIC_utf8_safe(s,e) || (*(s)) == '_')
+#endif
+
+#  endif
+
+/* This was broken before 5.12, and just use this instead of worrying about
+ * which releases the official works on */
+#  if 'A' == 65
+#ifndef isXDIGIT_utf8_safe
+#  define isXDIGIT_utf8_safe(s,e)        \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( inRANGE(((const U8*)s)[0], 0x30, 0x39 ) || inRANGE(((const U8*)s)[0], 0x41, 0x46 ) || inRANGE(((const U8*)s)[0], 0x61, 0x66 ) ) ? 1\
+    : ( ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) && ( 0xEF == ((const U8*)s)[0] ) ) ? ( ( 0xBC == ((const U8*)s)[1] ) ?\
+		    ( ( inRANGE(((const U8*)s)[2], 0x90, 0x99 ) || inRANGE(((const U8*)s)[2], 0xA1, 0xA6 ) ) ? 3 : 0 )\
+		: ( ( 0xBD == ((const U8*)s)[1] ) && ( inRANGE(((const U8*)s)[2], 0x81, 0x86 ) ) ) ? 3 : 0 ) : 0 )\
+: 0 )
+#endif
+
+#  elif 'A' == 193  && '^' == 95 /* EBCDIC 1047 */
+#ifndef isXDIGIT_utf8_safe
+#  define isXDIGIT_utf8_safe(s,e)        \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( inRANGE(((const U8*)s)[0], 0x81, 0x86 ) || inRANGE(((const U8*)s)[0], 0xC1, 0xC6 ) || inRANGE(((const U8*)s)[0], 0xF0, 0xF9 ) ) ? 1\
+    : ( ( ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) && ( 0xDD == ((const U8*)s)[0] ) ) && ( 0x73 == ((const U8*)s)[1] ) ) ? ( ( 0x67 == ((const U8*)s)[2] ) ?\
+			( ( inRANGE(((const U8*)s)[3], 0x57, 0x59 ) || inRANGE(((const U8*)s)[3], 0x62, 0x68 ) ) ? 4 : 0 )\
+		    : ( ( inRANGE(((const U8*)s)[2], 0x68, 0x69 ) ) && ( inRANGE(((const U8*)s)[3], 0x42, 0x47 ) ) ) ? 4 : 0 ) : 0 )\
+: 0 )
+#endif
+
+#  elif 'A' == 193  && '^' == 176 /* EBCDIC 037 */
+#ifndef isXDIGIT_utf8_safe
+#  define isXDIGIT_utf8_safe(s,e)        \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( inRANGE(((const U8*)s)[0], 0x81, 0x86 ) || inRANGE(((const U8*)s)[0], 0xC1, 0xC6 ) || inRANGE(((const U8*)s)[0], 0xF0, 0xF9 ) ) ? 1\
+    : ( ( ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) && ( 0xDD == ((const U8*)s)[0] ) ) && ( 0x72 == ((const U8*)s)[1] ) ) ? ( ( 0x66 == ((const U8*)s)[2] ) ?\
+			( ( inRANGE(((const U8*)s)[3], 0x57, 0x59 ) || 0x5F == ((const U8*)s)[3] || inRANGE(((const U8*)s)[3], 0x62, 0x67 ) ) ? 4 : 0 )\
+		    : ( ( inRANGE(((const U8*)s)[2], 0x67, 0x68 ) ) && ( inRANGE(((const U8*)s)[3], 0x42, 0x47 ) ) ) ? 4 : 0 ) : 0 )\
+: 0 )
+#endif
+
+#  else
+#    error Unknown character set
+#  endif
+#ifndef isALPHA_LC_utf8_safe
+#  define isALPHA_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, ALPHA)
+#endif
+
+#  ifdef isALPHANUMERIC_utf8
+#ifndef isALPHANUMERIC_LC_utf8_safe
+#  define isALPHANUMERIC_LC_utf8_safe(s,e) \
+                                D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, ALPHANUMERIC)
+#endif
+
+#  else
+#ifndef isALPHANUMERIC_LC_utf8_safe
+#  define isALPHANUMERIC_LC_utf8_safe(s,e) \
+                        (isALPHA_LC_utf8_safe(s,e) || isDIGIT_LC_utf8_safe(s,e))
+#endif
+
+#  endif
+#ifndef isBLANK_LC_utf8_safe
+#  define isBLANK_LC_utf8_safe(s,e)      \
+                            D_PPP_IS_GENERIC_LC_UTF8_SAFE_BROKEN(s, e, BLANK)
+#endif
+
+#ifndef isCNTRL_LC_utf8_safe
+#  define isCNTRL_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, CNTRL)
+#endif
+
+#ifndef isDIGIT_LC_utf8_safe
+#  define isDIGIT_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, DIGIT)
+#endif
+
+#ifndef isGRAPH_LC_utf8_safe
+#  define isGRAPH_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, GRAPH)
+#endif
+
+#  ifdef isIDCONT_utf8
+#ifndef isIDCONT_LC_utf8_safe
+#  define isIDCONT_LC_utf8_safe(s,e)     D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, IDCONT)
+#endif
+
+#  else
+#ifndef isIDCONT_LC_utf8_safe
+#  define isIDCONT_LC_utf8_safe(s,e)     isWORDCHAR_LC_utf8_safe(s,e)
+#endif
+
+#  endif
+#ifndef isIDFIRST_LC_utf8_safe
+#  define isIDFIRST_LC_utf8_safe(s,e)    D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, IDFIRST)
+#endif
+
+#ifndef isLOWER_LC_utf8_safe
+#  define isLOWER_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, LOWER)
+#endif
+
+#ifndef isPRINT_LC_utf8_safe
+#  define isPRINT_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, PRINT)
+#endif
+
+#  undef isPSXSPC_LC_utf8_safe   /* Use the modern definition */
+#ifndef isPSXSPC_LC_utf8_safe
+#  define isPSXSPC_LC_utf8_safe(s,e)     isSPACE_LC_utf8_safe(s,e)
+#endif
+#ifndef isPUNCT_LC_utf8_safe
+#  define isPUNCT_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, PUNCT)
+#endif
+
+#ifndef isSPACE_LC_utf8_safe
+#  define isSPACE_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, SPACE)
+#endif
+
+#ifndef isUPPER_LC_utf8_safe
+#  define isUPPER_LC_utf8_safe(s,e)      D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, UPPER)
+#endif
+
+#  ifdef isWORDCHAR_utf8
+#ifndef isWORDCHAR_LC_utf8_safe
+#  define isWORDCHAR_LC_utf8_safe(s,e)   D_PPP_IS_GENERIC_LC_UTF8_SAFE(s, e, WORDCHAR)
+#endif
+
+#  else
+#ifndef isWORDCHAR_LC_utf8_safe
+#  define isWORDCHAR_LC_utf8_safe(s,e)   \
+                               (isALPHANUMERIC_LC_utf8_safe(s,e) || (*(s)) == '_')
+#endif
+
+#  endif
+#ifndef isXDIGIT_LC_utf8_safe
+#  define isXDIGIT_LC_utf8_safe(s,e)     \
+                            D_PPP_IS_GENERIC_LC_UTF8_SAFE_BROKEN(s, e, XDIGIT)
+#endif
+
+/* Warning: isALPHANUMERIC_utf8_safe, isALPHA_utf8_safe, isASCII_utf8_safe,
+ * isBLANK_utf8_safe, isCNTRL_utf8_safe, isDIGIT_utf8_safe, isGRAPH_utf8_safe,
+ * isIDCONT_utf8_safe, isIDFIRST_utf8_safe, isLOWER_utf8_safe,
+ * isPRINT_utf8_safe, isPSXSPC_utf8_safe, isPUNCT_utf8_safe, isSPACE_utf8_safe,
+ * isUPPER_utf8_safe, isWORDCHAR_utf8_safe, isWORDCHAR_utf8_safe,
+ * isXDIGIT_utf8_safe,
+ * isALPHANUMERIC_LC_utf8_safe, isALPHA_LC_utf8_safe, isASCII_LC_utf8_safe,
+ * isBLANK_LC_utf8_safe, isCNTRL_LC_utf8_safe, isDIGIT_LC_utf8_safe,
+ * isGRAPH_LC_utf8_safe, isIDCONT_LC_utf8_safe, isIDFIRST_LC_utf8_safe,
+ * isLOWER_LC_utf8_safe, isPRINT_LC_utf8_safe, isPSXSPC_LC_utf8_safe,
+ * isPUNCT_LC_utf8_safe, isSPACE_LC_utf8_safe, isUPPER_LC_utf8_safe,
+ * isWORDCHAR_LC_utf8_safe, isWORDCHAR_LC_utf8_safe, isXDIGIT_LC_utf8_safe,
+ * isALPHANUMERIC_uvchr, isALPHA_uvchr, isASCII_uvchr, isBLANK_uvchr,
+ * isCNTRL_uvchr, isDIGIT_uvchr, isGRAPH_uvchr, isIDCONT_uvchr,
+ * isIDFIRST_uvchr, isLOWER_uvchr, isPRINT_uvchr, isPSXSPC_uvchr,
+ * isPUNCT_uvchr, isSPACE_uvchr, isUPPER_uvchr, isWORDCHAR_uvchr,
+ * isWORDCHAR_uvchr, isXDIGIT_uvchr
+ *
+ * The UTF-8 handling is buggy in early Perls, and this can give inaccurate
+ * results for code points above 0xFF, until the implementation started
+ * settling down in 5.12 and 5.14 */
+
+#endif
+
+#define D_PPP_TOO_SHORT_MSG  "Malformed UTF-8 character starting with:"      \
+                             " \\x%02x (too short; %d bytes available, need" \
+                             " %d)\n"
+/* Perls starting here had a new API which handled multi-character results */
+#if (PERL_BCDVERSION >= 0x5007003)
+#ifndef toLOWER_uvchr
+#  define toLOWER_uvchr(c, s, l)         UNI_TO_NATIVE(to_uni_lower(NATIVE_TO_UNI(c), s, l))
+#endif
+
+#ifndef toUPPER_uvchr
+#  define toUPPER_uvchr(c, s, l)         UNI_TO_NATIVE(to_uni_upper(NATIVE_TO_UNI(c), s, l))
+#endif
+
+#ifndef toTITLE_uvchr
+#  define toTITLE_uvchr(c, s, l)         UNI_TO_NATIVE(to_uni_title(NATIVE_TO_UNI(c), s, l))
+#endif
+
+#ifndef toFOLD_uvchr
+#  define toFOLD_uvchr(c, s, l)          UNI_TO_NATIVE(to_uni_fold( NATIVE_TO_UNI(c), s, l))
+#endif
+
+#  if (PERL_BCDVERSION != 0x5015006)     /* Just this version is broken */
+
+      /* Prefer the macro to the function */
+#    if defined toLOWER_utf8
+#      define D_PPP_TO_LOWER_CALLEE(s,r,l)    toLOWER_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_LOWER_CALLEE(s,r,l)    to_utf8_lower(s,r,l)
+#    endif
+#    if defined toTITLE_utf8
+#      define D_PPP_TO_TITLE_CALLEE(s,r,l)    toTITLE_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_TITLE_CALLEE(s,r,l)    to_utf8_title(s,r,l)
+#    endif
+#    if defined toUPPER_utf8
+#      define D_PPP_TO_UPPER_CALLEE(s,r,l)    toUPPER_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_UPPER_CALLEE(s,r,l)    to_utf8_upper(s,r,l)
+#    endif
+#    if defined toFOLD_utf8
+#      define D_PPP_TO_FOLD_CALLEE(s,r,l)     toFOLD_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_FOLD_CALLEE(s,r,l)     to_utf8_fold(s,r,l)
+#    endif
+#  else     /* Below is 5.15.6, which failed to make the macros available
+#              outside of core, so we have to use the 'Perl_' form.  khw
+#              decided it was easier to just handle this case than have to
+#              document the exception, and make an exception in the tests below
+#              */
+#    define D_PPP_TO_LOWER_CALLEE(s,r,l)                                    \
+                        Perl__to_utf8_lower_flags(aTHX_ s, r, l, 0, NULL)
+#    define D_PPP_TO_TITLE_CALLEE(s,r,l)                                    \
+                        Perl__to_utf8_title_flags(aTHX_ s, r, l, 0, NULL)
+#    define D_PPP_TO_UPPER_CALLEE(s,r,l)                                    \
+                        Perl__to_utf8_upper_flags(aTHX_ s, r, l, 0, NULL)
+#    define D_PPP_TO_FOLD_CALLEE(s,r,l)                                     \
+            Perl__to_utf8_fold_flags(aTHX_ s, r, l, FOLD_FLAGS_FULL, NULL)
+#  endif
+
+/* The actual implementation of the backported macros.  If too short, croak,
+ * otherwise call the original that doesn't have an upper limit parameter */
+#  define D_PPP_GENERIC_MULTI_ARG_TO(name, s, e,r,l)                        \
+    (((((e) - (s)) <= 0)                                                    \
+         /* We could just do nothing, but modern perls croak */             \
+      ? (croak("Attempting case change on zero length string"),             \
+         0) /* So looks like it returns something, and will compile */      \
+      : ((e) - (s)) < UTF8SKIP(s))                                          \
+        ? (croak(D_PPP_TOO_SHORT_MSG,                                       \
+                               s[0], (int) ((e) - (s)), (int) UTF8SKIP(s)), \
+           0)                                                               \
+        : D_PPP_TO_ ## name ## _CALLEE(s,r,l))
+#ifndef toUPPER_utf8_safe
+#  define toUPPER_utf8_safe(s,e,r,l)     \
+                        D_PPP_GENERIC_MULTI_ARG_TO(UPPER,s,e,r,l)
+#endif
+
+#ifndef toLOWER_utf8_safe
+#  define toLOWER_utf8_safe(s,e,r,l)     \
+                        D_PPP_GENERIC_MULTI_ARG_TO(LOWER,s,e,r,l)
+#endif
+
+#ifndef toTITLE_utf8_safe
+#  define toTITLE_utf8_safe(s,e,r,l)     \
+                        D_PPP_GENERIC_MULTI_ARG_TO(TITLE,s,e,r,l)
+#endif
+
+#ifndef toFOLD_utf8_safe
+#  define toFOLD_utf8_safe(s,e,r,l)      \
+                        D_PPP_GENERIC_MULTI_ARG_TO(FOLD,s,e,r,l)
+#endif
+
+#elif (PERL_BCDVERSION >= 0x5006000)
+
+/* Here we have UTF-8 support, but using the original API where the case
+ * changing functions merely returned the changed code point; hence they
+ * couldn't handle multi-character results. */
+
+#  ifdef uvchr_to_utf8
+#    define D_PPP_UV_TO_UTF8 uvchr_to_utf8
+#  else
+#    define D_PPP_UV_TO_UTF8 uv_to_utf8
+#  endif
+
+   /* Get the utf8 of the case changed value, and store its length; then have
+    * to re-calculate the changed case value in order to return it */
+#  define D_PPP_GENERIC_SINGLE_ARG_TO_UVCHR(name, c, s, l)                  \
+        (*(l) = (D_PPP_UV_TO_UTF8(s,                                        \
+                 UNI_TO_NATIVE(to_uni_ ## name(NATIVE_TO_UNI(c)))) - (s)),  \
+        UNI_TO_NATIVE(to_uni_ ## name(NATIVE_TO_UNI(c))))
+#ifndef toLOWER_uvchr
+#  define toLOWER_uvchr(c, s, l)         \
+                        D_PPP_GENERIC_SINGLE_ARG_TO_UVCHR(lower, c, s, l)
+#endif
+
+#ifndef toUPPER_uvchr
+#  define toUPPER_uvchr(c, s, l)         \
+                        D_PPP_GENERIC_SINGLE_ARG_TO_UVCHR(upper, c, s, l)
+#endif
+
+#ifndef toTITLE_uvchr
+#  define toTITLE_uvchr(c, s, l)         \
+                        D_PPP_GENERIC_SINGLE_ARG_TO_UVCHR(title, c, s, l)
+#endif
+
+#ifndef toFOLD_uvchr
+#  define toFOLD_uvchr(c, s, l)          toLOWER_uvchr(c, s, l)
+#endif
+
+#  define D_PPP_GENERIC_SINGLE_ARG_TO_UTF8(name, s, e, r, l)                \
+    (((((e) - (s)) <= 0)                                                    \
+      ? (croak("Attempting case change on zero length string"),             \
+         0) /* So looks like it returns something, and will compile */      \
+      : ((e) - (s)) < UTF8SKIP(s))                                          \
+        ? (croak(D_PPP_TOO_SHORT_MSG,                                       \
+                               s[0], (int) ((e) - (s)), (int) UTF8SKIP(s)), \
+           0)                                                               \
+          /* Get the changed code point and store its UTF-8 */              \
+        : D_PPP_UV_TO_UTF8(r, to_utf8_ ## name(s)),                         \
+            /* Then store its length, and re-get code point for return */   \
+            *(l) = UTF8SKIP(r), to_utf8_ ## name(r))
+
+/* Warning: toUPPER_utf8_safe, toLOWER_utf8_safe, toTITLE_utf8_safe,
+ * toUPPER_uvchr, toLOWER_uvchr, toTITLE_uvchr
+    The UTF-8 case changing operations had bugs before around 5.12 or 5.14;
+    this backport does not correct them.
+
+    In perls before 7.3, multi-character case changing is not implemented; this
+    backport uses the simple case changes available in those perls. */
+#ifndef toUPPER_utf8_safe
+#  define toUPPER_utf8_safe(s,e,r,l)     \
+                        D_PPP_GENERIC_SINGLE_ARG_TO_UTF8(upper, s, e, r, l)
+#endif
+
+#ifndef toLOWER_utf8_safe
+#  define toLOWER_utf8_safe(s,e,r,l)     \
+                        D_PPP_GENERIC_SINGLE_ARG_TO_UTF8(lower, s, e, r, l)
+#endif
+
+#ifndef toTITLE_utf8_safe
+#  define toTITLE_utf8_safe(s,e,r,l)     \
+                        D_PPP_GENERIC_SINGLE_ARG_TO_UTF8(title, s, e, r, l)
+#endif
+
+ /* Warning: toFOLD_utf8_safe, toFOLD_uvchr
+    The UTF-8 case changing operations had bugs before around 5.12 or 5.14;
+    this backport does not correct them.
+
+    In perls before 7.3, case folding is not implemented; instead, this
+    backport substitutes simple (not multi-character, which isn't available)
+    lowercasing.  This gives the correct result in most, but not all, instances
+    */
+#ifndef toFOLD_utf8_safe
+#  define toFOLD_utf8_safe(s,e,r,l)      toLOWER_utf8_safe(s,e,r,l)
+#endif
+
 #endif
 
 /* Until we figure out how to support this in older perls... */
@@ -7174,6 +7843,12 @@ DPPP_(my_croak_xs_usage)(const CV *const cv, const char *const params)
 #  define PERL_LOADMOD_IMPORT_OPS        0x4
 #endif
 
+#if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
+# define D_PPP_CROAK_IF_ERROR(cond) ({ SV *_errsv; ((cond) && (_errsv = ERRSV) && (SvROK(_errsv) || SvTRUE(_errsv)) && (croak_sv(_errsv), 1)); })
+#else
+# define D_PPP_CROAK_IF_ERROR(cond) ((cond) && (SvROK(ERRSV) || SvTRUE(ERRSV)) && (croak_sv(ERRSV), 1))
+#endif
+
 #ifndef G_METHOD
 # define G_METHOD               64
 # ifdef call_sv
@@ -7188,14 +7863,26 @@ DPPP_(my_croak_xs_usage)(const CV *const cv, const char *const params)
 # endif
 #endif
 
+#ifndef G_RETHROW
+# define G_RETHROW 8192
+# ifdef eval_sv
+#  undef eval_sv
+# endif
+# if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
+#  define eval_sv(sv, flags) ({ I32 _flags = (flags); I32 _ret = Perl_eval_sv(aTHX_ sv, (_flags & ~G_RETHROW)); D_PPP_CROAK_IF_ERROR(_flags & G_RETHROW); _ret; })
+# else
+#  define eval_sv(sv, flags) ((PL_na = Perl_eval_sv(aTHX_ sv, ((flags) & ~G_RETHROW))), D_PPP_CROAK_IF_ERROR((flags) & G_RETHROW), (I32)PL_na)
+# endif
+#endif
+
 /* Older Perl versions have broken croak_on_error=1 */
 #if (PERL_BCDVERSION < 0x5031002)
 # ifdef eval_pv
 #  undef eval_pv
 #  if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
-#   define eval_pv(p, croak_on_error) ({ SV *_sv = Perl_eval_pv(aTHX_ p, 0); SV *_errsv = ERRSV; (croak_on_error && (SvROK(_errsv) || SvTRUE(_errsv)) && (croak_sv(_errsv), 1)); _sv; })
+#   define eval_pv(p, croak_on_error) ({ SV *_sv = Perl_eval_pv(aTHX_ p, 0); D_PPP_CROAK_IF_ERROR(croak_on_error); _sv; })
 #  else
-#   define eval_pv(p, croak_on_error) ((PL_Sv = Perl_eval_pv(aTHX_ p, 0)), (croak_on_error && (SvROK(ERRSV) || SvTRUE(ERRSV)) && (croak_sv(ERRSV), 1)), PL_Sv)
+#   define eval_pv(p, croak_on_error) ((PL_Sv = Perl_eval_pv(aTHX_ p, 0)), D_PPP_CROAK_IF_ERROR(croak_on_error), PL_Sv)
 #  endif
 # endif
 #endif
@@ -7223,7 +7910,6 @@ SV*
 DPPP_(my_eval_pv)(const char *p, I32 croak_on_error)
 {
     dSP;
-    SV* errsv;
     SV* sv = newSVpv(p, 0);
 
     PUSHMARK(sp);
@@ -7234,11 +7920,7 @@ DPPP_(my_eval_pv)(const char *p, I32 croak_on_error)
     sv = POPs;
     PUTBACK;
 
-    if (croak_on_error) {
-        errsv = ERRSV;
-        if (SvROK(errsv) || SvTRUE(errsv))
-            croak_sv(errsv);
-    }
+    D_PPP_CROAK_IF_ERROR(croak_on_error);
 
     return sv;
 }
@@ -7569,15 +8251,15 @@ DPPP_(my_load_module)(U32 flags, SV *name, SV *ver, ...)
 #if ( (PERL_BCDVERSION >= 0x5007003) && (PERL_BCDVERSION < 0x5008007) ) || ( (PERL_BCDVERSION >= 0x5009000) && (PERL_BCDVERSION < 0x5009002) )
 #undef sv_setsv_flags
 #define SV_NOSTEAL 16
-#define sv_setsv_flags(dstr, sstr, flags)                                \
-  STMT_START {                                                           \
-    if (((flags) & SV_NOSTEAL) && (SvFLAGS((sstr)) & SVs_TEMP)) {        \
-      SvTEMP_off((sstr));                                                \
-      Perl_sv_setsv_flags(aTHX_ (dstr), (sstr), (flags) & ~SV_NOSTEAL);  \
-      SvTEMP_on((sstr));                                                 \
-    } else {                                                             \
-      Perl_sv_setsv_flags(aTHX_ (dstr), (sstr), (flags) & ~SV_NOSTEAL);  \
-    }                                                                    \
+#define sv_setsv_flags(dstr, sstr, flags)                                          \
+  STMT_START {                                                                     \
+    if (((flags) & SV_NOSTEAL) && (sstr) && (SvFLAGS((SV *)(sstr)) & SVs_TEMP)) {  \
+      SvTEMP_off((SV *)(sstr));                                                    \
+      Perl_sv_setsv_flags(aTHX_ (dstr), (sstr), (flags) & ~SV_NOSTEAL);            \
+      SvTEMP_on((SV *)(sstr));                                                     \
+    } else {                                                                       \
+      Perl_sv_setsv_flags(aTHX_ (dstr), (sstr), (flags) & ~SV_NOSTEAL);            \
+    }                                                                              \
   } STMT_END
 #endif
 
@@ -9023,6 +9705,99 @@ DPPP_(my_my_strlcpy)(char *dst, const char *src, Size_t size)
 #endif
 
 #endif
+#ifndef UTF_START_MARK
+#  define UTF_START_MARK(len)            \
+                    (((len) >  7) ? 0xFF : (0xFF & (0xFE << (7-(len)))))
+#endif
+
+#if (PERL_BCDVERSION < 0x5018000)     /* On non-EBCDIC was valid before this, */
+                            /* but easier to just do one check */
+#  undef UTF8_MAXBYTES_CASE
+#endif
+
+#if 'A' == 65
+#  define D_PPP_BYTE_INFO_BITS 6  /* 6 bits meaningful in continuation bytes */
+#ifndef UTF8_MAXBYTES_CASE
+#  define UTF8_MAXBYTES_CASE             13
+#endif
+
+#else
+#  define D_PPP_BYTE_INFO_BITS 5  /* 5 bits meaningful in continuation bytes */
+#ifndef UTF8_MAXBYTES_CASE
+#  define UTF8_MAXBYTES_CASE             15
+#endif
+
+#endif
+#ifndef UTF_ACCUMULATION_SHIFT
+#  define UTF_ACCUMULATION_SHIFT         D_PPP_BYTE_INFO_BITS
+#endif
+
+#ifdef NATIVE_TO_UTF
+#ifndef NATIVE_UTF8_TO_I8
+#  define NATIVE_UTF8_TO_I8(c)           NATIVE_TO_UTF(c)
+#endif
+
+#else   /* System doesn't support EBCDIC */
+#ifndef NATIVE_UTF8_TO_I8
+#  define NATIVE_UTF8_TO_I8(c)           (c)
+#endif
+
+#endif
+
+#ifdef UTF_TO_NATIVE
+#ifndef I8_TO_NATIVE_UTF8
+#  define I8_TO_NATIVE_UTF8(c)           UTF_TO_NATIVE(c)
+#endif
+
+#else   /* System doesn't support EBCDIC */
+#ifndef I8_TO_NATIVE_UTF8
+#  define I8_TO_NATIVE_UTF8(c)           (c)
+#endif
+
+#endif
+#ifndef UTF_START_MASK
+#  define UTF_START_MASK(len)            \
+                                (((len) >= 7) ? 0x00 : (0x1F >> ((len)-2)))
+#endif
+
+#ifndef UTF_IS_CONTINUATION_MASK
+#  define UTF_IS_CONTINUATION_MASK       \
+                                    ((U8) (0xFF << UTF_ACCUMULATION_SHIFT))
+#endif
+
+#ifndef UTF_CONTINUATION_MARK
+#  define UTF_CONTINUATION_MARK          \
+                                          (UTF_IS_CONTINUATION_MASK & 0xB0)
+#endif
+
+#ifndef UTF_MIN_START_BYTE
+#  define UTF_MIN_START_BYTE             \
+    ((UTF_CONTINUATION_MARK >> UTF_ACCUMULATION_SHIFT) | UTF_START_MARK(2))
+#endif
+#ifndef UTF_MIN_ABOVE_LATIN1_BYTE
+#  define UTF_MIN_ABOVE_LATIN1_BYTE      \
+                    ((0x100 >> UTF_ACCUMULATION_SHIFT) | UTF_START_MARK(2))
+#endif
+
+#if (PERL_BCDVERSION < 0x5007000)     /* Was the complement of what should have been */
+#  undef UTF8_IS_DOWNGRADEABLE_START
+#endif
+#ifndef UTF8_IS_DOWNGRADEABLE_START
+#  define UTF8_IS_DOWNGRADEABLE_START(c) \
+                inRANGE(NATIVE_UTF8_TO_I8(c),                               \
+                        UTF_MIN_START_BYTE, UTF_MIN_ABOVE_LATIN1_BYTE - 1)
+#endif
+
+#ifndef UTF_CONTINUATION_MASK
+#  define UTF_CONTINUATION_MASK          \
+                                ((U8) ((1U << UTF_ACCUMULATION_SHIFT) - 1))
+#endif
+#ifndef UTF8_ACCUMULATE
+#  define UTF8_ACCUMULATE(base, added)   \
+                                  (((base) << UTF_ACCUMULATION_SHIFT)       \
+                                   | ((NATIVE_UTF8_TO_I8(added))            \
+                                       & UTF_CONTINUATION_MASK))
+#endif
 #ifndef UTF8_ALLOW_ANYUV
 #  define UTF8_ALLOW_ANYUV               0
 #endif
@@ -9061,13 +9836,23 @@ DPPP_(my_my_strlcpy)(char *dst, const char *src, Size_t size)
 
 #if defined UTF8SKIP
 
-/* Don't use official version because it uses MIN, which may not be available */
+/* Don't use official versions because they use MIN, which may not be available */
 #undef UTF8_SAFE_SKIP
+#undef UTF8_CHK_SKIP
 #ifndef UTF8_SAFE_SKIP
 #  define UTF8_SAFE_SKIP(s, e)           (                                          \
                                       ((((e) - (s)) <= 0)                       \
                                       ? 0                                       \
                                       : D_PPP_MIN(((e) - (s)), UTF8SKIP(s))))
+#endif
+#ifndef UTF8_CHK_SKIP
+#  define UTF8_CHK_SKIP(s)               \
+    (s[0] == '\0' ? 1 : ((U8) D_PPP_MIN(my_strnlen((char *) (s), UTF8SKIP(s)),  \
+                                      UTF8SKIP(s))))
+#endif
+
+#ifndef UTF8_SKIP
+#  define UTF8_SKIP(s)                   UTF8SKIP(s)
 #endif
 
 #endif
@@ -9089,7 +9874,6 @@ DPPP_(my_my_strlcpy)(char *dst, const char *src, Size_t size)
 
 #ifdef UVCHR_IS_INVARIANT
 #  if 'A' == 65
-#    define D_PPP_BYTE_INFO_BITS 6  /* 6 bits meaningful in continuation bytes */
 #    ifdef QUADKIND
 #      define D_PPP_UVCHR_SKIP_UPPER(c)                                         \
           (WIDEST_UTYPE) (c) <                                                  \
@@ -9098,8 +9882,6 @@ DPPP_(my_my_strlcpy)(char *dst, const char *src, Size_t size)
 #      define D_PPP_UVCHR_SKIP_UPPER(c) 7  /* 32 bit platform */
 #    endif
 #  else
-#    define D_PPP_BYTE_INFO_BITS 5      /* EBCDIC has only 5 meaningful bits */
-
      /* In the releases this is backported to, UTF-EBCDIC had a max of 2**31-1 */
 #    define D_PPP_UVCHR_SKIP_UPPER(c) 7
 #  endif
@@ -9140,10 +9922,10 @@ DPPP_(my_my_strlcpy)(char *dst, const char *src, Size_t size)
 
 #if defined(is_utf8_string) && defined(UTF8SKIP)
 #ifndef isUTF8_CHAR
-#  define isUTF8_CHAR(s0, e)             (                                           \
-    (e) <= (s0) || ! is_utf8_string(s0, D_PPP_MIN(UTF8SKIP(s0), (e) - (s0)))    \
+#  define isUTF8_CHAR(s, e)              (                                            \
+    (e) <= (s) || ! is_utf8_string(s, UTF8_SAFE_SKIP(s, e))                     \
     ? 0                                                                         \
-    : UTF8SKIP(s0))
+    : UTF8SKIP(s))
 #endif
 
 #endif
@@ -9277,7 +10059,7 @@ DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
          * than 31 bits */
         if (sizeof(ret) < 8) {
             overflows = 1;
-            overflow_length = 7;
+            overflow_length = (*s == 0xFE) ? 7 : 13;
         }
         else {
             const U8 highest[] =    /* 2*63-1 */
@@ -9391,7 +10173,12 @@ DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
                 *retlen = D_PPP_MIN(*retlen, curlen);
                 *retlen = D_PPP_MIN(*retlen, UTF8SKIP(s));
                 do {
-                    if (s[i] < 0x80 || s[i] > 0xBF) {
+#      ifdef UTF8_IS_CONTINUATION
+                    if (! UTF8_IS_CONTINUATION(s[i]))
+#      else       /* Versions without the above don't support EBCDIC anyway */
+                    if (s[i] < 0x80 || s[i] > 0xBF)
+#      endif
+                    {
                         *retlen = i;
                         break;
                     }
@@ -9420,7 +10207,7 @@ DPPP_(my_utf8_to_uvchr_buf)(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
 #  define utf8_to_uvchr(s, lp)           \
     ((*(s) == '\0')                                                             \
     ? utf8_to_uvchr_buf(s,((s)+1), lp) /* Handle single NUL specially */        \
-    : utf8_to_uvchr_buf(s, (s) + my_strnlen((char *) (s), UTF8SKIP(s)), (lp)))
+    : utf8_to_uvchr_buf(s, (s) + UTF8_CHK_SKIP(s), (lp)))
 #endif
 
 #endif
@@ -9727,10 +10514,15 @@ DPPP_(my_pv_display)(pTHX_ SV *dsv, const char *pv, STRLEN cur, STRLEN len, STRL
 #    if (PERL_BCDVERSION >= 0x5021003)
 #      undef sync_locale
 #      define sync_locale() (Perl_sync_locale(aTHX), 1)
+#    elif defined(sync_locale)  /* These should be the 5.20 maints*/
+#      undef sync_locale        /* Just copy their defn and return 1 */
+#      define sync_locale() (new_ctype(setlocale(LC_CTYPE, NULL)),        \
+                             new_collate(setlocale(LC_COLLATE, NULL)),    \
+                             set_numeric_local(),                         \
+                             new_numeric(setlocale(LC_NUMERIC, NULL)),    \
+                             1)
 #    elif defined(new_ctype) && defined(LC_CTYPE)
 #      define sync_locale() (new_ctype(setlocale(LC_CTYPE, NULL)), 1)
-#    else
-#      undef sync_locale
 #    endif
 #  endif
 #endif
