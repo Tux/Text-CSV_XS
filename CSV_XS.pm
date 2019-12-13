@@ -3676,8 +3676,7 @@ returned by L</error_diag>:
 
  my ($c, $s);
 
- sub ignore3006
- {
+ sub ignore3006 {
      my ($err, $msg, $pos, $recno, $fldno) = @_;
      if ($err == 3006) {
          # ignore this error
@@ -3709,8 +3708,7 @@ parser object and an array reference to the fields parsed.
 The return code of the callback is ignored  unless it is a reference to the
 string "skip", in which case the record will be skipped in L</getline_all>.
 
- sub add_from_db
- {
+ sub add_from_db {
      my ($csv, $row) = @_;
      $sth->execute ($row->[4]);
      push @$row, $sth->fetchrow_array;
@@ -3760,8 +3758,7 @@ parser object and an array reference to the fields passed.
 
 The return code of the callback is ignored.
 
- sub max_4_fields
- {
+ sub max_4_fields {
      my ($csv, $row) = @_;
      @$row > 4 and splice @$row, 4;
      } # max_4_fields
