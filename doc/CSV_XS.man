@@ -2032,8 +2032,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
           my ($c, $s);
 
-          sub ignore3006
-          {
+          sub ignore3006 {
               my ($err, $msg, $pos, $recno, $fldno) = @_;
               if ($err == 3006) {
                   # ignore this error
@@ -2065,8 +2064,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
          to the string "skip", in which case the record will be skipped in
          "getline_all".
 
-          sub add_from_db
-          {
+          sub add_from_db {
               my ($csv, $row) = @_;
               $sth->execute ($row->[4]);
               push @$row, $sth->fetchrow_array;
@@ -2096,6 +2094,46 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
             after_parse => sub { $_[1][0] =~ m/^\d+$/ or return \"skip"; }
 
+         One could also use modules like Types::Standard (showing varieties):
+
+          use Types::Standard -types;
+
+          my $filter = \&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
+          my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
+          my $check  = $type->compiled_check;
+
+          # no filter/validation
+          my $aoa = csv (
+             in     => \$data,
+             );
+
+          # filter with compiled check
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub {         $check->($_[1])    }},
+             );
+
+          # filter with compiled check and warnings
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub { my $x = $check->($_[1]) or
+                                        warn $type->get_message ($_[1]), "\n";
+                                    $x;
+                                    }},
+             );
+
+          # filter with callback + eval
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub { eval {  $filter->($_[1]) } }},
+             );
+
+          # filter with callback will die on invalid rows
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub {         $filter->($_[1])   }},
+             );
+
        before_print
           my $idx = 1;
           $csv->callbacks (before_print => sub { $_[1][0] = $idx++ });
@@ -2108,8 +2146,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
          The return code of the callback is ignored.
 
-          sub max_4_fields
-          {
+          sub max_4_fields {
               my ($csv, $row) = @_;
               @$row > 4 and splice @$row, 4;
               } # max_4_fields
@@ -2955,4 +2992,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.30.0                      2019-09-15                          STDIN(1)
+perl v5.30.0                      2019-12-15                          STDIN(1)

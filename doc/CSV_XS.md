@@ -110,7 +110,7 @@ force it to be upgraded before you pass them on:
 
     $csv->print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);
 
-For complete control over encoding, please use [Text::CSV::Encoded](https://metacpan.org/pod/Text::CSV::Encoded):
+For complete control over encoding, please use [Text::CSV::Encoded](https://metacpan.org/pod/Text%3A%3ACSV%3A%3AEncoded):
 
     use Text::CSV::Encoded;
     my $csv = Text::CSV::Encoded->new ({
@@ -2149,8 +2149,7 @@ or enhance the ["csv"](#csv) function.
 
         my ($c, $s);
 
-        sub ignore3006
-        {
+        sub ignore3006 {
             my ($err, $msg, $pos, $recno, $fldno) = @_;
             if ($err == 3006) {
                 # ignore this error
@@ -2182,8 +2181,7 @@ or enhance the ["csv"](#csv) function.
     The return code of the callback is ignored  unless it is a reference to the
     string "skip", in which case the record will be skipped in ["getline\_all"](#getline_all).
 
-        sub add_from_db
-        {
+        sub add_from_db {
             my ($csv, $row) = @_;
             $sth->execute ($row->[4]);
             push @$row, $sth->fetchrow_array;
@@ -2216,6 +2214,46 @@ or enhance the ["csv"](#csv) function.
 
             after_parse => sub { $_[1][0] =~ m/^\d+$/ or return \"skip"; }
 
+    One could also use modules like [Types::Standard](https://metacpan.org/pod/Types%3A%3AStandard) (showing varieties):
+
+        use Types::Standard -types;
+
+        my $filter = \&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
+        my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
+        my $check  = $type->compiled_check;
+
+        # no filter/validation
+        my $aoa = csv (
+           in     => \$data,
+           );
+
+        # filter with compiled check
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub {         $check->($_[1])    }},
+           );
+
+        # filter with compiled check and warnings
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub { my $x = $check->($_[1]) or
+                                      warn $type->get_message ($_[1]), "\n";
+                                  $x;
+                                  }},
+           );
+
+        # filter with callback + eval
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub { eval {  $filter->($_[1]) } }},
+           );
+
+        # filter with callback will die on invalid rows
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub {         $filter->($_[1])   }},
+           );
+
 - before\_print
 
 
@@ -2229,8 +2267,7 @@ or enhance the ["csv"](#csv) function.
 
     The return code of the callback is ignored.
 
-        sub max_4_fields
-        {
+        sub max_4_fields {
             my ($csv, $row) = @_;
             @$row > 4 and splice @$row, 4;
             } # max_4_fields
@@ -2682,14 +2719,14 @@ The following files can be found there:
 
 
     A script to convert `CSV` to Microsoft Excel (`XLS`). This requires extra
-    modules [Date::Calc](https://metacpan.org/pod/Date::Calc) and [Spreadsheet::WriteExcel](https://metacpan.org/pod/Spreadsheet::WriteExcel). The converter accepts
+    modules [Date::Calc](https://metacpan.org/pod/Date%3A%3ACalc) and [Spreadsheet::WriteExcel](https://metacpan.org/pod/Spreadsheet%3A%3AWriteExcel). The converter accepts
     various options and can produce UTF-8 compliant Excel files.
 
 - csv2xlsx
 
 
     A script to convert `CSV` to Microsoft Excel (`XLSX`).  This requires the
-    modules [Date::Calc](https://metacpan.org/pod/Date::Calc) and [Spreadsheet::Writer::XLSX](https://metacpan.org/pod/Spreadsheet::Writer::XLSX).  The converter does
+    modules [Date::Calc](https://metacpan.org/pod/Date%3A%3ACalc) and [Spreadsheet::Writer::XLSX](https://metacpan.org/pod/Spreadsheet%3A%3AWriter%3A%3AXLSX).  The converter does
     accept various options including merging several `CSV` files into a single
     Excel file.
 
@@ -3091,9 +3128,9 @@ And below should be the complete list of error codes that can be returned:
 
 # SEE ALSO
 
-[IO::File](https://metacpan.org/pod/IO::File),  [IO::Handle](https://metacpan.org/pod/IO::Handle),  [IO::Wrap](https://metacpan.org/pod/IO::Wrap),  [Text::CSV](https://metacpan.org/pod/Text::CSV),  [Text::CSV\_PP](https://metacpan.org/pod/Text::CSV_PP),
-[Text::CSV::Encoded](https://metacpan.org/pod/Text::CSV::Encoded),     [Text::CSV::Separator](https://metacpan.org/pod/Text::CSV::Separator),    [Text::CSV::Slurp](https://metacpan.org/pod/Text::CSV::Slurp),
-[Spreadsheet::CSV](https://metacpan.org/pod/Spreadsheet::CSV) and [Spreadsheet::Read](https://metacpan.org/pod/Spreadsheet::Read), and of course [perl](https://metacpan.org/pod/perl).
+[IO::File](https://metacpan.org/pod/IO%3A%3AFile),  [IO::Handle](https://metacpan.org/pod/IO%3A%3AHandle),  [IO::Wrap](https://metacpan.org/pod/IO%3A%3AWrap),  [Text::CSV](https://metacpan.org/pod/Text%3A%3ACSV),  [Text::CSV\_PP](https://metacpan.org/pod/Text%3A%3ACSV_PP),
+[Text::CSV::Encoded](https://metacpan.org/pod/Text%3A%3ACSV%3A%3AEncoded),     [Text::CSV::Separator](https://metacpan.org/pod/Text%3A%3ACSV%3A%3ASeparator),    [Text::CSV::Slurp](https://metacpan.org/pod/Text%3A%3ACSV%3A%3ASlurp),
+[Spreadsheet::CSV](https://metacpan.org/pod/Spreadsheet%3A%3ACSV) and [Spreadsheet::Read](https://metacpan.org/pod/Spreadsheet%3A%3ARead), and of course [perl](https://metacpan.org/pod/perl).
 
 If you are using perl6,  you can have a look at  `Text::CSV`  in the perl6
 ecosystem, offering the same features.
