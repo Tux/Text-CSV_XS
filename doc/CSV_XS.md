@@ -2214,46 +2214,6 @@ or enhance the ["csv"](#csv) function.
 
             after_parse => sub { $_[1][0] =~ m/^\d+$/ or return \"skip"; }
 
-    One could also use modules like [Types::Standard](https://metacpan.org/pod/Types%3A%3AStandard) (showing varieties):
-
-        use Types::Standard -types;
-
-        my $filter = \&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
-        my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
-        my $check  = $type->compiled_check;
-
-        # no filter/validation
-        my $aoa = csv (
-           in     => \$data,
-           );
-
-        # filter with compiled check
-        my $aoa = csv (
-           in     => \$data,
-           filter => { 0 => sub {         $check->($_[1])    }},
-           );
-
-        # filter with compiled check and warnings
-        my $aoa = csv (
-           in     => \$data,
-           filter => { 0 => sub { my $x = $check->($_[1]) or
-                                      warn $type->get_message ($_[1]), "\n";
-                                  $x;
-                                  }},
-           );
-
-        # filter with callback + eval
-        my $aoa = csv (
-           in     => \$data,
-           filter => { 0 => sub { eval {  $filter->($_[1]) } }},
-           );
-
-        # filter with callback will die on invalid rows
-        my $aoa = csv (
-           in     => \$data,
-           filter => { 0 => sub {         $filter->($_[1])   }},
-           );
-
 - before\_print
 
 
@@ -2417,6 +2377,46 @@ but only feature the ["csv"](#csv) function.
             not evaluate to the empty string.
 
             With the given example data, this filter would skip lines 2 through 8.
+
+    One could also use modules like [Types::Standard](https://metacpan.org/pod/Types%3A%3AStandard) (showing varieties):
+
+        use Types::Standard -types;
+
+        my $filter = \&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
+        my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
+        my $check  = $type->compiled_check;
+
+        # no filter/validation
+        my $aoa = csv (
+           in     => \$data,
+           );
+
+        # filter with compiled check
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub {         $check->($_[1])    }},
+           );
+
+        # filter with compiled check and warnings
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub { my $x = $check->($_[1]) or
+                                      warn $type->get_message ($_[1]), "\n";
+                                  $x;
+                                  }},
+           );
+
+        # filter with callback + eval
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub { eval {  $filter->($_[1]) } }},
+           );
+
+        # filter with callback will die on invalid rows
+        my $aoa = csv (
+           in     => \$data,
+           filter => { 0 => sub {         $filter->($_[1])   }},
+           );
 
 - after\_in
 

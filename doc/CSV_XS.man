@@ -2094,46 +2094,6 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
             after_parse => sub { $_[1][0] =~ m/^\d+$/ or return \"skip"; }
 
-         One could also use modules like Types::Standard (showing varieties):
-
-          use Types::Standard -types;
-
-          my $filter = \&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
-          my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
-          my $check  = $type->compiled_check;
-
-          # no filter/validation
-          my $aoa = csv (
-             in     => \$data,
-             );
-
-          # filter with compiled check
-          my $aoa = csv (
-             in     => \$data,
-             filter => { 0 => sub {         $check->($_[1])    }},
-             );
-
-          # filter with compiled check and warnings
-          my $aoa = csv (
-             in     => \$data,
-             filter => { 0 => sub { my $x = $check->($_[1]) or
-                                        warn $type->get_message ($_[1]), "\n";
-                                    $x;
-                                    }},
-             );
-
-          # filter with callback + eval
-          my $aoa = csv (
-             in     => \$data,
-             filter => { 0 => sub { eval {  $filter->($_[1]) } }},
-             );
-
-          # filter with callback will die on invalid rows
-          my $aoa = csv (
-             in     => \$data,
-             filter => { 0 => sub {         $filter->($_[1])   }},
-             );
-
        before_print
           my $idx = 1;
           $csv->callbacks (before_print => sub { $_[1][0] = $idx++ });
@@ -2292,6 +2252,46 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
              With the given example data, this filter would skip lines 2
              through 8.
+
+         One could also use modules like Types::Standard (showing varieties):
+
+          use Types::Standard -types;
+
+          my $filter = \&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
+          my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
+          my $check  = $type->compiled_check;
+
+          # no filter/validation
+          my $aoa = csv (
+             in     => \$data,
+             );
+
+          # filter with compiled check
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub {         $check->($_[1])    }},
+             );
+
+          # filter with compiled check and warnings
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub { my $x = $check->($_[1]) or
+                                        warn $type->get_message ($_[1]), "\n";
+                                    $x;
+                                    }},
+             );
+
+          # filter with callback + eval
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub { eval {  $filter->($_[1]) } }},
+             );
+
+          # filter with callback will die on invalid rows
+          my $aoa = csv (
+             in     => \$data,
+             filter => { 0 => sub {         $filter->($_[1])   }},
+             );
 
        after_in
          This callback is invoked for each record after all records have been

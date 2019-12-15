@@ -2027,46 +2027,6 @@ or
 </dd>
 </dl>
 
-<p>One could also use modules like <a>Types::Standard</a> (showing varieties):</p>
-
-<pre><code> use Types::Standard -types;
-
- my $filter = \&amp;{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
- my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
- my $check  = $type-&gt;compiled_check;
-
- # no filter/validation
- my $aoa = csv (
-    in     =&gt; \$data,
-    );
-
- # filter with compiled check
- my $aoa = csv (
-    in     =&gt; \$data,
-    filter =&gt; { 0 =&gt; sub {         $check-&gt;($_[1])    }},
-    );
-
- # filter with compiled check and warnings
- my $aoa = csv (
-    in     =&gt; \$data,
-    filter =&gt; { 0 =&gt; sub { my $x = $check-&gt;($_[1]) or
-                               warn $type-&gt;get_message ($_[1]), &quot;\n&quot;;
-                           $x;
-                           }},
-    );
-
- # filter with callback + eval
- my $aoa = csv (
-    in     =&gt; \$data,
-    filter =&gt; { 0 =&gt; sub { eval {  $filter-&gt;($_[1]) } }},
-    );
-
- # filter with callback will die on invalid rows
- my $aoa = csv (
-    in     =&gt; \$data,
-    filter =&gt; { 0 =&gt; sub {         $filter-&gt;($_[1])   }},
-    );</code></pre>
-
 </dd>
 <dt id="before_print">before_print </dt>
 <dd>
@@ -2238,6 +2198,46 @@ or
 
 </dd>
 </dl>
+
+<p>One could also use modules like <a>Types::Standard</a> (showing varieties):</p>
+
+<pre><code> use Types::Standard -types;
+
+ my $filter = \&amp;{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
+ my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
+ my $check  = $type-&gt;compiled_check;
+
+ # no filter/validation
+ my $aoa = csv (
+    in     =&gt; \$data,
+    );
+
+ # filter with compiled check
+ my $aoa = csv (
+    in     =&gt; \$data,
+    filter =&gt; { 0 =&gt; sub {         $check-&gt;($_[1])    }},
+    );
+
+ # filter with compiled check and warnings
+ my $aoa = csv (
+    in     =&gt; \$data,
+    filter =&gt; { 0 =&gt; sub { my $x = $check-&gt;($_[1]) or
+                               warn $type-&gt;get_message ($_[1]), &quot;\n&quot;;
+                           $x;
+                           }},
+    );
+
+ # filter with callback + eval
+ my $aoa = csv (
+    in     =&gt; \$data,
+    filter =&gt; { 0 =&gt; sub { eval {  $filter-&gt;($_[1]) } }},
+    );
+
+ # filter with callback will die on invalid rows
+ my $aoa = csv (
+    in     =&gt; \$data,
+    filter =&gt; { 0 =&gt; sub {         $filter-&gt;($_[1])   }},
+    );</code></pre>
 
 </dd>
 <dt id="after_in">after_in </dt>
