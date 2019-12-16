@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2019-12-15" "perl v5.30.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2019-12-16" "perl v5.30.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2910,45 +2910,24 @@ With the given example data, this filter would skip lines 2 through 8.
 .RE
 .RS 2
 .Sp
-One could also use modules like Types::Standard (showing varieties):
+One could also use modules like Types::Standard:
 .Sp
 .Vb 1
 \& use Types::Standard \-types;
 \&
-\& my $filter = \e&{ +Tuple[Str, Str, Int, Bool, Optional[Num]] };
-\& my $type   =      Tuple[Str, Str, Int, Bool, Optional[Num]];
+\& my $type   = Tuple[Str, Str, Int, Bool, Optional[Num]];
 \& my $check  = $type\->compiled_check;
-\&
-\& # no filter/validation
-\& my $aoa = csv (
-\&    in     => \e$data,
-\&    );
-\&
-\& # filter with compiled check
-\& my $aoa = csv (
-\&    in     => \e$data,
-\&    filter => { 0 => sub {         $check\->($_[1])    }},
-\&    );
 \&
 \& # filter with compiled check and warnings
 \& my $aoa = csv (
 \&    in     => \e$data,
-\&    filter => { 0 => sub { my $x = $check\->($_[1]) or
-\&                               warn $type\->get_message ($_[1]), "\en";
-\&                           $x;
-\&                           }},
-\&    );
-\&
-\& # filter with callback + eval
-\& my $aoa = csv (
-\&    in     => \e$data,
-\&    filter => { 0 => sub { eval {  $filter\->($_[1]) } }},
-\&    );
-\&
-\& # filter with callback will die on invalid rows
-\& my $aoa = csv (
-\&    in     => \e$data,
-\&    filter => { 0 => sub {         $filter\->($_[1])   }},
+\&    filter => {
+\&        0 => sub {
+\&            my $x = $check\->($_[1]) or
+\&                warn $type\->get_message ($_[1]), "\en";
+\&            $x;
+\&            },
+\&        },
 \&    );
 .Ve
 .RE
