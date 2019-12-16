@@ -2390,9 +2390,9 @@ but only feature the ["csv"](#csv) function.
            in     => \$data,
            filter => {
                0 => sub {
-                   my $x = $check->($_[1]) or
+                   my $ok = $check->($_[1]) or
                        warn $type->get_message ($_[1]), "\n";
-                   $x;
+                   return $ok;
                    },
                },
            );

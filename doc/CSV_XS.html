@@ -2211,9 +2211,9 @@ or
     in     =&gt; \$data,
     filter =&gt; {
         0 =&gt; sub {
-            my $x = $check-&gt;($_[1]) or
+            my $ok = $check-&gt;($_[1]) or
                 warn $type-&gt;get_message ($_[1]), &quot;\n&quot;;
-            $x;
+            return $ok;
             },
         },
     );</code></pre>
