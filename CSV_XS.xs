@@ -205,7 +205,7 @@ static const xs_error_t xs_errors[] =  {
     { 1000, "INI - constructor failed"						},
     { 1001, "INI - sep_char is equal to quote_char or escape_char"		},
     { 1002, "INI - allow_whitespace with escape_char or quote_char SP or TAB"	},
-    { 1003, "INI - \r or \n in main attr not allowed"				},
+    { 1003, "INI - \\r or \\n in main attr not allowed"				},
     { 1004, "INI - callbacks should be undef or a hashref"			},
     { 1005, "INI - EOL too long"						},
     { 1006, "INI - SEP too long"						},
@@ -277,7 +277,7 @@ static SV *m_getline, *m_print;
 #define is_EOL(c) (c == CH_EOLX)
 
 #define __is_SEPX(c) (c == CH_SEP && (csv->sep_len == 0 || (\
-    csv->size - csv->used >= (STRLEN)csv->sep_len - 1				&&\
+    csv->size - csv->used >= (STRLEN)csv->sep_len - 1			&&\
     !memcmp (csv->bptr + csv->used, csv->sep + 1, csv->sep_len - 1)	&&\
     (csv->used += csv->sep_len - 1)					&&\
     (c = CH_SEPX))))
@@ -297,7 +297,7 @@ static byte _is_SEPX (unsigned int *c, csv_t *csv, int line) {
 #endif
 
 #define __is_QUOTEX(c) (CH_QUOTE && c == CH_QUOTE && (csv->quo_len == 0 || (\
-    csv->size - csv->used >= (STRLEN)csv->quo_len - 1				&&\
+    csv->size - csv->used >= (STRLEN)csv->quo_len - 1			&&\
     !memcmp (csv->bptr + csv->used, csv->quo + 1, csv->quo_len - 1)	&&\
     (csv->used += csv->quo_len - 1)					&&\
     (c = CH_QUOTEX))))

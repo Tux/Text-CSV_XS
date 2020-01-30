@@ -4,6 +4,7 @@
     * csv2xlsx: support images (each image gets its own tab)
     * More docs. (Data validation)
     * It's 2020
+    * No binary literals in fixed error messages
 
 1.40	- 2019-09-15, H.Merijn Brand
     * Update to Devel::PPPort-3.52
