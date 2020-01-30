@@ -22,8 +22,8 @@ if ($h) {
 while (my $row = $csv->getline (*DATA)) {
     show (@$row);
     }
-$csv->error_diag;
 say "EOF: ", $csv->eof ? "Yes" : "No";
+$csv->error_diag;
 
 __DATA__
 Foo,Bar,Baz
