@@ -45,3 +45,8 @@ examples/rewrite.pl	Simple CSV rewriter
 examples/speed.pl	Small benchmark script
 files/macosx.csv	A CSV files exported on MacOSX
 files/utf8.csv		A UTF-8 encode test file
+err-csv/check.pl	Script to test error situations
+err-csv/E2021.csv	Error 2021
+err-csv/E2022.csv	Error 2022
+err-csv/E2023.csv	Error 2023
+err-csv/E2024.csv	Error 2024
