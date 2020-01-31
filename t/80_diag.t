@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 329;
+ use Test::More tests => 333;
 #use Test::More "no_plan";
 
 my %err;
@@ -360,6 +360,29 @@ SKIP: {
 	is ($x, undef, "Invalid value");
 	my @diag = $csv->error_diag;
 	is ($diag[0], 1503, "Invalid value type");
+	}
+    }
+
+# Issue 19: auto_diag > 1 does not die if ->header () is used
+{   open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print $fh qq{foo,bar,baz\n};
+    print $fh qq{a,xxx,1\n};
+    print $fh qq{b,"xx"xx", 2"\n};
+    print $fh qq{c, foo , 3\n};
+    close $fh;
+    foreach my $h (0, 1) {
+	$@ = "";
+	my @row;
+	my $ok = eval {
+	    open  $fh,   "<", $tfn or die "$tfn: $!\n";
+	    my $csv = Text::CSV_XS->new ({ auto_diag => 2 });
+	    $h and push @row, [ $csv->header ($fh) ];
+	    while (my $row = $csv->getline ($fh)) { push @row, $row }
+	    close $fh;
+	    1;
+	    };
+	is_deeply (\@row, [[qw(foo bar baz)],[qw(a xxx 1)]], "2 valid rows");
+	like ($@, qr '^# CSV_XS ERROR: 2023 -', "3rd row dies error 2023");
 	}
     }
 

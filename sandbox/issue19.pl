@@ -28,5 +28,5 @@ say "EOF: ", $csv->eof ? "Yes" : "No";
 __DATA__
 Foo,Bar,Baz
 a,xxx,1
-b,"xx"xx", 2
+b,"xx"xx", 2"
 c, foo , 3
