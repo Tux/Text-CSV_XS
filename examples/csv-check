@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'17 [24 Nov 2017] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [30 Jan 2020] Copyright H.M.Brand 2007-2020
 
 # This code requires the defined-or feature and PerlIO
 
@@ -11,54 +11,56 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode );
 
-our $VERSION = "2.01";	# 2017-11-24
+our $VERSION = "2.02";	# 2020-01-30
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
     my $err = shift and select STDERR;
     print <<"EOU";
 usage: $cmd [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
-       -s <sep>   use <sep>   as seperator char. Auto-detect, default = ','
-                  The string "tab" is allowed.
-       -e <esc>   use <sep>   as seperator char. Auto-detect, default = ','
-                  The string "undef" is allowed.
-       -q <quot>  use <quot>  as quotation char. Default = '"'
-                  The string "undef" will disable quotation.
-       -u         check if all fields are valid unicode
-       -E <enc>   open file with encoding
-       -h         check with header (implies BOM)
-       -b         check with BOM (no header)
-       -f         do not check formula's
+    -s S  --sep=S         use S as seperator char. Auto-detect, default = ','
+                          the string "tab" is allowed.
+    -q Q  --quo=Q         use Q as quote     char. Auto-detect, default = '"'
+                          the string "undef" will disable quotation.
+    -e E  --esc=E         use E as escape    char. Auto-detect, default = '"'
+                          the string "undef" will disable escapes.
+    -N    --nl            force EOL to \\n
+    -C    --cr            force EOL to \\r
+    -M    --crnl          force EOL to \\r\\n
+    -u    --utf-8         check if all fields are valid unicode
+    -E E  --enc=E         open file with encoding E
+    -h    --hdr           check with header (implies BOM)
+    -b    --bom           check with BOM (no header)
+    -f    --skip-formula  do not check formula's
 
-       --pp       use Text::CSV_PP instead (cross-check)
+          --pp            use Text::CSV_PP instead (cross-check)
 EOU
     exit $err;
     } # usage
 
 use Getopt::Long qw(:config bundling);
-my $sep;	# Set after reading first line in a flurry attempt to auto-detect
-my $quo = '"';
-my $esc = '"';
-my $opt_u = 0;
-my $opt_p = 0;
-my $opt_h = 0;
-my $opt_b = 0;
-my $opt_f = 0;
-my $enc;
+my $eol;
 GetOptions (
     "help|?"		=> sub { usage (0); },
     "V|version"		=> sub { print "$cmd [$VERSION]\n"; exit 0; },
 
-    "c|s|sep=s"		=> \$sep,
-    "q|quo|quote=s"	=> \$quo,
-    "e|esc|escape=s"	=> \$esc,
-    "u|utf|utf8|utf-8!"	=> \$opt_u,
-    "E|enc|encoding=s"	=> \$enc,
-    "h|hdr|header!"	=> \$opt_h,
-    "b|bom!"		=> \$opt_b,
-    "f|skip-formula!"	=> \$opt_f,
+    "c|s|sep=s"		=> \(my  $sep   = ""),
+    "q|quo|quote=s"	=> \(my  $quo   = '"'),
+    "e|esc|escape=s"	=> \(my  $esc   = '"'),
+    "N|nl!"		=> sub { $eol   = "\n"; },
+    "C|cr!"		=> sub { $eol   = "\r"; },
+    "M|crnl!"		=> sub { $eol   = "\r\n"; },
+    "B|binary!"		=> \(my  $bin   = 1),
 
-    "pp!"		=> \$opt_p,
+    "u|utf|utf8|utf-8!"	=> \(my  $opt_u = 0),
+    "E|enc|encoding=s"	=> \(my  $enc),
+    "h|hdr|header!"	=> \(my  $opt_h = 0),
+    "b|bom!"		=> \(my  $opt_b = 0),
+    "f|skip-formula!"	=> \(my  $opt_f = 0),
+
+    "pp!"		=> \(my  $opt_p = 0),
+
+    "v|verbose:1"	=> \(my  $opt_v = 0),
     ) or usage (1);
 
 my  $csvmod = "Text::CSV_XS";
@@ -71,11 +73,24 @@ else {
     }
 $csvmod->import ();
 
+binmode STDERR, ":encoding(utf-8)";
+
 my $fn   = $ARGV[0] // "-";
 my $data = do { local $/; <> } or die "No data to analyze\n";
 my @warn;
 
-my ($bin, $rows, $eol, %cols) = (0, 0, undef);
+my %csvarg = (
+    sep_char       => $sep eq "tab"   ? "\t"  : $sep,
+    quote_char     => $quo eq "undef" ? undef : $quo,
+    escape_char    => $esc eq "undef" ? undef : $esc,
+    eol            => $eol,
+    binary         => $bin,
+    keep_meta_info => 1,
+    auto_diag      => 1,
+    formula        => $opt_f ? "none" : "diag",
+    );
+
+my ($rows, %cols, $s_eol) = (0);
 unless ($sep) { # No sep char passed, try to auto-detect;
     my ($first_line) = ($data =~ m/\A(.*?)(?:\r\n|\n|\r)/);
     $first_line ||= $data; # if no EOL at all, use whole set
@@ -86,18 +101,13 @@ unless ($sep) { # No sep char passed, try to auto-detect;
 	   $first_line =~ m/\w,[\w,]/     ? ","  :
 	   $first_line =~ m/\w;[\w;]/     ? ";"  :
 	   $first_line =~ m/\w\t[\w]/     ? "\t" : ",";
-    $data =~ m/([\r\n]+)\Z/ and $eol = DDisplay "$1";
+    $data =~ m/([\r\n]+)\Z/ and $s_eol = DDisplay "$1";
+    $csvarg{sep_char} = $sep;
     }
 
-my $csv = $csvmod->new ({
-    sep_char       => $sep eq "tab"   ? "\t"  : $sep,
-    quote_char     => $quo eq "undef" ? undef : $quo,
-    escape_char    => $esc eq "undef" ? undef : $esc,
-    binary         => 1,
-    keep_meta_info => 1,
-    auto_diag      => 1,
-    formula        => $opt_f ? "none" : "diag",
-    });
+my $csv = $csvmod->new (\%csvarg);
+
+$bin = 0; # Assume ASCII only
 
 sub done {
     my $file = $ARGV // "STDIN";
@@ -111,13 +121,15 @@ sub done {
 	} || "unknown";
     print "Checked $file with $cmd $VERSION\nusing $csvmod @{[$csvmod->VERSION]} with perl $pv and Unicode $uv\n";
     my @diag = $csv->error_diag;
+    my $line = $. // $csv->record_number // "?";
     if ($diag[0] == 2012 && $csv->eof) {
 	my @coll = sort { $a <=> $b } keys %cols;
 	local $" = ", ";
 	my $cols = @coll == 1 ? $coll[0] : "(@coll)";
-	$eol //= $csv->eol || "--unknown--";
+	$s_eol //= $csv->eol || "--unknown--";
+	$s_eol =~ m/[\x00-\x1f]/ and $s_eol = DDisplay $s_eol;
 	print "OK: rows: $rows, columns: $cols\n";
-	print "    sep = <$sep>, quo = <$quo>, bin = <$bin>, eol = <$eol>\n";
+	print "    sep = <$sep>, quo = <$quo>, bin = <$bin>, eol = <$s_eol>\n";
 	print "    encoding = $csv->{ENCODING}\n" if $csv->{ENCODING};
 	if (@coll > 1) {
 	    print "multiple column lengths:\n";
@@ -129,7 +141,7 @@ sub done {
 	$diag[0] = 0;
 	}
     elsif ($diag[2]) {
-	print "$ARGV record $diag[3] at line $./$diag[2] - $diag[0] - $diag[1]\n";
+	print "$ARGV record $diag[3] at line $line/$diag[2] - $diag[0] - $diag[1]\n";
 	my $ep  = $diag[2] - 1; # diag[2] is 1-based
 	my $err = $csv->error_input . "         ";
 	substr $err, $ep + 1, 0, "*";
@@ -138,16 +150,21 @@ sub done {
 	print "    |$err|\n";
 	}
     else {
-	print "$ARGV line $. - $diag[1]\n";
+	print "$ARGV line $line - $diag[1]\n";
 	}
     print for @warn;
     exit $diag[0];
     } # done
 
+sub show {
+    say STDERR join ", " => map { "\x{231e}$_\x{231d}" } @_;
+    } # show
+
 sub stats {
     my $r = shift;
     $cols{scalar @$r}++;
     grep { $_ & 0x0002 } $csv->meta_info and $bin = 1;
+    $opt_v and show (@$r);
     if ($opt_u) {
 	my @r = @$r;
 	foreach my $x (0 .. $#r) {
