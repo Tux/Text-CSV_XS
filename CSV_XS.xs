@@ -360,7 +360,7 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
 	(void)hv_store (csv->self, "_EOF",          4, &PL_sv_yes,   0);
     if (csv->auto_diag) {
 	unless (_is_hashref (pself))
-	    pself = newRV ((SV *)csv->self);
+	    pself = newRV_inc ((SV *)csv->self);
 	ENTER;
 	PUSHMARK (SP);
 	XPUSHs (pself);
