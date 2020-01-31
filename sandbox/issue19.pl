@@ -17,13 +17,13 @@ sub show {
 my $csv = Text::CSV_XS->new ({ auto_diag => 2 });
 if ($h) {
     say "Calling header";
-    show ($csv->header (*DATA)); # comment out this line to hide the bug
+    show ($csv->header (*DATA));
     }
+
 while (my $row = $csv->getline (*DATA)) {
     show (@$row);
     }
 say "EOF: ", $csv->eof ? "Yes" : "No";
-$csv->error_diag;
 
 __DATA__
 Foo,Bar,Baz

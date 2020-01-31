@@ -345,7 +345,8 @@ static SV *cx_SvDiag (pTHX_ int xse) {
 #define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
 static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
     dSP;
-    SV *err = SvDiag (xse);
+    SV *err   = SvDiag (xse);
+    SV *pself = csv->pself;
 
     last_error = xse;
 	(void)hv_store (csv->self, "_ERROR_DIAG",  11, err,          0);
@@ -357,13 +358,17 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
 	}
     if (xse == 2012) /* EOF */
 	(void)hv_store (csv->self, "_EOF",          4, &PL_sv_yes,   0);
-    if (csv->pself && csv->auto_diag) {
+    if (csv->auto_diag) {
+	unless (_is_hashref (pself))
+	    pself = newRV ((SV *)csv->self);
 	ENTER;
 	PUSHMARK (SP);
-	XPUSHs (csv->pself);
+	XPUSHs (pself);
 	PUTBACK;
 	call_pv ("Text::CSV_XS::error_diag", G_VOID | G_DISCARD);
 	LEAVE;
+	unless (pself == csv->pself)
+	    sv_free (pself);
 	}
     return (err);
     } /* SetDiag */

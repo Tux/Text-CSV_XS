@@ -1,10 +1,11 @@
-1.41	- 2020-01-30, H.Merijn Brand
+1.41	- 2020-01-31, H.Merijn Brand
     * Update to Devel::PPPort-3.56
     * csv2xls uses sheetname as csv2xlsx
     * csv2xlsx: support images (each image gets its own tab)
     * More docs. (Data validation)
     * It's 2020
     * No binary literals in fixed error messages
+    * Fix auto_diag > 2 to die when headers are used (issue 19)
 
 1.40	- 2019-09-15, H.Merijn Brand
     * Update to Devel::PPPort-3.52
