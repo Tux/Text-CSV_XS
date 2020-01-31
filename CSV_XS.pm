@@ -82,7 +82,7 @@ my %def_attr = (
     types			=> undef,
     callbacks			=> undef,
 
-    _EOF			=> 0,
+    _EOF			=> "",
     _RECNO			=> 0,
     _STATUS			=> undef,
     _FIELDS			=> undef,
@@ -641,7 +641,7 @@ sub error_diag {
 
     # Docs state to NEVER use UNIVERSAL::isa, because it will *never* call an
     # overridden isa method in any class. Well, that is exacly what I want here
-    if ($self && ref $self && # Not a class method or direct call
+    if ($self && ref $self and # Not a class method or direct call
 	 UNIVERSAL::isa ($self, __PACKAGE__) && exists $self->{_ERROR_DIAG}) {
 	$diag[0] = 0 + $self->{_ERROR_DIAG};
 	$diag[1] =     $self->{_ERROR_DIAG};
@@ -660,7 +660,7 @@ sub error_diag {
 	    $diag[4] and $msg =~ s/$/ field $diag[4]/;
 
 	    unless ($self && ref $self) {	# auto_diag
-	    	# called without args in void context
+		# called without args in void context
 		warn $msg;
 		return;
 		}
@@ -891,7 +891,7 @@ sub header {
 	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = "gb-18030"   }
 	elsif ($hdr =~ s/^\x{feff}//)         { $enc = ""           }
 
-	$self->{ENCODING} = uc $enc;
+	$self->{ENCODING} = $enc ? uc $enc : undef;
 
 	$hdr eq "" and croak ($self->SetDiag (1010));
 
