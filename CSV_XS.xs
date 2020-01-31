@@ -161,7 +161,7 @@ typedef struct {
 
     byte *	cache;
 
-    SV *	pself;
+    SV *	pself;	/* PL_self, for error_diag */
     HV *	self;
     SV *	bound;
 
