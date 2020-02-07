@@ -28,3 +28,4 @@ sandbox/parse-*.png
 sandbox/print-*.png
 sandbox/rfc7111.odt
 sandbox/test.*
+used-by-t/*

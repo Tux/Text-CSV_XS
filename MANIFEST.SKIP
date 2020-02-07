@@ -16,6 +16,7 @@
 ^doc/
 ^sandbox/
 ^tmp/
+^used-by-t/
 genMETA.pl
 ^Makefile$
 MANIFEST\.SKIP
