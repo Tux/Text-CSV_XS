@@ -25,7 +25,8 @@ scp -p Text-CSV_XS.tgz ...
 - Windows 7
 - FreeBSD
 - NetBSD
-- CentOS
+- CentOS 7
+- CentOS 8
 - Oracle Linux
 - Debian
 - MacOSX
