@@ -262,6 +262,7 @@ foreach my $m (@tm) {
 	say $fh "#!$^X";
 	say $fh "use 5.12.1;";
 	say $fh "use warnings;";
+	say $fh "# HARNESS-TIMEOUT-EVENT 300"; # For App::Yath
 	say $fh "use CPAN;";
 	say $fh "use Test::More;";
 	say $fh "use Capture::Tiny qw( :all );";
@@ -291,6 +292,11 @@ foreach my $m (@tm) {
 
 if ($opt_d) {
     fork or exec "prove", "-vbt", "-j8", $opt_d;
+    #fork or exec "yath", "test", "-Pblib", "-PText::CSV_XS", $opt_d;
+    #require App::Yath;
+    #@ARGV = ("test", "-Pblib", "-PText::CSV_XS", "used-by-t");
+    #App::Yath->import (\@ARGV, \$App::Yath::RUN);
+    #Test::More::ok ($App::Yath::RUN->(), "Run YATH");
     }
 
 done_testing;
