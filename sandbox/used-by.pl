@@ -1,9 +1,9 @@
 #!/pro/bin/perl
 
-use 5.16.2;
+use 5.26.0;
 use warnings;
 
-our $VERSION = "2.00 - 20200207";
+our $VERSION = "2.00 - 20200209";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -258,18 +258,36 @@ foreach my $m (@tm) {
     # diag $m;
     if ($opt_d) {
 	open my $fh, ">", "$opt_d/$m.t";
-	say $fh "#!$^X";
-	say $fh "use 5.12.1;";
-	say $fh "use warnings;";
-	say $fh "# HARNESS-TIMEOUT-EVENT 300"; # For App::Yath
-	say $fh "use CPAN;";
-	say $fh "use Test::More;";
-	say $fh "use Capture::Tiny qw( :all );";
-	say $fh "alarm 300;";
-	say $fh "eval { capture { CPAN::Shell->expand ('Module', '/$m/')->test }};";
-	say $fh "alarm 0;";
-	say $fh "is (\$?, 0, '$m');";
-	say $fh "done_testing ();";
+	print $fh <<~"EOT";
+		#!$^X
+		use 5.12.1;
+		use warnings;
+		# HARNESS-TIMEOUT-EVENT 300
+		use CPAN;
+		use Test::More;
+		use Capture::Tiny qw( :all );
+
+		my (\$out, \$err, \$ext);
+		alarm 300;
+		eval {
+		    (\$out, \$err, \$ext) = capture {
+			CPAN::Shell->expand ("Module", "/$m/")->test;
+			};
+		    };
+		alarm 0;
+		is (\$?, 0, '$m');
+		if (\$? and \$out) {
+		    open my \$fh, ">", "$opt_d/$m.out";
+		    print \$fh \$out;
+		    close \$fh;
+		    }
+		if (\$? and \$err) {
+		    open my \$fh, ">", "$opt_d/$m.err";
+		    print \$fh \$err;
+		    close \$fh;
+		    }
+		done_testing ();
+		EOT
 	close $fh;
 	ok (1, $m);
 	}
