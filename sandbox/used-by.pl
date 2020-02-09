@@ -69,7 +69,6 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "chart",				# Questions (in Apache-Wyrd)
     "CohortExplorer",			# Unmet prerequisites
     "Connector",			# No Makefile.PL (in Annelidous)
-    "Data-Report",
     "DBIx-Class-DigestColumns",		# unmet prereqs
     "DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet prereqs
     # DBIx-Class-EncodedColumn",	# Busted configuration
