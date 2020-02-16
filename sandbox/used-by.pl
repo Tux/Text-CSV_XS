@@ -309,9 +309,9 @@ foreach my $m (@tm) {
 
 if ($opt_d) {
     fork or exec "prove", "-vbt", "-j8", $opt_d;
-    #fork or exec "yath", "test", "-Pblib", "-PText::CSV_XS", $opt_d;
+    #fork or exec "yath", "test", "--no-fork", $opt_d;
     #require App::Yath;
-    #@ARGV = ("test", "-Pblib", "-PText::CSV_XS", "used-by-t");
+    #@ARGV = ("test", "-PText::CSV_XS", "used-by-t");
     #App::Yath->import (\@ARGV, \$App::Yath::RUN);
     #Test::More::ok ($App::Yath::RUN->(), "Run YATH");
     }
