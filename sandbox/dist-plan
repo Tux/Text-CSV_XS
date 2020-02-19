@@ -13,26 +13,7 @@
 [ ]  perl sandbox/used-by.pl
      
 [ ]  scp -p Text-CSV_XS.tgz ...
-[ ]  - HP-UX 11.31 ia
-[ ]  - HP-UX 11.23 ia
-[ ]  - HP-UX 11.11 pa
-[ ]  - AIX 5.2
-[ ]  - openSUSE TW
-[ ]  - openSUSE 13.1
-[ ]  - openSUSE 15.1
-[ ]  - openSUSE 15.0
-[ ]  - openSUSE 42.3
-[ ]  - Windows 7
-[ ]  - Windows 10
-[ ]  - FreeBSD
-[ ]  - NetBSD
-[ ]  - CentOS 7
-[ ]  - CentOS 8
-[ ]  - Oracle Linux
-[ ]  - Debian
-[ ]  - MacOSX
-[ ]  - Synology
-[ ]  - Oracle Solaris 11.4
-[ ]  - Hercules / ZDOlinux
+[ ]  other architectures and OS versions
+     create your own list, e.g. sandbox/dist-other
      
      GO!

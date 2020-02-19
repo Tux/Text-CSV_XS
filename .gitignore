@@ -23,6 +23,7 @@ pod2htm*
 nytprof*
 tmp/*
 sandbox/cover_db*
+sandbox/dist-other
 sandbox/i-ttt*
 sandbox/parse-*.png
 sandbox/print-*.png
