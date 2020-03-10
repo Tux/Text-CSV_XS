@@ -4,7 +4,7 @@
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.57
+    ppport.h -- Perl/Pollution/Portability Version 3.58
 
     Automatically created by Devel::PPPort running under perl 5.030000.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.57
+ppport.h - Perl/Pollution/Portability version 3.58
 
 =head1 SYNOPSIS
 
@@ -56,7 +56,7 @@ ppport.h - Perl/Pollution/Portability version 3.57
 =head1 COMPATIBILITY
 
 This version of F<ppport.h> is designed to support operation with Perl
-installations back to 5.003_07, and has been tested up to 5.31.6.
+installations back to 5.003_07, and has been tested up to 5.31.10.
 
 =head1 OPTIONS
 
@@ -516,7 +516,7 @@ BEGIN { require warnings if "$]" > '5.006' }
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= 5.009004 && "$]" <= 5.009005 }
 
-my $VERSION = 3.57;
+my $VERSION = 3.58;
 
 my %opt = (
   quiet     => 0,
@@ -740,6 +740,7 @@ clone_params_del|5.013002|5.013002|nu
 clone_params_new|5.013002|5.013002|nu
 closest_cop|5.007002||Viu
 cntrl_to_mnemonic|5.021004||ncViu
+compile_wildcard|5.031010||Viu
 compute_EXACTish|5.017003||nViu
 construct_ahocorasick_from_trie|5.021001||Viu
 cop_fetch_label|5.015001|5.015001|x
@@ -801,9 +802,9 @@ croak_popstack|5.017008||ncViu
 croak_sv|5.013001|5.003007|p
 croak_xs_usage|5.010001|5.003007|pn
 cr_textfilter|5.006000||Viu
-csighandler1|||nu
-csighandler3|||nu
-csighandler|||nu
+csighandler1|5.031007|5.031007|nu
+csighandler3|5.031007|5.031007|nu
+csighandler|5.031007|5.031007|nu
 current_re_engine|5.017001||cViu
 curse|5.013009||Viu
 custom_op_desc|5.007003|5.007003|d
@@ -1019,6 +1020,7 @@ ERRSV|5.004005|5.003007|p
 eval_pv|5.006000|5.003007|p
 eval_sv|5.006000|5.003007|p
 exec_failed|5.009004||Viu
+execute_wildcard|5.031010||Viu
 expect_number|5.007001||Viu
 EXTEND|5.003007|5.003007|
 EXTERN_C|5.005000|5.003007|poVu
@@ -1036,7 +1038,7 @@ find_array_subscript|5.009004||Viu
 find_beginning|5.005000||Viu
 find_byclass|5.006000||Viu
 find_default_stash|5.019004||Viu
-find_first_differing_byte_pos|||nViu
+find_first_differing_byte_pos|5.031007||nViu
 find_hash_subscript|5.009004||Viu
 find_in_my_stash|5.006001||Viu
 find_lexical_cv|5.019001||Viu
@@ -1069,8 +1071,8 @@ force_version|5.005000||Viu
 force_word|5.003007||Viu
 forget_pmop|5.017007||Viu
 form|5.006000|5.004000|v
-form_alien_digit_msg|||ciu
-form_cp_too_large_msg|||ciu
+form_alien_digit_msg|5.031009||cViu
+form_cp_too_large_msg|5.031009||cViu
 form_nocontext|5.006000||vnVu
 fp_dup|5.007003|5.007003|u
 fprintf_nocontext|5.006000||vndVu
@@ -1131,7 +1133,7 @@ gp_ref|5.003007|5.003007|u
 G_RETHROW|5.031002|5.003007|p
 grok_atoUV|5.021010||ncVi
 grok_bin|5.007003|5.003007|p
-grok_bin_oct_hex|||cVu
+grok_bin_oct_hex|5.031008||cVu
 grok_bslash_c|5.013001||cViu
 grok_bslash_N|5.017003||Viu
 grok_bslash_o|5.013003||cViu
@@ -1362,7 +1364,7 @@ invlist_iterfinish|5.017008||nViu
 invlist_iterinit|5.015001||nViu
 invlist_iternext|5.015001||nViu
 _invlist_len|5.017004||nViu
-invlist_lowest|||nxViu
+invlist_lowest|5.031007||nxViu
 invlist_max|5.013010||nViu
 invlist_previous_index|5.017004||nViu
 invlist_replace_list_destroys_src|5.023009||Viu
@@ -1453,7 +1455,7 @@ isFOO_utf8_lc|5.017008||Viu
 isGCB|5.021009||Viu
 isGRAPH|5.006000|5.003007|p
 isGRAPH_A|5.013006|5.003007|p
-is_grapheme|||Viu
+is_grapheme|5.031007||Viu
 isGRAPH_L1|5.013006|5.003007|p
 isGRAPH_LC|5.006000|5.006000|
 isGRAPH_LC_utf8_safe|5.025009|5.006000|p
@@ -1641,6 +1643,7 @@ LIKELY|5.009004|5.003007|p
 LINKLIST|5.013006|5.013006|
 list|5.003007||Viu
 listkids|5.003007||Viu
+load_charnames|5.031010||cViu
 load_module|5.006000|5.003007|pv
 load_module_nocontext|5.006000||vnVu
 localize|5.003007||Viu
@@ -1725,7 +1728,7 @@ matcher_matches_sv|5.027008||Viu
 maybe_multimagic_gv|5.019004||Viu
 mayberelocate|5.015006||Viu
 measure_struct|5.007003||Viu
-memCHRs||5.003007|p
+memCHRs|5.031008|5.003007|p
 mem_collxfrm|5.003007||dViu
 _mem_collxfrm|5.025002||Viu
 memEQ|5.004000|5.003007|p
@@ -2026,7 +2029,7 @@ op_unscope|5.017003||xViu
 ORIGMARK|5.003007|5.003007|
 OSNAME|5.003007|5.003007|
 OSVERS|5.007002|5.007002|
-output_non_portable|||Viu
+output_non_portable|5.031008||Viu
 output_posix_warnings|5.029005||Viu
 package|5.003007||Viu
 package_version|5.011001||Viu
@@ -2315,7 +2318,7 @@ PERL_USE_GCC_BRACE_GROUPS|5.009004|5.004000|poVu
 PERL_USHORT_MAX|5.003007|5.003007|p
 PERL_USHORT_MIN|5.003007|5.003007|p
 PERL_VERSION|5.006000|5.003007|p
-perly_sighandler|||nu
+perly_sighandler|5.031007|5.031007|nu
 pidgone|5.003007||Viu
 PL_bufend||5.003007|pou
 PL_bufptr||5.003007|pou
@@ -2456,13 +2459,13 @@ pv_pretty|5.009004|5.003007|p
 pv_uni_display|5.007003|5.007003|
 qerror|5.006000||cViu
 quadmath_format_needed|5.021004||nVi
-quadmath_format_valid|||nVi
+quadmath_format_valid|5.031007||nVi
 RANDBITS|5.003007|5.003007|
 READ_XDIGIT|5.017006|5.017006|
 realloc|5.007002|5.007002|n
 ReANY|||ncu
 re_compile|5.009005|5.009005|u
-re_croak2|||iu
+re_croak|||iu
 re_dup_guts|5.011000|5.011000|u
 reentrant_free|5.010000|5.010000|u
 reentrant_init|5.010000|5.010000|u
@@ -2525,6 +2528,7 @@ reg_numbered_buff_fetch|5.009005||cViu
 reg_numbered_buff_length|5.009005||cViu
 reg_numbered_buff_store|5.009005||cViu
 regpiece|5.005000||Viu
+regpnode|5.031010||Viu
 regprop|5.003007||Viu
 reg_qr_package|5.009005||cViu
 regrepeat|5.005000||Viu
@@ -2540,6 +2544,7 @@ re_intuit_string|5.006000||cVu
 Renew|5.003007|5.003007|
 Renewc|5.003007|5.003007|
 re_op_compile|5.017001||Viu
+re_op_compile_wrapper|5.031010||Viu
 repeatcpy|5.003007|5.003007|nu
 REPLACEMENT_CHARACTER_UTF8|5.025005|5.003007|p
 report_evil_fh|5.006001||Viu
@@ -2697,8 +2702,8 @@ share_hek_flags|5.008000||Viu
 SHORTSIZE|5.004000|5.004000|
 should_warn_nl|5.021001||nViu
 si_dup|5.007003|5.007003|u
-sighandler1|||nViu
-sighandler3|||nViu
+sighandler1|5.031007||nViu
+sighandler3|5.031007||nViu
 sighandler|5.003007||nViu
 simplify_sort|5.006000||Viu
 SITELIB|5.003007|5.003007|
@@ -2889,7 +2894,7 @@ SvIOK_only_UV|5.006000|5.006000|
 SvIOKp|5.003007|5.003007|
 SvIOK_UV|5.006000|5.006000|
 sv_isa|5.003007|5.003007|
-sv_isa_sv|||x
+sv_isa_sv|5.031007|5.031007|x
 SvIsCOW|5.008003|5.008003|
 SvIsCOW_shared_hash|5.008003|5.008003|
 sv_isobject|5.003007|5.003007|
@@ -3275,7 +3280,7 @@ utf8n_to_uvchr|5.007001|5.007001|n
 utf8n_to_uvchr_error|5.025006|5.025006|n
 utf8n_to_uvchr_msgs|5.027009|5.027009|nx
 _utf8n_to_uvchr_msgs_helper|5.029001||ncVu
-utf8n_to_uvuni|5.007001||cV
+utf8n_to_uvuni|5.007001||dcV
 UTF8_SAFE_SKIP|5.029009|5.006000|p
 UTF8SKIP|5.006000|5.006000|
 UTF8_SKIP|5.023002|5.006000|p
@@ -3304,7 +3309,7 @@ UVSIZE|5.006000|5.003007|p
 UVTYPE|5.006000|5.003007|p
 UVuf|5.006000|5.003007|p
 uvuni_to_utf8|5.019004||cVu
-uvuni_to_utf8_flags|5.007003||cV
+uvuni_to_utf8_flags|5.007003||dcV
 UVxf|5.006000|5.003007|p
 UVXf|5.007001|5.007001|p
 validate_proto|5.019002||xcVi
@@ -3350,7 +3355,7 @@ WARN_EXPERIMENTAL__ALPHA_ASSERTIONS|5.027009|5.027009|
 WARN_EXPERIMENTAL__BITWISE|5.021009|5.021009|
 WARN_EXPERIMENTAL__CONST_ATTR|5.021008|5.021008|
 WARN_EXPERIMENTAL__DECLARED_REFS|5.025003|5.025003|
-WARN_EXPERIMENTAL__ISA|||
+WARN_EXPERIMENTAL__ISA|5.031007|5.031007|
 WARN_EXPERIMENTAL__LEXICAL_SUBS|5.017005|5.017005|
 WARN_EXPERIMENTAL__POSTDEREF|5.019005|5.019005|
 WARN_EXPERIMENTAL__PRIVATE_USE|5.029009|5.029009|
@@ -5209,6 +5214,18 @@ DPPP_(my_newCONSTSUB)(HV *stash, const char *name, SV *sv)
 
 #endif
 
+#ifndef WIDEST_UTYPE
+# ifdef QUADKIND
+#  ifdef U64TYPE
+#   define WIDEST_UTYPE U64TYPE
+#  else
+#   define WIDEST_UTYPE unsigned Quad_t
+#  endif
+# else
+#  define WIDEST_UTYPE U32
+# endif
+#endif
+
 /* These could become provided if/when they become part of the public API */
 #ifndef withinCOUNT
 #  define withinCOUNT(c, l, n)           \
@@ -5584,18 +5601,6 @@ typedef OP* (CPERLscope(*Perl_ppaddr_t))(pTHX);
 
 typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 
-#endif
-
-#ifndef WIDEST_UTYPE
-# ifdef QUADKIND
-#  ifdef U64TYPE
-#   define WIDEST_UTYPE U64TYPE
-#  else
-#   define WIDEST_UTYPE Quad_t
-#  endif
-# else
-#  define WIDEST_UTYPE U32
-# endif
 #endif
 
 /* On versions without NATIVE_TO_ASCII, only ASCII is supported */
@@ -10073,17 +10078,14 @@ DPPP_(my_my_strlcpy)(char *dst, const char *src, Size_t size)
 #endif
 
 #ifdef UVCHR_IS_INVARIANT
-#  if 'A' == 65
-#    ifdef QUADKIND
-#      define D_PPP_UVCHR_SKIP_UPPER(c)                                         \
-          (WIDEST_UTYPE) (c) <                                                  \
-        (((WIDEST_UTYPE) 1) << (6 * D_PPP_BYTE_INFO_BITS)) ? 7 : 13
-#    else
-#      define D_PPP_UVCHR_SKIP_UPPER(c) 7  /* 32 bit platform */
-#    endif
-#  else
-     /* In the releases this is backported to, UTF-EBCDIC had a max of 2**31-1 */
+#  if 'A' != 65 || UVSIZE < 8
+     /* 32 bit platform, which includes UTF-EBCDIC on the releases this is
+      * backported to */
 #    define D_PPP_UVCHR_SKIP_UPPER(c) 7
+#  else
+#    define D_PPP_UVCHR_SKIP_UPPER(c)                                       \
+        (((WIDEST_UTYPE) (c)) <                                             \
+         (((WIDEST_UTYPE) 1) << (6 * D_PPP_BYTE_INFO_BITS)) ? 7 : 13)
 #  endif
 #ifndef UVCHR_SKIP
 #  define UVCHR_SKIP(c)                  \
