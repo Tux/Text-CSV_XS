@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'19 [21 Oct 2019] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [25 Mar 2020] Copyright H.M.Brand 2007-2020
 
 use 5.12.0;
 use warnings;
 
-our $VERSION = "1.79";
+our $VERSION = "1.80";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -92,7 +92,7 @@ if (-s $xls) {
 use Text::CSV_XS;
 use Date::Calc qw( Delta_Days Days_in_Month );
 use Spreadsheet::WriteExcel;
-use Encode qw( from_to );
+use Encode qw( from_to encode );
 
 my $wbk = Spreadsheet::WriteExcel->new ($xls);
 my $snm = $title;
@@ -175,6 +175,10 @@ while ($row && @$row or $row = $csv->getline (*ARGV)) {
 	$l > ($w[$c] // -1) and $w[$c] = $l;
 
 	if ($utf and $csv->is_binary ($c)) {
+	    eval { # from_to requires raw
+		my $raw = encode ("UTF-8", $val, Encode::FB_CROAK);
+		$val = $raw;
+		};
 	    from_to ($val, "utf-8", "ucs2");
 	    $wks->write_unicode ($h, $c, $val);
 	    next;

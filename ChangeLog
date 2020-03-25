@@ -1,5 +1,6 @@
-1.42	- 2020-03-10, H.Merijn Brand
+1.42	- 2020-03-25, H.Merijn Brand
     * Update to Devel::PPPort-3.58
+    * Unicode fixes for csv2xls and csv2xlsx
 
 1.41	- 2020-02-16, H.Merijn Brand
     * Update to Devel::PPPort-3.56

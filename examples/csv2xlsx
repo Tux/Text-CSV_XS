@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'19 [28 Nov 2019] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [25 Mar 2020] Copyright H.M.Brand 2007-2020
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.06";
+our $VERSION = "1.07";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -129,6 +129,7 @@ foreach my $csvf (@args) {
     my $sheetname = $csvf =~ s{\.\w+$}{}ir =~ s{.*/}{}r || "Sheet 1";
     ($_ = length $sheetname) > 31 and substr $sheetname, 31, $_ - 31, "";
     my $wks = $wbk->add_worksheet ($sheetname);
+    $utf && !$wks->can ("write_unicode") and $utf = 0;
 
     if ($csvf =~ m/\.(png|jpe?g|bmp|gif|tiff|xpm)$/i) {
 	$wks->insert_image (1, 1, $csvf);
