@@ -546,6 +546,13 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     _cache_show_byte ("quo_len",		csv->quo_len);
     if (csv->quo_len > 1)
 	_cache_show_str ("quote", csv->quo_len,	csv->quo);
+
+    if (csv->bptr)
+	_cache_show_str ("bptr", strlen (csv->bptr), csv->bptr);
+    if (csv->tmp && SvPOK (csv->tmp)) {
+	char *s = SvPV_nolen (csv->tmp);
+	_cache_show_str ("tmp",  strlen (s),	s);
+	}
     } /* xs_cache_diag */
 
 #define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
