@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'20 [30 Jan 2020] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [08 Apr 2020] Copyright H.M.Brand 2007-2020
 
 # This code requires the defined-or feature and PerlIO
 
@@ -9,9 +9,9 @@ use 5.12.0;
 use warnings;
 
 use Data::Peek;
-use Encode qw( decode );
+use Encode qw( decode encode );
 
-our $VERSION = "2.02";	# 2020-01-30
+our $VERSION = "2.03";	# 2020-04-08
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -42,7 +42,7 @@ use Getopt::Long qw(:config bundling);
 my $eol;
 GetOptions (
     "help|?"		=> sub { usage (0); },
-    "V|version"		=> sub { print "$cmd [$VERSION]\n"; exit 0; },
+    "V|version"		=> sub { say "$cmd [$VERSION]"; exit 0; },
 
     "c|s|sep=s"		=> \(my  $sep   = ""),
     "q|quo|quote=s"	=> \(my  $quo   = '"'),
@@ -73,6 +73,7 @@ else {
     }
 $csvmod->import ();
 
+binmode STDOUT, ":encoding(utf-8)";
 binmode STDERR, ":encoding(utf-8)";
 
 my $fn   = $ARGV[0] // "-";
@@ -119,7 +120,7 @@ sub done {
 	eval { require Unicode::UCD;     Unicode::UCD::UnicodeVersion () } ||
 	eval { require Module::CoreList; $Module::CoreList::version{$cv}{Unicode} };
 	} || "unknown";
-    print "Checked $file with $cmd $VERSION\nusing $csvmod @{[$csvmod->VERSION]} with perl $pv and Unicode $uv\n";
+    say "Checked $file with $cmd $VERSION\nusing $csvmod @{[$csvmod->VERSION]} with perl $pv and Unicode $uv";
     my @diag = $csv->error_diag;
     my $line = $. // $csv->record_number // "?";
     if ($diag[0] == 2012 && $csv->eof) {
@@ -128,11 +129,11 @@ sub done {
 	my $cols = @coll == 1 ? $coll[0] : "(@coll)";
 	$s_eol //= $csv->eol || "--unknown--";
 	$s_eol =~ m/[\x00-\x1f]/ and $s_eol = DDisplay $s_eol;
-	print "OK: rows: $rows, columns: $cols\n";
-	print "    sep = <$sep>, quo = <$quo>, bin = <$bin>, eol = <$s_eol>\n";
-	print "    encoding = $csv->{ENCODING}\n" if $csv->{ENCODING};
+	say "OK: rows: $rows, columns: $cols";
+	say "    sep = <$sep>, quo = <$quo>, bin = <$bin>, eol = <$s_eol>";
+	say "    encoding = $csv->{ENCODING}" if $csv->{ENCODING};
 	if (@coll > 1) {
-	    print "multiple column lengths:\n";
+	    say "multiple column lengths:";
 	    printf " %6d line%s with %4d field%s\n",
 		$cols{$_}, $cols{$_} == 1 ? " " : "s",
 		$_,        $_        == 1 ? ""  : "s"
@@ -141,16 +142,48 @@ sub done {
 	$diag[0] = 0;
 	}
     elsif ($diag[2]) {
-	print "$ARGV record $diag[3] at line $line/$diag[2] - $diag[0] - $diag[1]\n";
+	say "$ARGV record $diag[3] at line $line/$diag[2] - $diag[0] - $diag[1]";
 	my $ep  = $diag[2] - 1; # diag[2] is 1-based
-	my $err = $csv->error_input . "         ";
-	substr $err, $ep + 1, 0, "*";
-	substr $err, $ep,     0, "*";
-	($err = substr $err, $ep - 5, 12) =~ s/ +$//;
-	print "    |$err|\n";
+	my $ei  = $csv->error_input;
+	if (defined $ei) {
+	    my $l = 0;
+	    my $s = "";
+	    eval { my $u = decode ("utf-8", $ei); $ei = $u };
+	    for (split m/([^ -~])/ => $ei) {
+		if (m/^[ -~]+$/) {
+		    $s .= $_;
+		    $l += length;
+		    next;
+		    }
+		if ($_ eq "\t") {
+		    $s .= "\\t";
+		    $ep > $l and $ep++;
+		    $l += 2;
+		    next;
+		    }
+		if ($_ eq "\n") {
+		    $s .= "\\n";
+		    $ep > $l and $ep++;
+		    $l += 2;
+		    next;
+		    }
+		if ($_ eq "\r") {
+		    $s .= "\\r";
+		    $ep > $l and $ep++;
+		    $l += 2;
+		    next;
+		    }
+		$s .= sprintf "\\x{%05x}", ord;
+		$ep > $l and $ep += 9 - length encode "utf-8", $_;
+		$l += 9;
+		}
+
+	    say "    |$s|"; #           2b06
+	    say "    |", " " x $ep, "\x{25b2}", " " x (length ($s) - $ep - 1), "|";
+	    }
 	}
     else {
-	print "$ARGV line $line - $diag[1]\n";
+	say "$ARGV line $line - $diag[1]";
 	}
     print for @warn;
     exit $diag[0];

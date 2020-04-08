@@ -2,6 +2,7 @@
     * Update to Devel::PPPort-3.58
     * Unicode fixes for csv2xls and csv2xlsx
     * Add internal buffers to cache diagnostics
+    * Fix positional reporting in examples/csv-check
 
 1.41	- 2020-02-16, H.Merijn Brand
     * Update to Devel::PPPort-3.56
