@@ -539,19 +539,19 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     _cache_show_byte ("has_hooks",		csv->has_hooks);
     _cache_show_byte ("eol_is_cr",		csv->eol_is_cr);
     _cache_show_byte ("eol_len",		csv->eol_len);
-    _cache_show_str  ("eol", csv->eol_len,	csv->eol);
+    _cache_show_str  ("eol",      csv->eol_len,	csv->eol);
     _cache_show_byte ("sep_len",		csv->sep_len);
     if (csv->sep_len > 1)
-	_cache_show_str ("sep", csv->sep_len,	csv->sep);
+	_cache_show_str ("sep",   csv->sep_len,	csv->sep);
     _cache_show_byte ("quo_len",		csv->quo_len);
     if (csv->quo_len > 1)
 	_cache_show_str ("quote", csv->quo_len,	csv->quo);
 
     if (csv->bptr)
-	_cache_show_str ("bptr", strlen (csv->bptr), csv->bptr);
+	_cache_show_str ("bptr", (int)strlen (csv->bptr), csv->bptr);
     if (csv->tmp && SvPOK (csv->tmp)) {
 	char *s = SvPV_nolen (csv->tmp);
-	_cache_show_str ("tmp",  strlen (s),	s);
+	_cache_show_str ("tmp",  (int)strlen (s), s);
 	}
     } /* xs_cache_diag */
 
