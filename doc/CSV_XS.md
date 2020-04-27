@@ -545,7 +545,7 @@ is read as
 
     (1, undef, undef, " ", 2)
 
-Note that this effects only fields that are  originally  empty,  not fields
+Note that this affects only fields that are  originally  empty,  not fields
 that are empty after stripping allowed whitespace. YMMV.
 
 ### allow\_whitespace
@@ -734,7 +734,7 @@ is lost in that process.  Setting this flag to true enables retrieving that
 information after parsing with  the methods  ["meta\_info"](#meta_info),  ["is\_quoted"](#is_quoted),
 and ["is\_binary"](#is_binary) described below.  Default is false for performance.
 
-If you set this attribute to a value greater than 9,   than you can control
+If you set this attribute to a value greater than 9,   then you can control
 output quotation style like it was used in the input of the the last parsed
 record (unless quotation was added because of other reasons).
 
@@ -809,13 +809,13 @@ and ["getline"](#getline) `chomp`s line endings on reading.
 
 ### types
 
-A set of column types; the attribute is immediately passed to the ["types"](#types)
+A set of column types; the attribute is immediately passed to the ["types"](#types-1)
 method.
 
 ### callbacks
 
 
-See the ["Callbacks"](#callbacks) section below.
+See the ["Callbacks"](#callbacks-1) section below.
 
 ### accessors
 
@@ -892,10 +892,10 @@ in classes that use or extend Text::CSV\_XS.
 
     $status = $csv->print ($fh, $colref);
 
-Similar to  ["combine"](#combine) + ["string"](#string) + ["print"](#print),  but much more efficient.
+Similar to  ["combine"](#combine) + ["string"](#string) + `print`,  but much more efficient.
 It expects an array ref as input  (not an array!)  and the resulting string
 is not really  created,  but  immediately  written  to the  `$fh`  object,
-typically an IO handle or any other object that offers a ["print"](#print) method.
+typically an IO handle or any other object that offers a `print` method.
 
 For performance reasons  `print`  does not create a result string,  so all
 ["string"](#string), ["status"](#status), ["fields"](#fields), and ["error\_input"](#error_input) methods will return
@@ -1013,7 +1013,7 @@ declare your column names.
 
 Note that  ["getline\_hr"](#getline_hr)  creates a hashref for every row and will be much
 slower than the combined use of ["bind\_columns"](#bind_columns)  and ["getline"](#getline) but still
-offering the same ease of use hashref inside the loop:
+offering the same easy to use hashref inside the loop:
 
     my @cols = @{$csv->getline ($fh)};
     $csv->column_names (@cols);
@@ -1031,7 +1031,7 @@ Could easily be rewritten to the much faster:
         }
 
 Your mileage may vary for the size of the data and the number of rows. With
-perl-5.14.2 the comparison for a 100\_000 line file with 14 rows:
+perl-5.14.2 the comparison for a 100\_000 line file with 14 columns:
 
                Rate hashrefs getlines
     hashrefs 1.00/s       --     -76%
@@ -1059,7 +1059,7 @@ retrieve the decomposed fields. Upon failure calling ["fields"](#fields) will re
 undefined data and  ["error\_input"](#error_input)  can be called to retrieve  the invalid
 argument.
 
-You may use the ["types"](#types)  method for setting column types.  See ["types"](#types)'
+You may use the ["types"](#types-1)  method for setting column types.  See ["types"](#types-1)'
 description below.
 
 The `$line` argument is supposed to be a simple scalar. Everything else is
@@ -1085,7 +1085,7 @@ number of columns making the use of hashes unpredictable.
     $csv->column_names ("Name", "Age");
     my $AoH = $csv->fragment ($fh, "col=3;8");
 
-If the ["after\_parse"](#after_parse) callback is active,  it is also called on every line
+If the `after_parse` callback"](#callbacks-1) is active,  it is also called on every line
 parsed and skipped before the fragment.
 
 - row
@@ -1120,7 +1120,7 @@ parsed and skipped before the fragment.
         cell=3,2-*,*    # strip row 1 and 2, and column 1
 
     Cells and cell ranges may be combined with `;`, possibly resulting in rows
-    with different number of columns
+    with different numbers of columns
 
         cell=1,1-2,2;3,3-4,4;1,4;4,1
 
@@ -1170,7 +1170,7 @@ to unexpected results.   Undefined entries will be replaced with the string
     $csv->column_names (undef, "", "name", "name");
     $hr = $csv->getline_hr ($fh);
 
-Will set `$hr->{"\cAUNDEF\cA"}` to the 1st field,  `$hr->{""}` to
+will set `$hr->{"\cAUNDEF\cA"}` to the 1st field,  `$hr->{""}` to
 the 2nd field, and `$hr->{name}` to the 4th field,  discarding the 3rd
 field.
 
@@ -1180,7 +1180,7 @@ field.
 
 This method does NOT work in perl-5.6.x
 
-Parse the CSV header and set [`sep`](#sep), column\_names and encoding.
+Parse the CSV header and set [`sep`](#sep), [`column_names`](#column_names) and [`encoding`](#encoding).
 
     my @hdr = $csv->header ($fh);
     $csv->header ($fh, { sep_set => [ ";", ",", "|", "\t" ] });
@@ -1190,7 +1190,7 @@ The first argument should be a file handle.
 
 This method resets some object properties,  as it is supposed to be invoked
 only once per file or stream.  It will leave attributes `column_names` and
-`bound_columns` alone of setting column names is disabled. Reading headers
+`bound_columns` alone if setting column names is disabled. Reading headers
 on previously process objects might fail on perl-5.8.0 and older.
 
 Assuming that the file opened for parsing has a header, and the header does
@@ -1258,11 +1258,11 @@ false.
     behavior can be disabled by passing a false value to `detect_bom`.
 
     Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE,  and
-    UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
+    UTF-32LE. BOM also supports UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
     but [Encode](https://metacpan.org/pod/Encode) does not (yet). UTF-7 is not supported.
 
     If a supported BOM was detected as start of the stream, it is stored in the
-    abject attribute `ENCODING`.
+    object attribute `ENCODING`.
 
         my $enc = $csv->{ENCODING};
 
@@ -1270,7 +1270,7 @@ false.
 
     If the handle was opened in a (correct) encoding,  this method will  **not**
     alter the encoding, as it checks the leading **bytes** of the first line. In
-    case the stream starts with a decode BOM (`U+FEFF`), `{ENCODING}` will be
+    case the stream starts with a decoded BOM (`U+FEFF`), `{ENCODING}` will be
     `""` (empty) instead of the default `undef`.
 
 - munge\_column\_names
@@ -1514,7 +1514,7 @@ See the `is_***` methods below.
 
     my $quoted = $csv->is_quoted ($column_idx);
 
-Where  `$column_idx` is the  (zero-based)  index of the column in the last
+where  `$column_idx` is the  (zero-based)  index of the column in the last
 result of ["parse"](#parse).
 
 This returns a true value  if the data in the indicated column was enclosed
@@ -1529,7 +1529,7 @@ This method is only valid when ["keep\_meta\_info"](#keep_meta_info) is set to a
 
     my $binary = $csv->is_binary ($column_idx);
 
-Where  `$column_idx` is the  (zero-based)  index of the column in the last
+where  `$column_idx` is the  (zero-based)  index of the column in the last
 result of ["parse"](#parse).
 
 This returns a true value if the data in the indicated column contained any
@@ -1542,7 +1542,7 @@ This method is only valid when ["keep\_meta\_info"](#keep_meta_info) is set to a
 
     my $missing = $csv->is_missing ($column_idx);
 
-Where  `$column_idx` is the  (zero-based)  index of the column in the last
+where  `$column_idx` is the  (zero-based)  index of the column in the last
 result of ["getline\_hr"](#getline_hr).
 
     $csv->keep_meta_info (1);
@@ -1641,7 +1641,7 @@ This function is not exported by default and should be explicitly requested:
 
     use Text::CSV_XS qw( csv );
 
-This is an high-level function that aims at simple (user) interfaces.  This
+This is a high-level function that aims at simple (user) interfaces.  This
 can be used to read/parse a `CSV` file or stream (the default behavior) or
 to produce a file or write to a stream (define the  `out`  attribute).  It
 returns an array- or hash-reference on parsing (or `undef` on fail) or the
@@ -1877,8 +1877,8 @@ or `skip`.
 - HASH
 
 
-    If `headers` is an hash reference, this implies `auto`, but header fields
-    for that exist as key in the hashref will be replaced by the value for that
+    If `headers` is a hash reference, this implies `auto`, but header fields
+    that exist as key in the hashref will be replaced by the value for that
     key. Given a CSV file like
 
         post-kode,city,name,id number,fubble
@@ -2647,14 +2647,14 @@ or a map
         $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
         }
 
-note that this will not work as expected when choosing the backslash (`\`)
+Note that this will not work as expected when choosing the backslash (`\`)
 as `escape_char`, as that will cause the `\` to need to be escaped by yet
 another `\`,  which will cause the field to need quotation and thus ending
 up as `"\\N"` instead of `\N`. See also [`undef_str`](#undef_str).
 
     csv (out => "foo.csv", in => sub { $sth->fetch }, undef_str => "\\N");
 
-these special sequences are not recognized by  Text::CSV\_XS  on parsing the
+These special sequences are not recognized by  Text::CSV\_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
 
     while (my $row = $csv->getline ($fh)) {
@@ -2784,7 +2784,7 @@ will be recognized and honored when parsing with ["getline"](#getline).
 
         my @AoH = $csv->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
 
-    Returning something like
+    returning something like
 
         [ { fields => [ 1, 2, "foo", 4.5, undef, "", 8 ],
             flags  => [ ... ],
@@ -2959,7 +2959,7 @@ And below should be the complete list of error codes that can be returned:
 - 1012 "INI - the header contains an empty field"
 
 
-    The header line parsed in the ["header"](#header) is contains an empty field.
+    The header line parsed in the ["header"](#header)  contains an empty field.
 
 - 1013 "INI - the header contains nun-unique fields"
 
@@ -2970,7 +2970,7 @@ And below should be the complete list of error codes that can be returned:
 - 1014 "INI - header called on undefined stream"
 
 
-    The header line cannot be parsed from an undefined sources.
+    The header line cannot be parsed from an undefined source.
 
 - 1500 "PRM - Invalid/unsupported argument(s)"
 
