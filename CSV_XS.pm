@@ -2022,7 +2022,7 @@ fields to be set to C<undef>, causing the above to be parsed as
 
  ("1", "", undef, " ", "2")
 
-note that this is specifically important when loading  C<CSV> fields into a
+Note that this is specifically important when loading  C<CSV> fields into a
 database that allows C<NULL> values,  as the perl equivalent for C<NULL> is
 C<undef> in L<DBI> land.
 
@@ -2042,7 +2042,7 @@ is read as
 
  (1, undef, undef, " ", 2)
 
-Note that this effects only fields that are  originally  empty,  not fields
+Note that this affects only fields that are  originally  empty,  not fields
 that are empty after stripping allowed whitespace. YMMV.
 
 =head3 allow_whitespace
@@ -2231,7 +2231,7 @@ is lost in that process.  Setting this flag to true enables retrieving that
 information after parsing with  the methods  L</meta_info>,  L</is_quoted>,
 and L</is_binary> described below.  Default is false for performance.
 
-If you set this attribute to a value greater than 9,   than you can control
+If you set this attribute to a value greater than 9,   then you can control
 output quotation style like it was used in the input of the the last parsed
 record (unless quotation was added because of other reasons).
 
@@ -2510,7 +2510,7 @@ L</getline_hr> will croak if called before L</column_names>.
 
 Note that  L</getline_hr>  creates a hashref for every row and will be much
 slower than the combined use of L</bind_columns>  and L</getline> but still
-offering the same ease of use hashref inside the loop:
+offering the same easy to use hashref inside the loop:
 
  my @cols = @{$csv->getline ($fh)};
  $csv->column_names (@cols);
@@ -2528,7 +2528,7 @@ Could easily be rewritten to the much faster:
      }
 
 Your mileage may vary for the size of the data and the number of rows. With
-perl-5.14.2 the comparison for a 100_000 line file with 14 rows:
+perl-5.14.2 the comparison for a 100_000 line file with 14 columns:
 
             Rate hashrefs getlines
  hashrefs 1.00/s       --     -76%
@@ -2619,7 +2619,7 @@ The C<*> is only allowed in the second part of a pair
  cell=3,2-*,*    # strip row 1 and 2, and column 1
 
 Cells and cell ranges may be combined with C<;>, possibly resulting in rows
-with different number of columns
+with different numbers of columns
 
  cell=1,1-2,2;3,3-4,4;1,4;4,1
 
@@ -2671,7 +2671,7 @@ C<"\cAUNDEF\cA">, so
  $csv->column_names (undef, "", "name", "name");
  $hr = $csv->getline_hr ($fh);
 
-Will set C<< $hr->{"\cAUNDEF\cA"} >> to the 1st field,  C<< $hr->{""} >> to
+will set C<< $hr->{"\cAUNDEF\cA"} >> to the 1st field,  C<< $hr->{""} >> to
 the 2nd field, and C<< $hr->{name} >> to the 4th field,  discarding the 3rd
 field.
 
@@ -2691,7 +2691,7 @@ The first argument should be a file handle.
 
 This method resets some object properties,  as it is supposed to be invoked
 only once per file or stream.  It will leave attributes C<column_names> and
-C<bound_columns> alone of setting column names is disabled. Reading headers
+C<bound_columns> alone if setting column names is disabled. Reading headers
 on previously process objects might fail on perl-5.8.0 and older.
 
 Assuming that the file opened for parsing has a header, and the header does
@@ -2761,11 +2761,11 @@ the header has a BOM, use that to set the encoding of C<$fh>.  This default
 behavior can be disabled by passing a false value to C<detect_bom>.
 
 Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE,  and
-UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
+UTF-32LE. BOM also supports UTF-1, UTF-EBCDIC, SCSU, BOCU-1,  and GB-18030
 but L<Encode> does not (yet). UTF-7 is not supported.
 
 If a supported BOM was detected as start of the stream, it is stored in the
-abject attribute C<ENCODING>.
+object attribute C<ENCODING>.
 
  my $enc = $csv->{ENCODING};
 
@@ -2773,7 +2773,7 @@ The encoding is used with C<binmode> on C<$fh>.
 
 If the handle was opened in a (correct) encoding,  this method will  B<not>
 alter the encoding, as it checks the leading B<bytes> of the first line. In
-case the stream starts with a decode BOM (C<U+FEFF>), C<{ENCODING}> will be
+case the stream starts with a decoded BOM (C<U+FEFF>), C<{ENCODING}> will be
 C<""> (empty) instead of the default C<undef>.
 
 =item munge_column_names
@@ -3035,7 +3035,7 @@ X<is_quoted>
 
  my $quoted = $csv->is_quoted ($column_idx);
 
-Where  C<$column_idx> is the  (zero-based)  index of the column in the last
+where  C<$column_idx> is the  (zero-based)  index of the column in the last
 result of L</parse>.
 
 This returns a true value  if the data in the indicated column was enclosed
@@ -3050,7 +3050,7 @@ X<is_binary>
 
  my $binary = $csv->is_binary ($column_idx);
 
-Where  C<$column_idx> is the  (zero-based)  index of the column in the last
+where  C<$column_idx> is the  (zero-based)  index of the column in the last
 result of L</parse>.
 
 This returns a true value if the data in the indicated column contained any
@@ -3063,7 +3063,7 @@ X<is_missing>
 
  my $missing = $csv->is_missing ($column_idx);
 
-Where  C<$column_idx> is the  (zero-based)  index of the column in the last
+where  C<$column_idx> is the  (zero-based)  index of the column in the last
 result of L</getline_hr>.
 
  $csv->keep_meta_info (1);
@@ -3162,7 +3162,7 @@ This function is not exported by default and should be explicitly requested:
 
  use Text::CSV_XS qw( csv );
 
-This is an high-level function that aims at simple (user) interfaces.  This
+This is a high-level function that aims at simple (user) interfaces.  This
 can be used to read/parse a C<CSV> file or stream (the default behavior) or
 to produce a file or write to a stream (define the  C<out>  attribute).  It
 returns an array- or hash-reference on parsing (or C<undef> on fail) or the
@@ -3400,8 +3400,8 @@ as field names. The first line is considered data instead of headers.
 =item HASH
 X<HASH>
 
-If C<headers> is an hash reference, this implies C<auto>, but header fields
-for that exist as key in the hashref will be replaced by the value for that
+If C<headers> is a hash reference, this implies C<auto>, but header fields
+that exist as key in the hashref will be replaced by the value for that
 key. Given a CSV file like
 
  post-kode,city,name,id number,fubble
@@ -4197,14 +4197,14 @@ or a map
      $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
      }
 
-note that this will not work as expected when choosing the backslash (C<\>)
+Note that this will not work as expected when choosing the backslash (C<\>)
 as C<escape_char>, as that will cause the C<\> to need to be escaped by yet
 another C<\>,  which will cause the field to need quotation and thus ending
 up as C<"\\N"> instead of C<\N>. See also L<C<undef_str>|/undef_str>.
 
  csv (out => "foo.csv", in => sub { $sth->fetch }, undef_str => "\\N");
 
-these special sequences are not recognized by  Text::CSV_XS  on parsing the
+These special sequences are not recognized by  Text::CSV_XS  on parsing the
 CSV generated like this, but map and filter are your friends again
 
  while (my $row = $csv->getline ($fh)) {
@@ -4340,7 +4340,7 @@ enable a column selection on the call:
 
  my @AoH = $csv->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
 
-Returning something like
+returning something like
 
  [ { fields => [ 1, 2, "foo", 4.5, undef, "", 8 ],
      flags  => [ ... ],
@@ -4551,7 +4551,7 @@ separator character out of the allowed set of separators.
 1012 "INI - the header contains an empty field"
 X<1012>
 
-The header line parsed in the L</header> is contains an empty field.
+The header line parsed in the L</header> contains an empty field.
 
 =item *
 1013 "INI - the header contains nun-unique fields"
@@ -4564,7 +4564,7 @@ fields.
 1014 "INI - header called on undefined stream"
 X<1014>
 
-The header line cannot be parsed from an undefined sources.
+The header line cannot be parsed from an undefined source.
 
 =item *
 1500 "PRM - Invalid/unsupported argument(s)"
