@@ -268,6 +268,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     formula			=> 38,
     strict			=> 42,
     undef_str			=> 46,
+    types			=> 50,
     );
 
 # A `character'
@@ -588,10 +589,12 @@ sub types {
 	if (my $types = shift) {
 	    $self->{_types} = join "", map { chr } @{$types};
 	    $self->{types}  = $types;
+	    $self->_cache_set ($_cache_id{types}, $self->{_types});
 	    }
 	else {
 	    delete $self->{types};
 	    delete $self->{_types};
+	    $self->_cache_set ($_cache_id{types}, undef);
 	    undef;
 	    }
 	}

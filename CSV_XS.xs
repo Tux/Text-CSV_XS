@@ -116,6 +116,7 @@
 #define CACHE_ID_formula		38
 #define CACHE_ID_strict			42
 #define CACHE_ID_undef_str		46
+#define CACHE_ID_types			50
 
 #define	byte	unsigned char
 #define ulng	unsigned long
@@ -473,6 +474,17 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 		}
 	    break;
 
+	case CACHE_ID_types:
+	    if (cp && len) {
+		csv->types     = cp;
+		csv->types_len = len;
+		}
+	    else {
+		csv->types     = NULL;
+		csv->types_len = 0;
+		}
+	    break;
+
 	default:
 	    warn ("Unknown cache index %d ignored\n", idx);
 	}
@@ -546,6 +558,10 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     _cache_show_byte ("quo_len",		csv->quo_len);
     if (csv->quo_len > 1)
 	_cache_show_str ("quote", csv->quo_len,	csv->quo);
+    if (csv->types_len)
+	_cache_show_str ("types", csv->types_len, csv->types);
+    else
+	_cache_show_str ("types", 0, "");
 
     if (csv->bptr)
 	_cache_show_str ("bptr", (int)strlen (csv->bptr), csv->bptr);
