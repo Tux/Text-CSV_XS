@@ -3,58 +3,37 @@
 use 5.18.2;
 use warnings;
 
+use JSON;
 use Data::Peek;
 use Text::CSV_XS;
 
-my $csv = Text::CSV_XS->new;
+my $data = <<\csv;
+f1,f2
+1.1,2
+4.2,5
+4.4,6
+3.2,5
+csv
 
-my $data  = "3.14,1";
-my @types = (Text::CSV_XS::NV, Text::CSV_XS::IV);
+open my $fh, "<", \$data or die $!;
 
-my ($nv, $iv);
+my $csv   = Text::CSV_XS->new;
+my $csv_t = Text::CSV_XS->new;
 
-warn "with types(expected flags):\n";
+my @result;
 
-sub st {
-    if (my $t = $csv->types) {
-	say "  types: @$t";
-	}
-    else {
-	say "  types: none";
-	}
-    } # st
+push @result => { head => $csv->getline ($fh) }; # ok: expecting strings
 
-st;
-$csv->types (\@types);
-st;
-$csv->parse ($data);
-($nv, $iv) = $csv->fields;
+$csv->types   ([ Text::CSV_XS::NV, Text::CSV_XS::IV ]);
+push @result => { exp_num => $csv->getline ($fh) }; # err: expecting numbers, but got strings
 
-DPeek $nv; # PVNV with NOK flag
-DPeek $iv; # PVIV with IOK flag
+$csv_t->types ([ Text::CSV_XS::NV, Text::CSV_XS::IV ]);
+push @result => { exp_num => $csv_t->getline ($fh) }; # ok: expecting numbers
 
-warn "\nwithout types(expected flags):\n";
+$csv_t->types (undef);
+push @result => { exp_str => $csv_t->getline ($fh) }; # ok: expecting strings
 
-st;
-$csv->types (undef);
-st;
-$csv->parse ($data);
-($nv, $iv) = $csv->fields;
+$csv_t->types ([ Text::CSV_XS::NV, Text::CSV_XS::IV ]);
+push @result => { exp_num => $csv_t->getline ($fh) }; # err: expecting numbers in JSON
 
-DPeek $nv; # PVNV with POK flag
-DPeek $iv; # PVIV with POK flag
-
-warn "\nwith types(unexpected flags):\n";
-
-st;
-$csv->_cache_diag;
-$csv->types (\@types);
-st;
-$csv->_cache_diag;
-$csv->parse ($data);
-($nv, $iv) = $csv->fields;
-
-DPeek $nv; # PVNV with POK flag, but NOK expected
-DDump $nv; # PVNV with POK flag, but NOK expected
-DPeek $iv; # PVIV with POK flat, but IOK expected
-DDump $iv; # PVIV with POK flat, but IOK expected
+print JSON->new->pretty->encode (\@result);
