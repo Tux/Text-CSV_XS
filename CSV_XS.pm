@@ -3767,7 +3767,7 @@ The return code of the callback is ignored.
      } # max_4_fields
 
  csv (in => csv (in => "file.csv"), out => *STDOUT,
-     callbacks => { before print => \&max_4_fields });
+     callbacks => { before_print => \&max_4_fields });
 
 This callback is not active for L</combine>.
 
