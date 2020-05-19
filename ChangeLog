@@ -1,4 +1,4 @@
-1.42	- 2020-05-13, H.Merijn Brand
+1.42	- 2020-05-19, H.Merijn Brand
     * Update to Devel::PPPort-3.58
     * Unicode fixes for csv2xls and csv2xlsx
     * Add internal buffers to cache diagnostics
@@ -7,6 +7,7 @@
     * Proof reading - doc fixes by Klaus Baldermann <soonix> (PR#21)
     * Fix type caching (RT#132344)
     * Small doc fix by Nick Tonkin <1nickt> (PR#22)
+    * Fix sep=; being ignored in ->header (issue 23)
 
 1.41	- 2020-02-16, H.Merijn Brand
     * Update to Devel::PPPort-3.56

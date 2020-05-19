@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "This test unit requires perl-5.8.2 or higher";
         }
     else {
-	my $n = 1446;
+	my $n = 1448;
 	$pu and $n -= 120;
 	plan tests => $n;
 	}
@@ -324,4 +324,14 @@ foreach my $irs ("\n", "\xaa") {
 	    unlink $fnm;
 	    }
 	}
+    }
+
+{   # Header after first line with sep=
+    open my $fh, ">", $fnm or die "$fnm: $!";
+    print $fh "sep=;\n";
+    print $fh "a;b 1;c\n";
+    print $fh "1;2;3\n";
+    close $fh;
+    ok (my $aoh = csv (in => $fnm, munge => "db"), "Read header with sep=;");
+    is_deeply ($aoh, [{ a => 1, "b_1" => 2, c => 3 }], "Munged to db with sep");
     }

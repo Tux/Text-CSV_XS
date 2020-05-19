@@ -914,6 +914,10 @@ sub header {
 	}
 
     my ($ahead, $eol);
+    if ($hdr and $hdr =~ s/\Asep=(\S)([\r\n]+)//i) { # Also look in xs:Parse
+	$self->sep ($1);
+	length $hdr or $hdr = <$fh>;
+	}
     if ($hdr =~ s/^([^\r\n]+)([\r\n]+)([^\r\n].+)\z/$1/s) {
 	$eol   = $2;
 	$ahead = $3;
