@@ -607,7 +607,7 @@ or
 
 <pre><code> (&quot;1&quot;, &quot;&quot;, undef, &quot; &quot;, &quot;2&quot;)</code></pre>
 
-<p>note that this is specifically important when loading <code>CSV</code> fields into a database that allows <code>NULL</code> values, as the perl equivalent for <code>NULL</code> is <code>undef</code> in <a>DBI</a> land.</p>
+<p>Note that this is specifically important when loading <code>CSV</code> fields into a database that allows <code>NULL</code> values, as the perl equivalent for <code>NULL</code> is <code>undef</code> in <a>DBI</a> land.</p>
 
 <h3 id="empty_is_undef">empty_is_undef </h3>
 
@@ -623,7 +623,7 @@ or
 
 <pre><code> (1, undef, undef, &quot; &quot;, 2)</code></pre>
 
-<p>Note that this effects only fields that are originally empty, not fields that are empty after stripping allowed whitespace. YMMV.</p>
+<p>Note that this affects only fields that are originally empty, not fields that are empty after stripping allowed whitespace. YMMV.</p>
 
 <h3 id="allow_whitespace">allow_whitespace </h3>
 
@@ -758,7 +758,7 @@ or
 
 <p>By default, the parsing of input records is as simple and fast as possible. However, some parsing information - like quotation of the original field - is lost in that process. Setting this flag to true enables retrieving that information after parsing with the methods <a href="#meta_info">&quot;meta_info&quot;</a>, <a href="#is_quoted">&quot;is_quoted&quot;</a>, and <a href="#is_binary">&quot;is_binary&quot;</a> described below. Default is false for performance.</p>
 
-<p>If you set this attribute to a value greater than 9, than you can control output quotation style like it was used in the input of the the last parsed record (unless quotation was added because of other reasons).</p>
+<p>If you set this attribute to a value greater than 9, then you can control output quotation style like it was used in the input of the the last parsed record (unless quotation was added because of other reasons).</p>
 
 <pre><code> my $csv = Text::CSV_XS-&gt;new ({
     binary         =&gt; 1,
@@ -970,7 +970,7 @@ or
 
 <p><a href="#getline_hr">&quot;getline_hr&quot;</a> will croak if called before <a href="#column_names">&quot;column_names&quot;</a>.</p>
 
-<p>Note that <a href="#getline_hr">&quot;getline_hr&quot;</a> creates a hashref for every row and will be much slower than the combined use of <a href="#bind_columns">&quot;bind_columns&quot;</a> and <a href="#getline">&quot;getline&quot;</a> but still offering the same ease of use hashref inside the loop:</p>
+<p>Note that <a href="#getline_hr">&quot;getline_hr&quot;</a> creates a hashref for every row and will be much slower than the combined use of <a href="#bind_columns">&quot;bind_columns&quot;</a> and <a href="#getline">&quot;getline&quot;</a> but still offering the same easy to use hashref inside the loop:</p>
 
 <pre><code> my @cols = @{$csv-&gt;getline ($fh)};
  $csv-&gt;column_names (@cols);
@@ -987,7 +987,7 @@ or
      print $row-&gt;{price};
      }</code></pre>
 
-<p>Your mileage may vary for the size of the data and the number of rows. With perl-5.14.2 the comparison for a 100_000 line file with 14 rows:</p>
+<p>Your mileage may vary for the size of the data and the number of rows. With perl-5.14.2 the comparison for a 100_000 line file with 14 columns:</p>
 
 <pre><code>            Rate hashrefs getlines
  hashrefs 1.00/s       --     -76%
@@ -1063,7 +1063,7 @@ or
  cell=3,2-3,*    # column 2 till end, only row 3
  cell=3,2-*,*    # strip row 1 and 2, and column 1</code></pre>
 
-<p>Cells and cell ranges may be combined with <code>;</code>, possibly resulting in rows with different number of columns</p>
+<p>Cells and cell ranges may be combined with <code>;</code>, possibly resulting in rows with different numbers of columns</p>
 
 <pre><code> cell=1,1-2,2;3,3-4,4;1,4;4,1</code></pre>
 
@@ -1106,7 +1106,7 @@ or
 <pre><code> $csv-&gt;column_names (undef, &quot;&quot;, &quot;name&quot;, &quot;name&quot;);
  $hr = $csv-&gt;getline_hr ($fh);</code></pre>
 
-<p>Will set <code>$hr-&gt;{&quot;\cAUNDEF\cA&quot;}</code> to the 1st field, <code>$hr-&gt;{&quot;&quot;}</code> to the 2nd field, and <code>$hr-&gt;{name}</code> to the 4th field, discarding the 3rd field.</p>
+<p>will set <code>$hr-&gt;{&quot;\cAUNDEF\cA&quot;}</code> to the 1st field, <code>$hr-&gt;{&quot;&quot;}</code> to the 2nd field, and <code>$hr-&gt;{name}</code> to the 4th field, discarding the 3rd field.</p>
 
 <p><a href="#column_names">&quot;column_names&quot;</a> croaks on invalid arguments.</p>
 
@@ -1122,7 +1122,7 @@ or
 
 <p>The first argument should be a file handle.</p>
 
-<p>This method resets some object properties, as it is supposed to be invoked only once per file or stream. It will leave attributes <code>column_names</code> and <code>bound_columns</code> alone of setting column names is disabled. Reading headers on previously process objects might fail on perl-5.8.0 and older.</p>
+<p>This method resets some object properties, as it is supposed to be invoked only once per file or stream. It will leave attributes <code>column_names</code> and <code>bound_columns</code> alone if setting column names is disabled. Reading headers on previously process objects might fail on perl-5.8.0 and older.</p>
 
 <p>Assuming that the file opened for parsing has a header, and the header does not contain problematic characters like embedded newlines, read the first line from the open handle then auto-detect whether the header separates the column names with a character from the allowed separator list.</p>
 
@@ -1173,15 +1173,15 @@ or
 
 <p>The default behavior is to detect if the header line starts with a BOM. If the header has a BOM, use that to set the encoding of <code>$fh</code>. This default behavior can be disabled by passing a false value to <code>detect_bom</code>.</p>
 
-<p>Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and UTF-32LE. BOM&#39;s also support UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030 but <a>Encode</a> does not (yet). UTF-7 is not supported.</p>
+<p>Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and UTF-32LE. BOM also supports UTF-1, UTF-EBCDIC, SCSU, BOCU-1, and GB-18030 but <a>Encode</a> does not (yet). UTF-7 is not supported.</p>
 
-<p>If a supported BOM was detected as start of the stream, it is stored in the abject attribute <code>ENCODING</code>.</p>
+<p>If a supported BOM was detected as start of the stream, it is stored in the object attribute <code>ENCODING</code>.</p>
 
 <pre><code> my $enc = $csv-&gt;{ENCODING};</code></pre>
 
 <p>The encoding is used with <code>binmode</code> on <code>$fh</code>.</p>
 
-<p>If the handle was opened in a (correct) encoding, this method will <b>not</b> alter the encoding, as it checks the leading <b>bytes</b> of the first line. In case the stream starts with a decode BOM (<code>U+FEFF</code>), <code>{ENCODING}</code> will be <code>&quot;&quot;</code> (empty) instead of the default <code>undef</code>.</p>
+<p>If the handle was opened in a (correct) encoding, this method will <b>not</b> alter the encoding, as it checks the leading <b>bytes</b> of the first line. In case the stream starts with a decoded BOM (<code>U+FEFF</code>), <code>{ENCODING}</code> will be <code>&quot;&quot;</code> (empty) instead of the default <code>undef</code>.</p>
 
 </dd>
 <dt id="munge_column_names">munge_column_names </dt>
@@ -1433,7 +1433,7 @@ or
 
 <pre><code> my $quoted = $csv-&gt;is_quoted ($column_idx);</code></pre>
 
-<p>Where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#parse">&quot;parse&quot;</a>.</p>
+<p>where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#parse">&quot;parse&quot;</a>.</p>
 
 <p>This returns a true value if the data in the indicated column was enclosed in <a href="#quote_char"><code>quote_char</code></a> quotes. This might be important for fields where content <code>,20070108,</code> is to be treated as a numeric value, and where <code>,&quot;20070108&quot;,</code> is explicitly marked as character string data.</p>
 
@@ -1443,7 +1443,7 @@ or
 
 <pre><code> my $binary = $csv-&gt;is_binary ($column_idx);</code></pre>
 
-<p>Where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#parse">&quot;parse&quot;</a>.</p>
+<p>where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#parse">&quot;parse&quot;</a>.</p>
 
 <p>This returns a true value if the data in the indicated column contained any byte in the range <code>[\x00-\x08,\x10-\x1F,\x7F-\xFF]</code>.</p>
 
@@ -1453,7 +1453,7 @@ or
 
 <pre><code> my $missing = $csv-&gt;is_missing ($column_idx);</code></pre>
 
-<p>Where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#getline_hr">&quot;getline_hr&quot;</a>.</p>
+<p>where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#getline_hr">&quot;getline_hr&quot;</a>.</p>
 
 <pre><code> $csv-&gt;keep_meta_info (1);
  while (my $hr = $csv-&gt;getline_hr ($fh)) {
@@ -1516,7 +1516,7 @@ or
 
 <pre><code> use Text::CSV_XS qw( csv );</code></pre>
 
-<p>This is an high-level function that aims at simple (user) interfaces. This can be used to read/parse a <code>CSV</code> file or stream (the default behavior) or to produce a file or write to a stream (define the <code>out</code> attribute). It returns an array- or hash-reference on parsing (or <code>undef</code> on fail) or the numeric value of <a href="#error_diag">&quot;error_diag&quot;</a> on writing. When this function fails you can get to the error using the class call to <a href="#error_diag">&quot;error_diag&quot;</a></p>
+<p>This is a high-level function that aims at simple (user) interfaces. This can be used to read/parse a <code>CSV</code> file or stream (the default behavior) or to produce a file or write to a stream (define the <code>out</code> attribute). It returns an array- or hash-reference on parsing (or <code>undef</code> on fail) or the numeric value of <a href="#error_diag">&quot;error_diag&quot;</a> on writing. When this function fails you can get to the error using the class call to <a href="#error_diag">&quot;error_diag&quot;</a></p>
 
 <pre><code> my $aoa = csv (in =&gt; &quot;test.csv&quot;) or
      die Text::CSV_XS-&gt;error_diag;</code></pre>
@@ -1709,7 +1709,7 @@ or
 <dt id="HASH">HASH </dt>
 <dd>
 
-<p>If <code>headers</code> is an hash reference, this implies <code>auto</code>, but header fields for that exist as key in the hashref will be replaced by the value for that key. Given a CSV file like</p>
+<p>If <code>headers</code> is a hash reference, this implies <code>auto</code>, but header fields that exist as key in the hashref will be replaced by the value for that key. Given a CSV file like</p>
 
 <pre><code> post-kode,city,name,id number,fubble
  1234AA,Duckstad,Donald,13,&quot;X313DF&quot;</code></pre>
@@ -2045,7 +2045,7 @@ or
      } # max_4_fields
 
  csv (in =&gt; csv (in =&gt; &quot;file.csv&quot;), out =&gt; *STDOUT,
-     callbacks =&gt; { before print =&gt; \&amp;max_4_fields });</code></pre>
+     callbacks =&gt; { before_print =&gt; \&amp;max_4_fields });</code></pre>
 
 <p>This callback is not active for <a href="#combine">&quot;combine&quot;</a>.</p>
 
@@ -2460,11 +2460,11 @@ or
      $csv-&gt;print ($fh, [ map { $_ // &quot;\\N&quot; } @$row ]);
      }</code></pre>
 
-<p>note that this will not work as expected when choosing the backslash (<code>\</code>) as <code>escape_char</code>, as that will cause the <code>\</code> to need to be escaped by yet another <code>\</code>, which will cause the field to need quotation and thus ending up as <code>&quot;\\N&quot;</code> instead of <code>\N</code>. See also <a href="#undef_str"><code>undef_str</code></a>.</p>
+<p>Note that this will not work as expected when choosing the backslash (<code>\</code>) as <code>escape_char</code>, as that will cause the <code>\</code> to need to be escaped by yet another <code>\</code>, which will cause the field to need quotation and thus ending up as <code>&quot;\\N&quot;</code> instead of <code>\N</code>. See also <a href="#undef_str"><code>undef_str</code></a>.</p>
 
 <pre><code> csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch }, undef_str =&gt; &quot;\\N&quot;);</code></pre>
 
-<p>these special sequences are not recognized by Text::CSV_XS on parsing the CSV generated like this, but map and filter are your friends again</p>
+<p>These special sequences are not recognized by Text::CSV_XS on parsing the CSV generated like this, but map and filter are your friends again</p>
 
 <pre><code> while (my $row = $csv-&gt;getline ($fh)) {
      $sth-&gt;execute (map { $_ eq &quot;\\N&quot; ? undef : $_ } @$row);
@@ -2580,7 +2580,7 @@ or
 
 <pre><code> my @AoH = $csv-&gt;parse_file ($filename, { cols =&gt; [ 1, 4..8, 12 ]});</code></pre>
 
-<p>Returning something like</p>
+<p>returning something like</p>
 
 <pre><code> [ { fields =&gt; [ 1, 2, &quot;foo&quot;, 4.5, undef, &quot;&quot;, 8 ],
      flags  =&gt; [ ... ],
@@ -2755,7 +2755,7 @@ or
 </li>
 <li><p>1012 &quot;INI - the header contains an empty field&quot; </p>
 
-<p>The header line parsed in the <a href="#header">&quot;header&quot;</a> is contains an empty field.</p>
+<p>The header line parsed in the <a href="#header">&quot;header&quot;</a> contains an empty field.</p>
 
 </li>
 <li><p>1013 &quot;INI - the header contains nun-unique fields&quot; </p>
@@ -2765,7 +2765,7 @@ or
 </li>
 <li><p>1014 &quot;INI - header called on undefined stream&quot; </p>
 
-<p>The header line cannot be parsed from an undefined sources.</p>
+<p>The header line cannot be parsed from an undefined source.</p>
 
 </li>
 <li><p>1500 &quot;PRM - Invalid/unsupported argument(s)&quot; </p>

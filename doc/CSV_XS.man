@@ -517,7 +517,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
         ("1", "", undef, " ", "2")
 
-       note that this is specifically important when loading  "CSV" fields
+       Note that this is specifically important when loading  "CSV" fields
        into a database that allows "NULL" values,  as the perl equivalent for
        "NULL" is "undef" in DBI land.
 
@@ -536,7 +536,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
         (1, undef, undef, " ", 2)
 
-       Note that this effects only fields that are  originally  empty,  not
+       Note that this affects only fields that are  originally  empty,  not
        fields that are empty after stripping allowed whitespace. YMMV.
 
        [4mallow_whitespace[0m
@@ -714,7 +714,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        "meta_info",  "is_quoted", and "is_binary" described below.  Default is
        false for performance.
 
-       If you set this attribute to a value greater than 9,   than you can
+       If you set this attribute to a value greater than 9,   then you can
        control output quotation style like it was used in the input of the the
        last parsed record (unless quotation was added because of other
        reasons).
@@ -977,7 +977,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        Note that  "getline_hr"  creates a hashref for every row and will be
        much slower than the combined use of "bind_columns"  and "getline" but
-       still offering the same ease of use hashref inside the loop:
+       still offering the same easy to use hashref inside the loop:
 
         my @cols = @{$csv->getline ($fh)};
         $csv->column_names (@cols);
@@ -995,7 +995,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
             }
 
        Your mileage may vary for the size of the data and the number of rows.
-       With perl-5.14.2 the comparison for a 100_000 line file with 14 rows:
+       With perl-5.14.2 the comparison for a 100_000 line file with 14
+       columns:
 
                    Rate hashrefs getlines
         hashrefs 1.00/s       --     -76%
@@ -1078,7 +1079,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
           cell=3,2-*,*    # strip row 1 and 2, and column 1
 
          Cells and cell ranges may be combined with ";", possibly resulting in
-         rows with different number of columns
+         rows with different numbers of columns
 
           cell=1,1-2,2;3,3-4,4;1,4;4,1
 
@@ -1128,7 +1129,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         $csv->column_names (undef, "", "name", "name");
         $hr = $csv->getline_hr ($fh);
 
-       Will set "$hr->{"\cAUNDEF\cA"}" to the 1st field,  "$hr->{""}" to the
+       will set "$hr->{"\cAUNDEF\cA"}" to the 1st field,  "$hr->{""}" to the
        2nd field, and "$hr->{name}" to the 4th field,  discarding the 3rd
        field.
 
@@ -1147,7 +1148,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        This method resets some object properties,  as it is supposed to be
        invoked only once per file or stream.  It will leave attributes
-       "column_names" and "bound_columns" alone of setting column names is
+       "column_names" and "bound_columns" alone if setting column names is
        disabled. Reading headers on previously process objects might fail on
        perl-5.8.0 and older.
 
@@ -1215,12 +1216,12 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
          "detect_bom".
 
          Supported encodings from BOM are: UTF-8, UTF-16BE, UTF-16LE,
-         UTF-32BE,  and UTF-32LE. BOM's also support UTF-1, UTF-EBCDIC, SCSU,
+         UTF-32BE,  and UTF-32LE. BOM also supports UTF-1, UTF-EBCDIC, SCSU,
          BOCU-1,  and GB-18030 but Encode does not (yet). UTF-7 is not
          supported.
 
          If a supported BOM was detected as start of the stream, it is stored
-         in the abject attribute "ENCODING".
+         in the object attribute "ENCODING".
 
           my $enc = $csv->{ENCODING};
 
@@ -1228,7 +1229,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
          If the handle was opened in a (correct) encoding,  this method will
          [1mnot [22malter the encoding, as it checks the leading [1mbytes [22mof the first
-         line. In case the stream starts with a decode BOM ("U+FEFF"),
+         line. In case the stream starts with a decoded BOM ("U+FEFF"),
          "{ENCODING}" will be "" (empty) instead of the default "undef".
 
        munge_column_names
@@ -1438,7 +1439,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
    [1mis_quoted[0m
         my $quoted = $csv->is_quoted ($column_idx);
 
-       Where  $column_idx is the  (zero-based)  index of the column in the
+       where  $column_idx is the  (zero-based)  index of the column in the
        last result of "parse".
 
        This returns a true value  if the data in the indicated column was
@@ -1451,7 +1452,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
    [1mis_binary[0m
         my $binary = $csv->is_binary ($column_idx);
 
-       Where  $column_idx is the  (zero-based)  index of the column in the
+       where  $column_idx is the  (zero-based)  index of the column in the
        last result of "parse".
 
        This returns a true value if the data in the indicated column contained
@@ -1462,7 +1463,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
    [1mis_missing[0m
         my $missing = $csv->is_missing ($column_idx);
 
-       Where  $column_idx is the  (zero-based)  index of the column in the
+       where  $column_idx is the  (zero-based)  index of the column in the
        last result of "getline_hr".
 
         $csv->keep_meta_info (1);
@@ -1550,7 +1551,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
         use Text::CSV_XS qw( csv );
 
-       This is an high-level function that aims at simple (user) interfaces.
+       This is a high-level function that aims at simple (user) interfaces.
        This can be used to read/parse a "CSV" file or stream (the default
        behavior) or to produce a file or write to a stream (define the  "out"
        attribute).  It returns an array- or hash-reference on parsing (or
@@ -1772,9 +1773,9 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
           csv (in => $aoa, out => $fh, headers => [qw( code description price )]);
 
        HASH
-         If "headers" is an hash reference, this implies "auto", but header
-         fields for that exist as key in the hashref will be replaced by the
-         value for that key. Given a CSV file like
+         If "headers" is a hash reference, this implies "auto", but header
+         fields that exist as key in the hashref will be replaced by the value
+         for that key. Given a CSV file like
 
           post-kode,city,name,id number,fubble
           1234AA,Duckstad,Donald,13,"X313DF"
@@ -2112,7 +2113,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
               } # max_4_fields
 
           csv (in => csv (in => "file.csv"), out => *STDOUT,
-              callbacks => { before print => \&max_4_fields });
+              callbacks => { before_print => \&max_4_fields });
 
          This callback is not active for "combine".
 
@@ -2513,7 +2514,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
             $csv->print ($fh, [ map { $_ // "\\N" } @$row ]);
             }
 
-       note that this will not work as expected when choosing the backslash
+       Note that this will not work as expected when choosing the backslash
        ("\") as "escape_char", as that will cause the "\" to need to be
        escaped by yet another "\",  which will cause the field to need
        quotation and thus ending up as "\\N" instead of "\N". See also
@@ -2521,7 +2522,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
         csv (out => "foo.csv", in => sub { $sth->fetch }, undef_str => "\\N");
 
-       these special sequences are not recognized by  Text::CSV_XS  on parsing
+       These special sequences are not recognized by  Text::CSV_XS  on parsing
        the CSV generated like this, but map and filter are your friends again
 
         while (my $row = $csv->getline ($fh)) {
@@ -2636,7 +2637,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
           my @AoH = $csv->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
 
-         Returning something like
+         returning something like
 
           [ { fields => [ 1, 2, "foo", 4.5, undef, "", 8 ],
               flags  => [ ... ],
@@ -2797,7 +2798,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        • 1012 "INI - the header contains an empty field"
 
-         The header line parsed in the "header" is contains an empty field.
+         The header line parsed in the "header" contains an empty field.
 
        • 1013 "INI - the header contains nun-unique fields"
 
@@ -2806,7 +2807,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        • 1014 "INI - header called on undefined stream"
 
-         The header line cannot be parsed from an undefined sources.
+         The header line cannot be parsed from an undefined source.
 
        • 1500 "PRM - Invalid/unsupported argument(s)"
 
@@ -2971,4 +2972,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.30.0                      2020-01-30                          STDIN(1)
+perl v5.30.0                      2020-05-19                          STDIN(1)

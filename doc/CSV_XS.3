@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2020-01-30" "perl v5.30.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2020-05-19" "perl v5.30.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -745,7 +745,7 @@ fields to be set to \f(CW\*(C`undef\*(C'\fR, causing the above to be parsed as
 \& ("1", "", undef, " ", "2")
 .Ve
 .PP
-note that this is specifically important when loading  \f(CW\*(C`CSV\*(C'\fR fields into a
+Note that this is specifically important when loading  \f(CW\*(C`CSV\*(C'\fR fields into a
 database that allows \f(CW\*(C`NULL\*(C'\fR values,  as the perl equivalent for \f(CW\*(C`NULL\*(C'\fR is
 \&\f(CW\*(C`undef\*(C'\fR in \s-1DBI\s0 land.
 .PP
@@ -772,7 +772,7 @@ is read as
 \& (1, undef, undef, " ", 2)
 .Ve
 .PP
-Note that this effects only fields that are  originally  empty,  not fields
+Note that this affects only fields that are  originally  empty,  not fields
 that are empty after stripping allowed whitespace. \s-1YMMV.\s0
 .PP
 \fIallow_whitespace\fR
@@ -1010,7 +1010,7 @@ is lost in that process.  Setting this flag to true enables retrieving that
 information after parsing with  the methods  \*(L"meta_info\*(R",  \*(L"is_quoted\*(R",
 and \*(L"is_binary\*(R" described below.  Default is false for performance.
 .PP
-If you set this attribute to a value greater than 9,   than you can control
+If you set this attribute to a value greater than 9,   then you can control
 output quotation style like it was used in the input of the the last parsed
 record (unless quotation was added because of other reasons).
 .PP
@@ -1329,7 +1329,7 @@ declare your column names.
 .PP
 Note that  \*(L"getline_hr\*(R"  creates a hashref for every row and will be much
 slower than the combined use of \*(L"bind_columns\*(R"  and \*(L"getline\*(R" but still
-offering the same ease of use hashref inside the loop:
+offering the same easy to use hashref inside the loop:
 .PP
 .Vb 5
 \& my @cols = @{$csv\->getline ($fh)};
@@ -1351,7 +1351,7 @@ Could easily be rewritten to the much faster:
 .Ve
 .PP
 Your mileage may vary for the size of the data and the number of rows. With
-perl\-5.14.2 the comparison for a 100_000 line file with 14 rows:
+perl\-5.14.2 the comparison for a 100_000 line file with 14 columns:
 .PP
 .Vb 3
 \&            Rate hashrefs getlines
@@ -1454,7 +1454,7 @@ The \f(CW\*(C`*\*(C'\fR is only allowed in the second part of a pair
 .Ve
 .Sp
 Cells and cell ranges may be combined with \f(CW\*(C`;\*(C'\fR, possibly resulting in rows
-with different number of columns
+with different numbers of columns
 .Sp
 .Vb 1
 \& cell=1,1\-2,2;3,3\-4,4;1,4;4,1
@@ -1515,7 +1515,7 @@ to unexpected results.   Undefined entries will be replaced with the string
 \& $hr = $csv\->getline_hr ($fh);
 .Ve
 .PP
-Will set \f(CW\*(C`$hr\->{"\ecAUNDEF\ecA"}\*(C'\fR to the 1st field,  \f(CW\*(C`$hr\->{""}\*(C'\fR to
+will set \f(CW\*(C`$hr\->{"\ecAUNDEF\ecA"}\*(C'\fR to the 1st field,  \f(CW\*(C`$hr\->{""}\*(C'\fR to
 the 2nd field, and \f(CW\*(C`$hr\->{name}\*(C'\fR to the 4th field,  discarding the 3rd
 field.
 .PP
@@ -1536,7 +1536,7 @@ The first argument should be a file handle.
 .PP
 This method resets some object properties,  as it is supposed to be invoked
 only once per file or stream.  It will leave attributes \f(CW\*(C`column_names\*(C'\fR and
-\&\f(CW\*(C`bound_columns\*(C'\fR alone of setting column names is disabled. Reading headers
+\&\f(CW\*(C`bound_columns\*(C'\fR alone if setting column names is disabled. Reading headers
 on previously process objects might fail on perl\-5.8.0 and older.
 .PP
 Assuming that the file opened for parsing has a header, and the header does
@@ -1612,11 +1612,11 @@ the header has a \s-1BOM,\s0 use that to set the encoding of \f(CW$fh\fR.  This 
 behavior can be disabled by passing a false value to \f(CW\*(C`detect_bom\*(C'\fR.
 .Sp
 Supported encodings from \s-1BOM\s0 are: \s-1UTF\-8, UTF\-16BE, UTF\-16LE, UTF\-32BE,\s0  and
-\&\s-1UTF\-32LE. BOM\s0's also support \s-1UTF\-1,\s0 UTF-EBCDIC, \s-1SCSU, BOCU\-1,\s0  and \s-1GB\-18030\s0
+\&\s-1UTF\-32LE. BOM\s0 also supports \s-1UTF\-1,\s0 UTF-EBCDIC, \s-1SCSU, BOCU\-1,\s0  and \s-1GB\-18030\s0
 but Encode does not (yet). \s-1UTF\-7\s0 is not supported.
 .Sp
 If a supported \s-1BOM\s0 was detected as start of the stream, it is stored in the
-abject attribute \f(CW\*(C`ENCODING\*(C'\fR.
+object attribute \f(CW\*(C`ENCODING\*(C'\fR.
 .Sp
 .Vb 1
 \& my $enc = $csv\->{ENCODING};
@@ -1626,7 +1626,7 @@ The encoding is used with \f(CW\*(C`binmode\*(C'\fR on \f(CW$fh\fR.
 .Sp
 If the handle was opened in a (correct) encoding,  this method will  \fBnot\fR
 alter the encoding, as it checks the leading \fBbytes\fR of the first line. In
-case the stream starts with a decode \s-1BOM\s0 (\f(CW\*(C`U+FEFF\*(C'\fR), \f(CW\*(C`{ENCODING}\*(C'\fR will be
+case the stream starts with a decoded \s-1BOM\s0 (\f(CW\*(C`U+FEFF\*(C'\fR), \f(CW\*(C`{ENCODING}\*(C'\fR will be
 \&\f(CW""\fR (empty) instead of the default \f(CW\*(C`undef\*(C'\fR.
 .IP "munge_column_names" 2
 .IX Xref "munge_column_names"
@@ -1906,7 +1906,7 @@ See the \f(CW\*(C`is_***\*(C'\fR methods below.
 \& my $quoted = $csv\->is_quoted ($column_idx);
 .Ve
 .PP
-Where  \f(CW$column_idx\fR is the  (zero-based)  index of the column in the last
+where  \f(CW$column_idx\fR is the  (zero-based)  index of the column in the last
 result of \*(L"parse\*(R".
 .PP
 This returns a true value  if the data in the indicated column was enclosed
@@ -1922,7 +1922,7 @@ This method is only valid when \*(L"keep_meta_info\*(R" is set to a true value.
 \& my $binary = $csv\->is_binary ($column_idx);
 .Ve
 .PP
-Where  \f(CW$column_idx\fR is the  (zero-based)  index of the column in the last
+where  \f(CW$column_idx\fR is the  (zero-based)  index of the column in the last
 result of \*(L"parse\*(R".
 .PP
 This returns a true value if the data in the indicated column contained any
@@ -1936,7 +1936,7 @@ This method is only valid when \*(L"keep_meta_info\*(R" is set to a true value.
 \& my $missing = $csv\->is_missing ($column_idx);
 .Ve
 .PP
-Where  \f(CW$column_idx\fR is the  (zero-based)  index of the column in the last
+where  \f(CW$column_idx\fR is the  (zero-based)  index of the column in the last
 result of \*(L"getline_hr\*(R".
 .PP
 .Vb 4
@@ -2043,7 +2043,7 @@ This function is not exported by default and should be explicitly requested:
 \& use Text::CSV_XS qw( csv );
 .Ve
 .PP
-This is an high-level function that aims at simple (user) interfaces.  This
+This is a high-level function that aims at simple (user) interfaces.  This
 can be used to read/parse a \f(CW\*(C`CSV\*(C'\fR file or stream (the default behavior) or
 to produce a file or write to a stream (define the  \f(CW\*(C`out\*(C'\fR  attribute).  It
 returns an array\- or hash-reference on parsing (or \f(CW\*(C`undef\*(C'\fR on fail) or the
@@ -2319,8 +2319,8 @@ as field names. The first line is considered data instead of headers.
 .IP "\s-1HASH\s0" 2
 .IX Xref "HASH"
 .IX Item "HASH"
-If \f(CW\*(C`headers\*(C'\fR is an hash reference, this implies \f(CW\*(C`auto\*(C'\fR, but header fields
-for that exist as key in the hashref will be replaced by the value for that
+If \f(CW\*(C`headers\*(C'\fR is a hash reference, this implies \f(CW\*(C`auto\*(C'\fR, but header fields
+that exist as key in the hashref will be replaced by the value for that
 key. Given a \s-1CSV\s0 file like
 .Sp
 .Vb 2
@@ -2735,7 +2735,7 @@ The return code of the callback is ignored.
 \&     } # max_4_fields
 \&
 \& csv (in => csv (in => "file.csv"), out => *STDOUT,
-\&     callbacks => { before print => \e&max_4_fields });
+\&     callbacks => { before_print => \e&max_4_fields });
 .Ve
 .Sp
 This callback is not active for \*(L"combine\*(R".
@@ -3215,7 +3215,7 @@ or a map
 \&     }
 .Ve
 .PP
-note that this will not work as expected when choosing the backslash (\f(CW\*(C`\e\*(C'\fR)
+Note that this will not work as expected when choosing the backslash (\f(CW\*(C`\e\*(C'\fR)
 as \f(CW\*(C`escape_char\*(C'\fR, as that will cause the \f(CW\*(C`\e\*(C'\fR to need to be escaped by yet
 another \f(CW\*(C`\e\*(C'\fR,  which will cause the field to need quotation and thus ending
 up as \f(CW"\e\eN"\fR instead of \f(CW\*(C`\eN\*(C'\fR. See also \f(CW\*(C`undef_str\*(C'\fR.
@@ -3224,7 +3224,7 @@ up as \f(CW"\e\eN"\fR instead of \f(CW\*(C`\eN\*(C'\fR. See also \f(CW\*(C`undef
 \& csv (out => "foo.csv", in => sub { $sth\->fetch }, undef_str => "\e\eN");
 .Ve
 .PP
-these special sequences are not recognized by  Text::CSV_XS  on parsing the
+These special sequences are not recognized by  Text::CSV_XS  on parsing the
 \&\s-1CSV\s0 generated like this, but map and filter are your friends again
 .PP
 .Vb 3
@@ -3358,7 +3358,7 @@ enable a column selection on the call:
 \& my @AoH = $csv\->parse_file ($filename, { cols => [ 1, 4..8, 12 ]});
 .Ve
 .Sp
-Returning something like
+returning something like
 .Sp
 .Vb 7
 \& [ { fields => [ 1, 2, "foo", 4.5, undef, "", 8 ],
@@ -3530,7 +3530,7 @@ separator character out of the allowed set of separators.
 1012 \*(L"\s-1INI\s0 \- the header contains an empty field\*(R"
 .IX Xref "1012"
 .Sp
-The header line parsed in the \*(L"header\*(R" is contains an empty field.
+The header line parsed in the \*(L"header\*(R" contains an empty field.
 .IP "\(bu" 2
 1013 \*(L"\s-1INI\s0 \- the header contains nun-unique fields\*(R"
 .IX Xref "1013"
@@ -3541,7 +3541,7 @@ fields.
 1014 \*(L"\s-1INI\s0 \- header called on undefined stream\*(R"
 .IX Xref "1014"
 .Sp
-The header line cannot be parsed from an undefined sources.
+The header line cannot be parsed from an undefined source.
 .IP "\(bu" 2
 1500 \*(L"\s-1PRM\s0 \- Invalid/unsupported argument(s)\*(R"
 .IX Xref "1500"
