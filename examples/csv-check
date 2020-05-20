@@ -84,7 +84,6 @@ binmode STDOUT, ":encoding(utf-8)";
 binmode STDERR, ":encoding(utf-8)";
 
 my $fn   = $ARGV[0] // "-";
-my $data = do { local $/; <> } or die "No data to analyze\n";
 my @warn;
 
 my %csvarg = (
@@ -99,15 +98,9 @@ my %csvarg = (
     );
 {   my $p = $csvmod->new;
     my %ka = map { $_ => 1 } $p->known_attributes;
-    if ($opt_L) {
-	foreach my $attr (sort grep m/^[a-z]/ => keys %ka) {
-	    printf "  %-21s : %s\n", $attr, $csvarg{$attr} // $p->{$attr} // "(undef)";
-	    }
-	exit 0;
-	}
     foreach my $i (reverse 0 .. $#ARGV) {
-	if ($ARGV[$i] =~ m/^--([-\w]+)(?:=(.*))?$/) {
-	    my ($attr, $val) = (lc $1 =~ tr/-/_/r, $2 // 1);
+	if ($ARGV[$i] =~ m/^--(no[-_])?+([-\w]+)(?:=(.*))?$/) {
+	    my ($attr, $val) = (lc $2 =~ tr/-/_/r, $3 // ($1 ? 0 : 1));
 	    if (exists $ka{$attr}) {
 		unshift @opt_A, "$attr:$val";
 		splice @ARGV, $i, 1;
@@ -121,8 +114,16 @@ my %csvarg = (
 	$val eq "undef" || !length $val and $val = undef;	# -A escape_char:
 	$csvarg{$attr} = $val;
 	}
+    if ($opt_L) {
+	foreach my $attr (sort grep m/^[a-z]/ => keys %ka) {
+	    printf "  %-21s : %s\n", $attr, $csvarg{$attr} // $p->{$attr} // "(undef)";
+	    }
+	exit 0;
+	}
     }
 $opt_v > 1 and DDumper \%csvarg;
+
+my $data = do { local $/; <> } or die "No data to analyze\n";
 
 my ($rows, %cols, $s_eol) = (0);
 unless ($sep) { # No sep char passed, try to auto-detect;
