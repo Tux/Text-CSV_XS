@@ -18,7 +18,6 @@ package Text::CSV_XS;
 
 require 5.006001;
 
-#use p7;
 use strict;
 use warnings;
 
