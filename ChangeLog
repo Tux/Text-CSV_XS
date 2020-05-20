@@ -1,3 +1,6 @@
+1.43	- 2020-05-20, H.Merijn Brand
+    * Add --parser-opt[=value] to csv-check
+
 1.42	- 2020-05-19, H.Merijn Brand
     * Update to Devel::PPPort-3.58
     * Unicode fixes for csv2xls and csv2xlsx

@@ -11,7 +11,7 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode encode );
 
-our $VERSION = "2.04";	# 2020-04-08
+our $VERSION = "2.05";	# 2020-05-20
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -36,11 +36,13 @@ usage: $cmd [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
           --pp            use Text::CSV_PP instead (cross-check)
 
     -A a  --attr=at:val   pass attributes to parser
+			    --at=val is also supported for know attributes
+    -L    --list-attr     list supported CSV attributes
 EOU
     exit $err;
     } # usage
 
-use Getopt::Long qw(:config bundling);
+use Getopt::Long qw(:config bundling passthrough);
 my $eol;
 GetOptions (
     "help|?"		=> sub { usage (0); },
@@ -61,6 +63,7 @@ GetOptions (
     "f|skip-formula!"	=> \(my  $opt_f = 0),
 
     "A|attr=s"		=> \ my  @opt_A,
+    "L|list-attr!"	=> \ my  $opt_L,
 
     "pp!"		=> \(my  $opt_p = 0),
 
@@ -94,12 +97,32 @@ my %csvarg = (
     auto_diag      => 1,
     formula        => $opt_f ? "none" : "diag",
     );
-for (@opt_A) {
-    my ($attr, $val) = m/^(\w+)(?::(.*))?/ or next;
-    $val //= 1;						# -A strict
-    $val eq "undef" || !length $val and $val = undef;	# -A escape_char:
-    $csvarg{$1} = $val;
+{   my $p = $csvmod->new;
+    my %ka = map { $_ => 1 } $p->known_attributes;
+    if ($opt_L) {
+	foreach my $attr (sort grep m/^[a-z]/ => keys %ka) {
+	    printf "  %-21s : %s\n", $attr, $csvarg{$attr} // $p->{$attr} // "(undef)";
+	    }
+	exit 0;
+	}
+    foreach my $i (reverse 0 .. $#ARGV) {
+	if ($ARGV[$i] =~ m/^--([-\w]+)(?:=(.*))?$/) {
+	    my ($attr, $val) = (lc $1 =~ tr/-/_/r, $2 // 1);
+	    if (exists $ka{$attr}) {
+		unshift @opt_A, "$attr:$val";
+		splice @ARGV, $i, 1;
+		}
+	    }
+	}
+    for (@opt_A) {
+	m/^([-\w]+)(?:[:=](.*))?/ or next;
+	my ($attr, $val) = (lc $1 =~ tr/-/_/r, $2 // 1);
+	exists $ka{$attr} or next;
+	$val eq "undef" || !length $val and $val = undef;	# -A escape_char:
+	$csvarg{$attr} = $val;
+	}
     }
+$opt_v > 1 and DDumper \%csvarg;
 
 my ($rows, %cols, $s_eol) = (0);
 unless ($sep) { # No sep char passed, try to auto-detect;
@@ -117,7 +140,7 @@ unless ($sep) { # No sep char passed, try to auto-detect;
     }
 
 my $csv = $csvmod->new (\%csvarg);
-$opt_v >= 9 and DDumper $csv;
+$opt_v > 8 and DDumper $csv;
 
 $bin = 0; # Assume ASCII only
 
@@ -208,7 +231,7 @@ sub stats {
     my $r = shift;
     $cols{scalar @$r}++;
     grep { $_ & 0x0002 } $csv->meta_info and $bin = 1;
-    $opt_v and show (@$r);
+    $opt_v > 2 and show (@$r);
     if ($opt_u) {
 	my @r = @$r;
 	foreach my $x (0 .. $#r) {
