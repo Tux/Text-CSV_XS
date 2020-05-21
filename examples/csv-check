@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'20 [08 Apr 2020] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [21 May 2020] Copyright H.M.Brand 2007-2020
 
 # This code requires the defined-or feature and PerlIO
 
@@ -11,7 +11,7 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode encode );
 
-our $VERSION = "2.05";	# 2020-05-20
+our $VERSION = "2.05";	# 2020-05-21
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -38,6 +38,7 @@ usage: $cmd [-s <sep>] [-q <quot>] [-e <esc>] [-u] [--pp] [file.csv]
     -A a  --attr=at:val   pass attributes to parser
 			    --at=val is also supported for know attributes
     -L    --list-attr     list supported CSV attributes
+    -X    --list-changes  list attributes that changed from default
 EOU
     exit $err;
     } # usage
@@ -64,11 +65,13 @@ GetOptions (
 
     "A|attr=s"		=> \ my  @opt_A,
     "L|list-attr!"	=> \ my  $opt_L,
+    "X|list-changes!"	=> \ my  $opt_X,
 
     "pp!"		=> \(my  $opt_p = 0),
 
     "v|verbose:1"	=> \(my  $opt_v = 0),
     ) or usage (1);
+$opt_X and $opt_L++;
 
 my  $csvmod = "Text::CSV_XS";
 if ($opt_p) {
@@ -97,7 +100,7 @@ my %csvarg = (
     formula        => $opt_f ? "none" : "diag",
     );
 {   my $p = $csvmod->new;
-    my %ka = map { $_ => 1 } $p->known_attributes;
+    my %ka = map { $_ => $p->{$_} } grep m/^[a-z]/ => $p->known_attributes;
     foreach my $i (reverse 0 .. $#ARGV) {
 	if ($ARGV[$i] =~ m/^--(no[-_])?+([-\w]+)(?:=(.*))?$/) {
 	    my ($attr, $val) = (lc $2 =~ tr/-/_/r, $3 // ($1 ? 0 : 1));
@@ -115,8 +118,12 @@ my %csvarg = (
 	$csvarg{$attr} = $val;
 	}
     if ($opt_L) {
-	foreach my $attr (sort grep m/^[a-z]/ => keys %ka) {
-	    printf "  %-21s : %s\n", $attr, $csvarg{$attr} // $p->{$attr} // "(undef)";
+	$csvarg{sep_char} ||= $ka{sep_char};
+	foreach my $attr (sort keys %ka) {
+	    $ka{$attr}     //= "(undef)";
+	    $csvarg{$attr} //= $ka{$attr};
+	    $opt_X and $csvarg{$attr} eq $ka{$attr} and next;
+	    printf "  %-21s : %s\n", $attr, $csvarg{$attr};
 	    }
 	exit 0;
 	}
