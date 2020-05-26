@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 234;
+use Test::More tests => 236;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -53,6 +53,8 @@ is ($csv->sep ("**"),			"**",		"sep (**)");
 is ($csv->sep (";"),			";",		"sep (;)");
 is ($csv->sep_char (),			";",		"sep_char ()");
 is ($csv->quote_char ("="),		"=",		"quote_char (=)");
+is ($csv->quote_char (undef),		undef,		"quote_char (undef)");
+is ($csv->{quote_char},			undef,		"{quote_char} (undef)");
 is ($csv->quote (undef),		"",		"quote (undef)");
 is ($csv->quote (""),			"",		"quote (undef)");
 is ($csv->quote ("**"),			"**",		"quote (**)");

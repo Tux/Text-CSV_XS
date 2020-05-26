@@ -274,8 +274,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
 # A `character'
 sub _set_attr_C {
     my ($self, $name, $val, $ec) = @_;
-    defined $val or $val = 0;
-    utf8::decode ($val);
+    defined $val and utf8::decode ($val);
     $self->{$name} = $val;
     $ec = _check_sanity ($self) and croak ($self->SetDiag ($ec));
     $self->_cache_set ($_cache_id{$name}, $val);
