@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 236;
+use Test::More tests => 238;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -98,6 +98,8 @@ is ($csv->quote_empty (1),		1,		"quote_empty (1)");
 is ($csv->escape_null (1),		1,		"escape_null (1)");
 is ($csv->quote_null (1),		1,		"quote_null (1)");
 is ($csv->quote_binary (1),		1,		"quote_binary (1)");
+is ($csv->escape_char (undef),		undef,		"escape_char (undef)");
+is ($csv->{escape_char},		undef,		"{escape_char} (undef)");
 is ($csv->escape_char ("\\"),		"\\",		"escape_char (\\)");
 ok ($csv->combine (@fld),				"combine");
 is ($csv->string,
