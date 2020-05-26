@@ -29,7 +29,7 @@ use vars   qw( $VERSION @ISA @EXPORT_OK );
 $VERSION   = "1.43";
 @ISA       = qw( Exporter );
 @EXPORT_OK = qw( csv );
-XSLoader::load "Text::CSV_XS", $VERSION;
+XSLoader::load ("Text::CSV_XS", $VERSION);
 
 sub PV { 0 }
 sub IV { 1 }
