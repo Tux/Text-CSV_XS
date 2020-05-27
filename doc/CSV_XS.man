@@ -313,6 +313,9 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        When set, overrules "quote_char". If its length is one byte it acts as
        an alias to "quote_char".
 
+       This method does not support "undef".  Use "quote_char" to disable
+       quotation.
+
        See also "CAVEATS"
 
        [4mescape_char[0m
@@ -2972,4 +2975,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.30.0                      2020-05-19                          STDIN(1)
+perl v5.30.0                      2020-05-27                          STDIN(1)

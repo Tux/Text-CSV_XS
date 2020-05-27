@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2020-05-19" "perl v5.30.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2020-05-27" "perl v5.30.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -479,6 +479,9 @@ The chars used to quote fields, by default undefined. Limited to 8 bytes.
 .PP
 When set, overrules \f(CW\*(C`quote_char\*(C'\fR. If its length is one byte
 it acts as an alias to \f(CW\*(C`quote_char\*(C'\fR.
+.PP
+This method does not support \f(CW\*(C`undef\*(C'\fR.  Use \f(CW\*(C`quote_char\*(C'\fR to
+disable quotation.
 .PP
 See also \*(L"\s-1CAVEATS\*(R"\s0
 .PP

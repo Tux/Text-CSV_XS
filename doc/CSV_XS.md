@@ -307,6 +307,9 @@ The chars used to quote fields, by default undefined. Limited to 8 bytes.
 When set, overrules [`quote_char`](#quote_char). If its length is one byte
 it acts as an alias to [`quote_char`](#quote_char).
 
+This method does not support `undef`.  Use [`quote_char`](#quote_char) to
+disable quotation.
+
 See also ["CAVEATS"](#caveats)
 
 ### escape\_char
