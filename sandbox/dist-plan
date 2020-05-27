@@ -3,6 +3,7 @@
      
 [ ]  perl Makefile.PL
 [ ]  make test
+[ ]  yath
 [ ]  make tgzdist
      
 [ ]  release -t
