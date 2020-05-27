@@ -1,21 +1,24 @@
-[ ]  update ChangeLog
-[ ]  make docs
-     
-[ ]  perl Makefile.PL
-[ ]  make test
-[ ]  yath
-[ ]  make tgzdist
-     
-[ ]  release -t
-     
-[ ]  perl Makefile.PL
-[ ]  make test
-[ ]  make install UNINST=1
-[ ]  perl sandbox/used-by.pl
-[ ]  cd ../CSV ; Text-CSV-speed.pl --run --top --graph --no-ask
-     
-[ ]  scp -p Text-CSV_XS.tgz ...
-[ ]  other architectures and OS versions
-     create your own list, e.g. sandbox/dist-other
-     
+[ ] 0:00:01  perl Makefile.PL
+[ ] 0:00:44  make test
+[ ] 0:00:23  yath
+
+[ ] 0:00:02  make tgzdist
+[ ] 0:00:01  make docs
+
+[ ]          update ChangeLog
+[ ]          commit changes
+
+[ ] 1:05:00  release -t
+
+[ ] 0:00:01  perl Makefile.PL
+[ ] 0:00:44  make test
+[ ] 0:00:01  make install UNINST=1
+[ ] 0:22:00  perl sandbox/used-by.pl
+
+[ ] 0:09:00  cd ../CSV ; Text-CSV-speed.pl --run --top --graph --no-ask
+
+[ ]          scp -p Text-CSV_XS.tgz ...
+[ ]          other architectures and OS versions
+             create your own list, e.g. sandbox/dist-other
+
      GO!
