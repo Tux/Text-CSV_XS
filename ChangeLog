@@ -1,7 +1,8 @@
-1.43	- 2020-05-26, H.Merijn Brand
+1.43	- 2020-05-27, H.Merijn Brand
     * Add --parser-opt[=value] to csv-check
     * Add -L & -X to csv-check
     * Fix undef value in attribute setters for strings (issue 24)
+    * Document quote (undef) is not supported
 
 1.42	- 2020-05-19, H.Merijn Brand
     * Update to Devel::PPPort-3.58

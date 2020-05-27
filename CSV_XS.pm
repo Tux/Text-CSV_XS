@@ -1806,6 +1806,9 @@ The chars used to quote fields, by default undefined. Limited to 8 bytes.
 When set, overrules L<C<quote_char>|/quote_char>. If its length is one byte
 it acts as an alias to L<C<quote_char>|/quote_char>.
 
+This method does not support C<undef>.  Use L<C<quote_char>|/quote_char> to
+disable quotation.
+
 See also L</CAVEATS>
 
 =head3 escape_char
