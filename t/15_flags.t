@@ -60,7 +60,7 @@ sub crnlsp {
     } # crnlsp
 
 {   my $csv = Text::CSV_XS->new ();
-    my $c99 = chr (0x99);	# A random binary character
+    my $cb6 = chr (0xb6);	# A random binary character
 
     is ($csv->meta_info, undef,				"meta_info () before parse ()");
 
@@ -69,8 +69,8 @@ sub crnlsp {
     ok (!$csv->parse ('"abc'),				"Missing closing \"");
     ok (!$csv->parse ('ab"c'),				"\" outside of \"'s");
     ok (!$csv->parse ('"ab"c"'),			"Bad character sequence");
-    ok (!$csv->parse ("ab${c99}c"),			"Binary character");
-    ok (!$csv->parse (qq{"ab${c99}c"}),			"Binary character in quotes");
+    ok (!$csv->parse ("ab${cb6}c"),			"Binary character");
+    ok (!$csv->parse (qq{"ab${cb6}c"}),			"Binary character in quotes");
     ok (!$csv->parse (qq("abc\nc")),			"Bad character (NL)");
     ok (!$csv->status (),				"Wrong status ()");
     ok ( $csv->parse ('","'),				"comma - parse ()");
