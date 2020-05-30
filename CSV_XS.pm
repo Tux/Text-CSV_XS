@@ -55,52 +55,52 @@ sub version {
 #   a newly created Text::CSV object.
 
 my %def_attr = (
-    eol				=> '',
-    sep_char			=> ',',
-    quote_char			=> '"',
-    escape_char			=> '"',
-    binary			=> 0,
-    decode_utf8			=> 1,
-    auto_diag			=> 0,
-    diag_verbose		=> 0,
-    strict			=> 0,
-    blank_is_undef		=> 0,
-    empty_is_undef		=> 0,
-    allow_whitespace		=> 0,
-    allow_loose_quotes		=> 0,
-    allow_loose_escapes		=> 0,
-    allow_unquoted_escape	=> 0,
-    always_quote		=> 0,
-    quote_empty			=> 0,
-    quote_space			=> 1,
-    quote_binary		=> 1,
-    escape_null			=> 1,
-    keep_meta_info		=> 0,
-    verbatim			=> 0,
-    formula			=> 0,
-    undef_str			=> undef,
-    types			=> undef,
-    callbacks			=> undef,
+    'eol'				=> '',
+    'sep_char'			=> ',',
+    'quote_char'			=> '"',
+    'escape_char'			=> '"',
+    'binary'			=> 0,
+    'decode_utf8'			=> 1,
+    'auto_diag'			=> 0,
+    'diag_verbose'		=> 0,
+    'strict'			=> 0,
+    'blank_is_undef'		=> 0,
+    'empty_is_undef'		=> 0,
+    'allow_whitespace'		=> 0,
+    'allow_loose_quotes'		=> 0,
+    'allow_loose_escapes'		=> 0,
+    'allow_unquoted_escape'	=> 0,
+    'always_quote'		=> 0,
+    'quote_empty'			=> 0,
+    'quote_space'			=> 1,
+    'quote_binary'		=> 1,
+    'escape_null'			=> 1,
+    'keep_meta_info'		=> 0,
+    'verbatim'			=> 0,
+    'formula'			=> 0,
+    'undef_str'			=> undef,
+    'types'			=> undef,
+    'callbacks'			=> undef,
 
-    _EOF			=> "",
-    _RECNO			=> 0,
-    _STATUS			=> undef,
-    _FIELDS			=> undef,
-    _FFLAGS			=> undef,
-    _STRING			=> undef,
-    _ERROR_INPUT		=> undef,
-    _COLUMN_NAMES		=> undef,
-    _BOUND_COLUMNS		=> undef,
-    _AHEAD			=> undef,
-    _FORMULA_CB			=> undef,
+    '_EOF'			=> "",
+    '_RECNO'			=> 0,
+    '_STATUS'			=> undef,
+    '_FIELDS'			=> undef,
+    '_FFLAGS'			=> undef,
+    '_STRING'			=> undef,
+    '_ERROR_INPUT'		=> undef,
+    '_COLUMN_NAMES'		=> undef,
+    '_BOUND_COLUMNS'		=> undef,
+    '_AHEAD'			=> undef,
+    '_FORMULA_CB'			=> undef,
 
-    ENCODING			=> undef,
+    'ENCODING'			=> undef,
     );
 my %attr_alias = (
-    quote_always		=> "always_quote",
-    verbose_diag		=> "diag_verbose",
-    quote_null			=> "escape_null",
-    escape			=> "escape_char",
+    'quote_always'		=> "always_quote",
+    'verbose_diag'		=> "diag_verbose",
+    'quote_null'			=> "escape_null",
+    'escape'			=> "escape_char",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 
@@ -109,9 +109,9 @@ sub _unhealthy_whitespace {
     my ($self, $aw) = @_;
     $aw or return 0; # no checks needed without allow_whitespace
 
-    my $quo = $self->{quote};
-    defined $quo && length ($quo) or $quo = $self->{quote_char};
-    my $esc = $self->{escape_char};
+    my $quo = $self->{'quote'};
+    defined $quo && length ($quo) or $quo = $self->{'quote_char'};
+    my $esc = $self->{'escape_char'};
 
     defined $quo && $quo =~ m/^[ \t]/ and return 1002;
     defined $esc && $esc =~ m/^[ \t]/ and return 1002;
@@ -122,12 +122,12 @@ sub _unhealthy_whitespace {
 sub _check_sanity {
     my $self = shift;
 
-    my $eol = $self->{eol};
-    my $sep = $self->{sep};
-    defined $sep && length ($sep) or $sep = $self->{sep_char};
-    my $quo = $self->{quote};
-    defined $quo && length ($quo) or $quo = $self->{quote_char};
-    my $esc = $self->{escape_char};
+    my $eol = $self->{'eol'};
+    my $sep = $self->{'sep'};
+    defined $sep && length ($sep) or $sep = $self->{'sep_char'};
+    my $quo = $self->{'quote'};
+    defined $quo && length ($quo) or $quo = $self->{'quote_char'};
+    my $esc = $self->{'escape_char'};
 
 #    use DP;::diag ("SEP: '", DPeek ($sep),
 #	        "', QUO: '", DPeek ($quo),
@@ -151,7 +151,7 @@ sub _check_sanity {
 	length ($eol) > 16	and return 1005;
 	}
 
-    return _unhealthy_whitespace ($self, $self->{allow_whitespace});
+    return _unhealthy_whitespace ($self, $self->{'allow_whitespace'});
     } # _check_sanity
 
 sub known_attributes {
@@ -173,18 +173,18 @@ sub new {
 	} keys %$attr;
 
     my $sep_aliased = 0;
-    if (exists $attr{sep}) {
-	$attr{sep_char} = delete $attr{sep};
+    if (exists $attr{'sep'}) {
+	$attr{'sep_char'} = delete $attr{'sep'};
 	$sep_aliased = 1;
 	}
     my $quote_aliased = 0;
-    if (exists $attr{quote}) {
-	$attr{quote_char} = delete $attr{quote};
+    if (exists $attr{'quote'}) {
+	$attr{'quote_char'} = delete $attr{'quote'};
 	$quote_aliased = 1;
 	}
-    exists $attr{formula_handling} and
-	$attr{formula} = delete $attr{formula_handling};
-    my $attr_formula = delete $attr{formula};
+    exists $attr{'formula_handling'} and
+	$attr{'formula'} = delete $attr{'formula_handling'};
+    my $attr_formula = delete $attr{'formula'};
 
     for (keys %attr) {
 	if (m/^[a-z]/ && exists $def_attr{$_}) {
@@ -194,81 +194,81 @@ sub new {
 	    }
 #	croak?
 	$last_new_err = Text::CSV_XS->SetDiag (1000, "INI - Unknown attribute '$_'");
-	$attr{auto_diag} and error_diag ();
+	$attr{'auto_diag'} and error_diag ();
 	return;
 	}
     if ($sep_aliased) {
-	my @b = unpack "U0C*", $attr{sep_char};
+	my @b = unpack "U0C*", $attr{'sep_char'};
 	if (@b > 1) {
-	    $attr{sep} = $attr{sep_char};
-	    $attr{sep_char} = "\0";
+	    $attr{'sep'} = $attr{'sep_char'};
+	    $attr{'sep_char'} = "\0";
 	    }
 	else {
-	    $attr{sep} = undef;
+	    $attr{'sep'} = undef;
 	    }
 	}
-    if ($quote_aliased and defined $attr{quote_char}) {
-	my @b = unpack "U0C*", $attr{quote_char};
+    if ($quote_aliased and defined $attr{'quote_char'}) {
+	my @b = unpack "U0C*", $attr{'quote_char'};
 	if (@b > 1) {
-	    $attr{quote} = $attr{quote_char};
-	    $attr{quote_char} = "\0";
+	    $attr{'quote'} = $attr{'quote_char'};
+	    $attr{'quote_char'} = "\0";
 	    }
 	else {
-	    $attr{quote} = undef;
+	    $attr{'quote'} = undef;
 	    }
 	}
 
     my $self = { %def_attr, %attr };
     if (my $ec = _check_sanity ($self)) {
 	$last_new_err = Text::CSV_XS->SetDiag ($ec);
-	$attr{auto_diag} and error_diag ();
+	$attr{'auto_diag'} and error_diag ();
 	return;
 	}
-    if (defined $self->{callbacks} && ref $self->{callbacks} ne "HASH") {
+    if (defined $self->{'callbacks'} && ref $self->{'callbacks'} ne "HASH") {
 	carp "The 'callbacks' attribute is set but is not a hash: ignored\n";
-	$self->{callbacks} = undef;
+	$self->{'callbacks'} = undef;
 	}
 
     $last_new_err = Text::CSV_XS->SetDiag (0);
-    defined $\ && !exists $attr{eol} and $self->{eol} = $\;
+    defined $\ && !exists $attr{'eol'} and $self->{'eol'} = $\;
     bless $self, $class;
-    defined $self->{types} and $self->types ($self->{types});
-    defined $attr_formula  and $self->{formula} = _supported_formula ($self, $attr_formula);
+    defined $self->{'types'} and $self->types ($self->{'types'});
+    defined $attr_formula  and $self->{'formula'} = _supported_formula ($self, $attr_formula);
     $self;
     } # new
 
 # Keep in sync with XS!
 my %_cache_id = ( # Only expose what is accessed from within PM
-    quote_char			=>  0,
-    escape_char			=>  1,
-    sep_char			=>  2,
-    sep				=> 39,	# 39 .. 55
-    binary			=>  3,
-    keep_meta_info		=>  4,
-    always_quote		=>  5,
-    allow_loose_quotes		=>  6,
-    allow_loose_escapes		=>  7,
-    allow_unquoted_escape	=>  8,
-    allow_whitespace		=>  9,
-    blank_is_undef		=> 10,
-    eol				=> 11,
-    quote			=> 15,
-    verbatim			=> 22,
-    empty_is_undef		=> 23,
-    auto_diag			=> 24,
-    diag_verbose		=> 33,
-    quote_space			=> 25,
-    quote_empty			=> 37,
-    quote_binary		=> 32,
-    escape_null			=> 31,
-    decode_utf8			=> 35,
-    _has_ahead			=> 30,
-    _has_hooks			=> 36,
-    _is_bound			=> 26,	# 26 .. 29
-    formula			=> 38,
-    strict			=> 42,
-    undef_str			=> 46,
-    types			=> 50,
+    'quote_char'			=>  0,
+    'escape_char'			=>  1,
+    'sep_char'			=>  2,
+    'sep'				=> 39,	# 39 .. 55
+    'binary'			=>  3,
+    'keep_meta_info'		=>  4,
+    'always_quote'		=>  5,
+    'allow_loose_quotes'		=>  6,
+    'allow_loose_escapes'		=>  7,
+    'allow_unquoted_escape'	=>  8,
+    'allow_whitespace'		=>  9,
+    'blank_is_undef'		=> 10,
+    'eol'				=> 11,
+    'quote'			=> 15,
+    'verbatim'			=> 22,
+    'empty_is_undef'		=> 23,
+    'auto_diag'			=> 24,
+    'diag_verbose'		=> 33,
+    'quote_space'			=> 25,
+    'quote_empty'			=> 37,
+    'quote_binary'		=> 32,
+    'escape_null'			=> 31,
+    'decode_utf8'			=> 35,
+    '_has_ahead'			=> 30,
+    '_has_hooks'			=> 36,
+    '_is_bound'			=> 26,	# 26 .. 29
+    'formula'			=> 38,
+    'strict'			=> 42,
+    'undef_str'			=> 46,
+    'types'			=> 50,
     );
 
 # A `character'
@@ -301,9 +301,9 @@ sub quote_char {
     my $self = shift;
     if (@_) {
 	$self->_set_attr_C ("quote_char", shift);
-	$self->_cache_set ($_cache_id{quote}, "");
+	$self->_cache_set ($_cache_id{'quote'}, "");
 	}
-    $self->{quote_char};
+    $self->{'quote_char'};
     } # quote_char
 
 sub quote {
@@ -321,15 +321,15 @@ sub quote {
 	    $self->quote_char ($quote);
 	    $quote = "";
 	    }
-	$self->{quote} = $quote;
+	$self->{'quote'} = $quote;
 
 	my $ec = _check_sanity ($self);
 	$ec and croak ($self->SetDiag ($ec));
 
-	$self->_cache_set ($_cache_id{quote}, $quote);
+	$self->_cache_set ($_cache_id{'quote'}, $quote);
 	}
-    my $quote = $self->{quote};
-    defined $quote && length ($quote) ? $quote : $self->{quote_char};
+    my $quote = $self->{'quote'};
+    defined $quote && length ($quote) ? $quote : $self->{'quote_char'};
     } # quote
 
 sub escape_char {
@@ -339,16 +339,16 @@ sub escape_char {
 	$self->_set_attr_C ("escape_char", $ec);
 	$ec or $self->_set_attr_X ("escape_null", 0);
 	}
-    $self->{escape_char};
+    $self->{'escape_char'};
     } # escape_char
 
 sub sep_char {
     my $self = shift;
     if (@_) {
 	$self->_set_attr_C ("sep_char", shift);
-	$self->_cache_set ($_cache_id{sep}, "");
+	$self->_cache_set ($_cache_id{'sep'}, "");
 	}
-    $self->{sep_char};
+    $self->{'sep_char'};
     } # sep_char
 
 sub sep {
@@ -366,15 +366,15 @@ sub sep {
 	    $self->sep_char ($sep);
 	    $sep = "";
 	    }
-	$self->{sep} = $sep;
+	$self->{'sep'} = $sep;
 
 	my $ec = _check_sanity ($self);
 	$ec and croak ($self->SetDiag ($ec));
 
-	$self->_cache_set ($_cache_id{sep}, $sep);
+	$self->_cache_set ($_cache_id{'sep'}, $sep);
 	}
-    my $sep = $self->{sep};
-    defined $sep && length ($sep) ? $sep : $self->{sep_char};
+    my $sep = $self->{'sep'};
+    defined $sep && length ($sep) ? $sep : $self->{'sep_char'};
     } # sep
 
 sub eol {
@@ -383,53 +383,53 @@ sub eol {
 	my $eol = shift;
 	defined $eol or $eol = "";
 	length ($eol) > 16 and croak ($self->SetDiag (1005));
-	$self->{eol} = $eol;
-	$self->_cache_set ($_cache_id{eol}, $eol);
+	$self->{'eol'} = $eol;
+	$self->_cache_set ($_cache_id{'eol'}, $eol);
 	}
-    $self->{eol};
+    $self->{'eol'};
     } # eol
 
 sub always_quote {
     my $self = shift;
     @_ and $self->_set_attr_X ("always_quote", shift);
-    $self->{always_quote};
+    $self->{'always_quote'};
     } # always_quote
 
 sub quote_space {
     my $self = shift;
     @_ and $self->_set_attr_X ("quote_space", shift);
-    $self->{quote_space};
+    $self->{'quote_space'};
     } # quote_space
 
 sub quote_empty {
     my $self = shift;
     @_ and $self->_set_attr_X ("quote_empty", shift);
-    $self->{quote_empty};
+    $self->{'quote_empty'};
     } # quote_empty
 
 sub escape_null {
     my $self = shift;
     @_ and $self->_set_attr_X ("escape_null", shift);
-    $self->{escape_null};
+    $self->{'escape_null'};
     } # escape_null
 sub quote_null { goto &escape_null; }
 
 sub quote_binary {
     my $self = shift;
     @_ and $self->_set_attr_X ("quote_binary", shift);
-    $self->{quote_binary};
+    $self->{'quote_binary'};
     } # quote_binary
 
 sub binary {
     my $self = shift;
     @_ and $self->_set_attr_X ("binary", shift);
-    $self->{binary};
+    $self->{'binary'};
     } # binary
 
 sub strict {
     my $self = shift;
     @_ and $self->_set_attr_X ("strict", shift);
-    $self->{strict};
+    $self->{'strict'};
     } # always_quote
 
 sub _SetDiagInfo {
@@ -445,7 +445,7 @@ sub _supported_formula {
     my ($self, $f) = @_;
     defined $f or return 5;
     if ($self && $f && ref $f && ref $f eq "CODE") {
-	$self->{_FORMULA_CB} = $f;
+	$self->{'_FORMULA_CB'} = $f;
 	return 6;
 	}
     $f =~ m/^(?: 0 | none    )$/xi ? 0 :
@@ -463,8 +463,8 @@ sub _supported_formula {
 sub formula {
     my $self = shift;
     @_ and $self->_set_attr_N ("formula", _supported_formula ($self, shift));
-    $self->{formula} == 6 or $self->{_FORMULA_CB} = undef;
-    [qw( none die croak diag empty undef cb )]->[_supported_formula ($self, $self->{formula})];
+    $self->{'formula'} == 6 or $self->{'_FORMULA_CB'} = undef;
+    [qw( none die croak diag empty undef cb )]->[_supported_formula ($self, $self->{'formula'})];
     } # always_quote
 sub formula_handling {
     my $self = shift;
@@ -474,7 +474,7 @@ sub formula_handling {
 sub decode_utf8 {
     my $self = shift;
     @_ and $self->_set_attr_X ("decode_utf8", shift);
-    $self->{decode_utf8};
+    $self->{'decode_utf8'};
     } # decode_utf8
 
 sub keep_meta_info {
@@ -485,19 +485,19 @@ sub keep_meta_info {
 	$v =~ m/^[0-9]/ or $v = lc $v eq "false" ? 0 : 1; # true/truth = 1
 	$self->_set_attr_X ("keep_meta_info", $v);
 	}
-    $self->{keep_meta_info};
+    $self->{'keep_meta_info'};
     } # keep_meta_info
 
 sub allow_loose_quotes {
     my $self = shift;
     @_ and $self->_set_attr_X ("allow_loose_quotes", shift);
-    $self->{allow_loose_quotes};
+    $self->{'allow_loose_quotes'};
     } # allow_loose_quotes
 
 sub allow_loose_escapes {
     my $self = shift;
     @_ and $self->_set_attr_X ("allow_loose_escapes", shift);
-    $self->{allow_loose_escapes};
+    $self->{'allow_loose_escapes'};
     } # allow_loose_escapes
 
 sub allow_whitespace {
@@ -508,41 +508,41 @@ sub allow_whitespace {
 	    croak ($self->SetDiag (1002));
 	$self->_set_attr_X ("allow_whitespace", $aw);
 	}
-    $self->{allow_whitespace};
+    $self->{'allow_whitespace'};
     } # allow_whitespace
 
 sub allow_unquoted_escape {
     my $self = shift;
     @_ and $self->_set_attr_X ("allow_unquoted_escape", shift);
-    $self->{allow_unquoted_escape};
+    $self->{'allow_unquoted_escape'};
     } # allow_unquoted_escape
 
 sub blank_is_undef {
     my $self = shift;
     @_ and $self->_set_attr_X ("blank_is_undef", shift);
-    $self->{blank_is_undef};
+    $self->{'blank_is_undef'};
     } # blank_is_undef
 
 sub empty_is_undef {
     my $self = shift;
     @_ and $self->_set_attr_X ("empty_is_undef", shift);
-    $self->{empty_is_undef};
+    $self->{'empty_is_undef'};
     } # empty_is_undef
 
 sub verbatim {
     my $self = shift;
     @_ and $self->_set_attr_X ("verbatim", shift);
-    $self->{verbatim};
+    $self->{'verbatim'};
     } # verbatim
 
 sub undef_str {
     my $self = shift;
     if (@_) {
 	my $v = shift;
-	$self->{undef_str} = defined $v ? "$v" : undef;
-	$self->_cache_set ($_cache_id{undef_str}, $self->{undef_str});
+	$self->{'undef_str'} = defined $v ? "$v" : undef;
+	$self->_cache_set ($_cache_id{'undef_str'}, $self->{'undef_str'});
 	}
-    $self->{undef_str};
+    $self->{'undef_str'};
     } # undef_str
 
 sub auto_diag {
@@ -553,7 +553,7 @@ sub auto_diag {
 	$v =~ m/^[0-9]/ or $v = lc $v eq "false" ? 0 : 1; # true/truth = 1
 	$self->_set_attr_X ("auto_diag", $v);
 	}
-    $self->{auto_diag};
+    $self->{'auto_diag'};
     } # auto_diag
 
 sub diag_verbose {
@@ -564,7 +564,7 @@ sub diag_verbose {
 	$v =~ m/^[0-9]/ or $v = lc $v eq "false" ? 0 : 1; # true/truth = 1
 	$self->_set_attr_X ("diag_verbose", $v);
 	}
-    $self->{diag_verbose};
+    $self->{'diag_verbose'};
     } # diag_verbose
 
 # status
@@ -574,31 +574,31 @@ sub diag_verbose {
 
 sub status {
     my $self = shift;
-    return $self->{_STATUS};
+    return $self->{'_STATUS'};
     } # status
 
 sub eof {
     my $self = shift;
-    return $self->{_EOF};
+    return $self->{'_EOF'};
     } # status
 
 sub types {
     my $self = shift;
     if (@_) {
 	if (my $types = shift) {
-	    $self->{_types} = join "", map { chr } @{$types};
-	    $self->{types}  = $types;
-	    $self->_cache_set ($_cache_id{types}, $self->{_types});
+	    $self->{'_types'} = join "", map { chr } @{$types};
+	    $self->{'types'}  = $types;
+	    $self->_cache_set ($_cache_id{'types'}, $self->{'_types'});
 	    }
 	else {
-	    delete $self->{types};
-	    delete $self->{_types};
-	    $self->_cache_set ($_cache_id{types}, undef);
+	    delete $self->{'types'};
+	    delete $self->{'_types'};
+	    $self->_cache_set ($_cache_id{'types'}, undef);
 	    undef;
 	    }
 	}
     else {
-	$self->{types};
+	$self->{'types'};
 	}
     } # types
 
@@ -618,18 +618,18 @@ sub callbacks {
 		$cbk =~ m/^[\w.]+$/ && ref $cb->{$cbk} eq "CODE" or
 		    croak ($self->SetDiag (1004));
 		}
-	    exists $cb->{error}        and $hf |= 0x01;
-	    exists $cb->{after_parse}  and $hf |= 0x02;
-	    exists $cb->{before_print} and $hf |= 0x04;
+	    exists $cb->{'error'}        and $hf |= 0x01;
+	    exists $cb->{'after_parse'}  and $hf |= 0x02;
+	    exists $cb->{'before_print'} and $hf |= 0x04;
 	    }
 	elsif (@_ > 1) {
 	    # (undef, whatever)
 	    croak ($self->SetDiag (1004));
 	    }
 	$self->_set_attr_X ("_has_hooks", $hf);
-	$self->{callbacks} = $cb;
+	$self->{'callbacks'} = $cb;
 	}
-    $self->{callbacks};
+    $self->{'callbacks'};
     } # callbacks
 
 # error_diag
@@ -644,15 +644,15 @@ sub error_diag {
     # Docs state to NEVER use UNIVERSAL::isa, because it will *never* call an
     # overridden isa method in any class. Well, that is exacly what I want here
     if ($self && ref $self and # Not a class method or direct call
-	 UNIVERSAL::isa ($self, __PACKAGE__) && exists $self->{_ERROR_DIAG}) {
-	$diag[0] = 0 + $self->{_ERROR_DIAG};
-	$diag[1] =     $self->{_ERROR_DIAG};
-	$diag[2] = 1 + $self->{_ERROR_POS} if exists $self->{_ERROR_POS};
-	$diag[3] =     $self->{_RECNO};
-	$diag[4] =     $self->{_ERROR_FLD} if exists $self->{_ERROR_FLD};
+	 UNIVERSAL::isa ($self, __PACKAGE__) && exists $self->{'_ERROR_DIAG'}) {
+	$diag[0] = 0 + $self->{'_ERROR_DIAG'};
+	$diag[1] =     $self->{'_ERROR_DIAG'};
+	$diag[2] = 1 + $self->{'_ERROR_POS'} if exists $self->{'_ERROR_POS'};
+	$diag[3] =     $self->{'_RECNO'};
+	$diag[4] =     $self->{'_ERROR_FLD'} if exists $self->{'_ERROR_FLD'};
 
-	$diag[0] && $self->{callbacks} && $self->{callbacks}{error} and
-	    return $self->{callbacks}{error}->(@diag);
+	$diag[0] && $self->{'callbacks'} && $self->{'callbacks'}{'error'} and
+	    return $self->{'callbacks'}{'error'}->(@diag);
 	}
 
     my $context = wantarray;
@@ -667,18 +667,18 @@ sub error_diag {
 		return;
 		}
 
-	    if ($self->{diag_verbose} and $self->{_ERROR_INPUT}) {
+	    if ($self->{'diag_verbose'} and $self->{'_ERROR_INPUT'}) {
 		$msg .= "$self->{_ERROR_INPUT}'\n";
 		$msg .= " " x ($diag[2] - 1);
 		$msg .= "^\n";
 		}
 
-	    my $lvl = $self->{auto_diag};
+	    my $lvl = $self->{'auto_diag'};
 	    if ($lvl < 2) {
 		my @c = caller (2);
 		if (@c >= 11 && $c[10] && ref $c[10] eq "HASH") {
 		    my $hints = $c[10];
-		    (exists $hints->{autodie} && $hints->{autodie} or
+		    (exists $hints->{'autodie'} && $hints->{'autodie'} or
 		     exists $hints->{"guard Fatal"} &&
 		    !exists $hints->{"no Fatal"}) and
 			$lvl++;
@@ -696,7 +696,7 @@ sub error_diag {
 
 sub record_number {
     my $self = shift;
-    return $self->{_RECNO};
+    return $self->{'_RECNO'};
     } # record_number
 
 # string
@@ -707,7 +707,7 @@ sub record_number {
 
 sub string {
     my $self = shift;
-    return ref $self->{_STRING} ? ${$self->{_STRING}} : undef;
+    return ref $self->{'_STRING'} ? ${$self->{'_STRING'}} : undef;
     } # string
 
 # fields
@@ -718,7 +718,7 @@ sub string {
 
 sub fields {
     my $self = shift;
-    return ref $self->{_FIELDS} ? @{$self->{_FIELDS}} : undef;
+    return ref $self->{'_FIELDS'} ? @{$self->{'_FIELDS'}} : undef;
     } # fields
 
 # meta_info
@@ -730,28 +730,28 @@ sub fields {
 
 sub meta_info {
     my $self = shift;
-    return ref $self->{_FFLAGS} ? @{$self->{_FFLAGS}} : undef;
+    return ref $self->{'_FFLAGS'} ? @{$self->{'_FFLAGS'}} : undef;
     } # meta_info
 
 sub is_quoted {
     my ($self, $idx) = @_;
-    ref $self->{_FFLAGS} &&
-	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
-    $self->{_FFLAGS}[$idx] & 0x0001 ? 1 : 0;
+    ref $self->{'_FFLAGS'} &&
+	$idx >= 0 && $idx < @{$self->{'_FFLAGS'}} or return;
+    $self->{'_FFLAGS'}[$idx] & 0x0001 ? 1 : 0;
     } # is_quoted
 
 sub is_binary {
     my ($self, $idx) = @_;
-    ref $self->{_FFLAGS} &&
-	$idx >= 0 && $idx < @{$self->{_FFLAGS}} or return;
-    $self->{_FFLAGS}[$idx] & 0x0002 ? 1 : 0;
+    ref $self->{'_FFLAGS'} &&
+	$idx >= 0 && $idx < @{$self->{'_FFLAGS'}} or return;
+    $self->{'_FFLAGS'}[$idx] & 0x0002 ? 1 : 0;
     } # is_binary
 
 sub is_missing {
     my ($self, $idx) = @_;
-    $idx < 0 || !ref $self->{_FFLAGS} and return;
-    $idx >= @{$self->{_FFLAGS}} and return 1;
-    $self->{_FFLAGS}[$idx] & 0x0010 ? 1 : 0;
+    $idx < 0 || !ref $self->{'_FFLAGS'} and return;
+    $idx >= @{$self->{'_FFLAGS'}} and return 1;
+    $self->{'_FFLAGS'}[$idx] & 0x0010 ? 1 : 0;
     } # is_missing
 
 # combine
@@ -768,10 +768,10 @@ sub is_missing {
 sub combine {
     my $self = shift;
     my $str  = "";
-    $self->{_FIELDS} = \@_;
-    $self->{_STATUS} = (@_ > 0) && $self->Combine (\$str, \@_, 0);
-    $self->{_STRING} = \$str;
-    $self->{_STATUS};
+    $self->{'_FIELDS'} = \@_;
+    $self->{'_STATUS'} = (@_ > 0) && $self->Combine (\$str, \@_, 0);
+    $self->{'_STRING'} = \$str;
+    $self->{'_STATUS'};
     } # combine
 
 # parse
@@ -793,27 +793,27 @@ sub parse {
 
     my $fields = [];
     my $fflags = [];
-    $self->{_STRING} = \$str;
+    $self->{'_STRING'} = \$str;
     if (defined $str && $self->Parse ($str, $fields, $fflags)) {
-	$self->{_FIELDS} = $fields;
-	$self->{_FFLAGS} = $fflags;
-	$self->{_STATUS} = 1;
+	$self->{'_FIELDS'} = $fields;
+	$self->{'_FFLAGS'} = $fflags;
+	$self->{'_STATUS'} = 1;
 	}
     else {
-	$self->{_FIELDS} = undef;
-	$self->{_FFLAGS} = undef;
-	$self->{_STATUS} = 0;
+	$self->{'_FIELDS'} = undef;
+	$self->{'_FFLAGS'} = undef;
+	$self->{'_STATUS'} = 0;
 	}
-    $self->{_STATUS};
+    $self->{'_STATUS'};
     } # parse
 
 sub column_names {
     my ($self, @keys) = @_;
     @keys or
-	return defined $self->{_COLUMN_NAMES} ? @{$self->{_COLUMN_NAMES}} : ();
+	return defined $self->{'_COLUMN_NAMES'} ? @{$self->{'_COLUMN_NAMES'}} : ();
 
     @keys == 1 && ! defined $keys[0] and
-	return $self->{_COLUMN_NAMES} = undef;
+	return $self->{'_COLUMN_NAMES'} = undef;
 
     if (@keys == 1 && ref $keys[0] eq "ARRAY") {
 	@keys = @{$keys[0]};
@@ -822,11 +822,11 @@ sub column_names {
 	croak ($self->SetDiag (3001));
 	}
 
-    $self->{_BOUND_COLUMNS} && @keys != @{$self->{_BOUND_COLUMNS}} and
+    $self->{'_BOUND_COLUMNS'} && @keys != @{$self->{'_BOUND_COLUMNS'}} and
 	croak ($self->SetDiag (3003));
 
-    $self->{_COLUMN_NAMES} = [ map { defined $_ ? $_ : "\cAUNDEF\cA" } @keys ];
-    @{$self->{_COLUMN_NAMES}};
+    $self->{'_COLUMN_NAMES'} = [ map { defined $_ ? $_ : "\cAUNDEF\cA" } @keys ];
+    @{$self->{'_COLUMN_NAMES'}};
     } # column_names
 
 sub header {
@@ -847,22 +847,22 @@ sub header {
 	croak (q{usage: $csv->header ($fh, [ seps ], { options })});
 	}
 
-    defined $args{munge} && !defined $args{munge_column_names} and
-	$args{munge_column_names} = $args{munge}; # munge as alias
-    defined $args{detect_bom}         or $args{detect_bom}         = 1;
-    defined $args{set_column_names}   or $args{set_column_names}   = 1;
-    defined $args{munge_column_names} or $args{munge_column_names} = "lc";
+    defined $args{'munge'} && !defined $args{'munge_column_names'} and
+	$args{'munge_column_names'} = $args{'munge'}; # munge as alias
+    defined $args{'detect_bom'}         or $args{'detect_bom'}         = 1;
+    defined $args{'set_column_names'}   or $args{'set_column_names'}   = 1;
+    defined $args{'munge_column_names'} or $args{'munge_column_names'} = "lc";
 
     # Reset any previous leftovers
-    $self->{_RECNO}		= 0;
-    $self->{_AHEAD}		= undef;
-    $self->{_COLUMN_NAMES}	= undef if $args{set_column_names};
-    $self->{_BOUND_COLUMNS}	= undef if $args{set_column_names};
+    $self->{'_RECNO'}		= 0;
+    $self->{'_AHEAD'}		= undef;
+    $self->{'_COLUMN_NAMES'}	= undef if $args{'set_column_names'};
+    $self->{'_BOUND_COLUMNS'}	= undef if $args{'set_column_names'};
 
-    if (defined $args{sep_set}) {
-	ref $args{sep_set} eq "ARRAY" or
+    if (defined $args{'sep_set'}) {
+	ref $args{'sep_set'} eq "ARRAY" or
 	    croak ($self->_SetDiagInfo (1500, "sep_set should be an array ref"));
-	@seps =  @{$args{sep_set}};
+	@seps =  @{$args{'sep_set'}};
 	}
 
     $^O eq "MSWin32" and binmode $fh;
@@ -880,7 +880,7 @@ sub header {
 
     $self->sep (keys %sep);
     my $enc = "";
-    if ($args{detect_bom}) { # UTF-7 is not supported
+    if ($args{'detect_bom'}) { # UTF-7 is not supported
 	   if ($hdr =~ s/^\x00\x00\xfe\xff//) { $enc = "utf-32be"   }
 	elsif ($hdr =~ s/^\xff\xfe\x00\x00//) { $enc = "utf-32le"   }
 	elsif ($hdr =~ s/^\xfe\xff//)         { $enc = "utf-16be"   }
@@ -893,7 +893,7 @@ sub header {
 	elsif ($hdr =~ s/^\x84\x31\x95\x33//) { $enc = "gb-18030"   }
 	elsif ($hdr =~ s/^\x{feff}//)         { $enc = ""           }
 
-	$self->{ENCODING} = $enc ? uc $enc : undef;
+	$self->{'ENCODING'} = $enc ? uc $enc : undef;
 
 	$hdr eq "" and croak ($self->SetDiag (1010));
 
@@ -922,8 +922,8 @@ sub header {
 	$ahead = $3;
 	}
 
-    $args{munge_column_names} eq "lc" and $hdr = lc $hdr;
-    $args{munge_column_names} eq "uc" and $hdr = uc $hdr;
+    $args{'munge_column_names'} eq "lc" and $hdr = lc $hdr;
+    $args{'munge_column_names'} eq "uc" and $hdr = uc $hdr;
 
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
     open my $h, "<", $hr or croak ($self->SetDiag (1010));
@@ -931,7 +931,7 @@ sub header {
     my $row = $self->getline ($h) or croak;
     close $h;
 
-    if ($args{munge_column_names} eq "db") {
+    if ($args{'munge_column_names'} eq "db") {
 	for (@$row) {
 	    s/\W+/_/g;
 	    s/^_+//;
@@ -940,65 +940,65 @@ sub header {
 	}
 
     if ($ahead) { # Must be after getline, which creates the cache
-	$self->_cache_set ($_cache_id{_has_ahead}, 1);
-	$self->{_AHEAD} = $ahead;
+	$self->_cache_set ($_cache_id{'_has_ahead'}, 1);
+	$self->{'_AHEAD'} = $ahead;
 	$eol =~ m/^\r([^\n]|\z)/ and $self->eol ($eol);
 	}
 
     my @hdr = @$row;
-    ref $args{munge_column_names} eq "CODE" and
-	@hdr = map { $args{munge_column_names}->($_)       } @hdr;
-    ref $args{munge_column_names} eq "HASH" and
-	@hdr = map { $args{munge_column_names}->{$_} || $_ } @hdr;
+    ref $args{'munge_column_names'} eq "CODE" and
+	@hdr = map { $args{'munge_column_names'}->($_)       } @hdr;
+    ref $args{'munge_column_names'} eq "HASH" and
+	@hdr = map { $args{'munge_column_names'}->{$_} || $_ } @hdr;
     my %hdr; $hdr{$_}++ for @hdr;
     exists $hdr{""} and croak ($self->SetDiag (1012));
     unless (keys %hdr == @hdr) {
 	croak ($self->_SetDiagInfo (1013, join ", " =>
 	    map { "$_ ($hdr{$_})" } grep { $hdr{$_} > 1 } keys %hdr));
 	}
-    $args{set_column_names} and $self->column_names (@hdr);
+    $args{'set_column_names'} and $self->column_names (@hdr);
     wantarray ? @hdr : $self;
     } # header
 
 sub bind_columns {
     my ($self, @refs) = @_;
     @refs or
-	return defined $self->{_BOUND_COLUMNS} ? @{$self->{_BOUND_COLUMNS}} : undef;
+	return defined $self->{'_BOUND_COLUMNS'} ? @{$self->{'_BOUND_COLUMNS'}} : undef;
 
     if (@refs == 1 && ! defined $refs[0]) {
-	$self->{_COLUMN_NAMES} = undef;
-	return $self->{_BOUND_COLUMNS} = undef;
+	$self->{'_COLUMN_NAMES'} = undef;
+	return $self->{'_BOUND_COLUMNS'} = undef;
 	}
 
-    $self->{_COLUMN_NAMES} && @refs != @{$self->{_COLUMN_NAMES}} and
+    $self->{'_COLUMN_NAMES'} && @refs != @{$self->{'_COLUMN_NAMES'}} and
 	croak ($self->SetDiag (3003));
 
     join "", map { ref $_ eq "SCALAR" ? "" : "*" } @refs and
 	croak ($self->SetDiag (3004));
 
     $self->_set_attr_N ("_is_bound", scalar @refs);
-    $self->{_BOUND_COLUMNS} = [ @refs ];
+    $self->{'_BOUND_COLUMNS'} = [ @refs ];
     @refs;
     } # bind_columns
 
 sub getline_hr {
     my ($self, @args, %hr) = @_;
-    $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
+    $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3002));
     my $fr = $self->getline (@args) or return;
-    if (ref $self->{_FFLAGS}) { # missing
-	$self->{_FFLAGS}[$_] = 0x0010
-	    for (@$fr ? $#{$fr} + 1 : 0) .. $#{$self->{_COLUMN_NAMES}};
+    if (ref $self->{'_FFLAGS'}) { # missing
+	$self->{'_FFLAGS'}[$_] = 0x0010
+	    for (@$fr ? $#{$fr} + 1 : 0) .. $#{$self->{'_COLUMN_NAMES'}};
 	@$fr == 1 && (!defined $fr->[0] || $fr->[0] eq "") and
-	    $self->{_FFLAGS}[0] ||= 0x0010;
+	    $self->{'_FFLAGS'}[0] ||= 0x0010;
 	}
-    @hr{@{$self->{_COLUMN_NAMES}}} = @$fr;
+    @hr{@{$self->{'_COLUMN_NAMES'}}} = @$fr;
     \%hr;
     } # getline_hr
 
 sub getline_hr_all {
     my ($self, @args) = @_;
-    $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3002));
-    my @cn = @{$self->{_COLUMN_NAMES}};
+    $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3002));
+    my @cn = @{$self->{'_COLUMN_NAMES'}};
     [ map { my %h; @h{@cn} = @$_; \%h } @{$self->getline_all (@args)} ];
     } # getline_hr_all
 
@@ -1014,7 +1014,7 @@ sub say {
 
 sub print_hr {
     my ($self, $io, $hr) = @_;
-    $self->{_COLUMN_NAMES} or croak ($self->SetDiag (3009));
+    $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3009));
     ref $hr eq "HASH"      or croak ($self->SetDiag (3010));
     $self->print ($io, [ map { $hr->{$_} } $self->column_names ]);
     } # print_hr
@@ -1125,10 +1125,10 @@ my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 sub _csv_attr {
     my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or croak;
 
-    $attr{binary} = 1;
+    $attr{'binary'} = 1;
 
-    my $enc = delete $attr{enc} || delete $attr{encoding} || "";
-    $enc eq "auto" and ($attr{detect_bom}, $enc) = (1, "");
+    my $enc = delete $attr{'enc'} || delete $attr{'encoding'} || "";
+    $enc eq "auto" and ($attr{'detect_bom'}, $enc) = (1, "");
     my $stack = $enc =~ s/(:\w.*)// ? $1 : "";
     $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
     $enc .= $stack;
@@ -1136,9 +1136,9 @@ sub _csv_attr {
     my $fh;
     my $sink = 0;
     my $cls  = 0;	# If I open a file, I have to close it
-    my $in   = delete $attr{in}  || delete $attr{file} or croak $csv_usage;
-    my $out  = exists $attr{out} && !$attr{out} ? \"skip"
-	     : delete $attr{out} || delete $attr{file};
+    my $in   = delete $attr{'in'}  || delete $attr{'file'} or croak $csv_usage;
+    my $out  = exists $attr{'out'} && !$attr{'out'} ? \"skip"
+	     : delete $attr{'out'} || delete $attr{'file'};
 
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
@@ -1151,7 +1151,7 @@ sub _csv_attr {
 	    $fh = $out;
 	    }
 	elsif (ref $out and "SCALAR" eq ref $out and defined $$out and $$out eq "skip") {
-	    delete $attr{out};
+	    delete $attr{'out'};
 	    $sink = 1;
 	    }
 	else {
@@ -1163,9 +1163,9 @@ sub _csv_attr {
 		binmode $fh, $enc;
 		my $fn = fileno $fh; # This is a workaround for a bug in PerlIO::via::gzip
 		}
-	    unless (defined $attr{eol}) {
+	    unless (defined $attr{'eol'}) {
 		my @layers = eval { PerlIO::get_layers ($fh) };
-		$attr{eol} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
+		$attr{'eol'} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
 		}
 	    }
 	}
@@ -1193,80 +1193,80 @@ sub _csv_attr {
 	}
     $fh || $sink or croak qq{No valid source passed. "in" is required};
 
-    my $hdrs = delete $attr{headers};
-    my $frag = delete $attr{fragment};
-    my $key  = delete $attr{key};
-    my $val  = delete $attr{value};
-    my $kh   = delete $attr{keep_headers}	    ||
-	       delete $attr{keep_column_names}      ||
-	       delete $attr{kh};
+    my $hdrs = delete $attr{'headers'};
+    my $frag = delete $attr{'fragment'};
+    my $key  = delete $attr{'key'};
+    my $val  = delete $attr{'value'};
+    my $kh   = delete $attr{'keep_headers'}	    ||
+	       delete $attr{'keep_column_names'}      ||
+	       delete $attr{'kh'};
 
-    my $cbai = delete $attr{callbacks}{after_in}    ||
-	       delete $attr{after_in}               ||
-	       delete $attr{callbacks}{after_parse} ||
-	       delete $attr{after_parse};
-    my $cbbo = delete $attr{callbacks}{before_out}  ||
-	       delete $attr{before_out};
-    my $cboi = delete $attr{callbacks}{on_in}       ||
-	       delete $attr{on_in};
+    my $cbai = delete $attr{'callbacks'}{'after_in'}    ||
+	       delete $attr{'after_in'}               ||
+	       delete $attr{'callbacks'}{'after_parse'} ||
+	       delete $attr{'after_parse'};
+    my $cbbo = delete $attr{'callbacks'}{'before_out'}  ||
+	       delete $attr{'before_out'};
+    my $cboi = delete $attr{'callbacks'}{'on_in'}       ||
+	       delete $attr{'on_in'};
 
-    my $hd_s = delete $attr{sep_set}                ||
-	       delete $attr{seps};
-    my $hd_b = delete $attr{detect_bom}             ||
-	       delete $attr{bom};
-    my $hd_m = delete $attr{munge}                  ||
-	       delete $attr{munge_column_names};
-    my $hd_c = delete $attr{set_column_names};
+    my $hd_s = delete $attr{'sep_set'}                ||
+	       delete $attr{'seps'};
+    my $hd_b = delete $attr{'detect_bom'}             ||
+	       delete $attr{'bom'};
+    my $hd_m = delete $attr{'munge'}                  ||
+	       delete $attr{'munge_column_names'};
+    my $hd_c = delete $attr{'set_column_names'};
 
-    for ([ quo    => "quote"		],
-	 [ esc    => "escape"		],
-	 [ escape => "escape_char"	],
+    for ([ 'quo'    => "quote"		],
+	 [ 'esc'    => "escape"		],
+	 [ 'escape' => "escape_char"	],
 	 ) {
 	my ($f, $t) = @$_;
 	exists $attr{$f} and !exists $attr{$t} and $attr{$t} = delete $attr{$f};
 	}
 
-    my $fltr = delete $attr{filter};
+    my $fltr = delete $attr{'filter'};
     my %fltr = (
-	not_blank => sub { @{$_[1]} > 1 or defined $_[1][0] && $_[1][0] ne "" },
-	not_empty => sub { grep { defined && $_ ne "" } @{$_[1]} },
-	filled    => sub { grep { defined && m/\S/    } @{$_[1]} },
+	'not_blank' => sub { @{$_[1]} > 1 or defined $_[1][0] && $_[1][0] ne "" },
+	'not_empty' => sub { grep { defined && $_ ne "" } @{$_[1]} },
+	'filled'    => sub { grep { defined && m/\S/    } @{$_[1]} },
 	);
     defined $fltr && !ref $fltr && exists $fltr{$fltr} and
-	$fltr = { 0 => $fltr{$fltr} };
+	$fltr = { '0' => $fltr{$fltr} };
     ref $fltr eq "CODE" and $fltr = { 0 => $fltr };
     ref $fltr eq "HASH" or  $fltr = undef;
 
-    my $form = delete $attr{formula};
+    my $form = delete $attr{'formula'};
 
-    defined $attr{auto_diag}   or $attr{auto_diag}   = 1;
-    defined $attr{escape_null} or $attr{escape_null} = 0;
-    my $csv = delete $attr{csv} || Text::CSV_XS->new (\%attr)
+    defined $attr{'auto_diag'}   or $attr{'auto_diag'}   = 1;
+    defined $attr{'escape_null'} or $attr{'escape_null'} = 0;
+    my $csv = delete $attr{'csv'} || Text::CSV_XS->new (\%attr)
 	or croak $last_new_err;
     defined $form and $csv->formula ($form);
 
     return {
-	csv  => $csv,
-	attr => { %attr },
-	fh   => $fh,
-	cls  => $cls,
-	in   => $in,
-	sink => $sink,
-	out  => $out,
-	enc  => $enc,
-	hdrs => $hdrs,
-	key  => $key,
-	val  => $val,
-	kh   => $kh,
-	frag => $frag,
-	fltr => $fltr,
-	cbai => $cbai,
-	cbbo => $cbbo,
-	cboi => $cboi,
-	hd_s => $hd_s,
-	hd_b => $hd_b,
-	hd_m => $hd_m,
-	hd_c => $hd_c,
+	'csv'  => $csv,
+	'attr' => { %attr },
+	'fh'   => $fh,
+	'cls'  => $cls,
+	'in'   => $in,
+	'sink' => $sink,
+	'out'  => $out,
+	'enc'  => $enc,
+	'hdrs' => $hdrs,
+	'key'  => $key,
+	'val'  => $val,
+	'kh'   => $kh,
+	'frag' => $frag,
+	'fltr' => $fltr,
+	'cbai' => $cbai,
+	'cbbo' => $cbbo,
+	'cboi' => $cboi,
+	'hd_s' => $hd_s,
+	'hd_b' => $hd_b,
+	'hd_m' => $hd_m,
+	'hd_c' => $hd_c,
 	};
     } # _csv_attr
 
@@ -1283,7 +1283,7 @@ sub csv {
 	$hdrs = "auto";
 	}
 
-    if ($c->{out} && !$c->{sink}) {
+    if ($c->{'out'} && !$c->{'sink'}) {
 	if (ref $in eq "CODE") {
 	    my $hdr = 1;
 	    while (my $row = $in->($csv)) {
@@ -1304,8 +1304,8 @@ sub csv {
 	elsif (ref $in->[0] eq "ARRAY") { # aoa
 	    ref $hdrs and $csv->print ($fh, $hdrs);
 	    for (@{$in}) {
-		$c->{cboi} and $c->{cboi}->($csv, $_);
-		$c->{cbbo} and $c->{cbbo}->($csv, $_);
+		$c->{'cboi'} and $c->{'cboi'}->($csv, $_);
+		$c->{'cbbo'} and $c->{'cbbo'}->($csv, $_);
 		$csv->print ($fh, $_);
 		}
 	    }
@@ -1317,45 +1317,45 @@ sub csv {
 	    for (@{$in}) {
 		local %_;
 		*_ = $_;
-		$c->{cboi} and $c->{cboi}->($csv, $_);
-		$c->{cbbo} and $c->{cbbo}->($csv, $_);
+		$c->{'cboi'} and $c->{'cboi'}->($csv, $_);
+		$c->{'cbbo'} and $c->{'cbbo'}->($csv, $_);
 		$csv->print ($fh, [ @{$_}{@hdrs} ]);
 		}
 	    }
 
-	$c->{cls} and close $fh;
+	$c->{'cls'} and close $fh;
 	return 1;
 	}
 
     my @row1;
-    if (defined $c->{hd_s} || defined $c->{hd_b} || defined $c->{hd_m} || defined $c->{hd_c}) {
+    if (defined $c->{'hd_s'} || defined $c->{'hd_b'} || defined $c->{'hd_m'} || defined $c->{'hd_c'}) {
 	my %harg;
-	defined $c->{hd_s} and $harg{set_set}            = $c->{hd_s};
-	defined $c->{hd_d} and $harg{detect_bom}         = $c->{hd_b};
-	defined $c->{hd_m} and $harg{munge_column_names} = $hdrs ? "none" : $c->{hd_m};
-	defined $c->{hd_c} and $harg{set_column_names}   = $hdrs ? 0      : $c->{hd_c};
+	defined $c->{'hd_s'} and $harg{'set_set'}            = $c->{'hd_s'};
+	defined $c->{'hd_d'} and $harg{'detect_bom'}         = $c->{'hd_b'};
+	defined $c->{'hd_m'} and $harg{'munge_column_names'} = $hdrs ? "none" : $c->{'hd_m'};
+	defined $c->{'hd_c'} and $harg{'set_column_names'}   = $hdrs ? 0      : $c->{'hd_c'};
 	@row1 = $csv->header ($fh, \%harg);
 	my @hdr = $csv->column_names;
 	@hdr and $hdrs ||= \@hdr;
 	}
 
-    if ($c->{kh}) {
-	ref $c->{kh} eq "ARRAY" or croak ($csv->SetDiag (1501));
+    if ($c->{'kh'}) {
+	ref $c->{'kh'} eq "ARRAY" or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
 
-    my $key = $c->{key};
+    my $key = $c->{'key'};
     if ($key) {
 	!ref $key or ref $key eq "ARRAY" && @$key > 1 or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
-    my $val = $c->{val};
+    my $val = $c->{'val'};
     if ($val) {
 	$key					      or croak ($csv->SetDiag (1502));
 	!ref $val or ref $val eq "ARRAY" && @$val > 0 or croak ($csv->SetDiag (1503));
 	}
 
-    $c->{fltr} && grep m/\D/ => keys %{$c->{fltr}} and $hdrs ||= "auto";
+    $c->{'fltr'} && grep m/\D/ => keys %{$c->{'fltr'}} and $hdrs ||= "auto";
     if (defined $hdrs) {
 	if (!ref $hdrs) {
 	    if ($hdrs eq "skip") {
@@ -1379,11 +1379,11 @@ sub csv {
 	    my $cr = $hdrs;
 	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @$h ];
 	    }
-	$c->{kh} and $hdrs and @{$c->{kh}} = @$hdrs;
+	$c->{'kh'} and $hdrs and @{$c->{'kh'}} = @$hdrs;
 	}
 
-    if ($c->{fltr}) {
-	my %f = %{$c->{fltr}};
+    if ($c->{'fltr'}) {
+	my %f = %{$c->{'fltr'}};
 	# convert headers to index
 	my @hdr;
 	if (ref $hdrs) {
@@ -1392,7 +1392,7 @@ sub csv {
 		exists $f{$hdr[$_]} and $f{$_ + 1} = delete $f{$hdr[$_]};
 		}
 	    }
-	$csv->callbacks (after_parse => sub {
+	$csv->callbacks ('after_parse' => sub {
 	    my ($CSV, $ROW) = @_; # lexical sub-variables in caps
 	    foreach my $FLD (sort keys %f) {
 		local $_ = $ROW->[$FLD - 1];
@@ -1404,7 +1404,7 @@ sub csv {
 	    });
 	}
 
-    my $frag = $c->{frag};
+    my $frag = $c->{'frag'};
     my $ref = ref $hdrs
 	? # aoh
 	  do {
@@ -1438,26 +1438,26 @@ sub csv {
 	    $frag ? $csv->fragment ($fh, $frag)
 		  : $csv->getline_all ($fh);
     if ($ref) {
-	@row1 && !$c->{hd_c} && !ref $hdrs and unshift @$ref, \@row1;
+	@row1 && !$c->{'hd_c'} && !ref $hdrs and unshift @$ref, \@row1;
 	}
     else {
 	Text::CSV_XS->auto_diag;
 	}
-    $c->{cls} and close $fh;
-    if ($ref and $c->{cbai} || $c->{cboi}) {
+    $c->{'cls'} and close $fh;
+    if ($ref and $c->{'cbai'} || $c->{'cboi'}) {
 	# Default is ARRAYref, but with key =>, you'll get a hashref
 	foreach my $r (ref $ref eq "ARRAY" ? @{$ref} : values %{$ref}) {
 	    local %_;
 	    ref $r eq "HASH" and *_ = $r;
-	    $c->{cbai} and $c->{cbai}->($csv, $r);
-	    $c->{cboi} and $c->{cboi}->($csv, $r);
+	    $c->{'cbai'} and $c->{'cbai'}->($csv, $r);
+	    $c->{'cboi'} and $c->{'cboi'}->($csv, $r);
 	    }
 	}
 
-    $c->{sink} and return;
+    $c->{'sink'} and return;
 
     defined wantarray or
-	return csv (%{$c->{attr}}, in => $ref, headers => $hdrs, %{$c->{attr}});
+	return csv (%{$c->{'attr'}}, 'in' => $ref, 'headers' => $hdrs, %{$c->{'attr'}});
 
     return $ref;
     } # csv
