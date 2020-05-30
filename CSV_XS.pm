@@ -225,7 +225,7 @@ sub new {
 	return;
 	}
     if (defined $self->{'callbacks'} && ref $self->{'callbacks'} ne "HASH") {
-	carp "The 'callbacks' attribute is set but is not a hash: ignored\n";
+	carp("The 'callbacks' attribute is set but is not a hash: ignored\n");
 	$self->{'callbacks'} = undef;
 	}
 
@@ -435,7 +435,7 @@ sub strict {
 sub _SetDiagInfo {
     my ($self, $err, $msg) = @_;
     $self->SetDiag ($err);
-    my $em  = $self->error_diag;
+    my $em  = $self->error_diag();
     $em =~ s/^\d+$// and $msg =~ s/^/# /;
     my $sep = $em =~ m/[;\n]$/ ? "\n\t" : ": ";
     join $sep => grep m/\S\S\S/ => $em, $msg;
@@ -928,7 +928,7 @@ sub header {
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
     open my $h, "<", $hr or croak ($self->SetDiag (1010));
 
-    my $row = $self->getline ($h) or croak;
+    my $row = $self->getline ($h) or croak();
     close $h;
 
     if ($args{'munge_column_names'} eq "db") {
@@ -1004,7 +1004,7 @@ sub getline_hr_all {
 
 sub say {
     my ($self, $io, @f) = @_;
-    my $eol = $self->eol;
+    my $eol = $self->eol();
     $eol eq "" and $self->eol ($\ || $/);
     # say ($fh, undef) does not propage actual undef to print ()
     my $state = $self->print ($io, @f == 1 && !defined $f[0] ? undef : @f);
@@ -1016,7 +1016,7 @@ sub print_hr {
     my ($self, $io, $hr) = @_;
     $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3009));
     ref $hr eq "HASH"      or croak ($self->SetDiag (3010));
-    $self->print ($io, [ map { $hr->{$_} } $self->column_names ]);
+    $self->print ($io, [ map { $hr->{$_} } $self->column_names() ]);
     } # print_hr
 
 sub fragment {
@@ -1123,7 +1123,7 @@ sub fragment {
 my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 
 sub _csv_attr {
-    my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or croak;
+    my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or croak();
 
     $attr{'binary'} = 1;
 
@@ -1136,15 +1136,15 @@ sub _csv_attr {
     my $fh;
     my $sink = 0;
     my $cls  = 0;	# If I open a file, I have to close it
-    my $in   = delete $attr{'in'}  || delete $attr{'file'} or croak $csv_usage;
+    my $in   = delete $attr{'in'}  || delete $attr{'file'} or croak($csv_usage);
     my $out  = exists $attr{'out'} && !$attr{'out'} ? \"skip"
 	     : delete $attr{'out'} || delete $attr{'file'};
 
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
-    $in && $out && !ref $in && !ref $out and croak join "\n" =>
+    $in && $out && !ref $in && !ref $out and croak( join "\n" =>
 	qq{Cannot use a string for both in and out. Instead use:},
-	qq{ csv (in => csv (in => "$in"), out => "$out");\n};
+	qq{ csv (in => csv (in => "$in"), out => "$out");\n});
 
     if ($out) {
 	if ((ref $out and "SCALAR" ne ref $out) or "GLOB" eq ref \$out) {
@@ -1155,7 +1155,7 @@ sub _csv_attr {
 	    $sink = 1;
 	    }
 	else {
-	    open $fh, ">", $out or croak "$out: $!";
+	    open $fh, ">", $out or croak("$out: $!");
 	    $cls = 1;
 	    }
 	if ($fh) {
@@ -1176,7 +1176,7 @@ sub _csv_attr {
     elsif (ref $in eq "SCALAR") {
 	# Strings with code points over 0xFF may not be mapped into in-memory file handles
 	# "<$enc" does not change that :(
-	open $fh, "<", $in or croak "Cannot open from SCALAR using PerlIO";
+	open $fh, "<", $in or croak("Cannot open from SCALAR using PerlIO");
 	$cls = 1;
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
@@ -1188,10 +1188,10 @@ sub _csv_attr {
 	    }
 	}
     else {
-	open $fh, "<$enc", $in or croak "$in: $!";
+	open $fh, "<$enc", $in or croak("$in: $!");
 	$cls = 1;
 	}
-    $fh || $sink or croak qq{No valid source passed. "in" is required};
+    $fh || $sink or croak( qq{No valid source passed. "in" is required} );
 
     my $hdrs = delete $attr{'headers'};
     my $frag = delete $attr{'fragment'};
@@ -1242,7 +1242,7 @@ sub _csv_attr {
     defined $attr{'auto_diag'}   or $attr{'auto_diag'}   = 1;
     defined $attr{'escape_null'} or $attr{'escape_null'} = 0;
     my $csv = delete $attr{'csv'} || Text::CSV_XS->new (\%attr)
-	or croak $last_new_err;
+	or croak($last_new_err);
     defined $form and $csv->formula ($form);
 
     return {
@@ -1335,7 +1335,7 @@ sub csv {
 	defined $c->{'hd_m'} and $harg{'munge_column_names'} = $hdrs ? "none" : $c->{'hd_m'};
 	defined $c->{'hd_c'} and $harg{'set_column_names'}   = $hdrs ? 0      : $c->{'hd_c'};
 	@row1 = $csv->header ($fh, \%harg);
-	my @hdr = $csv->column_names;
+	my @hdr = $csv->column_names();
 	@hdr and $hdrs ||= \@hdr;
 	}
 
@@ -1441,7 +1441,7 @@ sub csv {
 	@row1 && !$c->{'hd_c'} && !ref $hdrs and unshift @$ref, \@row1;
 	}
     else {
-	Text::CSV_XS->auto_diag;
+	Text::CSV_XS->auto_diag();
 	}
     $c->{'cls'} and close $fh;
     if ($ref and $c->{'cbai'} || $c->{'cboi'}) {
