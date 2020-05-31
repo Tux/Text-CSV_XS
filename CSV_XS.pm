@@ -55,26 +55,26 @@ sub version {
 #   a newly created Text::CSV object.
 
 my %def_attr = (
-    'eol'				=> '',
+    'eol'			=> '',
     'sep_char'			=> ',',
-    'quote_char'			=> '"',
-    'escape_char'			=> '"',
+    'quote_char'		=> '"',
+    'escape_char'		=> '"',
     'binary'			=> 0,
-    'decode_utf8'			=> 1,
+    'decode_utf8'		=> 1,
     'auto_diag'			=> 0,
     'diag_verbose'		=> 0,
     'strict'			=> 0,
     'blank_is_undef'		=> 0,
     'empty_is_undef'		=> 0,
     'allow_whitespace'		=> 0,
-    'allow_loose_quotes'		=> 0,
-    'allow_loose_escapes'		=> 0,
+    'allow_loose_quotes'	=> 0,
+    'allow_loose_escapes'	=> 0,
     'allow_unquoted_escape'	=> 0,
     'always_quote'		=> 0,
-    'quote_empty'			=> 0,
-    'quote_space'			=> 1,
+    'quote_empty'		=> 0,
+    'quote_space'		=> 1,
     'quote_binary'		=> 1,
-    'escape_null'			=> 1,
+    'escape_null'		=> 1,
     'keep_meta_info'		=> 0,
     'verbatim'			=> 0,
     'formula'			=> 0,
@@ -92,14 +92,14 @@ my %def_attr = (
     '_COLUMN_NAMES'		=> undef,
     '_BOUND_COLUMNS'		=> undef,
     '_AHEAD'			=> undef,
-    '_FORMULA_CB'			=> undef,
+    '_FORMULA_CB'		=> undef,
 
     'ENCODING'			=> undef,
     );
 my %attr_alias = (
     'quote_always'		=> "always_quote",
     'verbose_diag'		=> "diag_verbose",
-    'quote_null'			=> "escape_null",
+    'quote_null'		=> "escape_null",
     'escape'			=> "escape_char",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
@@ -239,31 +239,31 @@ sub new {
 
 # Keep in sync with XS!
 my %_cache_id = ( # Only expose what is accessed from within PM
-    'quote_char'			=>  0,
-    'escape_char'			=>  1,
+    'quote_char'		=>  0,
+    'escape_char'		=>  1,
     'sep_char'			=>  2,
-    'sep'				=> 39,	# 39 .. 55
+    'sep'			=> 39,	# 39 .. 55
     'binary'			=>  3,
     'keep_meta_info'		=>  4,
     'always_quote'		=>  5,
-    'allow_loose_quotes'		=>  6,
-    'allow_loose_escapes'		=>  7,
+    'allow_loose_quotes'	=>  6,
+    'allow_loose_escapes'	=>  7,
     'allow_unquoted_escape'	=>  8,
     'allow_whitespace'		=>  9,
     'blank_is_undef'		=> 10,
-    'eol'				=> 11,
+    'eol'			=> 11,
     'quote'			=> 15,
     'verbatim'			=> 22,
     'empty_is_undef'		=> 23,
     'auto_diag'			=> 24,
     'diag_verbose'		=> 33,
-    'quote_space'			=> 25,
-    'quote_empty'			=> 37,
+    'quote_space'		=> 25,
+    'quote_empty'		=> 37,
     'quote_binary'		=> 32,
-    'escape_null'			=> 31,
-    'decode_utf8'			=> 35,
-    '_has_ahead'			=> 30,
-    '_has_hooks'			=> 36,
+    'escape_null'		=> 31,
+    'decode_utf8'		=> 35,
+    '_has_ahead'		=> 30,
+    '_has_hooks'		=> 36,
     '_is_bound'			=> 26,	# 26 .. 29
     'formula'			=> 38,
     'strict'			=> 42,
@@ -1197,24 +1197,24 @@ sub _csv_attr {
     my $frag = delete $attr{'fragment'};
     my $key  = delete $attr{'key'};
     my $val  = delete $attr{'value'};
-    my $kh   = delete $attr{'keep_headers'}	    ||
-	       delete $attr{'keep_column_names'}      ||
+    my $kh   = delete $attr{'keep_headers'}		||
+	       delete $attr{'keep_column_names'}	||
 	       delete $attr{'kh'};
 
-    my $cbai = delete $attr{'callbacks'}{'after_in'}    ||
-	       delete $attr{'after_in'}               ||
-	       delete $attr{'callbacks'}{'after_parse'} ||
+    my $cbai = delete $attr{'callbacks'}{'after_in'}	||
+	       delete $attr{'after_in'}			||
+	       delete $attr{'callbacks'}{'after_parse'}	||
 	       delete $attr{'after_parse'};
-    my $cbbo = delete $attr{'callbacks'}{'before_out'}  ||
+    my $cbbo = delete $attr{'callbacks'}{'before_out'}	||
 	       delete $attr{'before_out'};
-    my $cboi = delete $attr{'callbacks'}{'on_in'}       ||
+    my $cboi = delete $attr{'callbacks'}{'on_in'}	||
 	       delete $attr{'on_in'};
 
-    my $hd_s = delete $attr{'sep_set'}                ||
+    my $hd_s = delete $attr{'sep_set'}			||
 	       delete $attr{'seps'};
-    my $hd_b = delete $attr{'detect_bom'}             ||
+    my $hd_b = delete $attr{'detect_bom'}		||
 	       delete $attr{'bom'};
-    my $hd_m = delete $attr{'munge'}                  ||
+    my $hd_m = delete $attr{'munge'}			||
 	       delete $attr{'munge_column_names'};
     my $hd_c = delete $attr{'set_column_names'};
 
@@ -1457,7 +1457,11 @@ sub csv {
     $c->{'sink'} and return;
 
     defined wantarray or
-	return csv (%{$c->{'attr'}}, 'in' => $ref, 'headers' => $hdrs, %{$c->{'attr'}});
+	return csv (
+	    'in'      => $ref,
+	    'headers' => $hdrs,
+	    %{$c->{'attr'}},
+	    );
 
     return $ref;
     } # csv
