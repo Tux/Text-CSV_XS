@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use charnames ":full";
 
 BEGIN {
     if ($] < 5.008001) {

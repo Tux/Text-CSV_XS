@@ -4,6 +4,7 @@
 
 require 5.006001; # <- also see postamble at the bottom for META.yml
 use strict;
+use charnames ":full";
 
 if ($ENV{PERLBREW_HOME} and $ENV{PERLBREW_HOME} eq "/home/njh/.perlbrew") {
      warn "Your smokers have been blocked because of consistent failures that\n";
