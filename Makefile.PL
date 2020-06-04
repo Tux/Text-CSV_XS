@@ -79,8 +79,13 @@ my $rv = WriteMakefile (%wm);
 
 package MY;
 
-sub postamble
-{
+sub postamble {
+    if ($^O eq "os390") { # Re-write test files
+	if (open my $fh, ">:encoding(utf-8)", "files/utf8.csv") {
+	    print $fh qq{"\N{LATIN CAPITAL LETTER O WITH STROKE}l/Vin",0\n};
+	    close $fh;
+	    }
+	}
     my $make_sep = $^O eq "VMS" ? "," : "";
     my $valgrind = join " ", qw(
 	PERL_DESTRUCT_LEVEL=2 PERL_DL_NONLAZY=1

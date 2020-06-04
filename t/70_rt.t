@@ -5,6 +5,7 @@ use warnings;
 
 #use Test::More "no_plan";
  use Test::More tests => 20469;
+ use Config;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -13,6 +14,7 @@ BEGIN {
     }
 
 my $tfn = "_70test.csv"; END { unlink $tfn, "_$tfn"; }
+my $ebcdic = $Config{ebcdic};
 
 my ($rt, %input, %desc);
 while (<DATA>) {
@@ -159,7 +161,7 @@ while (<DATA>) {
 	open my $fh, ">:raw", $tfn or die "$tfn: $!\n";
 	print   $fh @{$input{$rt}};
 	close   $fh;
-	my ($sep, $quo) = ("\x14", "\xfe");
+	my ($sep, $quo) = $ebcdic ? ("\x3c", "\x8e") : ("\x14", "\xfe");
 	chop ($_ = "$_\x{20ac}") for $sep, $quo;
 	ok (my $csv = Text::CSV_XS->new ({ binary => 1, sep_char => $sep }), "RT-$rt: $desc{$rt}");
 	ok ($csv->quote_char ($quo), "Set quote_char");
@@ -480,7 +482,8 @@ SKIP: {	# http://rt.cpan.org/Ticket/Display.html?id=80680
 	my $csv = Text::CSV_XS->new ({ binary => 1 });
 	my %row;
 	ok ($csv->bind_columns (\$row{c1}),	"Bind columns");
-	ok ($csv->parse ("pr\x{c3}\x{b6}blem"),	"Parse utf-8 content");
+	my $oe = $ebcdic ? "\x8e\x62" : "\xc5\x93";
+	ok ($csv->parse ("pr${oe}blem"),	"Parse utf-8 content");
 	is (length $row{c1}, 7,			"Length");
 	ok ($csv->parse (""),			"Parse empty line");
 	is (length $row{c1}, 0,			"Length");
