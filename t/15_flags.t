@@ -118,18 +118,18 @@ sub crnlsp {
 	binary         => 1,
 	quote_space    => 0,
 	});
-    ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"}), "Parse");
+    ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xb6lp,"h\xb6lp"}), "Parse");
     ok (my @f = $csv->fields,				"fields");
     is_deeply (\@f, [ 1, "", "", " ", " ", "f", "g", "h\"h",
-	"h\xe9lp", "h\xeblp" ],				"fields content");
+	"h\xb6lp", "h\xb6lp" ],				"fields content");
     ok ($csv->combine (@f),				"combine");
     is ($csv->string,
-	qq{1,,, , ,f,g,"h""h",h\xe9lp,h\xeblp},		"string 1");
-    ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"}), "Parse");
+	qq{1,,, , ,f,g,"h""h",h\xb6lp,h\xb6lp},		"string 1");
+    ok ($csv->parse (qq{1,,"", ," ",f,"g","h""h",h\xb6lp,"h\xb6lp"}), "Parse");
     is ($csv->keep_meta_info (11), 11,			"keep meta on out");
     ok ($csv->combine (@f),				"combine");
     is ($csv->string,
-	qq{1,,"", ," ",f,"g","h""h",h\xe9lp,"h\xeblp"},	"string 11");
+	qq{1,,"", ," ",f,"g","h""h",h\xb6lp,"h\xb6lp"},	"string 11");
     ok ($csv->parse  (qq{1,,"1193-1",4,"",,6}),		"parse under 11");
     ok ($csv->combine ($csv->fields),			"combine");
     is ($csv->string, qq{1,,"1193-1",4,"",,6},		"return same");

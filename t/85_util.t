@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Config;
 use Test::More;
 
 my $pu;
@@ -104,7 +105,8 @@ foreach my $sep (",", ";") {
 	}
     }
 
-my $sep_ok = [ "\t", "|", ",", ";", "##", "\xe2\x81\xa3" ];
+my $sep_utf = $Config{ebcdic} ? "\xca\x44\x44" : "\xe2\x81\xa3"; # U+2063 INVISIBLE SEPARATOR
+my $sep_ok = [ "\t", "|", ",", ";", "##", $sep_utf ];
 unless ($pu) {
     foreach my $sep (@$sep_ok) {
 	my $data = "bAr,foo\n1,2\n3,4,5\n";

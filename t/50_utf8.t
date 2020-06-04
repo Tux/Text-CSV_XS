@@ -66,9 +66,11 @@ is ($csv->parse (qq{"\x{0123}\n\x{20ac}"}), 0, "\\n still needs binary");
 is ($csv->binary, 0, "bin flag still unset");
 is ($csv->error_diag + 0, 2021, "Error 2021");
 
-my $file = "files/utf8.csv";
+open my $fh, ">:encoding(utf-8)", $tfn or die "$tfn: $!\n";
+print   $fh qq{"\N{LATIN CAPITAL LETTER O WITH STROKE}l/Vin",0\n};
+close   $fh;
 SKIP: {
-    open my $fh, "<:encoding(utf8)", $file or
+    open my $fh, "<:encoding(utf-8)", $tfn or
 	skip "Cannot open UTF-8 test file", 6;
 
     my $row;
@@ -107,10 +109,10 @@ ok ($csv->parse (qq{,1,"f\x{014d}o, 3""56",,bar,\r\n}), "example from XS");
 is_deeply ([$csv->fields], [
     "", 1, qq{f\x{014d}o, 3"56}, "", "bar", "" ], "content");
 
-open my $fh, ">:encoding(utf-8)", $tfn or die "$tfn: $!\n";
-print   $fh "euro\n\x{20ac}\neuro\n";
-close   $fh;
-open    $fh, "<:encoding(utf-8)", $tfn or die "$tfn: $!\n";
+open  $fh, ">:encoding(utf-8)", $tfn or die "$tfn: $!\n";
+print $fh "euro\n\x{20ac}\neuro\n";
+close $fh;
+open  $fh, "<:encoding(utf-8)", $tfn or die "$tfn: $!\n";
 
 SKIP: {
     my $out = "";
