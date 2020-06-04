@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use charnames ":full";
 
+use Config;
 use Test::More;
 $| = 1;
 
@@ -108,14 +109,18 @@ for (@tests) {
 {   my $blob = pack "C*", 0..255; $blob =~ tr/",//d;
     # perl-5.10.x has buggy SvCUR () on blob
     $] >= 5.010000 && $] <= 5.012001 and $blob =~ tr/\0//d;
+    my $b1 = "\x{b6}";		# PILCROW SIGN in ISO-8859-1
+    my $b2 = $Config{ebcdic}	# ARABIC COMMA in UTF-8
+	? "\x{b8}\x{57}\x{53}"
+	: "\x{d8}\x{8c}";
     my @data = (
 	qq[1,aap,3],		# No diac
-	qq[1,a\x{e1}p,3],	# a_ACUTE in ISO-8859-1
-	qq[1,a\x{c4}\x{83}p,3],	# a_BREVE in UTF-8
+	qq[1,a${b1}p,3],	# Single-byte
+	qq[1,a${b2}p,3],	# Multi-byte
 	qq[1,"$blob",3],	# Binary shit
 	) x 2;
     my $data = join "\n" => @data;
-    my @expect = ("aap", "a\341p", "a\x{0103}p", $blob) x 2;
+    my @expect = ("aap", "a\266p", "a\x{060c}p", $blob) x 2;
 
     my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
 
