@@ -32,8 +32,8 @@ sub combi {
     # use legal non-special characters
     is ($csv->allow_whitespace (0), 0, "Reset allow WS");
     is ($csv->sep_char    ("\x03"), "\x03", "Reset sep");
-    is ($csv->quote_char  ("\x04"), "\x04", "Reset quo");
-    is ($csv->escape_char ("\x05"), "\x05", "Reset esc");
+    is ($csv->quote_char  ("\x0b"), "\x0b", "Reset quo");
+    is ($csv->escape_char ("\x0c"), "\x0c", "Reset esc");
 
     # Set the attributes and check failure
     my %state;
