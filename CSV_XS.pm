@@ -844,7 +844,7 @@ sub header {
 	    %args = %$_;
 	    next;
 	    }
-	croak (q{usage: $csv->header ($fh, [ seps ], { options })});
+	croak (q{usage: $csv->header ($fh, [ seps ], \{ options \})});
 	}
 
     defined $args{'munge'} && !defined $args{'munge_column_names'} and
