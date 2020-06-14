@@ -170,7 +170,7 @@ sub new {
 	my $k = m/^[a-zA-Z]\w+$/ ? lc $_ : $_;
 	exists $attr_alias{$k} and $k = $attr_alias{$k};
 	$k => $attr->{$_};
-	} keys %$attr;
+	} keys %{$attr};
 
     my $sep_aliased = 0;
     if (exists $attr{'sep'}) {
@@ -612,7 +612,7 @@ sub callbacks {
 	    $cb = @_ == 1 && ref $_[0] eq "HASH" ? shift
 	        : @_ % 2 == 0                    ? { @_ }
 	        : croak ($self->SetDiag (1004));
-	    foreach my $cbk (keys %$cb) {
+	    foreach my $cbk (keys %{$cb}) {
 		# A key cannot be a ref. That would be stored as the *string
 		# 'SCALAR(0x1f3e710)' or 'ARRAY(0x1a5ae18)'
 		$cbk =~ m/^[\w.]+$/ && ref $cb->{$cbk} eq "CODE" or
@@ -837,11 +837,11 @@ sub header {
     my (@seps, %args);
     for (@args) {
 	if (ref $_ eq "ARRAY") {
-	    push @seps, @$_;
+	    push @seps, @{$_};
 	    next;
 	    }
 	if (ref $_ eq "HASH") {
-	    %args = %$_;
+	    %args = %{$_};
 	    next;
 	    }
 	croak ('usage: $csv->header ($fh, [ seps ], { options })');
@@ -932,7 +932,7 @@ sub header {
     close $h;
 
     if ($args{'munge_column_names'} eq "db") {
-	for (@$row) {
+	for (@{$row}) {
 	    s/\W+/_/g;
 	    s/^_+//;
 	    $_ = lc;
@@ -945,7 +945,7 @@ sub header {
 	$eol =~ m/^\r([^\n]|\z)/ and $self->eol ($eol);
 	}
 
-    my @hdr = @$row;
+    my @hdr = @{$row};
     ref $args{'munge_column_names'} eq "CODE" and
 	@hdr = map { $args{'munge_column_names'}->($_)       } @hdr;
     ref $args{'munge_column_names'} eq "HASH" and
@@ -987,11 +987,11 @@ sub getline_hr {
     my $fr = $self->getline (@args) or return;
     if (ref $self->{'_FFLAGS'}) { # missing
 	$self->{'_FFLAGS'}[$_] = 0x0010
-	    for (@$fr ? $#{$fr} + 1 : 0) .. $#{$self->{'_COLUMN_NAMES'}};
-	@$fr == 1 && (!defined $fr->[0] || $fr->[0] eq "") and
+	    for (@{$fr} ? $#{$fr} + 1 : 0) .. $#{$self->{'_COLUMN_NAMES'}};
+	@{$fr} == 1 && (!defined $fr->[0] || $fr->[0] eq "") and
 	    $self->{'_FFLAGS'}[0] ||= 0x0010;
 	}
-    @hr{@{$self->{'_COLUMN_NAMES'}}} = @$fr;
+    @hr{@{$self->{'_COLUMN_NAMES'}}} = @{$fr};
     \%hr;
     } # getline_hr
 
@@ -999,7 +999,7 @@ sub getline_hr_all {
     my ($self, @args) = @_;
     $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3002));
     my @cn = @{$self->{'_COLUMN_NAMES'}};
-    [ map { my %h; @h{@cn} = @$_; \%h } @{$self->getline_all (@args)} ];
+    [ map { my %h; @h{@cn} = @{$_}; \%h } @{$self->getline_all (@args)} ];
     } # getline_hr_all
 
 sub say {
@@ -1066,10 +1066,10 @@ sub fragment {
 	    my %row;
 	    my $lc;
 	    foreach my $s (@spec) {
-		my ($tlr, $tlc, $brr, $brc) = @$s;
+		my ($tlr, $tlc, $brr, $brc) = @{$s};
 		$r <  $tlr || ($brr ne "*" && $r > $brr) and next;
 		!defined $lc || $tlc < $lc and $lc = $tlc;
-		my $rr = $brc eq "*" ? $#$row : $brc;
+		my $rr = $brc eq "*" ? $#{$row} : $brc;
 		$row{$_} = $row->[$_] for $tlc .. $rr;
 		}
 	    push @c, [ @row{sort { $a <=> $b } keys %row } ];
@@ -1110,7 +1110,7 @@ sub fragment {
 		}
 	    next;
 	    }
-	push @c, [ map { ($_ > $#r && $eod) || $r[$_] ? $row->[$_] : () } 0..$#$row ];
+	push @c, [ map { ($_ > $#r && $eod) || $r[$_] ? $row->[$_] : () } 0..$#{$row} ];
 	if (@h) {
 	    my %h; @h{@h} = @{$c[-1]};
 	    $c[-1] = \%h;
@@ -1150,7 +1150,7 @@ sub _csv_attr {
 	if ((ref $out and "SCALAR" ne ref $out) or "GLOB" eq ref \$out) {
 	    $fh = $out;
 	    }
-	elsif (ref $out and "SCALAR" eq ref $out and defined $$out and $$out eq "skip") {
+	elsif (ref $out and "SCALAR" eq ref $out and defined ${$out} and ${$out} eq "skip") {
 	    delete $attr{'out'};
 	    $sink = 1;
 	    }
@@ -1181,7 +1181,7 @@ sub _csv_attr {
 	}
     elsif (ref $in or "GLOB" eq ref \$in) {
 	if (!ref $in && $] < 5.008005) {
-	    $fh = \*$in; # uncoverable statement ancient perl version required
+	    $fh = \*{$in}; # uncoverable statement ancient perl version required
 	    }
 	else {
 	    $fh = $in;
@@ -1222,7 +1222,7 @@ sub _csv_attr {
 	 [ 'esc'    => "escape"		],
 	 [ 'escape' => "escape_char"	],
 	 ) {
-	my ($f, $t) = @$_;
+	my ($f, $t) = @{$_};
 	exists $attr{$f} and !exists $attr{$t} and $attr{$t} = delete $attr{$f};
 	}
 
@@ -1279,7 +1279,7 @@ sub csv {
     my ($csv, $in, $fh, $hdrs) = @{$c}{qw( csv in fh hdrs )};
     my %hdr;
     if (ref $hdrs eq "HASH") {
-	%hdr  = %$hdrs;
+	%hdr  = %{$hdrs};
 	$hdrs = "auto";
 	}
 
@@ -1293,11 +1293,11 @@ sub csv {
 		    }
 		if (ref $row eq "HASH") {
 		    if ($hdr) {
-			$hdrs ||= [ map { $hdr{$_} || $_ } keys %$row ];
+			$hdrs ||= [ map { $hdr{$_} || $_ } keys %{$row} ];
 			$csv->print ($fh, $hdrs);
 			$hdr = 0;
 			}
-		    $csv->print ($fh, [ @{$row}{@$hdrs} ]);
+		    $csv->print ($fh, [ @{$row}{@{$hdrs}} ]);
 		    }
 		}
 	    }
@@ -1346,13 +1346,13 @@ sub csv {
 
     my $key = $c->{'key'};
     if ($key) {
-	!ref $key or ref $key eq "ARRAY" && @$key > 1 or croak ($csv->SetDiag (1501));
+	!ref $key or ref $key eq "ARRAY" && @{$key} > 1 or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
     my $val = $c->{'val'};
     if ($val) {
 	$key					      or croak ($csv->SetDiag (1502));
-	!ref $val or ref $val eq "ARRAY" && @$val > 0 or croak ($csv->SetDiag (1503));
+	!ref $val or ref $val eq "ARRAY" && @{$val} > 0 or croak ($csv->SetDiag (1503));
 	}
 
     $c->{'fltr'} && grep m/\D/ => keys %{$c->{'fltr'}} and $hdrs ||= "auto";
@@ -1363,23 +1363,23 @@ sub csv {
 		}
 	    elsif ($hdrs eq "auto") {
 		my $h = $csv->getline ($fh) or return;
-		$hdrs = [ map {      $hdr{$_} || $_ } @$h ];
+		$hdrs = [ map {      $hdr{$_} || $_ } @{$h} ];
 		}
 	    elsif ($hdrs eq "lc") {
 		my $h = $csv->getline ($fh) or return;
-		$hdrs = [ map { lc ($hdr{$_} || $_) } @$h ];
+		$hdrs = [ map { lc ($hdr{$_} || $_) } @{$h} ];
 		}
 	    elsif ($hdrs eq "uc") {
 		my $h = $csv->getline ($fh) or return;
-		$hdrs = [ map { uc ($hdr{$_} || $_) } @$h ];
+		$hdrs = [ map { uc ($hdr{$_} || $_) } @{$h} ];
 		}
 	    }
 	elsif (ref $hdrs eq "CODE") {
 	    my $h  = $csv->getline ($fh) or return;
 	    my $cr = $hdrs;
-	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @$h ];
+	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @{$h} ];
 	    }
-	$c->{'kh'} and $hdrs and @{$c->{'kh'}} = @$hdrs;
+	$c->{'kh'} and $hdrs and @{$c->{'kh'}} = @{$hdrs};
 	}
 
     if ($c->{'fltr'}) {
@@ -1397,7 +1397,7 @@ sub csv {
 	    foreach my $FLD (sort keys %f) {
 		local $_ = $ROW->[$FLD - 1];
 		local %_;
-		@hdr and @_{@hdr} = @$ROW;
+		@hdr and @_{@hdr} = @{$ROW};
 		$f{$FLD}->($CSV, $ROW) or return \"skip";
 		$ROW->[$FLD - 1] = $_;
 		}
@@ -1417,7 +1417,7 @@ sub csv {
 		}
 	    $frag ? $csv->fragment ($fh, $frag) :
 	    $key  ? do {
-			my ($k, $j, @f) = ref $key ? (undef, @$key) : ($key);
+			my ($k, $j, @f) = ref $key ? (undef, @{$key}) : ($key);
 			if (my @mk = grep { !exists $h{$_} } grep { defined } $k, @f) {
 			    croak ($csv->_SetDiagInfo (4001, join ", " => @mk));
 			    }
@@ -1427,7 +1427,7 @@ sub csv {
 			    ( $K => (
 			    $val
 				? ref $val
-				    ? { map { $_ => $r->{$_} } @$val }
+				    ? { map { $_ => $r->{$_} } @{$val} }
 				    : $r->{$val}
 			        : $r ));
 			    } @{$csv->getline_hr_all ($fh)} }
@@ -1438,7 +1438,7 @@ sub csv {
 	    $frag ? $csv->fragment ($fh, $frag)
 		  : $csv->getline_all ($fh);
     if ($ref) {
-	@row1 && !$c->{'hd_c'} && !ref $hdrs and unshift @$ref, \@row1;
+	@row1 && !$c->{'hd_c'} && !ref $hdrs and unshift @{$ref}, \@row1;
 	}
     else {
 	Text::CSV_XS->auto_diag ();
