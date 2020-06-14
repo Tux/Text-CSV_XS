@@ -169,7 +169,7 @@ sub new {
     my %attr  = map {
 	my $k = m/^[a-zA-Z]\w+$/ ? lc $_ : $_;
 	exists $attr_alias{$k} and $k = $attr_alias{$k};
-	$k => $attr->{$_};
+	($k => $attr->{$_});
 	} keys %{$attr};
 
     my $sep_aliased = 0;
