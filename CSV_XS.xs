@@ -322,16 +322,16 @@ static SV *m_getline, *m_print;
     (csv->used += csv->sep_len - 1)					&&\
     (c = CH_SEPX))))
 #if MAINT_DEBUG > 1
-static byte _is_SEPX (unsigned int *c, csv_t *csv, int line) {
-    unsigned int b = __is_SEPX (*c);
+static byte _is_SEPX (unsigned int c, csv_t *csv, int line) {
+    unsigned int b = __is_SEPX (c);
     (void)fprintf (stderr, "# %4d - is_SEPX:\t%d (%d)\n", line, b, csv->sep_len);
     if (csv->sep_len)
 	(void)fprintf (stderr,
 	    "# len: %d, siz: %d, usd: %d, c: %03x, *sep: %03x\n",
-	    csv->sep_len, csv->size, csv->used, *c, CH_SEP);
+	    csv->sep_len, csv->size, csv->used, c, CH_SEP);
     return b;
     } /* _is_SEPX */
-#define is_SEP(c)  _is_SEPX (&c, csv, __LINE__)
+#define is_SEP(c)  _is_SEPX (c, csv, __LINE__)
 #else
 #define is_SEP(c) __is_SEPX (c)
 #endif
@@ -342,17 +342,17 @@ static byte _is_SEPX (unsigned int *c, csv_t *csv, int line) {
     (csv->used += csv->quo_len - 1)					&&\
     (c = CH_QUOTEX))))
 #if MAINT_DEBUG > 1
-static byte _is_QUOTEX (unsigned int *c, csv_t *csv, int line) {
-    unsigned int b = __is_QUOTEX (*c);
+static byte _is_QUOTEX (unsigned int c, csv_t *csv, int line) {
+    unsigned int b = __is_QUOTEX (c);
     (void)fprintf (stderr, "# %4d - is_QUOTEX:\t%d (%d)\n", line, b, csv->quo_len);
 
     if (csv->quo_len)
 	(void)fprintf (stderr,
 	    "# len: %d, siz: %d, usd: %d, c: %03x, *quo: %03x\n",
-	    csv->quo_len, csv->size, csv->used, *c, CH_QUOTE);
+	    csv->quo_len, csv->size, csv->used, c, CH_QUOTE);
     return b;
     } /* _is_QUOTEX */
-#define is_QUOTE(c)  _is_QUOTEX (&c, csv, __LINE__)
+#define is_QUOTE(c)  _is_QUOTEX (c, csv, __LINE__)
 #else
 #define is_QUOTE(c) __is_QUOTEX (c)
 #endif
