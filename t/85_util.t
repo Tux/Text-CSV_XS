@@ -6,6 +6,7 @@ use warnings;
 use Config;
 use Test::More;
 
+my $ebcdic = $Config{ebcdic};
 my $pu;
 BEGIN {
     $pu = $ENV{PERL_UNICODE};
@@ -105,7 +106,7 @@ foreach my $sep (",", ";") {
 	}
     }
 
-my $sep_utf = $Config{ebcdic} ? "\xca\x44\x44" : "\xe2\x81\xa3"; # U+2063 INVISIBLE SEPARATOR
+my $sep_utf = $ebcdic ? "\xca\x44\x44" : "\xe2\x81\xa3"; # U+2063 INVISIBLE SEPARATOR
 my $sep_ok = [ "\t", "|", ",", ";", "##", $sep_utf ];
 unless ($pu) {
     foreach my $sep (@$sep_ok) {
@@ -270,16 +271,30 @@ foreach my $irs ("\n", "\xaa") {
 		[ "UTF-8"      => "\x{feff}"		],
 		) {
 	    my ($enc, $bom) = @$_;
-	    my $has_enc = 0;
+	    my ($enx, $box, $has_enc) = ($enc, $bom, 0);
+	    $enc eq "UTF-8" || $enc eq "none" or
+		$box = eval { Encode::encode ($enc, chr (0xfeff)) };
+	    $enc eq "none" and $enx = "utf-8";
+
+	    # On os390, Encode only supports the following EBCDIC
+	    #  cp37, cp500, cp875, cp1026, cp1047, and posix-bc
+	    # utf-ebcdic is not in the list
 	    eval {
 		no warnings "utf8";
 		open my $fh, ">", $fnm;
 		binmode $fh;
-		print $fh $bom;
-		print $fh Encode::encode ($enc eq "none" ? "utf-8" : $enc, $str);
+		if (defined $box) {
+		    print $fh $box;
+		    print $fh Encode::encode ($enx, $str);
+		    $has_enc = 1;
+		    }
+		else {
+		    print $fh Encode::encode ("utf-8", $str);
+		    }
+
 		close $fh;
-		$has_enc = 1;
 		};
+	    $ebcdic && $enc ne "none" and $has_enc = 0;
 
 	    $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 9 });
 

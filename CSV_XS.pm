@@ -22,6 +22,7 @@ use strict;
 use warnings;
 
 require Exporter;
+use Config;
 use XSLoader;
 use Carp;
 
@@ -103,6 +104,7 @@ my %attr_alias = (
     'escape'			=> "escape_char",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
+my $ebcdic       = $Config{'ebcdic'};
 
 # NOT a method: is also used before bless
 sub _unhealthy_whitespace {
@@ -898,17 +900,20 @@ sub header {
 	$hdr eq "" and croak ($self->SetDiag (1010));
 
 	if ($enc) {
+	    $ebcdic && $enc eq "utf-ebcdic" and $enc = "";
 	    if ($enc =~ m/([13]).le$/) {
 		my $l = 0 + $1;
 		my $x;
 		$hdr .= "\0" x $l;
 		read $fh, $x, $l;
 		}
-	    if ($enc && $enc ne "utf-8") {
-		require Encode;
-		$hdr = Encode::decode ($enc, $hdr);
+	    if ($enc) {
+		if ($enc ne "utf-8") {
+		    require Encode;
+		    $hdr = Encode::decode ($enc, $hdr);
+		    }
+		binmode $fh, ":encoding($enc)";
 		}
-	    binmode $fh, ":encoding($enc)";
 	    }
 	}
 
