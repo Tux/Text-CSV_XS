@@ -4422,8 +4422,9 @@ DIAGNOSTICS section in pod to *describe* the errors (see below)
 
 =head1 EBCDIC
 
-The current hard-coding of characters and character ranges  makes this code
-unusable on C<EBCDIC> systems. Recent work in perl-5.20 might change that.
+All but BOM detection works on native EBCDIC systems.  As the test does not
+cover all possible codepoints and L<Encode> does not yet support utf-ebcdic
+there is no guarantee that all handling of Unucode is done correct.
 
 Opening C<EBCDIC> encoded files on  C<ASCII>+  systems is likely to succeed
 using Encode's C<cp37>, C<cp1047>, or C<posix-bc>:

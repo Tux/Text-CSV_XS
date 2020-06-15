@@ -294,7 +294,7 @@ foreach my $irs ("\n", "\xaa") {
 
 		close $fh;
 		};
-	    $ebcdic && $enc ne "none" and $has_enc = 0;
+	    $ebcdic and $has_enc = 0; # TODO
 
 	    $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 9 });
 
