@@ -89,7 +89,7 @@ static unsigned char ec, ebcdic2ascii[256] = {
     0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
     0x38, 0x39, 0xb3, 0xdb, 0xdc, 0xd9, 0xda, 0x9f
     };
-#define is_csv_binary(ch) (((ec = ebcdic2ascii[ch]) < 0x20 || ec >= 0x7f) && ch != CH_TAB)
+#define is_csv_binary(ch) ((((ec = ebcdic2ascii[ch]) < 0x20 || ec >= 0x7f) && ch != CH_TAB) || ch == EOF)
 #else
 #define CH_DEL		'\177'
 #define is_csv_binary(ch) ((ch < CH_SPACE || ch >= CH_DEL) && ch != CH_TAB)
@@ -1344,6 +1344,10 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags) {
 	if (spl < 39) str_parsed[spl] = c;
 #endif
 restart:
+#if MAINT_DEBUG > 9
+	(void)fprintf (stderr, "# at restart: %d/%d/%03x pos %d = 0x%02x\n",
+	    waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
+#endif
 	if (is_SEP (c)) {
 #if MAINT_DEBUG > 1
 	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = SEP %s\t'%s'\n",
@@ -1720,6 +1724,11 @@ EOLX:
 		     *                     ^
 		     */
 		    c = EOF;
+
+#if MAINT_DEBUG > 9
+		    (void)fprintf (stderr, "# (%d) ... CR EOF 0x%x\n",
+			seenSomething, c);
+#endif
 		    unless (seenSomething)
 			break;
 		    goto restart;
@@ -1813,6 +1822,9 @@ EOLX:
 		 !memcmp (csv->bptr + csv->used, csv->eol + 1, csv->eol_len - 1) &&
 		 (csv->used += csv->eol_len - 1)) {
 		c = CH_EOLX;
+#if MAINT_DEBUG > 5
+		(void)fprintf (stderr, "# -> EOLX (0x%x)\n", c);
+#endif
 		goto EOLX;
 		}
 
@@ -1820,6 +1832,9 @@ EOLX:
 		if (csv->allow_whitespace && is_whitespace (c)) {
 		    do {
 			c = CSV_GET;
+#if MAINT_DEBUG > 5
+			(void)fprintf (stderr, "# WS next got (0x%x)\n", c);
+#endif
 			} while (is_whitespace (c));
 		    if (c == EOF)
 			break;
@@ -1829,6 +1844,12 @@ EOLX:
 		goto restart;
 		}
 
+#if MAINT_DEBUG > 5
+	    (void)fprintf (stderr, "# %sc 0x%x is%s binary %s utf8\n",
+		f & CSV_FLAGS_QUO ? "quoted " : "", c,
+		is_csv_binary (c) ? "" : " not",
+		csv->utf8 ? "is" : "not");
+#endif
 	    if (f & CSV_FLAGS_QUO) {
 		if (is_csv_binary (c)) {
 		    f |= CSV_FLAGS_BIN;
