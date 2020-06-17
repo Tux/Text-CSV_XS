@@ -3,10 +3,9 @@
 use strict;
 use warnings;
 
-use Config;
 use Test::More;
 
-my $ebcdic = $Config{ebcdic};
+my $ebcdic = ord ("A") == 0xC1;
 my $pu;
 BEGIN {
     $pu = $ENV{PERL_UNICODE};
@@ -247,6 +246,24 @@ for ([ undef, "_bar" ], [ "lc", "_bar" ], [ "uc", "_BAR" ], [ "none", "_bAr" ],
     close $fh;
     }
 
+sub todo_is {
+    my ($got, $exp, $cmnt) = @_;
+    $ebcdic or return is ($got, $exp, $cmnt);
+    TODO: {
+	local $TODO = "BOM decoding on EBCDIC is work in progress";
+	is ($got, $exp, $cmnt);
+	}
+    } # todo_is
+
+sub todo_is_deeply {
+    my ($got, $exp, $cmnt) = @_;
+    $ebcdic or return is_deeply ($got, $exp, $cmnt);
+    TODO: {
+	local $TODO = "BOM decoding on EBCDIC is work in progress";
+	is_deeply ($got, $exp, $cmnt);
+	}
+    } # todo_is_deeply
+
 my $fnm = "_85hdr.csv"; END { unlink $fnm; }
 foreach my $irs ("\n", "\xaa") {
     local $/ = $irs;
@@ -284,7 +301,7 @@ foreach my $irs ("\n", "\xaa") {
 		open my $fh, ">", $fnm;
 		binmode $fh;
 		if (defined $box) {
-		    print $fh $box;
+		    print $fh byte_utf8a_to_utf8n ($box);
 		    print $fh Encode::encode ($enx, $str);
 		    $has_enc = 1;
 		    }
@@ -294,7 +311,7 @@ foreach my $irs ("\n", "\xaa") {
 
 		close $fh;
 		};
-	    $ebcdic and $has_enc = 0; # TODO
+	    #$ebcdic and $has_enc = 0; # TODO
 
 	    $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 9 });
 
@@ -305,20 +322,21 @@ foreach my $irs ("\n", "\xaa") {
 		binmode $fh;
 		ok (1, "$fnm opened for enc $enc");
 		ok ($csv->header ($fh), "headers with BOM for $enc");
-		$enc =~ m/^utf/ and is ($csv->{ENCODING}, uc $enc, "Encoding inquirable");
-		is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
+		$enc =~ m/^utf/ and todo_is ($csv->{ENCODING}, uc $enc, "Encoding inquirable");
+
+		todo_is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
 		ok (my $row = $csv->getline_hr ($fh), "getline_hr");
-		is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+		todo_is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
 		close $fh;
 
 		my $aoh;
 		ok ($aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
-		is_deeply ($aoh,
-		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
+		todo_is_deeply ($aoh,
+		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data bom = 1");
 
 		ok ($aoh = csv (in => $fnm, encoding => "auto"), "csv (encoding => auto)");
-		is_deeply ($aoh,
-		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
+		todo_is_deeply ($aoh,
+		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data auto");
 		}
 
 	    SKIP: {
@@ -328,13 +346,13 @@ foreach my $irs ("\n", "\xaa") {
 		$enc eq "none" or binmode $fh, ":encoding($enc)";
 		ok (1, "$fnm opened for enc $enc");
 		ok ($csv->header ($fh), "headers with BOM for $enc");
-		is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
+		todo_is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
 		ok (my $row = $csv->getline_hr ($fh), "getline_hr");
-		is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+		todo_is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
 		close $fh;
 
 		ok (my $aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
-		is_deeply ($aoh,
+		todo_is_deeply ($aoh,
 		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
 		}
 

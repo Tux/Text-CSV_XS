@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use charnames ":full";
 
-use Config;
 use Test::More;
 $| = 1;
 
@@ -14,6 +13,7 @@ BEGIN {
     }
 
 my @tests;
+my $ebcdic = ord ("A") == 0xC1;
 
 BEGIN {
     delete $ENV{PERLIO};
@@ -110,7 +110,7 @@ for (@tests) {
     # perl-5.10.x has buggy SvCUR () on blob
     $] >= 5.010000 && $] <= 5.012001 and $blob =~ tr/\0//d;
     my $b1 = "\x{b6}";		# PILCROW SIGN in ISO-8859-1
-    my $b2 = $Config{ebcdic}	# ARABIC COMMA in UTF-8
+    my $b2 = $ebcdic		# ARABIC COMMA in UTF-8
 	? "\x{b8}\x{57}\x{53}"
 	: "\x{d8}\x{8c}";
     my @data = (

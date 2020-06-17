@@ -22,7 +22,6 @@ use strict;
 use warnings;
 
 require Exporter;
-use Config;
 use XSLoader;
 use Carp;
 
@@ -104,7 +103,7 @@ my %attr_alias = (
     'escape'			=> "escape_char",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
-my $ebcdic       = $Config{'ebcdic'};
+my $ebcdic       = ord ("A") == 0xC1;	# Faster than $Config{'ebcdic'}
 
 # NOT a method: is also used before bless
 sub _unhealthy_whitespace {
