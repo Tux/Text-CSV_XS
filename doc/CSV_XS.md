@@ -2839,8 +2839,9 @@ No guarantees, but this is what I had in mind some time ago:
 
 # EBCDIC
 
-The current hard-coding of characters and character ranges  makes this code
-unusable on `EBCDIC` systems. Recent work in perl-5.20 might change that.
+Everything should now work on native EBCDIC systems.   As the test does not
+cover all possible codepoints and [Encode](https://metacpan.org/pod/Encode) does not support `utf-ebcdic`,
+there is no guarantee that all handling of Unicode is done correct.
 
 Opening `EBCDIC` encoded files on  `ASCII`+  systems is likely to succeed
 using Encode's `cp37`, `cp1047`, or `posix-bc`:

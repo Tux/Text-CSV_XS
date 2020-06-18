@@ -3,7 +3,7 @@ Module:
 
 Description:
     Text::CSV_XS provides facilities for the composition and decomposition
-    of comma-separated values.  An instance of the Text::CSV_XS class can
+    of comma-separated values.   An instance of the Text::CSV_XS class can
     combine fields into a CSV string and parse a CSV string into fields.
 
 Copying:
@@ -28,7 +28,7 @@ Copying:
 Prerequisites:
     perl 5.6.1 or up.
 
-    You can have working Test::More for 5.6.1 by requiring version
+    You can have a working Test::More for 5.6.1 by requiring version
     Test::Harness-2.64 and Test::Simple-0.90
 
     I found no easy way to get Test::More working on 5.6.0
@@ -52,12 +52,12 @@ Author:
 
     Interface design by Alan Citterman <alan@mfgrtl.com>
 
-    A pure-perl version (L<Text::CSV_PP>) is being maintained by Kenichi
+    A pure-perl version Text::CSV_PP is being maintained by  Kenichi
     Ishigaki. This module was created by Makamaka Hannyaharamitu who
-    maintained it up to 2015. It tries to follow Text::CSV_XS as closely
-    as possible. It is not worth filing bugs to Text::CSV_XS when
-    Text::CSV is not in sync.
+    maintained it up to 2015.   It tries to follow  Text::CSV_XS  as
+    closely as possible.
+    Do not file bugs on Text::CSV to Text::CSV_XS.
 
-    Text::CSV_PP is bundled in Text::CSV, which now is a wrapper module
-    over Text::CSV_XS and Text::CSV_PP that will select Text::CSV_XS if
-    available, and otherwise use Text::CSV_PP.
+    Text::CSV_PP is bundled with Text::CSV which is a wrapper module
+    over Text::CSV_XS and Text::CSV_PP that selects  Text::CSV_XS if
+    if available, and otherwise uses Text::CSV_PP.

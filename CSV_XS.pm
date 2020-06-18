@@ -4422,7 +4422,7 @@ DIAGNOSTICS section in pod to *describe* the errors (see below)
 =head1 EBCDIC
 
 Everything should now work on native EBCDIC systems.   As the test does not
-cover all possible codepoints and L<Encode> does not yet support utf-ebcdic
+cover all possible codepoints and L<Encode> does not support C<utf-ebcdic>,
 there is no guarantee that all handling of Unicode is done correct.
 
 Opening C<EBCDIC> encoded files on  C<ASCII>+  systems is likely to succeed

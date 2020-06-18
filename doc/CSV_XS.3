@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2020-05-27" "perl v5.30.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2020-06-18" "perl v5.30.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -3409,8 +3409,9 @@ No guarantees, but this is what I had in mind some time ago:
 \&\s-1DIAGNOSTICS\s0 section in pod to *describe* the errors (see below)
 .SH "EBCDIC"
 .IX Header "EBCDIC"
-The current hard-coding of characters and character ranges  makes this code
-unusable on \f(CW\*(C`EBCDIC\*(C'\fR systems. Recent work in perl\-5.20 might change that.
+Everything should now work on native \s-1EBCDIC\s0 systems.   As the test does not
+cover all possible codepoints and Encode does not support \f(CW\*(C`utf\-ebcdic\*(C'\fR,
+there is no guarantee that all handling of Unicode is done correct.
 .PP
 Opening \f(CW\*(C`EBCDIC\*(C'\fR encoded files on  \f(CW\*(C`ASCII\*(C'\fR+  systems is likely to succeed
 using Encode's \f(CW\*(C`cp37\*(C'\fR, \f(CW\*(C`cp1047\*(C'\fR, or \f(CW\*(C`posix\-bc\*(C'\fR:

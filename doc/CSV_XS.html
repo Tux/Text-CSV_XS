@@ -2642,7 +2642,7 @@ or
 
 <h1 id="EBCDIC">EBCDIC</h1>
 
-<p>The current hard-coding of characters and character ranges makes this code unusable on <code>EBCDIC</code> systems. Recent work in perl-5.20 might change that.</p>
+<p>Everything should now work on native EBCDIC systems. As the test does not cover all possible codepoints and <a>Encode</a> does not support <code>utf-ebcdic</code>, there is no guarantee that all handling of Unicode is done correct.</p>
 
 <p>Opening <code>EBCDIC</code> encoded files on <code>ASCII</code>+ systems is likely to succeed using Encode&#39;s <code>cp37</code>, <code>cp1047</code>, or <code>posix-bc</code>:</p>
 
