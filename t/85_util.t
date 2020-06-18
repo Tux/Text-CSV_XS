@@ -105,7 +105,7 @@ foreach my $sep (",", ";") {
 	}
     }
 
-my $sep_utf = $ebcdic ? "\xca\x44\x44" : "\xe2\x81\xa3"; # U+2063 INVISIBLE SEPARATOR
+my $sep_utf = byte_utf8a_to_utf8n ("\xe2\x81\xa3"); # U+2063 INVISIBLE SEPARATOR
 my $sep_ok = [ "\t", "|", ",", ";", "##", $sep_utf ];
 unless ($pu) {
     foreach my $sep (@$sep_ok) {
@@ -246,30 +246,14 @@ for ([ undef, "_bar" ], [ "lc", "_bar" ], [ "uc", "_BAR" ], [ "none", "_bAr" ],
     close $fh;
     }
 
-sub todo_is {
-    my ($got, $exp, $cmnt) = @_;
-    $ebcdic or return is ($got, $exp, $cmnt);
-    TODO: {
-	local $TODO = "BOM decoding on EBCDIC is work in progress";
-	is ($got, $exp, $cmnt);
-	}
-    } # todo_is
-
-sub todo_is_deeply {
-    my ($got, $exp, $cmnt) = @_;
-    $ebcdic or return is_deeply ($got, $exp, $cmnt);
-    TODO: {
-	local $TODO = "BOM decoding on EBCDIC is work in progress";
-	is_deeply ($got, $exp, $cmnt);
-	}
-    } # todo_is_deeply
-
 my $fnm = "_85hdr.csv"; END { unlink $fnm; }
-foreach my $irs ("\n", "\xaa") {
+
+my $a_ring = chr (utf8::unicode_to_native (0xe5));
+foreach my $irs ("\n", chr (utf8::unicode_to_native (0xaa))) {
     local $/ = $irs;
     foreach my $eol ("\n", "\r\n", "\r") {
 	my $str = join $eol =>
-	    qq{zoo,b\x{00e5}r},
+	    qq{zoo,b${a_ring}r},
 	    qq{1,"1 \x{20ac} each"},
 	    "";
 	for (   [ "none"       => ""			],
@@ -322,21 +306,21 @@ foreach my $irs ("\n", "\xaa") {
 		binmode $fh;
 		ok (1, "$fnm opened for enc $enc");
 		ok ($csv->header ($fh), "headers with BOM for $enc");
-		$enc =~ m/^utf/ and todo_is ($csv->{ENCODING}, uc $enc, "Encoding inquirable");
+		$enc =~ m/^utf/ and is ($csv->{ENCODING}, uc $enc, "Encoding inquirable");
 
-		todo_is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
+		is (($csv->column_names)[1], "b${a_ring}r", "column name was decoded");
 		ok (my $row = $csv->getline_hr ($fh), "getline_hr");
-		todo_is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+		is ($row->{"b${a_ring}r"}, "1 \x{20ac} each", "Returned in Unicode");
 		close $fh;
 
 		my $aoh;
 		ok ($aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
-		todo_is_deeply ($aoh,
-		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data bom = 1");
+		is_deeply ($aoh,
+		    [{ zoo => 1, "b${a_ring}r" => "1 \x{20ac} each" }], "Returned data bom = 1");
 
 		ok ($aoh = csv (in => $fnm, encoding => "auto"), "csv (encoding => auto)");
-		todo_is_deeply ($aoh,
-		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data auto");
+		is_deeply ($aoh,
+		    [{ zoo => 1, "b${a_ring}r" => "1 \x{20ac} each" }], "Returned data auto");
 		}
 
 	    SKIP: {
@@ -346,14 +330,14 @@ foreach my $irs ("\n", "\xaa") {
 		$enc eq "none" or binmode $fh, ":encoding($enc)";
 		ok (1, "$fnm opened for enc $enc");
 		ok ($csv->header ($fh), "headers with BOM for $enc");
-		todo_is (($csv->column_names)[1], "b\x{00e5}r", "column name was decoded");
+		is (($csv->column_names)[1], "b${a_ring}r", "column name was decoded");
 		ok (my $row = $csv->getline_hr ($fh), "getline_hr");
-		todo_is ($row->{"b\x{00e5}r"}, "1 \x{20ac} each", "Returned in Unicode");
+		is ($row->{"b${a_ring}r"}, "1 \x{20ac} each", "Returned in Unicode");
 		close $fh;
 
 		ok (my $aoh = csv (in => $fnm, bom => 1), "csv (bom => 1)");
-		todo_is_deeply ($aoh,
-		    [{ zoo => 1, "b\x{00e5}r" => "1 \x{20ac} each" }], "Returned data");
+		is_deeply ($aoh,
+		    [{ zoo => 1, "b${a_ring}r" => "1 \x{20ac} each" }], "Returned data");
 		}
 
 	    unlink $fnm;

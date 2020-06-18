@@ -1,5 +1,5 @@
-1.44	- 2020-06-15, H.Merijn Brand
-    * EBCDIC now fully functional (except BOM detection)
+1.44	- 2020-06-18, H.Merijn Brand
+    * EBCDIC now fully functional
     * Prevent false negative CPANTESTERS fail reports
 
 1.43	- 2020-05-27, H.Merijn Brand
