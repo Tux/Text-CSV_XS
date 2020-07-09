@@ -20,6 +20,7 @@
 genMETA.pl
 ^Makefile$
 MANIFEST\.SKIP
+^MYMETA
 pm_to_blib
 ^xt/
 ^xx
