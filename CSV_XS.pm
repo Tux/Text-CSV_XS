@@ -669,9 +669,8 @@ sub error_diag {
 		}
 
 	    if ($self->{'diag_verbose'} and $self->{'_ERROR_INPUT'}) {
-		$msg .= "$self->{_ERROR_INPUT}'\n";
-		$msg .= " " x ($diag[2] - 1);
-		$msg .= "^\n";
+		$msg .= $self->{'_ERROR_INPUT'};
+		$msg .= "\n".(" " x ($diag[2] - 1))."^\n";
 		}
 
 	    my $lvl = $self->{'auto_diag'};
@@ -680,8 +679,8 @@ sub error_diag {
 		if (@c >= 11 && $c[10] && ref $c[10] eq "HASH") {
 		    my $hints = $c[10];
 		    (exists $hints->{'autodie'} && $hints->{'autodie'} or
-		     exists $hints->{"guard Fatal"} &&
-		    !exists $hints->{"no Fatal"}) and
+		     exists $hints->{'guard Fatal'} &&
+		    !exists $hints->{'no Fatal'}) and
 			$lvl++;
 		    # Future releases of autodie will probably set $^H{autodie}
 		    #  to "autodie @args", like "autodie :all" or "autodie open"
