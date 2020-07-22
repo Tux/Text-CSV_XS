@@ -668,10 +668,9 @@ sub error_diag {
 		return;
 		}
 
-	    if ($self->{'diag_verbose'} and $self->{'_ERROR_INPUT'}) {
-		$msg .= $self->{'_ERROR_INPUT'};
-		$msg .= "\n".(" " x ($diag[2] - 1))."^\n";
-		}
+	    $self->{'diag_verbose'} && $self->{'_ERROR_INPUT'} and
+		$msg .= $self->{'_ERROR_INPUT'}."\n".
+			(" " x ($diag[2] - 1))."^\n";
 
 	    my $lvl = $self->{'auto_diag'};
 	    if ($lvl < 2) {
