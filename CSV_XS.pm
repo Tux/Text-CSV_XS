@@ -164,7 +164,7 @@ sub new {
 	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);");
 
     my $proto = shift;
-    my $class = ref ($proto) || $proto	or  return;
+    my $class = ref $proto || $proto	or  return;
     @_ > 0 &&   ref $_[0] ne "HASH"	and return;
     my $attr  = shift || {};
     my %attr  = map {
