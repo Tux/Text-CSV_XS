@@ -8,9 +8,9 @@ use charnames ":full";
 
 if ($ENV{PERLBREW_HOME} and $ENV{PERLBREW_HOME} eq "/home/njh/.perlbrew") {
      warn "Your smokers have been blocked because of consistent failures that\n";
-     warn " are all caused by the smoking setup and not by module errors. I you\n";
-     warn " have fixed that all, please inform the authors, so this block can\n";
-     warn " be lifted again.\n";
+     warn " are all caused by the smoking setup and not by module errors.  If\n";
+     warn " you have fixed that all, please inform the authors, so this block\n";
+     warn " can be lifted again.\n";
      exit 0;
      }
 
