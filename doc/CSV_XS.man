@@ -2976,4 +2976,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.30.0                      2020-06-18                          STDIN(1)
+perl v5.32.0                      2020-07-22                          STDIN(1)
