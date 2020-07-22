@@ -54,7 +54,7 @@ BEGIN {
     binmode $builder->failure_output, ":encoding(utf8)";
     binmode $builder->todo_output,    ":encoding(utf8)";
 
-    plan tests => 11 + 6 * @tests + 4 * 22 + 6 + 10;
+    plan tests => 11 + 6 * @tests + 4 * 22 + 6 + 10 + 2;
     }
 
 BEGIN {
@@ -244,4 +244,26 @@ foreach my $new (0, 1, 2, 3) {
     utf8::encode ($b);
     ok ($csv->combine (1, $b, 3));
     ok ($s = $csv->string, "String");
+    }
+
+{   my $file = "Eric,\N{LATIN CAPITAL LETTER E WITH ACUTE}RIC\n";
+    utf8::encode ($file);
+    open my $fh, "<", \$file or die $!;
+
+    my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 2 });
+    is_deeply (
+	[ $csv->header ($fh) ],
+	[ "eric", "\N{LATIN SMALL LETTER E WITH ACUTE}ric" ],
+	"Lowercase unicode header");
+    }
+
+{   my $file = "Eric,\N{LATIN SMALL LETTER E WITH ACUTE}ric\n";
+    utf8::encode ($file);
+    open my $fh, "<", \$file or die $!;
+
+    my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 2 });
+    is_deeply (
+	[ $csv->header ($fh, { munge => "uc" }) ],
+	[ "ERIC", "\N{LATIN CAPITAL LETTER E WITH ACUTE}RIC" ],
+	"Uppercase unicode header");
     }

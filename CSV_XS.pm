@@ -924,16 +924,19 @@ sub header {
 	$ahead = $3;
 	}
 
-    $args{'munge_column_names'} eq "lc" and $hdr = lc $hdr;
-    $args{'munge_column_names'} eq "uc" and $hdr = uc $hdr;
-
     my $hr = \$hdr; # Will cause croak on perl-5.6.x
     open my $h, "<", $hr or croak ($self->SetDiag (1010));
 
     my $row = $self->getline ($h) or croak ();
     close $h;
 
-    if ($args{'munge_column_names'} eq "db") {
+    if (   $args{'munge_column_names'} eq "lc") {
+	$_ = lc for @{$row};
+	}
+    elsif ($args{'munge_column_names'} eq "uc") {
+	$_ = uc for @{$row};
+	}
+    elsif ($args{'munge_column_names'} eq "db") {
 	for (@{$row}) {
 	    s/\W+/_/g;
 	    s/^_+//;
