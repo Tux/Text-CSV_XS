@@ -35,6 +35,8 @@ my %wm = (
 			 cover_db
 			 valgrind.log
 			 pod2htmd.tmp
+			 MYMETA.json
+			 MYMETA.yml
 			 )
 		      },
 
