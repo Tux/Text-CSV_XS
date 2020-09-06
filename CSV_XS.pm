@@ -3342,7 +3342,7 @@ a reference to an C<ARRAY> or a C<HASH>, the output is appended to the data
 in the existing reference. The result of the parse should match what exists
 in the reference passed. This might come handy when you have to parse a set
 of files with similar content (like data stored per period) and you want to 
-collect that into a single data sturcture:
+collect that into a single data structure:
 
  my %hash;
  csv (in => $_, out => \%hash, key => "id") for sort glob "foo-[0-9]*.csv";
