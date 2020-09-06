@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 105;
+ use Test::More tests => 115;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -236,7 +236,8 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     like ($err, qr{PRM.*xyz}, $err);
     $err = "";
 
-    local $SIG{__DIE__} = sub { $err = shift; };
+    local $SIG{__DIE__}  = sub { $err = shift; };
+    local $SIG{__WARN__} = sub { $err = shift; };
     foreach my $hr (1, "foo", \my %hr, sub { 42; }, *STDOUT) {
 	$r = eval { csv (in => $tfn, kh => $hr, auto_diag => 0); };
 	$err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
@@ -276,17 +277,30 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     like ($err, qr{/foo/bar}, "No such file or directory");
     $err = "";
 
-    my %x;
-    $r = eval { csv (in => $tfn, out => \%x, auto_diag => 0); };
+    $r = eval { csv (); };
+    is ($r, undef, "Needs arguments");
+    like ($err, qr{^usage}i, "Don't know what to do");
+    $err = "";
+
+    my $x = sub { 42; };
+    $r = eval { csv (in => $tfn, out => \$x, auto_diag => 0); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
-    is ($r, undef, "Cannot write to hashref");
+    is ($r, undef, "Cannot write to subref");
     like ($err, qr{Not a GLOB}i, "Not a GLOB");
     $err = "";
 
-    $r = eval { csv (); };
+    $x = [[ 1, 2 ]]; # Add hashes to arrays
+    $r = eval { csv (in => $tfn, out => $x, bom => 1); };
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
-    is ($r, undef, "Needs arguments");
-    like ($err, qr{^usage}i, "Don't know what to do");
+    is ($r, undef, "Cannot add hashes to arrays");
+    like ($err, qr{type mismatch}i, "HASH != ARRAY");
+    $err = "";
+
+    $x = [{ a => 1, b => 2 }]; # Add arrays to hashes
+    $r = eval { csv (in => $tfn, out => $x); };
+    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
+    is ($r, undef, "Cannot add arrays to hashes");
+    like ($err, qr{type mismatch}i, "ARRAY != HASH");
     $err = "";
 
     $r = eval { csv (in => "in.csv", out => "out.csv"); };
@@ -343,6 +357,20 @@ eval {
     $dta = do { local (@ARGV, $/) = $ofn; <> };
     is ($dta, qq{1,2\n}, "out to \\*STDOUT");
     unlink $ofn;
+
+    my $aoa = [[ 1, 2 ]];
+    is (csv (in => \"3,4", out => $aoa), $aoa, "return AOA");
+    is_deeply ($aoa, [[ 1, 2 ], [ 3, 4 ]], "Add to AOA");
+
+    my $aoh = [{ a => 1, b => 2 }];
+    is (csv (in => \"a,b\n3,4", out => $aoh, bom => 1), $aoh, "return AOH");
+    is_deeply ($aoa, [[ 1, 2 ], [ 3, 4 ]], "Add to AOH");
+
+    my $ref = { 1 => { a => 1, b => 2 }};
+    is (csv (in => \"a,b\n3,4", out => $ref, key => "a"), $ref, "return REF");
+    is_deeply ($ref, { 1 => { a => 1, b => 2},
+                       3 => { a => 3, b => 4},
+                       }, "Add to keyed hash");
 
     SKIP: {
 	$] <= 5.008003 and skip qq{$] does not support ">:crlf"}, 1;

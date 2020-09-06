@@ -309,6 +309,9 @@ static const xs_error_t xs_errors[] =  {
 
     { 4001, "PRM - The key does not exist as field in the data"			},
 
+    { 5001, "PRM - The result does not match the output to append to"		},
+    { 5002, "PRM - Unsupported output"						},
+
     {    0, "" },
     };
 

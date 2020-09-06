@@ -1152,7 +1152,11 @@ sub _csv_attr {
 	qq{ csv (in => csv (in => "$in"), out => "$out");\n});
 
     if ($out) {
-	if ((ref $out and "SCALAR" ne ref $out) or "GLOB" eq ref \$out) {
+	if (ref $out and ("ARRAY" eq ref $out or "HASH" eq ref $out)) {
+	    delete $attr{'out'};
+	    $sink = 1;
+	    }
+	elsif ((ref $out and "SCALAR" ne ref $out) or "GLOB" eq ref \$out) {
 	    $fh = $out;
 	    }
 	elsif (ref $out and "SCALAR" eq ref $out and defined ${$out} and ${$out} eq "skip") {
@@ -1459,7 +1463,30 @@ sub csv {
 	    }
 	}
 
-    $c->{'sink'} and return;
+    if ($c->{'sink'}) {
+	my $ro = ref $c->{'out'} or return;
+
+	$ro eq "SCALAR" && ${$c->{'out'}} eq "skip" and
+	    return;
+
+	$ro eq ref $ref or
+	    croak ($csv->_SetDiagInfo (5001, "Output type mismatch"));
+
+	if ($ro eq "ARRAY") {
+	    if (@{$c->{'out'}} and @$ref and ref $c->{'out'}[0] eq ref $ref->[0]) {
+		push @{$c->{'out'}} => @$ref;
+		return $c->{'out'};
+		}
+	    croak ($csv->_SetDiagInfo (5001, "Output type mismatch"));
+	    }
+
+	if ($ro eq "HASH") {
+	    @{$c->{'out'}}{keys %{$ref}} = values %{$ref};
+	    return $c->{'out'};
+	    }
+
+	croak ($csv->_SetDiagInfo (5002, "Unsupported output type"));
+	}
 
     defined wantarray or
 	return csv (
@@ -3274,6 +3301,10 @@ X<out>
  csv (in => $aoa, out =>  undef);
  csv (in => $aoa, out => \"skip");
 
+ csv (in => $fh,  out => \@aoa);
+ csv (in => $fh,  out => \@aoh, bom => 1);
+ csv (in => $fh,  out => \%hsh, key => "key");
+
 In output mode, the default CSV options when producing CSV are
 
  eol       => "\r\n"
@@ -3305,6 +3336,22 @@ filter for side effects only.
 
 Currently,  setting C<out> to any false value  (C<undef>, C<"">, 0) will be
 equivalent to C<\"skip">.
+
+If the C<in> argument point to something to parse, and the C<out> is set to
+a reference to an C<ARRAY> or a C<HASH>, the output is appended to the data
+in the existing reference. The result of the parse should match what exists
+in the reference passed. This might come handy when you have to parse a set
+of files with similar content (like data stored per period) and you want to 
+collect that into a single data sturcture:
+
+ my %hash;
+ csv (in => $_, out => \%hash, key => "id") for sort glob "foo-[0-9]*.csv";
+
+ my @list; # List of arrays
+ csv (in => $_, out => \@list)              for sort glob "foo-[0-9]*.csv";
+
+ my @list; # List of hashes
+ csv (in => $_, out => \@list, bom => 1)    for sort glob "foo-[0-9]*.csv";
 
 =head3 encoding
 X<encoding>
