@@ -1591,7 +1591,11 @@ or
  csv (in =&gt; $aoa, out =&gt; \*STDOUT);
  csv (in =&gt; $aoa, out =&gt; \my $data);
  csv (in =&gt; $aoa, out =&gt;  undef);
- csv (in =&gt; $aoa, out =&gt; \&quot;skip&quot;);</code></pre>
+ csv (in =&gt; $aoa, out =&gt; \&quot;skip&quot;);
+
+ csv (in =&gt; $fh,  out =&gt; \@aoa);
+ csv (in =&gt; $fh,  out =&gt; \@aoh, bom =&gt; 1);
+ csv (in =&gt; $fh,  out =&gt; \%hsh, key =&gt; &quot;key&quot;);</code></pre>
 
 <p>In output mode, the default CSV options when producing CSV are</p>
 
@@ -1615,6 +1619,17 @@ or
       on_in =&gt; sub { $cache{$_[1][1]}++ });</code></pre>
 
 <p>Currently, setting <code>out</code> to any false value (<code>undef</code>, <code>&quot;&quot;</code>, 0) will be equivalent to <code>\&quot;skip&quot;</code>.</p>
+
+<p>If the <code>in</code> argument point to something to parse, and the <code>out</code> is set to a reference to an <code>ARRAY</code> or a <code>HASH</code>, the output is appended to the data in the existing reference. The result of the parse should match what exists in the reference passed. This might come handy when you have to parse a set of files with similar content (like data stored per period) and you want to collect that into a single data structure:</p>
+
+<pre><code> my %hash;
+ csv (in =&gt; $_, out =&gt; \%hash, key =&gt; &quot;id&quot;) for sort glob &quot;foo-[0-9]*.csv&quot;;
+
+ my @list; # List of arrays
+ csv (in =&gt; $_, out =&gt; \@list)              for sort glob &quot;foo-[0-9]*.csv&quot;;
+
+ my @list; # List of hashes
+ csv (in =&gt; $_, out =&gt; \@list, bom =&gt; 1)    for sort glob &quot;foo-[0-9]*.csv&quot;;</code></pre>
 
 <h3 id="encoding">encoding </h3>
 

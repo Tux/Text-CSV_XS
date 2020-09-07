@@ -1648,6 +1648,10 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         csv (in => $aoa, out =>  undef);
         csv (in => $aoa, out => \"skip");
 
+        csv (in => $fh,  out => \@aoa);
+        csv (in => $fh,  out => \@aoh, bom => 1);
+        csv (in => $fh,  out => \%hsh, key => "key");
+
        In output mode, the default CSV options when producing CSV are
 
         eol       => "\r\n"
@@ -1679,6 +1683,22 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        Currently,  setting "out" to any false value  ("undef", "", 0) will be
        equivalent to "\"skip"".
+
+       If the "in" argument point to something to parse, and the "out" is set
+       to a reference to an "ARRAY" or a "HASH", the output is appended to the
+       data in the existing reference. The result of the parse should match
+       what exists in the reference passed. This might come handy when you
+       have to parse a set of files with similar content (like data stored per
+       period) and you want to collect that into a single data structure:
+
+        my %hash;
+        csv (in => $_, out => \%hash, key => "id") for sort glob "foo-[0-9]*.csv";
+
+        my @list; # List of arrays
+        csv (in => $_, out => \@list)              for sort glob "foo-[0-9]*.csv";
+
+        my @list; # List of hashes
+        csv (in => $_, out => \@list, bom => 1)    for sort glob "foo-[0-9]*.csv";
 
        [4mencoding[0m
 
@@ -2976,4 +2996,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.32.0                      2020-07-22                          STDIN(1)
+perl v5.32.0                      2020-09-07                          STDIN(1)

@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2020-07-22" "perl v5.32.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2020-09-07" "perl v5.32.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2162,6 +2162,10 @@ where, in the absence of the \f(CW\*(C`out\*(C'\fR attribute, this is a shortcut
 \& csv (in => $aoa, out => \emy $data);
 \& csv (in => $aoa, out =>  undef);
 \& csv (in => $aoa, out => \e"skip");
+\&
+\& csv (in => $fh,  out => \e@aoa);
+\& csv (in => $fh,  out => \e@aoh, bom => 1);
+\& csv (in => $fh,  out => \e%hsh, key => "key");
 .Ve
 .PP
 In output mode, the default \s-1CSV\s0 options when producing \s-1CSV\s0 are
@@ -2201,6 +2205,24 @@ filter for side effects only.
 .PP
 Currently,  setting \f(CW\*(C`out\*(C'\fR to any false value  (\f(CW\*(C`undef\*(C'\fR, \f(CW""\fR, 0) will be
 equivalent to \f(CW\*(C`\e"skip"\*(C'\fR.
+.PP
+If the \f(CW\*(C`in\*(C'\fR argument point to something to parse, and the \f(CW\*(C`out\*(C'\fR is set to
+a reference to an \f(CW\*(C`ARRAY\*(C'\fR or a \f(CW\*(C`HASH\*(C'\fR, the output is appended to the data
+in the existing reference. The result of the parse should match what exists
+in the reference passed. This might come handy when you have to parse a set
+of files with similar content (like data stored per period) and you want to 
+collect that into a single data structure:
+.PP
+.Vb 2
+\& my %hash;
+\& csv (in => $_, out => \e%hash, key => "id") for sort glob "foo\-[0\-9]*.csv";
+\&
+\& my @list; # List of arrays
+\& csv (in => $_, out => \e@list)              for sort glob "foo\-[0\-9]*.csv";
+\&
+\& my @list; # List of hashes
+\& csv (in => $_, out => \e@list, bom => 1)    for sort glob "foo\-[0\-9]*.csv";
+.Ve
 .PP
 \fIencoding\fR
 .IX Xref "encoding"
