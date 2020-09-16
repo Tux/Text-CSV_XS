@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'20 [25 Mar 2020] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [16 Sep 2020] Copyright H.M.Brand 2007-2020
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.07";
+our $VERSION = "1.08";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -25,7 +25,8 @@ usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
                   if from standard input, defaults to csv2xlsx.xlsx
        -F         allow formula's. Otherwise fields starting with
                   an equal sign are forced to string
-         --Fa=aaa Define formula action: die/croak/diag/empty/undef
+         --Fa=aaa Define formula action: none/die/croak/diag/empty/undef
+         --Ft     Formula's will be stored as text (formula actions: none)
          --Fd     Formula's will cause a die
          --Fc     Formula's will cause a croak
          --FD     Formula's will cause a warning (this is the default)
@@ -68,6 +69,7 @@ GetOptions (
     "f|force!"		=> \my $frc,
     "F|formulas!"	=> \my $frm,
       "Fa=s"		=> \$fac,
+      "Ft"		=> sub { $fac = "none";		},
       "Fd"		=> sub { $fac = "die";		},
       "Fc"		=> sub { $fac = "croak";	},
       "FD"		=> sub { $fac = "diag";		},
