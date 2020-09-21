@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'20 [16 Sep 2020] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [21 Sep 2020] Copyright H.M.Brand 2007-2020
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.08";
+our $VERSION = "1.09";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -36,6 +36,7 @@ usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -C <C:fmt> use <fmt> as currency formats for currency <C>, no default
        -D cols    only convert dates in columns <cols>. Default is everywhere.
+       -L N       limit export to N rows
        -u         CSV is UTF8
        -m         merge multiple CSV's into a single xlsx (separate sheets)
 		    -o is required, all arguments should be existing files
@@ -77,6 +78,7 @@ GetOptions (
       "Fu"		=> sub { $fac = "undef";	},
     "u|utf-8|utf8!"	=> \my $utf,
     "m|merge!"		=> \my $mrg,
+    "L|row-limit=i"	=> \my $row_limit,
     "v|verbose:1"	=> \$opt_v,
     ) or usage (1);
 
@@ -88,7 +90,7 @@ if ($mrg) {
 	    $xls = $_;
 	    next;
 	    }
-	if (m/\.(csv|png|jpe?g|bmp|gif|tiff|xpm)$/i && -s) {
+	if (m/\.(?:csv|png|jpe?g|bmp|gif|tiff|xpm)$/i && -s) {
 	    push @csv, $_;
 	    next;
 	    }
@@ -206,6 +208,7 @@ foreach my $csvf (@args) {
 	}
 
     while ($row && @$row or $row = $csv->getline ($fh)) {
+	$row_limit and $csv->record_number > $row_limit and last;
 	my @row = @$row;
 	@row > $w and push @w, ($wdt) x (($w = @row) - @w);
 	foreach my $c (0 .. $#row) {
