@@ -6,7 +6,7 @@
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.09";
+our $VERSION = "1.10";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -38,6 +38,7 @@ usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
        -D cols    only convert dates in columns <cols>. Default is everywhere.
        -L N       limit export to N rows
        -u         CSV is UTF8
+         --de     Some CSV fields might be double-encoded. Try to fix that.
        -m         merge multiple CSV's into a single xlsx (separate sheets)
 		    -o is required, all arguments should be existing files
        -v [<lvl>] verbosity (default = 1)
@@ -77,6 +78,7 @@ GetOptions (
       "Fe"		=> sub { $fac = "empty";	},
       "Fu"		=> sub { $fac = "undef";	},
     "u|utf-8|utf8!"	=> \my $utf,
+      "de|fix-utf8!"	=> \my $dutf, # double encoded? \x{c3}\x{ab} => \x{100}
     "m|merge!"		=> \my $mrg,
     "L|row-limit=i"	=> \my $row_limit,
     "v|verbose:1"	=> \$opt_v,
@@ -115,6 +117,14 @@ use Text::CSV_XS;
 use Date::Calc qw( Delta_Days Days_in_Month );
 use Excel::Writer::XLSX;
 use Encode qw( from_to );
+
+if ($dutf) {
+    eval { require Encode::DoubleEncodedUTF8; };
+    if ($@) {
+	$dutf = 0;
+	warn "Cannot load Encode::DoubleEncodedUTF8; --de ignored\n";
+	}
+    }
 
 my $wbk = Excel::Writer::XLSX->new ($xls);
    $dtf =~ s/j/y/g;
@@ -215,6 +225,9 @@ foreach my $csvf (@args) {
 	    my $val = $row[$c] // "";
 	    my $l = length $val;
 	    $l > ($w[$c] // -1) and $w[$c] = $l;
+
+	    $dutf and $csv->is_binary ($c) and utf8::valid ($val) and
+		$val = Encode::decode ("utf-8-de", $val);
 
 	    if ($utf and $csv->is_binary ($c)) {
 		from_to ($val, "utf-8", "ucs2");
