@@ -1,8 +1,9 @@
-1.45	- 2020-09-24, H.Merijn Brand
+1.45	- 2020-10-13, H.Merijn Brand
     * Update to Devel::PPPort-3.60 (3.59 was b0rked)
     * Allow adding to existing data in csv (out => $ref)
     * examples/csv2xlsx : -L   # to limit records to export
     * examples/csv2xlsx : --de # for possible double-encoding fix
+    * Update to Devel::PPPort-3.61
 
 1.44	- 2020-07-22, H.Merijn Brand
     * EBCDIC now fully functional
