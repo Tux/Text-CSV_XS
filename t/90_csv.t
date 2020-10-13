@@ -289,12 +289,15 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     like ($err, qr{Not a GLOB}i, "Not a GLOB");
     $err = "";
 
-    $x = [[ 1, 2 ]]; # Add hashes to arrays
-    $r = eval { csv (in => $tfn, out => $x, bom => 1); };
-    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
-    is ($r, undef, "Cannot add hashes to arrays");
-    like ($err, qr{type mismatch}i, "HASH != ARRAY");
-    $err = "";
+    SKIP: {
+	$[ < 5.008 and skip "$] does not support bom here", 2;
+	$x = [[ 1, 2 ]]; # Add hashes to arrays
+	$r = eval { csv (in => $tfn, out => $x, bom => 1); };
+	$err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
+	is ($r, undef, "Cannot add hashes to arrays");
+	like ($err, qr{type mismatch}, "HASH != ARRAY");
+	$err = "";
+	}
 
     $x = [{ a => 1, b => 2 }]; # Add arrays to hashes
     $r = eval { csv (in => $tfn, out => $x); };
@@ -358,19 +361,22 @@ eval {
     is ($dta, qq{1,2\n}, "out to \\*STDOUT");
     unlink $ofn;
 
-    my $aoa = [[ 1, 2 ]];
-    is (csv (in => \"3,4", out => $aoa), $aoa, "return AOA");
-    is_deeply ($aoa, [[ 1, 2 ], [ 3, 4 ]], "Add to AOA");
+    SKIP: {
+	$] <= 5.008 and skip qq{$] does not support ScalarIO}, 6;
+	my $aoa = [[ 1, 2 ]];
+	is (csv (in => \"3,4", out => $aoa), $aoa, "return AOA");
+	is_deeply ($aoa, [[ 1, 2 ], [ 3, 4 ]], "Add to AOA");
 
-    my $aoh = [{ a => 1, b => 2 }];
-    is (csv (in => \"a,b\n3,4", out => $aoh, bom => 1), $aoh, "return AOH");
-    is_deeply ($aoa, [[ 1, 2 ], [ 3, 4 ]], "Add to AOH");
+	my $aoh = [{ a => 1, b => 2 }];
+	is (csv (in => \"a,b\n3,4", out => $aoh, bom => 1), $aoh, "return AOH");
+	is_deeply ($aoa, [[ 1, 2 ], [ 3, 4 ]], "Add to AOH");
 
-    my $ref = { 1 => { a => 1, b => 2 }};
-    is (csv (in => \"a,b\n3,4", out => $ref, key => "a"), $ref, "return REF");
-    is_deeply ($ref, { 1 => { a => 1, b => 2},
-                       3 => { a => 3, b => 4},
-                       }, "Add to keyed hash");
+	my $ref = { 1 => { a => 1, b => 2 }};
+	is (csv (in => \"a,b\n3,4", out => $ref, key => "a"), $ref, "return REF");
+	is_deeply ($ref, { 1 => { a => 1, b => 2},
+			   3 => { a => 3, b => 4},
+			   }, "Add to keyed hash");
+	}
 
     SKIP: {
 	$] <= 5.008003 and skip qq{$] does not support ">:crlf"}, 1;
