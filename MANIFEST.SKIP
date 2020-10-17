@@ -8,7 +8,8 @@
 \.gcno$
 \.releaserc
 \.exrc$
-\.travis.yml
+\.travis\.yml
+appveyor\.yml
 \.whitesource
 ^00ideas
 ^blib/
