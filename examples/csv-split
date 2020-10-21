@@ -1,0 +1,129 @@
+#!/pro/bin/perl
+
+use 5.14.2;
+use warnings;
+
+our $VERSION = "0.01 - 20201021";
+our $CMD = $0 =~ s{.*/}{}r;
+
+sub usage {
+    my $err = shift and select STDERR;
+    say "usage: $CMD [-c #] [-r #] [-b B] file.csv";
+    say "    -c N   --columns=N    Split on max N columns per file";
+    say "    -r N   --records=N    Split on max N records per file";
+    say "    -b B   --base=B       Use B as base for new file names";
+    exit $err;
+    } # usage
+
+use CSV;
+use Getopt::Long qw(:config bundling);
+GetOptions (
+    "help|?"		=> sub { usage (0); },
+    "V|version"		=> sub { say "$CMD [$VERSION]"; exit 0; },
+
+    "c|columns=n"	=> \ my $opt_c,
+    "r|rows|records=n"	=> \ my $opt_r,
+
+    "b|base=s"		=> \ my $opt_b,
+
+    "v|verbose:1"	=> \(my $opt_v = 0),
+    ) or usage (1);
+
+my $inf = shift or usage (1);
+-s $inf or die "$inf is empty";
+
+$opt_b //= $inf =~ s{\.csv$}{}ri;
+
+my $x = "01";
+open my $ih, "<", $inf or die "$inf: !$\n";
+
+my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+
+my @h = $csv->header ($ih, { bom => 1 });
+
+if (!$opt_c or @h <= $opt_c) {
+    # idx, fh, fields
+    @h = ([ "", undef, @h ]);
+    }
+else {
+    my @c;
+    my $i = "A";
+    while (@h) {
+	push @c => [ $i++, undef, splice @h, 0, $opt_c ];
+	}
+    @h = @c;
+    }
+
+sub next_oh {
+    for (@h) {
+	my ($idx, $fh, @fld) = @$_;
+	$fh and close $fh;
+	my $fn = $opt_b;
+	$opt_r and $fn .= "-$x";
+	$idx   and $fn .= "-$idx";
+	$fn .= ".csv";
+	$fn eq $inf and die "I WILL NOT OVERWRITE $inf!";
+	open $fh, ">", $fn or die "$fn: $!\n";
+	$csv->say ($fh, \@fld);
+	$_->[1] = $fh;
+	}
+    $x++;
+    } # next_oh
+$opt_r or next_oh ();
+
+my $n = 0; # Skip header in record number
+while (my $r = $csv->getline_hr ($ih)) {
+    if ($opt_r) { $n++ % $opt_r or next_oh () };
+    for (@h) {
+	my ($idx, $fh, @fld) = @$_;
+	$csv->say ($fh, [ @{$r}{@fld} ]);
+	}
+    }
+close $ih;
+close for grep { defined } map { $_->[1] } @h;
+
+__END__
+
+file.csv:
+a,b,c,d,e
+1,2,3,4,5
+2,2,3,4,4
+3,2,3,4,3
+4,2,3,4,2
+5,2,3,4,1
+
+csv-split -r 3 file.csv
+
+file-01.csv
+a,b,c,d,e
+1,2,3,4,5
+2,2,3,4,4
+3,2,3,4,3
+
+file-02.csv
+a,b,c,d,e
+4,2,3,4,2
+5,2,3,4,1
+
+csv-split -c 3 file.csv
+
+file-A.csv	file-B.csv
+a,b,c		d,e
+1,2,3		4,5
+2,2,3		4,4
+3,2,3		4,3
+4,2,3		4,2
+5,2,3		4,1
+
+csv-split -r 3 -c 3 file.csv
+
+file-01-A.csv	file-01-B.csv
+a,b,c		d,e
+1,2,3		4,5
+2,2,3		4,4
+3,2,3		4,3
+
+file-02-A.csv	file-02-B.csv
+a,b,c		d,e
+4,2,3		4,2
+5,2,3		4,1

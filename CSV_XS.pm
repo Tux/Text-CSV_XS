@@ -4311,6 +4311,13 @@ C<CSV> file and report on its content.
  OK: rows: 1, columns: 2
      sep = <,>, quo = <">, bin = <1>, eol = <"\n">
 
+=item csv-split
+X<csv-split>
+
+This command splits C<CSV> files into smaller files,  keeping (part of) the
+header.  Options include maximum number of (data) rows per file and maximum
+number of columns per file or a combination of the two.
+
 =item csv2xls
 X<csv2xls>
 
