@@ -290,7 +290,7 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     $err = "";
 
     SKIP: {
-	$[ < 5.008 and skip "$] does not support bom here", 2;
+	$] < 5.008 and skip "$] does not support bom here", 2;
 	$x = [[ 1, 2 ]]; # Add hashes to arrays
 	$r = eval { csv (in => $tfn, out => $x, bom => 1); };
 	$err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
