@@ -28,6 +28,7 @@ if ($check) {
     for ( [qw( csv2xls		5.012	)], # //=
 	  [qw( csv2xlsx		5.014	)], # s///r
 	  [qw( csv-check	5.012	)], # //=
+	  [qw( csv-split	5.014	)], # s///r
 	  [qw( csvdiff		5.010	)], # //=
 	  [qw( parser-xs.pl	5.006	)], #
 	  [qw( rewrite.pl	5.010	)], # //=
