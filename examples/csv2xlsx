@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'20 [21 Sep 2020] Copyright H.M.Brand 2007-2020
+#	   (m)'20 [30 Nov 2020] Copyright H.M.Brand 2007-2020
 
 use 5.14.0;
 use warnings;
 
-our $VERSION = "1.10";
+our $VERSION = "1.11";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -110,6 +110,13 @@ $xls ||= $base =~ s/(?:\.csv)?$/.xlsx/ir;
 if (-s $xls) {
     print STDERR "File '$xls' already exists. Overwrite? [y/N] > N\b";
     scalar <STDIN> =~ m/^[yj](?:es|a)?$/i or exit;
+    }
+# Test if the file can be created
+# The error from Excel::Writer::XLSX is not very informative if it fails
+# e.g. when the folder cannot be used for whatever reason
+{   open my $fh, ">", $xls or die "$xls: $!\n";
+    close $fh;
+    unlink $xls;
     }
 
 # Don't split ourselves when modules do it _much_ better, and follow the standards
