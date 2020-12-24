@@ -7,6 +7,7 @@
     * Update to Devel::PPPort-3.62
     * Add examples/csv-split
     * examples/csv2xlsx : Check if .xlsx is creatable before conversion
+    * Small doc additions
     * Fix META issue for bugtracker
 
 1.44	- 2020-07-22, H.Merijn Brand

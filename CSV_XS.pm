@@ -3141,6 +3141,9 @@ X<status>
 This method returns the status of the last invoked L</combine> or L</parse>
 call. Status is success (true: C<1>) or failure (false: C<undef> or C<0>).
 
+Note that as this only keeps track of the status of above mentioned methods,
+you are probably looking for L<C<error_diag>|/error_diag> instead.
+
 =head2 error_input
 X<error_input>
 
@@ -3149,6 +3152,9 @@ X<error_input>
 This method returns the erroneous argument (if it exists) of L</combine> or
 L</parse>,  whichever was called more recently.  If the last invocation was
 successful, C<error_input> will return C<undef>.
+
+Depending on the type of error, it I<might> also hold the data for the last
+error-input of L</getline>.
 
 =head2 error_diag
 X<error_diag>

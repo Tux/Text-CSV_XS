@@ -1474,11 +1474,15 @@ or
 
 <p>This method returns the status of the last invoked <a href="#combine">&quot;combine&quot;</a> or <a href="#parse">&quot;parse&quot;</a> call. Status is success (true: <code>1</code>) or failure (false: <code>undef</code> or <code>0</code>).</p>
 
+<p>Note that as this only keeps track of the status of above mentioned methods, you are probably looking for <a href="#error_diag"><code>error_diag</code></a> instead.</p>
+
 <h2 id="error_input">error_input </h2>
 
 <pre><code> $bad_argument = $csv-&gt;error_input ();</code></pre>
 
 <p>This method returns the erroneous argument (if it exists) of <a href="#combine">&quot;combine&quot;</a> or <a href="#parse">&quot;parse&quot;</a>, whichever was called more recently. If the last invocation was successful, <code>error_input</code> will return <code>undef</code>.</p>
+
+<p>Depending on the type of error, it <i>might</i> also hold the data for the last error-input of <a href="#getline">&quot;getline&quot;</a>.</p>
 
 <h2 id="error_diag">error_diag </h2>
 
@@ -2519,6 +2523,12 @@ or
  using Text::CSV_XS 1.32 with perl 5.26.0 and Unicode 9.0.0
  OK: rows: 1, columns: 2
      sep = &lt;,&gt;, quo = &lt;&quot;&gt;, bin = &lt;1&gt;, eol = &lt;&quot;\n&quot;&gt;</code></pre>
+
+</dd>
+<dt id="csv-split">csv-split </dt>
+<dd>
+
+<p>This command splits <code>CSV</code> files into smaller files, keeping (part of) the header. Options include maximum number of (data) rows per file and maximum number of columns per file or a combination of the two.</p>
 
 </dd>
 <dt id="csv2xls">csv2xls </dt>

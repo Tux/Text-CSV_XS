@@ -1497,12 +1497,18 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        This method returns the status of the last invoked "combine" or "parse"
        call. Status is success (true: 1) or failure (false: "undef" or 0).
 
+       Note that as this only keeps track of the status of above mentioned
+       methods, you are probably looking for "error_diag" instead.
+
    [1merror_input[0m
         $bad_argument = $csv->error_input ();
 
        This method returns the erroneous argument (if it exists) of "combine"
        or "parse",  whichever was called more recently.  If the last
        invocation was successful, "error_input" will return "undef".
+
+       Depending on the type of error, it [4mmight[24m also hold the data for the
+       last error-input of "getline".
 
    [1merror_diag[0m
         Text::CSV_XS->error_diag ();
@@ -2580,6 +2586,12 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
           OK: rows: 1, columns: 2
               sep = <,>, quo = <">, bin = <1>, eol = <"\n">
 
+       csv-split
+         This command splits "CSV" files into smaller files,  keeping (part
+         of) the header.  Options include maximum number of (data) rows per
+         file and maximum number of columns per file or a combination of the
+         two.
+
        csv2xls
          A script to convert "CSV" to Microsoft Excel ("XLS"). This requires
          extra modules Date::Calc and Spreadsheet::WriteExcel. The converter
@@ -2996,4 +3008,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.32.0                      2020-09-07                          STDIN(1)
+perl v5.32.0                      2020-12-24                          STDIN(1)

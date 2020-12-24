@@ -1578,6 +1578,9 @@ just one single empty field. However, if `keep_meta_info` is set, invoking
 This method returns the status of the last invoked ["combine"](#combine) or ["parse"](#parse)
 call. Status is success (true: `1`) or failure (false: `undef` or `0`).
 
+Note that as this only keeps track of the status of above mentioned methods,
+you are probably looking for [`error_diag`](#error_diag) instead.
+
 ## error\_input
 
 
@@ -1586,6 +1589,9 @@ call. Status is success (true: `1`) or failure (false: `undef` or `0`).
 This method returns the erroneous argument (if it exists) of ["combine"](#combine) or
 ["parse"](#parse),  whichever was called more recently.  If the last invocation was
 successful, `error_input` will return `undef`.
+
+Depending on the type of error, it _might_ also hold the data for the last
+error-input of ["getline"](#getline).
 
 ## error\_diag
 
@@ -2716,6 +2722,13 @@ The following files can be found there:
         using Text::CSV_XS 1.32 with perl 5.26.0 and Unicode 9.0.0
         OK: rows: 1, columns: 2
             sep = <,>, quo = <">, bin = <1>, eol = <"\n">
+
+- csv-split
+
+
+    This command splits `CSV` files into smaller files,  keeping (part of) the
+    header.  Options include maximum number of (data) rows per file and maximum
+    number of columns per file or a combination of the two.
 
 - csv2xls
 
