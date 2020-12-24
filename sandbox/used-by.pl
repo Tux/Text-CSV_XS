@@ -89,6 +89,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "FormValidator-Nested",		# ::CSV - Questions
     "FreeRADIUS-Database",		# ::CSV - Questions
     "Fsdb",				# ::CSV -
+    "Geo-Coder-Free",			# prereqs LEHMANN-ware
     "Geo-USCensus-Geocoding",		# '302 Found'
     "Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
     "Gtk2-Ex-Threads-DBI",		# Distribution is incomplete
@@ -98,6 +99,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "Module-CPANTS-ProcessCPAN",	# ::CSV - Questions
     "Module-CPANTS-Site",		# ::CSV - Unmet prerequisites
     "Net-IPFromZip",			# Missing zip file(s)
+    "OWL-DirectSemantics",		# dot-in-INC problem
     "Parse-CSV-Colnames",		# ::CSV - Fails because of Parse::CSV
     "Pcore",				# Unmet prereqs (common::header)
     "Plack-Middleware-DBIC-QueryLog",	# maint/Maker.pm
@@ -126,6 +128,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "XAS",				# ::CSV - No STOMP MQ
     "XAS-Model",			# ::CSV - No STOMP MQ
     "XAS-Spooler",			# ::CSV - No STOMP MQ
+    "XRD-Parser",			# dot-in-INC problem
     "xDash",				# Questions
 #   "xls2csv",
     "Xymon-DB-Schema",			# ::CSV - Bad prereqs
