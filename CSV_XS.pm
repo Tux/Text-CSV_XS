@@ -1,6 +1,6 @@
 package Text::CSV_XS;
 
-# Copyright (c) 2007-2020 H.Merijn Brand.  All rights reserved.
+# Copyright (c) 2007-2021 H.Merijn Brand.  All rights reserved.
 # Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
 # Copyright (c) 1997 Alan Citterman.       All rights reserved.
 #
@@ -26,7 +26,7 @@ use XSLoader;
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.45";
+$VERSION   = "1.46";
 @ISA       = qw( Exporter );
 @EXPORT_OK = qw( csv );
 XSLoader::load ("Text::CSV_XS", $VERSION);
@@ -4866,7 +4866,7 @@ L</csv> function. See ChangeLog releases 0.25 and on.
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2007-2020 H.Merijn Brand.  All rights reserved.
+ Copyright (C) 2007-2021 H.Merijn Brand.  All rights reserved.
  Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
  Copyright (C) 1997      Alan Citterman.  All rights reserved.
 

@@ -1,3 +1,6 @@
+1.46	- 2021-01-01, H.Merijn Brand
+    * It's 2021
+
 1.45	- 2020-12-24, H.Merijn Brand
     * Update to Devel::PPPort-3.60 (3.59 was b0rked)
     * Allow adding to existing data in csv (out => $ref)
