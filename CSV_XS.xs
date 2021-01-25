@@ -602,15 +602,15 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     if (csv->quo_len > 1)
 	_cache_show_str ("quote", csv->quo_len,	csv->quo);
     if (csv->types_len)
-	_cache_show_str ("types", csv->types_len, csv->types);
+	_cache_show_str ("types", csv->types_len, (byte *)csv->types);
     else
-	_cache_show_str ("types", 0, "");
+	_cache_show_str ("types", 0, (byte *)"");
 
     if (csv->bptr)
-	_cache_show_str ("bptr", (int)strlen (csv->bptr), csv->bptr);
+	_cache_show_str ("bptr", (int)strlen (csv->bptr), (byte *)csv->bptr);
     if (csv->tmp && SvPOK (csv->tmp)) {
 	char *s = SvPV_nolen (csv->tmp);
-	_cache_show_str ("tmp",  (int)strlen (s), s);
+	_cache_show_str ("tmp",  (int)strlen (s), (byte *)s);
 	}
     } /* xs_cache_diag */
 
