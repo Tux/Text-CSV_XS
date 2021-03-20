@@ -12,7 +12,7 @@ BEGIN {
 	}
     else {
 	require Encode;
-	plan tests => 48;
+	plan tests => 60;
 	}
     require "./t/util.pl";
     }
@@ -29,13 +29,14 @@ foreach my $cstr ("#", "//", "Comment", "\xe2\x98\x83") {
 
 	my $fh;
 	open  $fh, ">", $tfn or die "$tfn: $!\n";
-	print $fh $cstr, $rest, "\n";
-	print $fh "c,$cstr\n";
-	print $fh " $cstr\n";
-	print $fh "e,$cstr,$rest\n";
-	print $fh $cstr, "\n";
-	print $fh "g,i$cstr\n";
-	print $fh $cstr, "\n";
+	print $fh qq{$cstr$rest\n};
+	print $fh qq{c,$cstr\n};
+	print $fh qq{ $cstr\n};
+	print $fh qq{e,$cstr,$rest\n};
+	print $fh qq{$cstr\n};
+	print $fh qq{g,i$cstr\n};
+	print $fh qq{j,"k\n${cstr}k"\n};
+	print $fh qq{$cstr\n};
 	close $fh;
 
 	open  $fh, "<", $tfn or die "$tfn: $!\n";
@@ -47,6 +48,7 @@ foreach my $cstr ("#", "//", "Comment", "\xe2\x98\x83") {
 	is_deeply ($csv->getline ($fh), [ " $cuni" ],		"leading space");
 	is_deeply ($csv->getline ($fh), [ "e", $cuni, @rest ],	"not start of line");
 	is_deeply ($csv->getline ($fh), [ "g", "i$cuni" ],	"not start of field");
+	is_deeply ($csv->getline ($fh), [ "j", "k\n${cuni}k" ],	"in quoted field after NL");
 
 	close $fh;
 
