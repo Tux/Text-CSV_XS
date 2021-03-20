@@ -79,6 +79,7 @@ my %def_attr = (
     'verbatim'			=> 0,
     'formula'			=> 0,
     'undef_str'			=> undef,
+    'comment_str'		=> undef,
     'types'			=> undef,
     'callbacks'			=> undef,
 
@@ -269,7 +270,8 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     'formula'			=> 38,
     'strict'			=> 42,
     'undef_str'			=> 46,
-    'types'			=> 50,
+    'comment_str'		=> 54,
+    'types'			=> 62,
     );
 
 # A `character'
@@ -545,6 +547,16 @@ sub undef_str {
 	}
     $self->{'undef_str'};
     } # undef_str
+
+sub comment_str {
+    my $self = shift;
+    if (@_) {
+	my $v = shift;
+	$self->{'comment_str'} = defined $v ? "$v" : undef;
+	$self->_cache_set ($_cache_id{'comment_str'}, $self->{'comment_str'});
+	}
+    $self->{'comment_str'};
+    } # comment_str
 
 sub auto_diag {
     my $self = shift;
@@ -2312,6 +2324,19 @@ loaders, like for MySQL, that recognize special sequences for C<NULL> data.
 
 This attribute has no meaning when parsing CSV data.
 
+=head3 comment_str
+X<comment_str>
+
+ my $csv = Text::CSV_XS->new ({ comment_str => "#" });
+         $csv->comment_str (undef);
+ my $s = $csv->comment_str;
+
+This attribute optionally defines a string to be recognized as comment.  If
+this attribute is defined,   all lines starting with this sequence will not
+be parsed as CSV but skipped as comment.
+
+This attribute has no meaning when generating CSV.
+
 =head3 verbatim
 X<verbatim>
 
@@ -2394,6 +2419,7 @@ is equivalent to
      formula               => 0,
      verbatim              => 0,
      undef_str             => undef,
+     comment_str           => undef,
      types                 => undef,
      callbacks             => undef,
      });

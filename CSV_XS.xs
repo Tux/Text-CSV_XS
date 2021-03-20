@@ -156,7 +156,8 @@ static unsigned char ec, ebcdic2ascii[256] = {
 #define CACHE_ID_formula		38
 #define CACHE_ID_strict			42
 #define CACHE_ID_undef_str		46
-#define CACHE_ID_types			50
+#define CACHE_ID_comment_str		54
+#define CACHE_ID_types			62
 
 #define	byte	unsigned char
 #define ulng	unsigned long
@@ -193,8 +194,11 @@ typedef struct {
 
     byte	quote_empty;
     byte	formula;
+    byte	utf8;
+    byte	has_ahead;
 
     byte	strict;
+    byte	eolx;
     short	strict_n;
 
     long	is_bound;
@@ -215,11 +219,9 @@ typedef struct {
 
     char *	bptr;
     SV *	tmp;
-    byte	utf8;
-    byte	has_ahead;
-    byte	eolx;
     byte	undef_flg;
     byte *	undef_str;
+    byte *	comment_str;
     int		eol_pos;
     STRLEN	size;
     STRLEN	used;
@@ -517,6 +519,10 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 		}
 	    break;
 
+	case CACHE_ID_comment_str:
+	    csv->comment_str = *cp ? (byte *)cp : NULL;
+	    break;
+
 	case CACHE_ID_types:
 	    if (cp && len) {
 		csv->types     = cp;
@@ -698,6 +704,11 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	    }
 	else
 	    csv->undef_str = NULL;
+
+	if ((svp = hv_fetchs (self, "comment_str",    FALSE)) && *svp && SvOK (*svp))
+	    csv->comment_str = (byte *)SvPV_nolen (*svp);
+	else
+	    csv->comment_str = NULL;
 
 	if ((svp = hv_fetchs (self, "_types",         FALSE)) && *svp && SvOK (*svp)) {
 	    csv->types = SvPV (*svp, len);
@@ -1843,6 +1854,28 @@ EOLX:
 		}
 
 	    if (waitingForField) {
+		if (csv->comment_str && !f && !spl && c == *csv->comment_str) {
+		    STRLEN cl = strlen (csv->comment_str);
+
+#if MAINT_DEBUG > 5
+		    (void)fprintf (stderr,
+			"COMMENT? cl = %d, size = %d, used = %d\n",
+			cl, csv->size, csv->used);
+#endif
+		    if (cl == 1 || (
+		       (csv->size - csv->used >= cl - 1 &&
+			 !memcmp (csv->bptr + csv->used, csv->comment_str + 1, cl - 1) &&
+			 (csv->used += cl - 1)))) {
+			csv->used    = csv->size;
+			csv->fld_idx = 0;
+			c = CSV_GET;
+#if MAINT_DEBUG > 5
+			(void)fprintf (stderr, "# COMMENT, SKIPPED\n");
+#endif
+			goto restart;
+			}
+		    }
+
 		if (csv->allow_whitespace && is_whitespace (c)) {
 		    do {
 			c = CSV_GET;

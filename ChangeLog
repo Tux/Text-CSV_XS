@@ -1,5 +1,6 @@
-1.46	- 2021-01-01, H.Merijn Brand
+1.46	- 2021-03-20, H.Merijn Brand
     * It's 2021
+    * New attribute comment_str (RFC 4180-bis)
 
 1.45	- 2020-12-24, H.Merijn Brand
     * Update to Devel::PPPort-3.60 (3.59 was b0rked)
