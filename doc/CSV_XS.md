@@ -773,6 +773,19 @@ loaders, like for MySQL, that recognize special sequences for `NULL` data.
 
 This attribute has no meaning when parsing CSV data.
 
+### comment\_str
+
+
+    my $csv = Text::CSV_XS->new ({ comment_str => "#" });
+            $csv->comment_str (undef);
+    my $s = $csv->comment_str;
+
+This attribute optionally defines a string to be recognized as comment.  If
+this attribute is defined,   all lines starting with this sequence will not
+be parsed as CSV but skipped as comment.
+
+This attribute has no meaning when generating CSV.
+
 ### verbatim
 
 
@@ -855,6 +868,7 @@ is equivalent to
         formula               => 0,
         verbatim              => 0,
         undef_str             => undef,
+        comment_str           => undef,
         types                 => undef,
         callbacks             => undef,
         });

@@ -53,6 +53,7 @@
           <li><a href="#escape_null">escape_null  </a></li>
           <li><a href="#keep_meta_info">keep_meta_info </a></li>
           <li><a href="#undef_str">undef_str </a></li>
+          <li><a href="#comment_str">comment_str </a></li>
           <li><a href="#verbatim">verbatim </a></li>
           <li><a href="#types">types</a></li>
           <li><a href="#callbacks">callbacks </a></li>
@@ -788,6 +789,16 @@ or
 
 <p>This attribute has no meaning when parsing CSV data.</p>
 
+<h3 id="comment_str">comment_str </h3>
+
+<pre><code> my $csv = Text::CSV_XS-&gt;new ({ comment_str =&gt; &quot;#&quot; });
+         $csv-&gt;comment_str (undef);
+ my $s = $csv-&gt;comment_str;</code></pre>
+
+<p>This attribute optionally defines a string to be recognized as comment. If this attribute is defined, all lines starting with this sequence will not be parsed as CSV but skipped as comment.</p>
+
+<p>This attribute has no meaning when generating CSV.</p>
+
 <h3 id="verbatim">verbatim </h3>
 
 <pre><code> my $csv = Text::CSV_XS-&gt;new ({ verbatim =&gt; 1 });
@@ -853,6 +864,7 @@ or
      formula               =&gt; 0,
      verbatim              =&gt; 0,
      undef_str             =&gt; undef,
+     comment_str           =&gt; undef,
      types                 =&gt; undef,
      callbacks             =&gt; undef,
      });</code></pre>
