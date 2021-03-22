@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2021-03-20" "perl v5.32.1" "User Contributed Perl Documentation"
+.TH STDIN 1 "2021-03-22" "perl v5.32.1" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -549,6 +549,22 @@ so setting \f(CW\*(C`{ binary => 1 }\*(C'\fR is still a wise option.
 .PP
 If this attribute is set to \f(CW1\fR, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
+.PP
+\fIskip_empty_rows\fR
+.IX Xref "skip_empty_rows"
+.IX Subsection "skip_empty_rows"
+.PP
+.Vb 3
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 1 });
+\&         $csv\->skip_empty_rows (0);
+\& my $f = $csv\->skip_empty_rows;
+.Ve
+.PP
+If this attribute is set to \f(CW1\fR,  any row that has an  \*(L"eol\*(R" immediately
+following the start of line will be skipped.  Default behavior is to return
+one single empty field.
+.PP
+This attribute is only used in parsing.
 .PP
 \fIformula_handling\fR
 .IX Subsection "formula_handling"
@@ -1070,6 +1086,12 @@ be parsed as \s-1CSV\s0 but skipped as comment.
 .PP
 This attribute has no meaning when generating \s-1CSV.\s0
 .PP
+Comment strings that start with any of the special characters/sequences are
+not supported (so it cannot start with any of \*(L"sep_char\*(R", \*(L"quote_char\*(R",
+\&\*(L"escape_char\*(R", \*(L"sep\*(R", \*(L"quote\*(R", or \*(L"eol\*(R").
+.PP
+For convenience, \f(CW\*(C`comment\*(C'\fR is an alias for \f(CW\*(C`comment_str\*(C'\fR.
+.PP
 \fIverbatim\fR
 .IX Xref "verbatim"
 .IX Subsection "verbatim"
@@ -1160,6 +1182,7 @@ is equivalent to
 \&     quote_binary          => 1,
 \&     keep_meta_info        => 0,
 \&     strict                => 0,
+\&     skip_empty_rows       => 0,
 \&     formula               => 0,
 \&     verbatim              => 0,
 \&     undef_str             => undef,
@@ -2233,7 +2256,7 @@ If the \f(CW\*(C`in\*(C'\fR argument point to something to parse, and the \f(CW\
 a reference to an \f(CW\*(C`ARRAY\*(C'\fR or a \f(CW\*(C`HASH\*(C'\fR, the output is appended to the data
 in the existing reference. The result of the parse should match what exists
 in the reference passed. This might come handy when you have to parse a set
-of files with similar content (like data stored per period) and you want to 
+of files with similar content (like data stored per period) and you want to
 collect that into a single data structure:
 .PP
 .Vb 2

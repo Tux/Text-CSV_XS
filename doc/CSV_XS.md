@@ -366,6 +366,19 @@ so setting `{ binary => 1 }` is still a wise option.
 If this attribute is set to `1`, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
 
+### skip\_empty\_rows
+
+
+    my $csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });
+            $csv->skip_empty_rows (0);
+    my $f = $csv->skip_empty_rows;
+
+If this attribute is set to `1`,  any row that has an  ["eol"](#eol) immediately
+following the start of line will be skipped.  Default behavior is to return
+one single empty field.
+
+This attribute is only used in parsing.
+
 ### formula\_handling
 
 ### formula
@@ -786,6 +799,12 @@ be parsed as CSV but skipped as comment.
 
 This attribute has no meaning when generating CSV.
 
+Comment strings that start with any of the special characters/sequences are
+not supported (so it cannot start with any of ["sep\_char"](#sep_char), ["quote\_char"](#quote_char),
+["escape\_char"](#escape_char), ["sep"](#sep), ["quote"](#quote), or ["eol"](#eol)).
+
+For convenience, `comment` is an alias for `comment_str`.
+
 ### verbatim
 
 
@@ -865,6 +884,7 @@ is equivalent to
         quote_binary          => 1,
         keep_meta_info        => 0,
         strict                => 0,
+        skip_empty_rows       => 0,
         formula               => 0,
         verbatim              => 0,
         undef_str             => undef,
@@ -1798,7 +1818,7 @@ If the `in` argument point to something to parse, and the `out` is set to
 a reference to an `ARRAY` or a `HASH`, the output is appended to the data
 in the existing reference. The result of the parse should match what exists
 in the reference passed. This might come handy when you have to parse a set
-of files with similar content (like data stored per period) and you want to 
+of files with similar content (like data stored per period) and you want to
 collect that into a single data structure:
 
     my %hash;

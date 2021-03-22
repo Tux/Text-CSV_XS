@@ -370,6 +370,18 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        number of fields than the previous row will cause the parser to throw
        error 2014.
 
+       [4mskip_empty_rows[0m
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });
+                $csv->skip_empty_rows (0);
+        my $f = $csv->skip_empty_rows;
+
+       If this attribute is set to 1,  any row that has an  "eol" immediately
+       following the start of line will be skipped.  Default behavior is to
+       return one single empty field.
+
+       This attribute is only used in parsing.
+
        [4mformula_handling[0m
 
        [4mformula[0m
@@ -767,6 +779,12 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        This attribute has no meaning when generating CSV.
 
+       Comment strings that start with any of the special characters/sequences
+       are not supported (so it cannot start with any of "sep_char",
+       "quote_char", "escape_char", "sep", "quote", or "eol").
+
+       For convenience, "comment" is an alias for "comment_str".
+
        [4mverbatim[0m
 
         my $csv = Text::CSV_XS->new ({ verbatim => 1 });
@@ -845,6 +863,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
             quote_binary          => 1,
             keep_meta_info        => 0,
             strict                => 0,
+            skip_empty_rows       => 0,
             formula               => 0,
             verbatim              => 0,
             undef_str             => undef,
@@ -3021,4 +3040,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.32.1                      2021-03-20                          STDIN(1)
+perl v5.32.1                      2021-03-22                          STDIN(1)
