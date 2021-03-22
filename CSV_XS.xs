@@ -155,6 +155,7 @@ static unsigned char ec, ebcdic2ascii[256] = {
 #define CACHE_ID__has_hooks		36
 #define CACHE_ID_formula		38
 #define CACHE_ID_strict			42
+#define CACHE_ID_skip_empty_rows	43
 #define CACHE_ID_undef_str		46
 #define CACHE_ID_comment_str		54
 #define CACHE_ID_types			62
@@ -197,9 +198,11 @@ typedef struct {
     byte	utf8;
     byte	has_ahead;
 
-    byte	strict;
     byte	eolx;
+    byte	strict;
     short	strict_n;
+
+    byte	skip_empty_rows;
 
     long	is_bound;
     ulng	recno;
@@ -481,6 +484,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	case CACHE_ID_formula:               csv->formula               = bv; break;
 	case CACHE_ID_strict:                csv->strict                = bv; break;
 	case CACHE_ID_verbatim:              csv->verbatim              = bv; break;
+	case CACHE_ID_skip_empty_rows:       csv->skip_empty_rows       = bv; break;
 	case CACHE_ID_auto_diag:             csv->auto_diag             = bv; break;
 	case CACHE_ID_diag_verbose:          csv->diag_verbose          = bv; break;
 	case CACHE_ID__has_ahead:            csv->has_ahead             = bv; break;
@@ -590,6 +594,7 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
     _cache_show_byte ("diag_verbose",		csv->diag_verbose);
     _cache_show_byte ("formula",		csv->formula);
     _cache_show_byte ("strict",			csv->strict);
+    _cache_show_byte ("skip_empty_rows",	csv->skip_empty_rows);
     _cache_show_byte ("has_error_input",	csv->has_error_input);
     _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
     _cache_show_byte ("empty_is_undef",		csv->empty_is_undef);
@@ -729,6 +734,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->decode_utf8		= bool_opt ("decode_utf8");
 	csv->always_quote		= bool_opt ("always_quote");
 	csv->strict			= bool_opt ("strict");
+	csv->skip_empty_rows		= bool_opt ("skip_empty_rows");
 	csv->quote_empty		= bool_opt ("quote_empty");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
 	csv->escape_null		= bool_opt_def ("escape_null",  1);
@@ -1661,6 +1667,13 @@ EOLX:
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
 		csv->bptr + csv->used);
 #endif
+	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
+		csv->used    = csv->size;
+		csv->fld_idx = 0;
+		c = CSV_GET;
+		goto restart;
+		}
+
 	    if (waitingForField) {
 		/* ,1,"foo, 3",,bar,
 		 *                  ^
@@ -1732,14 +1745,12 @@ EOLX:
 	    if (waitingForField) {
 		int	c2;
 
-		waitingForField = 0;
-
 		if (csv->eol_is_cr) {
 		    /* ,1,"foo\n 3",,bar,\r
 		     *                   ^
 		     */
 		    c = CH_NL;
-		    goto restart;
+		    goto EOLX;
 		    }
 
 		c2 = CSV_GET;
@@ -1764,8 +1775,11 @@ EOLX:
 		     *                     ^
 		     */
 		    c = c2;
-		    goto restart;
+		    goto EOLX;
 		    }
+
+
+		waitingForField = 0;
 
 		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
 		    /* ,1,"foo\n 3",,bar,\r
@@ -1775,6 +1789,11 @@ EOLX:
 		    set_eol_is_cr (csv);
 		    csv->used--;
 		    csv->has_ahead++;
+		    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
+			csv->fld_idx = 0;
+			c = CSV_GET;
+			goto restart;
+			}
 		    AV_PUSH;
 		    return TRUE;
 		    }
@@ -1803,8 +1822,7 @@ EOLX:
 		    /* ,1,"foo\n 3",,bar\r
 		     *                  ^
 		     */
-		    AV_PUSH;
-		    return TRUE;
+		    goto EOLX;
 		    }
 
 		c2 = CSV_GET;
@@ -1813,8 +1831,7 @@ EOLX:
 		    /* ,1,"foo\n 3",,bar\r\n
 		     *                    ^
 		     */
-		    AV_PUSH;
-		    return TRUE;
+		    goto EOLX;
 		    }
 
 		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
@@ -1825,6 +1842,11 @@ EOLX:
 		    set_eol_is_cr (csv);
 		    csv->used--;
 		    csv->has_ahead++;
+		    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
+			csv->fld_idx = 0;
+			c = CSV_GET;
+			goto restart;
+			}
 		    AV_PUSH;
 		    return TRUE;
 		    }

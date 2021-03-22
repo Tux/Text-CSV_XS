@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 241;
+use Test::More tests => 243;
 
 BEGIN {
     use_ok "Text::CSV_XS";
@@ -33,6 +33,7 @@ is ($csv->diag_verbose,			0,		"diag_verbose");
 is ($csv->verbatim,			0,		"verbatim");
 is ($csv->formula,			"none",		"formula");
 is ($csv->strict,			0,		"strict");
+is ($csv->skip_empty_rows,		0,		"skip_empty_rows");
 is ($csv->quote_space,			1,		"quote_space");
 is ($csv->quote_empty,			0,		"quote_empty");
 is ($csv->escape_null,			1,		"escape_null");
@@ -94,6 +95,7 @@ is ($csv->diag_verbose (""),		0,		"diag_verbose (\"\")");
 is ($csv->verbatim (1),			1,		"verbatim (1)");
 is ($csv->formula ("diag"),		"diag",		"formula (\"diag\")");
 is ($csv->strict (1),			1,		"strict (1)");
+is ($csv->skip_empty_rows (1),		1,		"skip_empty_rows (1)");
 is ($csv->quote_space (1),		1,		"quote_space (1)");
 is ($csv->quote_empty (1),		1,		"quote_empty (1)");
 is ($csv->escape_null (1),		1,		"escape_null (1)");
@@ -257,7 +259,7 @@ my $attr = [ sort qw(
     always_quote quote_space quote_empty quote_binary
     escape_null
     keep_meta_info
-    verbatim strict formula
+    verbatim strict skip_empty_rows formula
     undef_str comment_str
     types
     callbacks

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1082;
+use Test::More tests => 1092;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -281,6 +281,47 @@ $/ = $def_rs;
     ok ($csv->allow_loose_escapes (1), "allow loose escapes");
     ok ($csv->parse (qq{"a","b","c"\r\n}), "parse \\r\\n");
     is_deeply ([$csv->fields], [qw( a b c )], "result");
+    }
+
+foreach my $eol ("\n", "\r\n", "\r") {
+    my $s_eol = $eol;
+    $s_eol =~ s{\r}{\\r};
+    $s_eol =~ s{\n}{\\n};
+    foreach my $before ("1,2$eol", "") {
+	open my $fh, ">", $tfn or die "$tfn: $!\n";
+	print   $fh $before; # To test if skipping the very first line works
+	print   $fh     $eol;
+	print   $fh qq{ $eol};
+	print   $fh qq{,$eol};
+	print   $fh     $eol;
+	print   $fh qq{""$eol};
+	print   $fh qq{eol$eol};
+	close   $fh;
+
+	my @expect = ([ " " ], [ "", "" ], [ "" ], [ "eol" ]);
+	$before and unshift @expect => [ 1, 2 ];
+
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
+	my $csv = Text::CSV_XS->new ({ skip_empty_rows => 1, eol => $eol });
+	my @csv;
+	while (my $row = $csv->getline ($fh)) {
+	    push @csv => $row;
+	    }
+	close   $fh;
+	is_deeply (\@csv, \@expect, "Empty lines skipped $s_eol\tEOL set");
+
+	$eol eq "\r" and next;	# Won't work with automatic detection as
+				# two \r's on the first line causes 2032
+
+	open    $fh, "<", $tfn or die "$tfn: $!\n";
+	$csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });
+	@csv = ();
+	while (my $row = $csv->getline ($fh)) {
+	    push @csv => $row;
+	    }
+	close   $fh;
+	is_deeply (\@csv, \@expect, "Empty lines skipped $s_eol\tauto-detect");
+	}
     }
 
 1;

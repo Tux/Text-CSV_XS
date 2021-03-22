@@ -78,6 +78,7 @@ my %def_attr = (
     'keep_meta_info'		=> 0,
     'verbatim'			=> 0,
     'formula'			=> 0,
+    'skip_empty_rows'		=> 0,
     'undef_str'			=> undef,
     'comment_str'		=> undef,
     'types'			=> undef,
@@ -270,6 +271,7 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     '_is_bound'			=> 26,	# 26 .. 29
     'formula'			=> 38,
     'strict'			=> 42,
+    'skip_empty_rows'		=> 43,
     'undef_str'			=> 46,
     'comment_str'		=> 54,
     'types'			=> 62,
@@ -434,6 +436,12 @@ sub strict {
     my $self = shift;
     @_ and $self->_set_attr_X ("strict", shift);
     $self->{'strict'};
+    } # always_quote
+
+sub skip_empty_rows {
+    my $self = shift;
+    @_ and $self->_set_attr_X ("skip_empty_rows", shift);
+    $self->{'skip_empty_rows'};
     } # always_quote
 
 sub _SetDiagInfo {
@@ -1914,6 +1922,19 @@ X<strict>
 If this attribute is set to C<1>, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
 
+=head3 skip_empty_rows
+X<skip_empty_rows>
+
+ my $csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });
+         $csv->skip_empty_rows (0);
+ my $f = $csv->skip_empty_rows;
+
+If this attribute is set to C<1>,  any row that has an  L</eol> immediately
+following the start of line will be skipped.  Default behavior is to return
+one single empty field.
+
+This attribute is only used in parsing.
+
 =head3 formula_handling
 
 =head3 formula
@@ -2423,6 +2444,7 @@ is equivalent to
      quote_binary          => 1,
      keep_meta_info        => 0,
      strict                => 0,
+     skip_empty_rows       => 0,
      formula               => 0,
      verbatim              => 0,
      undef_str             => undef,
