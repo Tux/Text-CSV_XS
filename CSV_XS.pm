@@ -102,6 +102,7 @@ my %attr_alias = (
     'verbose_diag'		=> "diag_verbose",
     'quote_null'		=> "escape_null",
     'escape'			=> "escape_char",
+    'comment'			=> "comment_str",
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 my $ebcdic       = ord ("A") == 0xC1;	# Faster than $Config{'ebcdic'}
@@ -2337,6 +2338,12 @@ be parsed as CSV but skipped as comment.
 
 This attribute has no meaning when generating CSV.
 
+Comment strings that start with any of the special characters/sequences are
+not supported (so it cannot start with any of L</sep_char>, L</quote_char>,
+L</escape_char>, L</sep>, L</quote>, or L</eol>).
+
+For convenience, C<comment> is an alias for C<comment_str>.
+
 =head3 verbatim
 X<verbatim>
 
@@ -3373,7 +3380,7 @@ If the C<in> argument point to something to parse, and the C<out> is set to
 a reference to an C<ARRAY> or a C<HASH>, the output is appended to the data
 in the existing reference. The result of the parse should match what exists
 in the reference passed. This might come handy when you have to parse a set
-of files with similar content (like data stored per period) and you want to 
+of files with similar content (like data stored per period) and you want to
 collect that into a single data structure:
 
  my %hash;
