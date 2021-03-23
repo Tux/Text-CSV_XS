@@ -149,7 +149,7 @@ meaning of possible present BOM.
 
 # SPECIFICATION
 
-While no formal specification for CSV exists, [RFC 4180](http://tools.ietf.org/html/rfc4180)
+While no formal specification for CSV exists, [RFC 4180](https://tools.ietf.org/html/rfc4180)
 (_1_) describes the common format and establishes  `text/csv` as the MIME
 type registered with the IANA. [RFC 7111](http://tools.ietf.org/html/rfc7111)
 (_2_) adds fragments to CSV.
@@ -159,8 +159,8 @@ The Comma Separated Value (CSV) File Format"](http://www.creativyst.com/Doc/Arti
 (_3_)  provides an overview of the  `CSV`  format in the most widely used
 applications and explains how it can best be used and supported.
 
-    1) http://tools.ietf.org/html/rfc4180
-    2) http://tools.ietf.org/html/rfc7111
+    1) https://tools.ietf.org/html/rfc4180
+    2) https://tools.ietf.org/html/rfc7111
     3) http://www.creativyst.com/Doc/Articles/CSV/CSV01.htm
 
 The basic rules are as follows:
