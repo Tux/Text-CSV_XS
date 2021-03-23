@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1092;
+use Test::More tests => 1094;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -290,12 +290,12 @@ foreach my $eol ("\n", "\r\n", "\r") {
     foreach my $before ("1,2$eol", "") {
 	open my $fh, ">", $tfn or die "$tfn: $!\n";
 	print   $fh $before; # To test if skipping the very first line works
-	print   $fh     $eol;
-	print   $fh qq{ $eol};
-	print   $fh qq{,$eol};
-	print   $fh     $eol;
-	print   $fh qq{""$eol};
-	print   $fh qq{eol$eol};
+	print   $fh     $eol;	# skipped
+	print   $fh qq{ $eol};	# -> [ " " ]
+	print   $fh qq{,$eol};	# -> [ "", "" ]
+	print   $fh     $eol;	# skipped
+	print   $fh qq{""$eol};	# -> [ "" ]
+	print   $fh qq{eol$eol};# -> [ "eol" ]
 	close   $fh;
 
 	my @expect = ([ " " ], [ "", "" ], [ "" ], [ "eol" ]);
@@ -309,9 +309,6 @@ foreach my $eol ("\n", "\r\n", "\r") {
 	    }
 	close   $fh;
 	is_deeply (\@csv, \@expect, "Empty lines skipped $s_eol\tEOL set");
-
-	$eol eq "\r" and next;	# Won't work with automatic detection as
-				# two \r's on the first line causes 2032
 
 	open    $fh, "<", $tfn or die "$tfn: $!\n";
 	$csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });

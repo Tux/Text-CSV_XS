@@ -3,6 +3,7 @@
     * New attribute comment_str     (RFC 4180-bis)
     * New attribute skip_empty_rows (RFC 4180-bis)
     * http -> https in links in docs
+    * Fix several issues with auto-detecting \r as EOL
 
 1.45	- 2020-12-24, H.Merijn Brand
     * Update to Devel::PPPort-3.60 (3.59 was b0rked)

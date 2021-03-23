@@ -1533,16 +1533,26 @@ restart:
 			return TRUE;
 			}
 
-		    if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c3)) {
-			/* ,1,"foo\n 3",,"bar"\r
-			 * baz,4
-			 * ^
-			 */
-			set_eol_is_cr (csv);
-			csv->used--;
-			csv->has_ahead++;
-			AV_PUSH;
-			return TRUE;
+		    if (csv->useIO && csv->eol_len == 0) {
+			if (c3 == CH_CR) { /* \r followed by an empty line */
+			    /* ,1,"foo, 3"\r\r
+			     *              ^
+			     */
+			    set_eol_is_cr (csv);
+			    goto EOLX;
+			    }
+
+			if (!is_csv_binary (c3)) {
+			    /* ,1,"foo\n 3",,"bar"\r
+			     * baz,4
+			     * ^
+			     */
+			    set_eol_is_cr (csv);
+			    csv->used--;
+			    csv->has_ahead++;
+			    AV_PUSH;
+			    return TRUE;
+			    }
 			}
 
 		    ParseError (csv, quoesc ? 2023 : 2010, csv->used - 2);
@@ -1669,9 +1679,14 @@ EOLX:
 		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
-		csv->used    = csv->size;
 		csv->fld_idx = 0;
 		c = CSV_GET;
+		if (c == EOF) {
+		    sv_free (sv);
+		    sv = NULL;
+		    waitingForField = 0;
+		    break;
+		    }
 		goto restart;
 		}
 
@@ -1779,24 +1794,39 @@ EOLX:
 		    goto EOLX;
 		    }
 
-
-		waitingForField = 0;
-
-		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
-		    /* ,1,"foo\n 3",,bar,\r
-		     * baz,4
-		     * ^
-		     */
-		    set_eol_is_cr (csv);
-		    csv->used--;
-		    csv->has_ahead++;
-		    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
-			csv->fld_idx = 0;
-			c = CSV_GET;
-			goto restart;
+		if (csv->useIO && csv->eol_len == 0) {
+		    if (c2 == CH_CR) { /* \r followed by an empty line */
+			/* ,1,"foo\n 3",,bar,\r\r
+			 *                     ^
+			 */
+			set_eol_is_cr (csv);
+			goto EOLX;
 			}
-		    AV_PUSH;
-		    return TRUE;
+
+		    waitingForField = 0;
+
+		    if (!is_csv_binary (c2)) {
+			/* ,1,"foo\n 3",,bar,\r
+			 * baz,4
+			 * ^
+			 */
+			set_eol_is_cr (csv);
+			csv->used--;
+			csv->has_ahead++;
+			if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
+			    csv->fld_idx = 0;
+			    c = CSV_GET;
+			    if (c == EOF) {
+				sv_free (sv);
+				sv = NULL;
+				waitingForField = 0;
+				break;
+				}
+			    goto restart;
+			    }
+			AV_PUSH;
+			return TRUE;
+			}
 		    }
 
 		/* ,1,"foo\n 3",,bar,\r\t
@@ -1835,21 +1865,33 @@ EOLX:
 		    goto EOLX;
 		    }
 
-		if (csv->useIO && csv->eol_len == 0 && !is_csv_binary (c2)) {
-		    /* ,1,"foo\n 3",,bar\r
-		     * baz,4
-		     * ^
-		     */
-		    set_eol_is_cr (csv);
-		    csv->used--;
-		    csv->has_ahead++;
-		    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
-			csv->fld_idx = 0;
-			c = CSV_GET;
-			goto restart;
+		if (csv->useIO && csv->eol_len == 0) {
+		    if (!is_csv_binary (c2)
+			    /* ,1,"foo\n 3",,bar\r
+			     * baz,4
+			     * ^
+			     */
+			|| c2 == CH_CR) {
+			    /* ,1,"foo\n 3",,bar,\r\r
+			     *                     ^
+			     */
+			set_eol_is_cr (csv);
+			csv->used--;
+			csv->has_ahead++;
+			if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
+			    csv->fld_idx = 0;
+			    c = CSV_GET;
+			    if (c == EOF) {
+				sv_free (sv);
+				sv = NULL;
+				waitingForField = 0;
+				break;
+				}
+			    goto restart;
+			    }
+			AV_PUSH;
+			return TRUE;
 			}
-		    AV_PUSH;
-		    return TRUE;
 		    }
 
 		/* ,1,"foo\n 3",,bar\r\t
@@ -1930,6 +1972,8 @@ EOLX:
 		}
 	    else {
 		if (is_csv_binary (c)) {
+		    if (csv->useIO && c == EOF)
+			break;
 		    f |= CSV_FLAGS_BIN;
 		    unless (csv->binary || csv->utf8)
 			ERROR_INSIDE_FIELD (2037);
