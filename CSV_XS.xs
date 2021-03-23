@@ -546,6 +546,7 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
     (void)memcpy (cache, csv, sizeof (csv_t));
     } /* cache_set */
 
+#define _pretty_strl(csv)	cx_pretty_str (aTHX_ csv, strlen (csv))
 #define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
 static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
     SV *dsv = sv_2mortal (newSVpvs (""));
@@ -1381,9 +1382,9 @@ restart:
 #endif
 	if (is_SEP (c)) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = SEP %s\t'%s'\n",
+	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = SEP %s\t%s\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
-		_sep_string (csv), csv->bptr + csv->used);
+		_sep_string (csv), _pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (waitingForField) {
 		/* ,1,"foo, 3",,bar,
@@ -1416,9 +1417,9 @@ restart:
 	else
 	if (is_QUOTE (c)) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = QUO '%c'\t\t'%s'\n",
+	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = QUO '%c'\t\t%s\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
-		csv->bptr + csv->used);
+		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (waitingForField) {
 		/* ,1,"foo, 3",,bar,\r\n
@@ -1587,9 +1588,9 @@ restart:
 	else
 	if (c == csv->escape_char && csv->escape_char) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = ESC '%c'\t'%s%\n",
+	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = ESC '%c'\t%s\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
-		csv->bptr + csv->used);
+		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    /* This means quote_char != escape_char */
 	    if (waitingForField) {
@@ -1663,9 +1664,9 @@ restart:
 	if (c == CH_NL || is_EOL (c)) {
 EOLX:
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = NL\t'%s'\n",
+	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = NL\t%s\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
-		csv->bptr + csv->used);
+		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
 		csv->used    = csv->size;
@@ -1859,9 +1860,9 @@ EOLX:
 	    } /* CH_CR */
 	else {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = CCC '%c'\t\t'%s'\n",
+	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = CCC '%c'\t\t%s\n",
 		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
-		csv->bptr + csv->used);
+		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    /* Needed for non-IO parse, where EOL is not set during read */
 	    if (csv->eolx && c == CH_EOL &&
