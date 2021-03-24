@@ -8,7 +8,7 @@
 [ ]          update ChangeLog
 [ ]          commit changes
 
-[ ] 1:05:00  release -t
+[ ] 1:05:00  env HARNESS_OPTIONS=j8 release -t
 
 [ ] 0:00:01  perl Makefile.PL
 [ ] 0:00:44  make test

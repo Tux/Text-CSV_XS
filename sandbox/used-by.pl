@@ -3,7 +3,7 @@
 use 5.26.0;
 use warnings;
 
-our $VERSION = "2.00 - 20200209";
+our $VERSION = "2.01 - 20210324";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -96,8 +96,11 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "hwd",				# Own tests fail
     "Iterator-BreakOn",			# ::CSV - Syntax, POD, badness
     "Mail-Karmasphere-Client",		# ::CSV - No karmaclient
+    "Metabolomics::Fragment::Annotation", # Own tests fail
     "Module-CPANTS-ProcessCPAN",	# ::CSV - Questions
     "Module-CPANTS-Site",		# ::CSV - Unmet prerequisites
+    "Mojolicious::Plugin::ReplyTable",	# Own tests fail
+    "Mojolicious::Plugin::Tables",	# Unmet prerequisites
     "Net-IPFromZip",			# Missing zip file(s)
     "OWL-DirectSemantics",		# dot-in-INC problem
     "Parse-CSV-Colnames",		# ::CSV - Fails because of Parse::CSV
