@@ -1920,7 +1920,7 @@ EOLX:
 
 	    if (waitingForField) {
 		if (csv->comment_str && !f && !spl && c == *csv->comment_str) {
-		    STRLEN cl = strlen (csv->comment_str);
+		    STRLEN cl = strlen ((char *)csv->comment_str);
 
 #if MAINT_DEBUG > 5
 		    (void)fprintf (stderr,
