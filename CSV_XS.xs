@@ -2289,8 +2289,10 @@ SetDiag (self, xse, ...)
 	SetupCsv (&csv, hv, self);
 	ST (0) = SetDiag (&csv, xse);
 	}
-    else
+    else {
+	last_error = xse;
 	ST (0) = sv_2mortal (SvDiag (xse));
+	}
 
     if (xse && items > 1 && SvPOK (ST (2))) {
 	sv_setpvn (ST (0),  SvPVX (ST (2)), SvCUR (ST (2)));

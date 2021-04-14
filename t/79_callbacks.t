@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 112;
+ use Test::More tests => 113;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -181,11 +181,26 @@ $csv->callbacks (error => sub {
 	push @rpt => [ $recno, $fldno, $pos ];
 	$csv->SetDiag (0);
 	}
-    return;
     });
 is_deeply ([ $csv->getline_all ($fh), @rpt ],
     [[[ 1, "foo" ], [ 2, "bar", "fail" ], [ 3, "baz" ], [ 4 ], [ 5, "eox" ]],
-     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014");
+     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014 with \$csv");
+close $fh;
+
+open $fh, "<", $tfn or die "$tfn: $!\n";
+@rpt = ();
+$csv = Text::CSV_XS->new ({ strict => 1, auto_diag => 1, callbacks => {
+    error => sub {
+	my ($err, $msg, $pos, $recno, $fldno) = @_;
+	if ($err == 2014) {
+	    push @rpt => [ $recno, $fldno, $pos ];
+	    Text::CSV_XS->SetDiag (0);
+	    }
+	}}});
+is_deeply ([ $csv->getline_all ($fh), @rpt ],
+    [[[ 1, "foo" ], [ 2, "bar", "fail" ], [ 3, "baz" ], [ 4 ], [ 5, "eox" ]],
+     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014 with class");
+close $fh;
 
 __END__
 1,foo
