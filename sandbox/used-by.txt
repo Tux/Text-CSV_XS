@@ -791,6 +791,7 @@ SeeAlso-Server
 Set-Partitions-Similarity
 Splunklib
 Spreadsheet-CSV
+Spreadsheet-Compare
 Spreadsheet-Reader-ExcelXML
 Spreadsheet-Wright
 Spreadsheet-Write
