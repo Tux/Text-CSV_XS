@@ -1682,13 +1682,13 @@ type registered with the IANA. L<RFC 7111|http://tools.ietf.org/html/rfc7111>
 (I<2>) adds fragments to CSV.
 
 Many informal documents exist that describe the C<CSV> format.   L<"How To:
-The Comma Separated Value (CSV) File Format"|http://www.creativyst.com/Doc/Articles/CSV/CSV01.htm>
+The Comma Separated Value (CSV) File Format"|http://creativyst.com/Doc/Articles/CSV/CSV01.shtml>
 (I<3>)  provides an overview of the  C<CSV>  format in the most widely used
 applications and explains how it can best be used and supported.
 
  1) https://tools.ietf.org/html/rfc4180
  2) https://tools.ietf.org/html/rfc7111
- 3) http://www.creativyst.com/Doc/Articles/CSV/CSV01.htm
+ 3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml
 
 The basic rules are as follows:
 
