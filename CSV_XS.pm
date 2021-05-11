@@ -1331,7 +1331,7 @@ sub csv {
 		    }
 		}
 	    }
-	elsif (ref $in->[0] eq "ARRAY") { # aoa
+	elsif (@{$in} == 0 or ref $in->[0] eq "ARRAY") { # aoa
 	    ref $hdrs and $csv->print ($fh, $hdrs);
 	    for (@{$in}) {
 		$c->{'cboi'} and $c->{'cboi'}->($csv, $_);
@@ -1340,7 +1340,7 @@ sub csv {
 		}
 	    }
 	else { # aoh
-	    my @hdrs = ref $hdrs ? @{$hdrs} : $in->[0] ? keys %{$in->[0]} : ();
+	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$in->[0]};
 	    defined $hdrs or $hdrs = "auto";
 	    ref $hdrs || $hdrs eq "auto" and @hdrs and
 		$csv->print ($fh, [ map { $hdr{$_} || $_ } @hdrs ]);
