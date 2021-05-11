@@ -1340,9 +1340,9 @@ sub csv {
 		}
 	    }
 	else { # aoh
-	    my @hdrs = ref $hdrs ? @{$hdrs} : keys %{$in->[0]};
+	    my @hdrs = ref $hdrs ? @{$hdrs} : $in->[0] ? keys %{$in->[0]} : ();
 	    defined $hdrs or $hdrs = "auto";
-	    ref $hdrs || $hdrs eq "auto" and
+	    ref $hdrs || $hdrs eq "auto" and @hdrs and
 		$csv->print ($fh, [ map { $hdr{$_} || $_ } @hdrs ]);
 	    for (@{$in}) {
 		local %_;

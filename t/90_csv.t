@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 115;
+ use Test::More tests => 116;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -359,6 +359,12 @@ eval {
     close STDOUT;
     $dta = do { local (@ARGV, $/) = $ofn; <> };
     is ($dta, qq{1,2\n}, "out to \\*STDOUT");
+    unlink $ofn;
+
+    open STDOUT, ">", $ofn;
+    csv (in => []);
+    close STDOUT;
+    is (-s $ofn, 0, "No data results in an empty file");
     unlink $ofn;
 
     SKIP: {
