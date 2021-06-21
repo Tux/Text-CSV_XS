@@ -4502,11 +4502,12 @@ Requirements|http://w3c.github.io/csvw/use-cases-and-requirements/index.html>
 Steal good new ideas and features from L<PapaParse|http://papaparse.com> or
 L<csvkit|http://csvkit.readthedocs.org>.
 
-=item Perl6 support
+=item Raku support
 
-I'm already working on perl6 support L<here|https://github.com/Tux/CSV>. No
-promises yet on when it is finished (or fast). Trying to keep the API alike
-as much as possible.
+Raku support can be found L<here|https://github.com/Tux/CSV>. The interface
+is richer in support than the Perl5 API, as Raku supports more types.
+
+The Raku version does not (yet) support pure binary CSV datasets.
 
 =back
 
@@ -4893,8 +4894,8 @@ L<IO::File>,  L<IO::Handle>,  L<IO::Wrap>,  L<Text::CSV>,  L<Text::CSV_PP>,
 L<Text::CSV::Encoded>,     L<Text::CSV::Separator>,    L<Text::CSV::Slurp>,
 L<Spreadsheet::CSV> and L<Spreadsheet::Read>, and of course L<perl>.
 
-If you are using perl6,  you can have a look at  C<Text::CSV>  in the perl6
-ecosystem, offering the same features.
+If you are using Raku,  have a look at C<Text::CSV> in the Raku ecosystem,
+offering the same features.
 
 =head3 non-perl
 

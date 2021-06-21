@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2021-05-11" "perl v5.32.1" "User Contributed Perl Documentation"
+.TH STDIN 1 "2021-06-21" "perl v5.34.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -3463,11 +3463,12 @@ Requirements <http://w3c.github.io/csvw/use-cases-and-requirements/index.html>
 .IX Item "Steal"
 Steal good new ideas and features from PapaParse <http://papaparse.com> or
 csvkit <http://csvkit.readthedocs.org>.
-.IP "Perl6 support" 2
-.IX Item "Perl6 support"
-I'm already working on perl6 support here <https://github.com/Tux/CSV>. No
-promises yet on when it is finished (or fast). Trying to keep the \s-1API\s0 alike
-as much as possible.
+.IP "Raku support" 2
+.IX Item "Raku support"
+Raku support can be found here <https://github.com/Tux/CSV>. The interface
+is richer in support than the Perl5 \s-1API,\s0 as Raku supports more types.
+.Sp
+The Raku version does not (yet) support pure binary \s-1CSV\s0 datasets.
 .SS "\s-1NOT TODO\s0"
 .IX Subsection "NOT TODO"
 .IP "combined methods" 2
@@ -3777,8 +3778,8 @@ IO::File,  IO::Handle,  IO::Wrap,  Text::CSV,  Text::CSV_PP,
 Text::CSV::Encoded,     Text::CSV::Separator,    Text::CSV::Slurp,
 Spreadsheet::CSV and Spreadsheet::Read, and of course perl.
 .PP
-If you are using perl6,  you can have a look at  \f(CW\*(C`Text::CSV\*(C'\fR  in the perl6
-ecosystem, offering the same features.
+If you are using Raku,  have a look at \f(CW\*(C`Text::CSV\*(C'\fR in the Raku ecosystem,
+offering the same features.
 .PP
 \fInon-perl\fR
 .IX Subsection "non-perl"

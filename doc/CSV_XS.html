@@ -178,38 +178,38 @@
 
 <h1 id="SYNOPSIS">SYNOPSIS</h1>
 
-<pre><code> # Functional interface
- use Text::CSV_XS qw( csv );
+<pre><code># Functional interface
+use Text::CSV_XS qw( csv );
 
- # Read whole file in memory
- my $aoa = csv (in =&gt; &quot;data.csv&quot;);    # as array of array
- my $aoh = csv (in =&gt; &quot;data.csv&quot;,
-                headers =&gt; &quot;auto&quot;);   # as array of hash
+# Read whole file in memory
+my $aoa = csv (in =&gt; &quot;data.csv&quot;);    # as array of array
+my $aoh = csv (in =&gt; &quot;data.csv&quot;,
+               headers =&gt; &quot;auto&quot;);   # as array of hash
 
- # Write array of arrays as csv file
- csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;, sep_char=&gt; &quot;;&quot;);
+# Write array of arrays as csv file
+csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;, sep_char=&gt; &quot;;&quot;);
 
- # Only show lines where &quot;code&quot; is odd
- csv (in =&gt; &quot;data.csv&quot;, filter =&gt; { code =&gt; sub { $_ % 2 }});
+# Only show lines where &quot;code&quot; is odd
+csv (in =&gt; &quot;data.csv&quot;, filter =&gt; { code =&gt; sub { $_ % 2 }});
 
 
- # Object interface
- use Text::CSV_XS;
+# Object interface
+use Text::CSV_XS;
 
- my @rows;
- # Read/parse CSV
- my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
- open my $fh, &quot;&lt;:encoding(utf8)&quot;, &quot;test.csv&quot; or die &quot;test.csv: $!&quot;;
- while (my $row = $csv-&gt;getline ($fh)) {
-     $row-&gt;[2] =~ m/pattern/ or next; # 3rd field should match
-     push @rows, $row;
-     }
- close $fh;
+my @rows;
+# Read/parse CSV
+my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+open my $fh, &quot;&lt;:encoding(utf8)&quot;, &quot;test.csv&quot; or die &quot;test.csv: $!&quot;;
+while (my $row = $csv-&gt;getline ($fh)) {
+    $row-&gt;[2] =~ m/pattern/ or next; # 3rd field should match
+    push @rows, $row;
+    }
+close $fh;
 
- # and write as CSV
- open $fh, &quot;&gt;:encoding(utf8)&quot;, &quot;new.csv&quot; or die &quot;new.csv: $!&quot;;
- $csv-&gt;say ($fh, $_) for @rows;
- close $fh or die &quot;new.csv: $!&quot;;</code></pre>
+# and write as CSV
+open $fh, &quot;&gt;:encoding(utf8)&quot;, &quot;new.csv&quot; or die &quot;new.csv: $!&quot;;
+$csv-&gt;say ($fh, $_) for @rows;
+close $fh or die &quot;new.csv: $!&quot;;</code></pre>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -223,23 +223,23 @@
 
 <p>But you still have the problem that you have to pass a correct line to the <a href="#parse">&quot;parse&quot;</a> method, which is more complicated from the usual point of usage:</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, eol =&gt; $/ });
- while (&lt;&gt;) {           #  WRONG!
-     $csv-&gt;parse ($_);
-     my @fields = $csv-&gt;fields ();
-     }</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, eol =&gt; $/ });
+while (&lt;&gt;) {           #  WRONG!
+    $csv-&gt;parse ($_);
+    my @fields = $csv-&gt;fields ();
+    }</code></pre>
 
 <p>this will break, as the <code>while</code> might read broken lines: it does not care about the quoting. If you need to support embedded newlines, the way to go is to <b>not</b> pass <a href="#eol"><code>eol</code></a> in the parser (it accepts <code>\n</code>, <code>\r</code>, <b>and</b> <code>\r\n</code> by default) and then</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1 });
- open my $fh, &quot;&lt;&quot;, $file or die &quot;$file: $!&quot;;
- while (my $row = $csv-&gt;getline ($fh)) {
-     my @fields = @$row;
-     }</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1 });
+open my $fh, &quot;&lt;&quot;, $file or die &quot;$file: $!&quot;;
+while (my $row = $csv-&gt;getline ($fh)) {
+    my @fields = @$row;
+    }</code></pre>
 
 <p>The old(er) way of using global file handles is still supported</p>
 
-<pre><code> while (my $row = $csv-&gt;getline (*ARGV)) { ... }</code></pre>
+<pre><code>while (my $row = $csv-&gt;getline (*ARGV)) { ... }</code></pre>
 
 <h2 id="Unicode">Unicode</h2>
 
@@ -261,23 +261,23 @@ or
 
 <p>On combining (<a href="#print">&quot;print&quot;</a> and <a href="#combine">&quot;combine&quot;</a>): if any of the combining fields was marked UTF8, the resulting string will be marked as UTF8. Note however that all fields <i>before</i> the first field marked UTF8 and contained 8-bit characters that were not upgraded to UTF8, these will be <code>bytes</code> in the resulting string too, possibly causing unexpected errors. If you pass data of different encoding, or you don&#39;t know if there is different encoding, force it to be upgraded before you pass them on:</p>
 
-<pre><code> $csv-&gt;print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);</code></pre>
+<pre><code>$csv-&gt;print ($fh, [ map { utf8::upgrade (my $x = $_); $x } @data ]);</code></pre>
 
 <p>For complete control over encoding, please use <a>Text::CSV::Encoded</a>:</p>
 
-<pre><code> use Text::CSV::Encoded;
- my $csv = Text::CSV::Encoded-&gt;new ({
-     encoding_in  =&gt; &quot;iso-8859-1&quot;, # the encoding comes into   Perl
-     encoding_out =&gt; &quot;cp1252&quot;,     # the encoding comes out of Perl
-     });
+<pre><code>use Text::CSV::Encoded;
+my $csv = Text::CSV::Encoded-&gt;new ({
+    encoding_in  =&gt; &quot;iso-8859-1&quot;, # the encoding comes into   Perl
+    encoding_out =&gt; &quot;cp1252&quot;,     # the encoding comes out of Perl
+    });
 
- $csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; &quot;utf8&quot; });
- # combine () and print () accept *literally* utf8 encoded data
- # parse () and getline () return *literally* utf8 encoded data
+$csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; &quot;utf8&quot; });
+# combine () and print () accept *literally* utf8 encoded data
+# parse () and getline () return *literally* utf8 encoded data
 
- $csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; undef }); # default
- # combine () and print () accept UTF8 marked data
- # parse () and getline () return UTF8 marked data</code></pre>
+$csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; undef }); # default
+# combine () and print () accept UTF8 marked data
+# parse () and getline () return UTF8 marked data</code></pre>
 
 <h2 id="BOM">BOM</h2>
 
@@ -285,13 +285,13 @@ or
 
 <p>If a file has a BOM, the easiest way to deal with that is</p>
 
-<pre><code> my $aoh = csv (in =&gt; $file, detect_bom =&gt; 1);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; $file, detect_bom =&gt; 1);</code></pre>
 
 <p>All records will be encoded based on the detected BOM.</p>
 
 <p>This implies a call to the <a href="#header">&quot;header&quot;</a> method, which defaults to also set the <a href="#column_names">&quot;column_names&quot;</a>. So this is <b>not</b> the same as</p>
 
-<pre><code> my $aoh = csv (in =&gt; $file, headers =&gt; &quot;auto&quot;);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; $file, headers =&gt; &quot;auto&quot;);</code></pre>
 
 <p>which only reads the first record to set <a href="#column_names">&quot;column_names&quot;</a> but ignores any meaning of possible present BOM.</p>
 
@@ -301,9 +301,9 @@ or
 
 <p>Many informal documents exist that describe the <code>CSV</code> format. <a href="http://creativyst.com/Doc/Articles/CSV/CSV01.shtml">&quot;How To: The Comma Separated Value (CSV) File Format&quot;</a> (<i>3</i>) provides an overview of the <code>CSV</code> format in the most widely used applications and explains how it can best be used and supported.</p>
 
-<pre><code> 1) https://tools.ietf.org/html/rfc4180
- 2) https://tools.ietf.org/html/rfc7111
- 3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml</code></pre>
+<pre><code>1) https://tools.ietf.org/html/rfc4180
+2) https://tools.ietf.org/html/rfc7111
+3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml</code></pre>
 
 <p>The basic rules are as follows:</p>
 
@@ -355,15 +355,15 @@ or
 
 <p>(Class method) Returns a new instance of class Text::CSV_XS. The attributes are described by the (optional) hash ref <code>\%attr</code>.</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ attributes ... });</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ attributes ... });</code></pre>
 
 <p>The following attributes are available:</p>
 
 <h3 id="eol">eol </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ eol =&gt; $/ });
-           $csv-&gt;eol (undef);
- my $eol = $csv-&gt;eol;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ eol =&gt; $/ });
+          $csv-&gt;eol (undef);
+my $eol = $csv-&gt;eol;</code></pre>
 
 <p>The end-of-line string to add to rows for <a href="#print">&quot;print&quot;</a> or the record separator for <a href="#getline">&quot;getline&quot;</a>.</p>
 
@@ -377,9 +377,9 @@ or
 
 <h3 id="sep_char">sep_char </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ sep_char =&gt; &quot;;&quot; });
-         $csv-&gt;sep_char (&quot;;&quot;);
- my $c = $csv-&gt;sep_char;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ sep_char =&gt; &quot;;&quot; });
+        $csv-&gt;sep_char (&quot;;&quot;);
+my $c = $csv-&gt;sep_char;</code></pre>
 
 <p>The char used to separate fields, by default a comma. (<code>,</code>). Limited to a single-byte character, usually in the range from <code>0x20</code> (space) to <code>0x7E</code> (tilde). When longer sequences are required, use <a href="#sep"><code>sep</code></a>.</p>
 
@@ -389,9 +389,9 @@ or
 
 <h3 id="sep">sep </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ sep =&gt; &quot;\N{FULLWIDTH COMMA}&quot; });
-           $csv-&gt;sep (&quot;;&quot;);
- my $sep = $csv-&gt;sep;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ sep =&gt; &quot;\N{FULLWIDTH COMMA}&quot; });
+          $csv-&gt;sep (&quot;;&quot;);
+my $sep = $csv-&gt;sep;</code></pre>
 
 <p>The chars used to separate fields, by default undefined. Limited to 8 bytes.</p>
 
@@ -401,9 +401,9 @@ or
 
 <h3 id="quote_char">quote_char </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ quote_char =&gt; &quot;&#39;&quot; });
-         $csv-&gt;quote_char (undef);
- my $c = $csv-&gt;quote_char;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ quote_char =&gt; &quot;&#39;&quot; });
+        $csv-&gt;quote_char (undef);
+my $c = $csv-&gt;quote_char;</code></pre>
 
 <p>The character to quote fields containing blanks or binary data, by default the double quote character (<code>&quot;</code>). A value of undef suppresses quote chars (for simple cases only). Limited to a single-byte character, usually in the range from <code>0x20</code> (space) to <code>0x7E</code> (tilde). When longer sequences are required, use <a href="#quote"><code>quote</code></a>.</p>
 
@@ -411,9 +411,9 @@ or
 
 <h3 id="quote">quote </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ quote =&gt; &quot;\N{FULLWIDTH QUOTATION MARK}&quot; });
-             $csv-&gt;quote (&quot;&#39;&quot;);
- my $quote = $csv-&gt;quote;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ quote =&gt; &quot;\N{FULLWIDTH QUOTATION MARK}&quot; });
+            $csv-&gt;quote (&quot;&#39;&quot;);
+my $quote = $csv-&gt;quote;</code></pre>
 
 <p>The chars used to quote fields, by default undefined. Limited to 8 bytes.</p>
 
@@ -425,15 +425,15 @@ or
 
 <h3 id="escape_char">escape_char </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ escape_char =&gt; &quot;\\&quot; });
-         $csv-&gt;escape_char (&quot;:&quot;);
- my $c = $csv-&gt;escape_char;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ escape_char =&gt; &quot;\\&quot; });
+        $csv-&gt;escape_char (&quot;:&quot;);
+my $c = $csv-&gt;escape_char;</code></pre>
 
 <p>The character to escape certain characters inside quoted fields. This is limited to a single-byte character, usually in the range from <code>0x20</code> (space) to <code>0x7E</code> (tilde).</p>
 
 <p>The <code>escape_char</code> defaults to being the double-quote mark (<code>&quot;</code>). In other words the same as the default <a href="#quote_char"><code>quote_char</code></a>. This means that doubling the quote mark in a field escapes it:</p>
 
-<pre><code> &quot;foo&quot;,&quot;bar&quot;,&quot;Escape &quot;&quot;quote mark&quot;&quot; with two &quot;&quot;quote marks&quot;&quot;&quot;,&quot;baz&quot;</code></pre>
+<pre><code>&quot;foo&quot;,&quot;bar&quot;,&quot;Escape &quot;&quot;quote mark&quot;&quot; with two &quot;&quot;quote marks&quot;&quot;&quot;,&quot;baz&quot;</code></pre>
 
 <p>If you change the <a href="#quote_char"><code>quote_char</code></a> without changing the <code>escape_char</code>, the <code>escape_char</code> will still be the double-quote (<code>&quot;</code>). If instead you want to escape the <a href="#quote_char"><code>quote_char</code></a> by doubling it you will need to also change the <code>escape_char</code> to be the same as what you have changed the <a href="#quote_char"><code>quote_char</code></a> to.</p>
 
@@ -443,9 +443,9 @@ or
 
 <h3 id="binary">binary </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1 });
-         $csv-&gt;binary (0);
- my $f = $csv-&gt;binary;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1 });
+        $csv-&gt;binary (0);
+my $f = $csv-&gt;binary;</code></pre>
 
 <p>If this attribute is <code>1</code>, you may use binary characters in quoted fields, including line feeds, carriage returns and <code>NULL</code> bytes. (The latter could be escaped as <code>&quot;0</code>.) By default this feature is off.</p>
 
@@ -453,17 +453,17 @@ or
 
 <h3 id="strict">strict </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ strict =&gt; 1 });
-         $csv-&gt;strict (0);
- my $f = $csv-&gt;strict;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ strict =&gt; 1 });
+        $csv-&gt;strict (0);
+my $f = $csv-&gt;strict;</code></pre>
 
 <p>If this attribute is set to <code>1</code>, any row that parses to a different number of fields than the previous row will cause the parser to throw error 2014.</p>
 
 <h3 id="skip_empty_rows">skip_empty_rows </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 1 });
-         $csv-&gt;skip_empty_rows (0);
- my $f = $csv-&gt;skip_empty_rows;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 1 });
+        $csv-&gt;skip_empty_rows (0);
+my $f = $csv-&gt;skip_empty_rows;</code></pre>
 
 <p>If this attribute is set to <code>1</code>, any row that has an <a href="#eol">&quot;eol&quot;</a> immediately following the start of line will be skipped. Default behavior is to return one single empty field.</p>
 
@@ -473,17 +473,17 @@ or
 
 <h3 id="formula">formula  </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ formula =&gt; &quot;none&quot; });
-         $csv-&gt;formula (&quot;none&quot;);
- my $f = $csv-&gt;formula;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ formula =&gt; &quot;none&quot; });
+        $csv-&gt;formula (&quot;none&quot;);
+my $f = $csv-&gt;formula;</code></pre>
 
 <p>This defines the behavior of fields containing <i>formulas</i>. As formulas are considered dangerous in spreadsheets, this attribute can define an optional action to be taken if a field starts with an equal sign (<code>=</code>).</p>
 
 <p>For purpose of code-readability, this can also be written as</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ formula_handling =&gt; &quot;none&quot; });
-         $csv-&gt;formula_handling (&quot;none&quot;);
- my $f = $csv-&gt;formula_handling;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ formula_handling =&gt; &quot;none&quot; });
+        $csv-&gt;formula_handling (&quot;none&quot;);
+my $f = $csv-&gt;formula_handling;</code></pre>
 
 <p>Possible values for this attribute are</p>
 
@@ -494,7 +494,7 @@ or
 
 <p>Take no specific action. This is the default.</p>
 
-<pre><code> $csv-&gt;formula (&quot;none&quot;);</code></pre>
+<pre><code>$csv-&gt;formula (&quot;none&quot;);</code></pre>
 
 </dd>
 <dt id="die">die</dt>
@@ -502,7 +502,7 @@ or
 
 <p>Cause the process to <code>die</code> whenever a leading <code>=</code> is encountered.</p>
 
-<pre><code> $csv-&gt;formula (&quot;die&quot;);</code></pre>
+<pre><code>$csv-&gt;formula (&quot;die&quot;);</code></pre>
 
 </dd>
 <dt id="croak">croak</dt>
@@ -510,7 +510,7 @@ or
 
 <p>Cause the process to <code>croak</code> whenever a leading <code>=</code> is encountered. (See <a>Carp</a>)</p>
 
-<pre><code> $csv-&gt;formula (&quot;croak&quot;);</code></pre>
+<pre><code>$csv-&gt;formula (&quot;croak&quot;);</code></pre>
 
 </dd>
 <dt id="diag">diag</dt>
@@ -518,7 +518,7 @@ or
 
 <p>Report position and content of the field whenever a leading <code>=</code> is found. The value of the field is unchanged.</p>
 
-<pre><code> $csv-&gt;formula (&quot;diag&quot;);</code></pre>
+<pre><code>$csv-&gt;formula (&quot;diag&quot;);</code></pre>
 
 </dd>
 <dt id="empty">empty</dt>
@@ -526,8 +526,8 @@ or
 
 <p>Replace the content of fields that start with a <code>=</code> with the empty string.</p>
 
-<pre><code> $csv-&gt;formula (&quot;empty&quot;);
- $csv-&gt;formula (&quot;&quot;);</code></pre>
+<pre><code>$csv-&gt;formula (&quot;empty&quot;);
+$csv-&gt;formula (&quot;&quot;);</code></pre>
 
 </dd>
 <dt id="undef">undef</dt>
@@ -535,8 +535,8 @@ or
 
 <p>Replace the content of fields that start with a <code>=</code> with <code>undef</code>.</p>
 
-<pre><code> $csv-&gt;formula (&quot;undef&quot;);
- $csv-&gt;formula (undef);</code></pre>
+<pre><code>$csv-&gt;formula (&quot;undef&quot;);
+$csv-&gt;formula (undef);</code></pre>
 
 </dd>
 <dt id="a-callback">a callback</dt>
@@ -544,17 +544,17 @@ or
 
 <p>Modify the content of fields that start with a <code>=</code> with the return-value of the callback. The original content of the field is available inside the callback as <code>$_</code>;</p>
 
-<pre><code> # Replace all formula&#39;s with 42
- $csv-&gt;formula (sub { 42; });
+<pre><code># Replace all formula&#39;s with 42
+$csv-&gt;formula (sub { 42; });
 
- # same as $csv-&gt;formula (&quot;empty&quot;) but slower
- $csv-&gt;formula (sub { &quot;&quot; });
+# same as $csv-&gt;formula (&quot;empty&quot;) but slower
+$csv-&gt;formula (sub { &quot;&quot; });
 
- # Allow =4+12
- $csv-&gt;formula (sub { s/^=(\d+\+\d+)$/$1/eer });
+# Allow =4+12
+$csv-&gt;formula (sub { s/^=(\d+\+\d+)$/$1/eer });
 
- # Allow more complex calculations
- $csv-&gt;formula (sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ });</code></pre>
+# Allow more complex calculations
+$csv-&gt;formula (sub { eval { s{^=([-+*/0-9()]+)$}{$1}ee }; $_ });</code></pre>
 
 </dd>
 </dl>
@@ -563,29 +563,29 @@ or
 
 <h3 id="decode_utf8">decode_utf8 </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ decode_utf8 =&gt; 1 });
-         $csv-&gt;decode_utf8 (0);
- my $f = $csv-&gt;decode_utf8;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ decode_utf8 =&gt; 1 });
+        $csv-&gt;decode_utf8 (0);
+my $f = $csv-&gt;decode_utf8;</code></pre>
 
 <p>This attributes defaults to TRUE.</p>
 
 <p>While <i>parsing</i>, fields that are valid UTF-8, are automatically set to be UTF-8, so that</p>
 
-<pre><code>  $csv-&gt;parse (&quot;\xC4\xA8\n&quot;);</code></pre>
+<pre><code>$csv-&gt;parse (&quot;\xC4\xA8\n&quot;);</code></pre>
 
 <p>results in</p>
 
-<pre><code>  PV(&quot;\304\250&quot;\0) [UTF8 &quot;\x{128}&quot;]</code></pre>
+<pre><code>PV(&quot;\304\250&quot;\0) [UTF8 &quot;\x{128}&quot;]</code></pre>
 
 <p>Sometimes it might not be a desired action. To prevent those upgrades, set this attribute to false, and the result will be</p>
 
-<pre><code>  PV(&quot;\304\250&quot;\0)</code></pre>
+<pre><code>PV(&quot;\304\250&quot;\0)</code></pre>
 
 <h3 id="auto_diag">auto_diag </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ auto_diag =&gt; 1 });
-         $csv-&gt;auto_diag (2);
- my $l = $csv-&gt;auto_diag;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ auto_diag =&gt; 1 });
+        $csv-&gt;auto_diag (2);
+my $l = $csv-&gt;auto_diag;</code></pre>
 
 <p>Set this attribute to a number between <code>1</code> and <code>9</code> causes <a href="#error_diag">&quot;error_diag&quot;</a> to be automatically called in void context upon errors.</p>
 
@@ -597,156 +597,156 @@ or
 
 <h3 id="diag_verbose">diag_verbose </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ diag_verbose =&gt; 1 });
-         $csv-&gt;diag_verbose (2);
- my $l = $csv-&gt;diag_verbose;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ diag_verbose =&gt; 1 });
+        $csv-&gt;diag_verbose (2);
+my $l = $csv-&gt;diag_verbose;</code></pre>
 
 <p>Set the verbosity of the output triggered by <code>auto_diag</code>. Currently only adds the current input-record-number (if known) to the diagnostic output with an indication of the position of the error.</p>
 
 <h3 id="blank_is_undef">blank_is_undef </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ blank_is_undef =&gt; 1 });
-         $csv-&gt;blank_is_undef (0);
- my $f = $csv-&gt;blank_is_undef;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ blank_is_undef =&gt; 1 });
+        $csv-&gt;blank_is_undef (0);
+my $f = $csv-&gt;blank_is_undef;</code></pre>
 
 <p>Under normal circumstances, <code>CSV</code> data makes no distinction between quoted- and unquoted empty fields. These both end up in an empty string field once read, thus</p>
 
-<pre><code> 1,&quot;&quot;,,&quot; &quot;,2</code></pre>
+<pre><code>1,&quot;&quot;,,&quot; &quot;,2</code></pre>
 
 <p>is read as</p>
 
-<pre><code> (&quot;1&quot;, &quot;&quot;, &quot;&quot;, &quot; &quot;, &quot;2&quot;)</code></pre>
+<pre><code>(&quot;1&quot;, &quot;&quot;, &quot;&quot;, &quot; &quot;, &quot;2&quot;)</code></pre>
 
 <p>When <i>writing</i> <code>CSV</code> files with either <a href="#always_quote"><code>always_quote</code></a> or <a href="#quote_empty"><code>quote_empty</code></a> set, the unquoted <i>empty</i> field is the result of an undefined value. To enable this distinction when <i>reading</i> <code>CSV</code> data, the <code>blank_is_undef</code> attribute will cause unquoted empty fields to be set to <code>undef</code>, causing the above to be parsed as</p>
 
-<pre><code> (&quot;1&quot;, &quot;&quot;, undef, &quot; &quot;, &quot;2&quot;)</code></pre>
+<pre><code>(&quot;1&quot;, &quot;&quot;, undef, &quot; &quot;, &quot;2&quot;)</code></pre>
 
 <p>Note that this is specifically important when loading <code>CSV</code> fields into a database that allows <code>NULL</code> values, as the perl equivalent for <code>NULL</code> is <code>undef</code> in <a>DBI</a> land.</p>
 
 <h3 id="empty_is_undef">empty_is_undef </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ empty_is_undef =&gt; 1 });
-         $csv-&gt;empty_is_undef (0);
- my $f = $csv-&gt;empty_is_undef;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ empty_is_undef =&gt; 1 });
+        $csv-&gt;empty_is_undef (0);
+my $f = $csv-&gt;empty_is_undef;</code></pre>
 
 <p>Going one step further than <a href="#blank_is_undef"><code>blank_is_undef</code></a>, this attribute converts all empty fields to <code>undef</code>, so</p>
 
-<pre><code> 1,&quot;&quot;,,&quot; &quot;,2</code></pre>
+<pre><code>1,&quot;&quot;,,&quot; &quot;,2</code></pre>
 
 <p>is read as</p>
 
-<pre><code> (1, undef, undef, &quot; &quot;, 2)</code></pre>
+<pre><code>(1, undef, undef, &quot; &quot;, 2)</code></pre>
 
 <p>Note that this affects only fields that are originally empty, not fields that are empty after stripping allowed whitespace. YMMV.</p>
 
 <h3 id="allow_whitespace">allow_whitespace </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ allow_whitespace =&gt; 1 });
-         $csv-&gt;allow_whitespace (0);
- my $f = $csv-&gt;allow_whitespace;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ allow_whitespace =&gt; 1 });
+        $csv-&gt;allow_whitespace (0);
+my $f = $csv-&gt;allow_whitespace;</code></pre>
 
 <p>When this option is set to true, the whitespace (<code>TAB</code>&#39;s and <code>SPACE</code>&#39;s) surrounding the separation character is removed when parsing. If either <code>TAB</code> or <code>SPACE</code> is one of the three characters <a href="#sep_char"><code>sep_char</code></a>, <a href="#quote_char"><code>quote_char</code></a>, or <a href="#escape_char"><code>escape_char</code></a> it will not be considered whitespace.</p>
 
 <p>Now lines like:</p>
 
-<pre><code> 1 , &quot;foo&quot; , bar , 3 , zapp</code></pre>
+<pre><code>1 , &quot;foo&quot; , bar , 3 , zapp</code></pre>
 
 <p>are parsed as valid <code>CSV</code>, even though it violates the <code>CSV</code> specs.</p>
 
 <p>Note that <b>all</b> whitespace is stripped from both start and end of each field. That would make it <i>more</i> than a <i>feature</i> to enable parsing bad <code>CSV</code> lines, as</p>
 
-<pre><code> 1,   2.0,  3,   ape  , monkey</code></pre>
+<pre><code>1,   2.0,  3,   ape  , monkey</code></pre>
 
 <p>will now be parsed as</p>
 
-<pre><code> (&quot;1&quot;, &quot;2.0&quot;, &quot;3&quot;, &quot;ape&quot;, &quot;monkey&quot;)</code></pre>
+<pre><code>(&quot;1&quot;, &quot;2.0&quot;, &quot;3&quot;, &quot;ape&quot;, &quot;monkey&quot;)</code></pre>
 
 <p>even if the original line was perfectly acceptable <code>CSV</code>.</p>
 
 <h3 id="allow_loose_quotes">allow_loose_quotes </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ allow_loose_quotes =&gt; 1 });
-         $csv-&gt;allow_loose_quotes (0);
- my $f = $csv-&gt;allow_loose_quotes;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ allow_loose_quotes =&gt; 1 });
+        $csv-&gt;allow_loose_quotes (0);
+my $f = $csv-&gt;allow_loose_quotes;</code></pre>
 
 <p>By default, parsing unquoted fields containing <a href="#quote_char"><code>quote_char</code></a> characters like</p>
 
-<pre><code> 1,foo &quot;bar&quot; baz,42</code></pre>
+<pre><code>1,foo &quot;bar&quot; baz,42</code></pre>
 
 <p>would result in parse error 2034. Though it is still bad practice to allow this format, we cannot help the fact that some vendors make their applications spit out lines styled this way.</p>
 
 <p>If there is <b>really</b> bad <code>CSV</code> data, like</p>
 
-<pre><code> 1,&quot;foo &quot;bar&quot; baz&quot;,42</code></pre>
+<pre><code>1,&quot;foo &quot;bar&quot; baz&quot;,42</code></pre>
 
 <p>or</p>
 
-<pre><code> 1,&quot;&quot;foo bar baz&quot;&quot;,42</code></pre>
+<pre><code>1,&quot;&quot;foo bar baz&quot;&quot;,42</code></pre>
 
 <p>there is a way to get this data-line parsed and leave the quotes inside the quoted field as-is. This can be achieved by setting <code>allow_loose_quotes</code> <b>AND</b> making sure that the <a href="#escape_char"><code>escape_char</code></a> is <i>not</i> equal to <a href="#quote_char"><code>quote_char</code></a>.</p>
 
 <h3 id="allow_loose_escapes">allow_loose_escapes </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ allow_loose_escapes =&gt; 1 });
-         $csv-&gt;allow_loose_escapes (0);
- my $f = $csv-&gt;allow_loose_escapes;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ allow_loose_escapes =&gt; 1 });
+        $csv-&gt;allow_loose_escapes (0);
+my $f = $csv-&gt;allow_loose_escapes;</code></pre>
 
 <p>Parsing fields that have <a href="#escape_char"><code>escape_char</code></a> characters that escape characters that do not need to be escaped, like:</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ escape_char =&gt; &quot;\\&quot; });
- $csv-&gt;parse (qq{1,&quot;my bar\&#39;s&quot;,baz,42});</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ escape_char =&gt; &quot;\\&quot; });
+$csv-&gt;parse (qq{1,&quot;my bar\&#39;s&quot;,baz,42});</code></pre>
 
 <p>would result in parse error 2025. Though it is bad practice to allow this format, this attribute enables you to treat all escape character sequences equal.</p>
 
 <h3 id="allow_unquoted_escape">allow_unquoted_escape </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ allow_unquoted_escape =&gt; 1 });
-         $csv-&gt;allow_unquoted_escape (0);
- my $f = $csv-&gt;allow_unquoted_escape;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ allow_unquoted_escape =&gt; 1 });
+        $csv-&gt;allow_unquoted_escape (0);
+my $f = $csv-&gt;allow_unquoted_escape;</code></pre>
 
 <p>A backward compatibility issue where <a href="#escape_char"><code>escape_char</code></a> differs from <a href="#quote_char"><code>quote_char</code></a> prevents <a href="#escape_char"><code>escape_char</code></a> to be in the first position of a field. If <a href="#quote_char"><code>quote_char</code></a> is equal to the default <code>&quot;</code> and <a href="#escape_char"><code>escape_char</code></a> is set to <code>\</code>, this would be illegal:</p>
 
-<pre><code> 1,\0,2</code></pre>
+<pre><code>1,\0,2</code></pre>
 
 <p>Setting this attribute to <code>1</code> might help to overcome issues with backward compatibility and allow this style.</p>
 
 <h3 id="always_quote">always_quote </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ always_quote =&gt; 1 });
-         $csv-&gt;always_quote (0);
- my $f = $csv-&gt;always_quote;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ always_quote =&gt; 1 });
+        $csv-&gt;always_quote (0);
+my $f = $csv-&gt;always_quote;</code></pre>
 
 <p>By default the generated fields are quoted only if they <i>need</i> to be. For example, if they contain the separator character. If you set this attribute to <code>1</code> then <i>all</i> defined fields will be quoted. (<code>undef</code> fields are not quoted, see <a href="#blank_is_undef">&quot;blank_is_undef&quot;</a>). This makes it quite often easier to handle exported data in external applications. (Poor creatures who are better to use Text::CSV_XS. :)</p>
 
 <h3 id="quote_space">quote_space </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ quote_space =&gt; 1 });
-         $csv-&gt;quote_space (0);
- my $f = $csv-&gt;quote_space;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ quote_space =&gt; 1 });
+        $csv-&gt;quote_space (0);
+my $f = $csv-&gt;quote_space;</code></pre>
 
 <p>By default, a space in a field would trigger quotation. As no rule exists this to be forced in <code>CSV</code>, nor any for the opposite, the default is true for safety. You can exclude the space from this trigger by setting this attribute to 0.</p>
 
 <h3 id="quote_empty">quote_empty </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ quote_empty =&gt; 1 });
-         $csv-&gt;quote_empty (0);
- my $f = $csv-&gt;quote_empty;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ quote_empty =&gt; 1 });
+        $csv-&gt;quote_empty (0);
+my $f = $csv-&gt;quote_empty;</code></pre>
 
 <p>By default the generated fields are quoted only if they <i>need</i> to be. An empty (defined) field does not need quotation. If you set this attribute to <code>1</code> then <i>empty</i> defined fields will be quoted. (<code>undef</code> fields are not quoted, see <a href="#blank_is_undef">&quot;blank_is_undef&quot;</a>). See also <a href="#always_quote"><code>always_quote</code></a>.</p>
 
 <h3 id="quote_binary">quote_binary </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ quote_binary =&gt; 1 });
-         $csv-&gt;quote_binary (0);
- my $f = $csv-&gt;quote_binary;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ quote_binary =&gt; 1 });
+        $csv-&gt;quote_binary (0);
+my $f = $csv-&gt;quote_binary;</code></pre>
 
 <p>By default, all &quot;unsafe&quot; bytes inside a string cause the combined field to be quoted. By setting this attribute to <code>0</code>, you can disable that trigger for bytes &gt;= <code>0x7F</code>.</p>
 
 <h3 id="escape_null">escape_null  </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ escape_null =&gt; 1 });
-         $csv-&gt;escape_null (0);
- my $f = $csv-&gt;escape_null;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ escape_null =&gt; 1 });
+        $csv-&gt;escape_null (0);
+my $f = $csv-&gt;escape_null;</code></pre>
 
 <p>By default, a <code>NULL</code> byte in a field would be escaped. This option enables you to treat the <code>NULL</code> byte as a simple binary character in binary mode (the <code>{ binary =&gt; 1 }</code> is set). The default is true. You can prevent <code>NULL</code> escapes by setting this attribute to <code>0</code>.</p>
 
@@ -754,11 +754,11 @@ or
 
 <p>The default setting will encode &quot;=\x00=&quot; as</p>
 
-<pre><code> &quot;=&quot;0=&quot;</code></pre>
+<pre><code>&quot;=&quot;0=&quot;</code></pre>
 
 <p>With <code>escape_null</code> set, this will result in</p>
 
-<pre><code> &quot;=\x00=&quot;</code></pre>
+<pre><code>&quot;=\x00=&quot;</code></pre>
 
 <p>The default when using the <code>csv</code> function is <code>false</code>.</p>
 
@@ -766,33 +766,33 @@ or
 
 <h3 id="keep_meta_info">keep_meta_info </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ keep_meta_info =&gt; 1 });
-         $csv-&gt;keep_meta_info (0);
- my $f = $csv-&gt;keep_meta_info;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ keep_meta_info =&gt; 1 });
+        $csv-&gt;keep_meta_info (0);
+my $f = $csv-&gt;keep_meta_info;</code></pre>
 
 <p>By default, the parsing of input records is as simple and fast as possible. However, some parsing information - like quotation of the original field - is lost in that process. Setting this flag to true enables retrieving that information after parsing with the methods <a href="#meta_info">&quot;meta_info&quot;</a>, <a href="#is_quoted">&quot;is_quoted&quot;</a>, and <a href="#is_binary">&quot;is_binary&quot;</a> described below. Default is false for performance.</p>
 
 <p>If you set this attribute to a value greater than 9, then you can control output quotation style like it was used in the input of the the last parsed record (unless quotation was added because of other reasons).</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({
-    binary         =&gt; 1,
-    keep_meta_info =&gt; 1,
-    quote_space    =&gt; 0,
-    });
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({
+   binary         =&gt; 1,
+   keep_meta_info =&gt; 1,
+   quote_space    =&gt; 0,
+   });
 
- my $row = $csv-&gt;parse (q{1,,&quot;&quot;, ,&quot; &quot;,f,&quot;g&quot;,&quot;h&quot;&quot;h&quot;,help,&quot;help&quot;});
+my $row = $csv-&gt;parse (q{1,,&quot;&quot;, ,&quot; &quot;,f,&quot;g&quot;,&quot;h&quot;&quot;h&quot;,help,&quot;help&quot;});
 
- $csv-&gt;print (*STDOUT, \@row);
- # 1,,, , ,f,g,&quot;h&quot;&quot;h&quot;,help,help
- $csv-&gt;keep_meta_info (11);
- $csv-&gt;print (*STDOUT, \@row);
- # 1,,&quot;&quot;, ,&quot; &quot;,f,&quot;g&quot;,&quot;h&quot;&quot;h&quot;,help,&quot;help&quot;</code></pre>
+$csv-&gt;print (*STDOUT, \@row);
+# 1,,, , ,f,g,&quot;h&quot;&quot;h&quot;,help,help
+$csv-&gt;keep_meta_info (11);
+$csv-&gt;print (*STDOUT, \@row);
+# 1,,&quot;&quot;, ,&quot; &quot;,f,&quot;g&quot;,&quot;h&quot;&quot;h&quot;,help,&quot;help&quot;</code></pre>
 
 <h3 id="undef_str">undef_str </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ undef_str =&gt; &quot;\\N&quot; });
-         $csv-&gt;undef_str (undef);
- my $s = $csv-&gt;undef_str;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ undef_str =&gt; &quot;\\N&quot; });
+        $csv-&gt;undef_str (undef);
+my $s = $csv-&gt;undef_str;</code></pre>
 
 <p>This attribute optionally defines the output of undefined fields. The value passed is not changed at all, so if it needs quotation, the quotation needs to be included in the value of the attribute. Use with caution, as passing a value like <code>&quot;,&quot;,,,,&quot;&quot;&quot;</code> will for sure mess up your output. The default for this attribute is <code>undef</code>, meaning no special treatment.</p>
 
@@ -802,9 +802,9 @@ or
 
 <h3 id="comment_str">comment_str </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ comment_str =&gt; &quot;#&quot; });
-         $csv-&gt;comment_str (undef);
- my $s = $csv-&gt;comment_str;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ comment_str =&gt; &quot;#&quot; });
+        $csv-&gt;comment_str (undef);
+my $s = $csv-&gt;comment_str;</code></pre>
 
 <p>This attribute optionally defines a string to be recognized as comment. If this attribute is defined, all lines starting with this sequence will not be parsed as CSV but skipped as comment.</p>
 
@@ -816,9 +816,9 @@ or
 
 <h3 id="verbatim">verbatim </h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ verbatim =&gt; 1 });
-         $csv-&gt;verbatim (0);
- my $f = $csv-&gt;verbatim;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ verbatim =&gt; 1 });
+        $csv-&gt;verbatim (0);
+my $f = $csv-&gt;verbatim;</code></pre>
 
 <p>This is a quite controversial attribute to set, but makes some hard things possible.</p>
 
@@ -828,7 +828,7 @@ or
 
 <p>Imagine a file format like</p>
 
-<pre><code> M^^Hans^Janssen^Klas 2\n2A^Ja^11-06-2007#\r\n</code></pre>
+<pre><code>M^^Hans^Janssen^Klas 2\n2A^Ja^11-06-2007#\r\n</code></pre>
 
 <p>where, the line ending is a very specific <code>&quot;#\r\n&quot;</code>, and the sep_char is a <code>^</code> (caret). None of the fields is quoted, but embedded binary data is likely to be present. With the specific line ending, this should not be too hard to detect.</p>
 
@@ -848,70 +848,70 @@ or
 
 <p>To sum it up,</p>
 
-<pre><code> $csv = Text::CSV_XS-&gt;new ();</code></pre>
+<pre><code>$csv = Text::CSV_XS-&gt;new ();</code></pre>
 
 <p>is equivalent to</p>
 
-<pre><code> $csv = Text::CSV_XS-&gt;new ({
-     eol                   =&gt; undef, # \r, \n, or \r\n
-     sep_char              =&gt; &#39;,&#39;,
-     sep                   =&gt; undef,
-     quote_char            =&gt; &#39;&quot;&#39;,
-     quote                 =&gt; undef,
-     escape_char           =&gt; &#39;&quot;&#39;,
-     binary                =&gt; 0,
-     decode_utf8           =&gt; 1,
-     auto_diag             =&gt; 0,
-     diag_verbose          =&gt; 0,
-     blank_is_undef        =&gt; 0,
-     empty_is_undef        =&gt; 0,
-     allow_whitespace      =&gt; 0,
-     allow_loose_quotes    =&gt; 0,
-     allow_loose_escapes   =&gt; 0,
-     allow_unquoted_escape =&gt; 0,
-     always_quote          =&gt; 0,
-     quote_empty           =&gt; 0,
-     quote_space           =&gt; 1,
-     escape_null           =&gt; 1,
-     quote_binary          =&gt; 1,
-     keep_meta_info        =&gt; 0,
-     strict                =&gt; 0,
-     skip_empty_rows       =&gt; 0,
-     formula               =&gt; 0,
-     verbatim              =&gt; 0,
-     undef_str             =&gt; undef,
-     comment_str           =&gt; undef,
-     types                 =&gt; undef,
-     callbacks             =&gt; undef,
-     });</code></pre>
+<pre><code>$csv = Text::CSV_XS-&gt;new ({
+    eol                   =&gt; undef, # \r, \n, or \r\n
+    sep_char              =&gt; &#39;,&#39;,
+    sep                   =&gt; undef,
+    quote_char            =&gt; &#39;&quot;&#39;,
+    quote                 =&gt; undef,
+    escape_char           =&gt; &#39;&quot;&#39;,
+    binary                =&gt; 0,
+    decode_utf8           =&gt; 1,
+    auto_diag             =&gt; 0,
+    diag_verbose          =&gt; 0,
+    blank_is_undef        =&gt; 0,
+    empty_is_undef        =&gt; 0,
+    allow_whitespace      =&gt; 0,
+    allow_loose_quotes    =&gt; 0,
+    allow_loose_escapes   =&gt; 0,
+    allow_unquoted_escape =&gt; 0,
+    always_quote          =&gt; 0,
+    quote_empty           =&gt; 0,
+    quote_space           =&gt; 1,
+    escape_null           =&gt; 1,
+    quote_binary          =&gt; 1,
+    keep_meta_info        =&gt; 0,
+    strict                =&gt; 0,
+    skip_empty_rows       =&gt; 0,
+    formula               =&gt; 0,
+    verbatim              =&gt; 0,
+    undef_str             =&gt; undef,
+    comment_str           =&gt; undef,
+    types                 =&gt; undef,
+    callbacks             =&gt; undef,
+    });</code></pre>
 
 <p>For all of the above mentioned flags, an accessor method is available where you can inquire the current value, or change the value</p>
 
-<pre><code> my $quote = $csv-&gt;quote_char;
- $csv-&gt;binary (1);</code></pre>
+<pre><code>my $quote = $csv-&gt;quote_char;
+$csv-&gt;binary (1);</code></pre>
 
 <p>It is not wise to change these settings halfway through writing <code>CSV</code> data to a stream. If however you want to create a new stream using the available <code>CSV</code> object, there is no harm in changing them.</p>
 
 <p>If the <a href="#new">&quot;new&quot;</a> constructor call fails, it returns <code>undef</code>, and makes the fail reason available through the <a href="#error_diag">&quot;error_diag&quot;</a> method.</p>
 
-<pre><code> $csv = Text::CSV_XS-&gt;new ({ ecs_char =&gt; 1 }) or
-     die &quot;&quot;.Text::CSV_XS-&gt;error_diag ();</code></pre>
+<pre><code>$csv = Text::CSV_XS-&gt;new ({ ecs_char =&gt; 1 }) or
+    die &quot;&quot;.Text::CSV_XS-&gt;error_diag ();</code></pre>
 
 <p><a href="#error_diag">&quot;error_diag&quot;</a> will return a string like</p>
 
-<pre><code> &quot;INI - Unknown attribute &#39;ecs_char&#39;&quot;</code></pre>
+<pre><code>&quot;INI - Unknown attribute &#39;ecs_char&#39;&quot;</code></pre>
 
 <h2 id="known_attributes">known_attributes </h2>
 
-<pre><code> @attr = Text::CSV_XS-&gt;known_attributes;
- @attr = Text::CSV_XS::known_attributes;
- @attr = $csv-&gt;known_attributes;</code></pre>
+<pre><code>@attr = Text::CSV_XS-&gt;known_attributes;
+@attr = Text::CSV_XS::known_attributes;
+@attr = $csv-&gt;known_attributes;</code></pre>
 
 <p>This method will return an ordered list of all the supported attributes as described above. This can be useful for knowing what attributes are valid in classes that use or extend Text::CSV_XS.</p>
 
 <h2 id="print">print </h2>
 
-<pre><code> $status = $csv-&gt;print ($fh, $colref);</code></pre>
+<pre><code>$status = $csv-&gt;print ($fh, $colref);</code></pre>
 
 <p>Similar to <a href="#combine">&quot;combine&quot;</a> + <a href="#string">&quot;string&quot;</a> + <a href="#print">&quot;print&quot;</a>, but much more efficient. It expects an array ref as input (not an array!) and the resulting string is not really created, but immediately written to the <code>$fh</code> object, typically an IO handle or any other object that offers a <a href="#print">&quot;print&quot;</a> method.</p>
 
@@ -919,49 +919,49 @@ or
 
 <p>If <code>$colref</code> is <code>undef</code> (explicit, not through a variable argument) and <a href="#bind_columns">&quot;bind_columns&quot;</a> was used to specify fields to be printed, it is possible to make performance improvements, as otherwise data would have to be copied as arguments to the method call:</p>
 
-<pre><code> $csv-&gt;bind_columns (\($foo, $bar));
- $status = $csv-&gt;print ($fh, undef);</code></pre>
+<pre><code>$csv-&gt;bind_columns (\($foo, $bar));
+$status = $csv-&gt;print ($fh, undef);</code></pre>
 
 <p>A short benchmark</p>
 
-<pre><code> my @data = (&quot;aa&quot; .. &quot;zz&quot;);
- $csv-&gt;bind_columns (\(@data));
+<pre><code>my @data = (&quot;aa&quot; .. &quot;zz&quot;);
+$csv-&gt;bind_columns (\(@data));
 
- $csv-&gt;print ($fh, [ @data ]);   # 11800 recs/sec
- $csv-&gt;print ($fh,  \@data  );   # 57600 recs/sec
- $csv-&gt;print ($fh,   undef  );   # 48500 recs/sec</code></pre>
+$csv-&gt;print ($fh, [ @data ]);   # 11800 recs/sec
+$csv-&gt;print ($fh,  \@data  );   # 57600 recs/sec
+$csv-&gt;print ($fh,   undef  );   # 48500 recs/sec</code></pre>
 
 <h2 id="say">say </h2>
 
-<pre><code> $status = $csv-&gt;say ($fh, $colref);</code></pre>
+<pre><code>$status = $csv-&gt;say ($fh, $colref);</code></pre>
 
 <p>Like <a href="#print"><code>print</code></a>, but <a href="#eol"><code>eol</code></a> defaults to <code>$\</code>.</p>
 
 <h2 id="print_hr">print_hr </h2>
 
-<pre><code> $csv-&gt;print_hr ($fh, $ref);</code></pre>
+<pre><code>$csv-&gt;print_hr ($fh, $ref);</code></pre>
 
 <p>Provides an easy way to print a <code>$ref</code> (as fetched with <a href="#getline_hr">&quot;getline_hr&quot;</a>) provided the column names are set with <a href="#column_names">&quot;column_names&quot;</a>.</p>
 
 <p>It is just a wrapper method with basic parameter checks over</p>
 
-<pre><code> $csv-&gt;print ($fh, [ map { $ref-&gt;{$_} } $csv-&gt;column_names ]);</code></pre>
+<pre><code>$csv-&gt;print ($fh, [ map { $ref-&gt;{$_} } $csv-&gt;column_names ]);</code></pre>
 
 <h2 id="combine">combine </h2>
 
-<pre><code> $status = $csv-&gt;combine (@fields);</code></pre>
+<pre><code>$status = $csv-&gt;combine (@fields);</code></pre>
 
 <p>This method constructs a <code>CSV</code> record from <code>@fields</code>, returning success or failure. Failure can result from lack of arguments or an argument that contains an invalid character. Upon success, <a href="#string">&quot;string&quot;</a> can be called to retrieve the resultant <code>CSV</code> string. Upon failure, the value returned by <a href="#string">&quot;string&quot;</a> is undefined and <a href="#error_input">&quot;error_input&quot;</a> could be called to retrieve the invalid argument.</p>
 
 <h2 id="string">string </h2>
 
-<pre><code> $line = $csv-&gt;string ();</code></pre>
+<pre><code>$line = $csv-&gt;string ();</code></pre>
 
 <p>This method returns the input to <a href="#parse">&quot;parse&quot;</a> or the resultant <code>CSV</code> string of <a href="#combine">&quot;combine&quot;</a>, whichever was called more recently.</p>
 
 <h2 id="getline">getline </h2>
 
-<pre><code> $colref = $csv-&gt;getline ($fh);</code></pre>
+<pre><code>$colref = $csv-&gt;getline ($fh);</code></pre>
 
 <p>This is the counterpart to <a href="#print">&quot;print&quot;</a>, as <a href="#parse">&quot;parse&quot;</a> is the counterpart to <a href="#combine">&quot;combine&quot;</a>: it parses a row from the <code>$fh</code> handle using the <a href="#getline">&quot;getline&quot;</a> method associated with <code>$fh</code> and parses this row into an array ref. This array ref is returned by the function or <code>undef</code> for failure. When <code>$fh</code> does not support <code>getline</code>, you are likely to hit errors.</p>
 
@@ -971,69 +971,69 @@ or
 
 <h2 id="getline_all">getline_all </h2>
 
-<pre><code> $arrayref = $csv-&gt;getline_all ($fh);
- $arrayref = $csv-&gt;getline_all ($fh, $offset);
- $arrayref = $csv-&gt;getline_all ($fh, $offset, $length);</code></pre>
+<pre><code>$arrayref = $csv-&gt;getline_all ($fh);
+$arrayref = $csv-&gt;getline_all ($fh, $offset);
+$arrayref = $csv-&gt;getline_all ($fh, $offset, $length);</code></pre>
 
 <p>This will return a reference to a list of <a href="#getline">getline ($fh)</a> results. In this call, <code>keep_meta_info</code> is disabled. If <code>$offset</code> is negative, as with <code>splice</code>, only the last <code>abs ($offset)</code> records of <code>$fh</code> are taken into consideration.</p>
 
 <p>Given a CSV file with 10 lines:</p>
 
-<pre><code> lines call
- ----- ---------------------------------------------------------
- 0..9  $csv-&gt;getline_all ($fh)         # all
- 0..9  $csv-&gt;getline_all ($fh,  0)     # all
- 8..9  $csv-&gt;getline_all ($fh,  8)     # start at 8
- -     $csv-&gt;getline_all ($fh,  0,  0) # start at 0 first 0 rows
- 0..4  $csv-&gt;getline_all ($fh,  0,  5) # start at 0 first 5 rows
- 4..5  $csv-&gt;getline_all ($fh,  4,  2) # start at 4 first 2 rows
- 8..9  $csv-&gt;getline_all ($fh, -2)     # last 2 rows
- 6..7  $csv-&gt;getline_all ($fh, -4,  2) # first 2 of last  4 rows</code></pre>
+<pre><code>lines call
+----- ---------------------------------------------------------
+0..9  $csv-&gt;getline_all ($fh)         # all
+0..9  $csv-&gt;getline_all ($fh,  0)     # all
+8..9  $csv-&gt;getline_all ($fh,  8)     # start at 8
+-     $csv-&gt;getline_all ($fh,  0,  0) # start at 0 first 0 rows
+0..4  $csv-&gt;getline_all ($fh,  0,  5) # start at 0 first 5 rows
+4..5  $csv-&gt;getline_all ($fh,  4,  2) # start at 4 first 2 rows
+8..9  $csv-&gt;getline_all ($fh, -2)     # last 2 rows
+6..7  $csv-&gt;getline_all ($fh, -4,  2) # first 2 of last  4 rows</code></pre>
 
 <h2 id="getline_hr">getline_hr </h2>
 
 <p>The <a href="#getline_hr">&quot;getline_hr&quot;</a> and <a href="#column_names">&quot;column_names&quot;</a> methods work together to allow you to have rows returned as hashrefs. You must call <a href="#column_names">&quot;column_names&quot;</a> first to declare your column names.</p>
 
-<pre><code> $csv-&gt;column_names (qw( code name price description ));
- $hr = $csv-&gt;getline_hr ($fh);
- print &quot;Price for $hr-&gt;{name} is $hr-&gt;{price} EUR\n&quot;;</code></pre>
+<pre><code>$csv-&gt;column_names (qw( code name price description ));
+$hr = $csv-&gt;getline_hr ($fh);
+print &quot;Price for $hr-&gt;{name} is $hr-&gt;{price} EUR\n&quot;;</code></pre>
 
 <p><a href="#getline_hr">&quot;getline_hr&quot;</a> will croak if called before <a href="#column_names">&quot;column_names&quot;</a>.</p>
 
 <p>Note that <a href="#getline_hr">&quot;getline_hr&quot;</a> creates a hashref for every row and will be much slower than the combined use of <a href="#bind_columns">&quot;bind_columns&quot;</a> and <a href="#getline">&quot;getline&quot;</a> but still offering the same easy to use hashref inside the loop:</p>
 
-<pre><code> my @cols = @{$csv-&gt;getline ($fh)};
- $csv-&gt;column_names (@cols);
- while (my $row = $csv-&gt;getline_hr ($fh)) {
-     print $row-&gt;{price};
-     }</code></pre>
+<pre><code>my @cols = @{$csv-&gt;getline ($fh)};
+$csv-&gt;column_names (@cols);
+while (my $row = $csv-&gt;getline_hr ($fh)) {
+    print $row-&gt;{price};
+    }</code></pre>
 
 <p>Could easily be rewritten to the much faster:</p>
 
-<pre><code> my @cols = @{$csv-&gt;getline ($fh)};
- my $row = {};
- $csv-&gt;bind_columns (\@{$row}{@cols});
- while ($csv-&gt;getline ($fh)) {
-     print $row-&gt;{price};
-     }</code></pre>
+<pre><code>my @cols = @{$csv-&gt;getline ($fh)};
+my $row = {};
+$csv-&gt;bind_columns (\@{$row}{@cols});
+while ($csv-&gt;getline ($fh)) {
+    print $row-&gt;{price};
+    }</code></pre>
 
 <p>Your mileage may vary for the size of the data and the number of rows. With perl-5.14.2 the comparison for a 100_000 line file with 14 columns:</p>
 
-<pre><code>            Rate hashrefs getlines
- hashrefs 1.00/s       --     -76%
- getlines 4.15/s     313%       --</code></pre>
+<pre><code>           Rate hashrefs getlines
+hashrefs 1.00/s       --     -76%
+getlines 4.15/s     313%       --</code></pre>
 
 <h2 id="getline_hr_all">getline_hr_all </h2>
 
-<pre><code> $arrayref = $csv-&gt;getline_hr_all ($fh);
- $arrayref = $csv-&gt;getline_hr_all ($fh, $offset);
- $arrayref = $csv-&gt;getline_hr_all ($fh, $offset, $length);</code></pre>
+<pre><code>$arrayref = $csv-&gt;getline_hr_all ($fh);
+$arrayref = $csv-&gt;getline_hr_all ($fh, $offset);
+$arrayref = $csv-&gt;getline_hr_all ($fh, $offset, $length);</code></pre>
 
 <p>This will return a reference to a list of <a href="#getline_hr">getline_hr ($fh)</a> results. In this call, <a href="#keep_meta_info"><code>keep_meta_info</code></a> is disabled.</p>
 
 <h2 id="parse">parse </h2>
 
-<pre><code> $status = $csv-&gt;parse ($line);</code></pre>
+<pre><code>$status = $csv-&gt;parse ($line);</code></pre>
 
 <p>This method decomposes a <code>CSV</code> string into fields, returning success or failure. Failure can result from a lack of argument or the given <code>CSV</code> string is improperly formatted. Upon success, <a href="#fields">&quot;fields&quot;</a> can be called to retrieve the decomposed fields. Upon failure calling <a href="#fields">&quot;fields&quot;</a> will return undefined data and <a href="#error_input">&quot;error_input&quot;</a> can be called to retrieve the invalid argument.</p>
 
@@ -1045,14 +1045,14 @@ or
 
 <p>This function tries to implement RFC7111 (URI Fragment Identifiers for the text/csv Media Type) - http://tools.ietf.org/html/rfc7111</p>
 
-<pre><code> my $AoA = $csv-&gt;fragment ($fh, $spec);</code></pre>
+<pre><code>my $AoA = $csv-&gt;fragment ($fh, $spec);</code></pre>
 
 <p>In specifications, <code>*</code> is used to specify the <i>last</i> item, a dash (<code>-</code>) to indicate a range. All indices are <code>1</code>-based: the first row or column has index <code>1</code>. Selections can be combined with the semi-colon (<code>;</code>).</p>
 
 <p>When using this method in combination with <a href="#column_names">&quot;column_names&quot;</a>, the returned reference will point to a list of hashes instead of a list of lists. A disjointed cell-based combined selection might return rows with different number of columns making the use of hashes unpredictable.</p>
 
-<pre><code> $csv-&gt;column_names (&quot;Name&quot;, &quot;Age&quot;);
- my $AoH = $csv-&gt;fragment ($fh, &quot;col=3;8&quot;);</code></pre>
+<pre><code>$csv-&gt;column_names (&quot;Name&quot;, &quot;Age&quot;);
+my $AoH = $csv-&gt;fragment ($fh, &quot;col=3;8&quot;);</code></pre>
 
 <p>If the <a href="#after_parse">&quot;after_parse&quot;</a> callback is active, it is also called on every line parsed and skipped before the fragment.</p>
 
@@ -1061,19 +1061,19 @@ or
 <dt id="row">row</dt>
 <dd>
 
-<pre><code> row=4
- row=5-7
- row=6-*
- row=1-2;4;6-*</code></pre>
+<pre><code>row=4
+row=5-7
+row=6-*
+row=1-2;4;6-*</code></pre>
 
 </dd>
 <dt id="col">col</dt>
 <dd>
 
-<pre><code> col=2
- col=1-3
- col=4-*
- col=1-2;4;7-*</code></pre>
+<pre><code>col=2
+col=1-3
+col=4-*
+col=1-2;4;7-*</code></pre>
 
 </dd>
 <dt id="cell">cell</dt>
@@ -1081,42 +1081,42 @@ or
 
 <p>In cell-based selection, the comma (<code>,</code>) is used to pair row and column</p>
 
-<pre><code> cell=4,1</code></pre>
+<pre><code>cell=4,1</code></pre>
 
 <p>The range operator (<code>-</code>) using <code>cell</code>s can be used to define top-left and bottom-right <code>cell</code> location</p>
 
-<pre><code> cell=3,1-4,6</code></pre>
+<pre><code>cell=3,1-4,6</code></pre>
 
 <p>The <code>*</code> is only allowed in the second part of a pair</p>
 
-<pre><code> cell=3,2-*,2    # row 3 till end, only column 2
- cell=3,2-3,*    # column 2 till end, only row 3
- cell=3,2-*,*    # strip row 1 and 2, and column 1</code></pre>
+<pre><code>cell=3,2-*,2    # row 3 till end, only column 2
+cell=3,2-3,*    # column 2 till end, only row 3
+cell=3,2-*,*    # strip row 1 and 2, and column 1</code></pre>
 
 <p>Cells and cell ranges may be combined with <code>;</code>, possibly resulting in rows with different numbers of columns</p>
 
-<pre><code> cell=1,1-2,2;3,3-4,4;1,4;4,1</code></pre>
+<pre><code>cell=1,1-2,2;3,3-4,4;1,4;4,1</code></pre>
 
 <p>Disjointed selections will only return selected cells. The cells that are not specified will not be included in the returned set, not even as <code>undef</code>. As an example given a <code>CSV</code> like</p>
 
-<pre><code> 11,12,13,...19
- 21,22,...28,29
- :            :
- 91,...97,98,99</code></pre>
+<pre><code>11,12,13,...19
+21,22,...28,29
+:            :
+91,...97,98,99</code></pre>
 
 <p>with <code>cell=1,1-2,2;3,3-4,4;1,4;4,1</code> will return:</p>
 
-<pre><code> 11,12,14
- 21,22
- 33,34
- 41,43,44</code></pre>
+<pre><code>11,12,14
+21,22
+33,34
+41,43,44</code></pre>
 
 <p>Overlapping cell-specs will return those cells only once, So <code>cell=1,1-3,3;2,2-4,4;2,3;4,2</code> will return:</p>
 
-<pre><code> 11,12,13
- 21,22,23,24
- 31,32,33,34
- 42,43,44</code></pre>
+<pre><code>11,12,13
+21,22,23,24
+31,32,33,34
+42,43,44</code></pre>
 
 </dd>
 </dl>
@@ -1129,12 +1129,12 @@ or
 
 <p><a href="#column_names">&quot;column_names&quot;</a> accepts a list of scalars (the column names) or a single array_ref, so you can pass the return value from <a href="#getline">&quot;getline&quot;</a> too:</p>
 
-<pre><code> $csv-&gt;column_names ($csv-&gt;getline ($fh));</code></pre>
+<pre><code>$csv-&gt;column_names ($csv-&gt;getline ($fh));</code></pre>
 
 <p><a href="#column_names">&quot;column_names&quot;</a> does <b>no</b> checking on duplicates at all, which might lead to unexpected results. Undefined entries will be replaced with the string <code>&quot;\cAUNDEF\cA&quot;</code>, so</p>
 
-<pre><code> $csv-&gt;column_names (undef, &quot;&quot;, &quot;name&quot;, &quot;name&quot;);
- $hr = $csv-&gt;getline_hr ($fh);</code></pre>
+<pre><code>$csv-&gt;column_names (undef, &quot;&quot;, &quot;name&quot;, &quot;name&quot;);
+$hr = $csv-&gt;getline_hr ($fh);</code></pre>
 
 <p>will set <code>$hr-&gt;{&quot;\cAUNDEF\cA&quot;}</code> to the 1st field, <code>$hr-&gt;{&quot;&quot;}</code> to the 2nd field, and <code>$hr-&gt;{name}</code> to the 4th field, discarding the 3rd field.</p>
 
@@ -1146,9 +1146,9 @@ or
 
 <p>Parse the CSV header and set <a href="#sep"><code>sep</code></a>, column_names and encoding.</p>
 
-<pre><code> my @hdr = $csv-&gt;header ($fh);
- $csv-&gt;header ($fh, { sep_set =&gt; [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot; ] });
- $csv-&gt;header ($fh, { detect_bom =&gt; 1, munge_column_names =&gt; &quot;lc&quot; });</code></pre>
+<pre><code>my @hdr = $csv-&gt;header ($fh);
+$csv-&gt;header ($fh, { sep_set =&gt; [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot; ] });
+$csv-&gt;header ($fh, { detect_bom =&gt; 1, munge_column_names =&gt; &quot;lc&quot; });</code></pre>
 
 <p>The first argument should be a file handle.</p>
 
@@ -1158,13 +1158,13 @@ or
 
 <p>If any of the allowed separators matches, and none of the <i>other</i> allowed separators match, set <a href="#sep"><code>sep</code></a> to that separator for the current CSV_XS instance and use it to parse the first line, map those to lowercase, and use that to set the instance <a href="#column_names">&quot;column_names&quot;</a>:</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
- open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot;;
- binmode $fh; # for Windows
- $csv-&gt;header ($fh);
- while (my $row = $csv-&gt;getline_hr ($fh)) {
-     ...
-     }</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot;;
+binmode $fh; # for Windows
+$csv-&gt;header ($fh);
+while (my $row = $csv-&gt;getline_hr ($fh)) {
+    ...
+    }</code></pre>
 
 <p>If the header is empty, contains more than one unique separator out of the allowed set, contains empty fields, or contains identical fields (after folding), it will croak with error 1010, 1011, 1012, or 1013 respectively.</p>
 
@@ -1187,11 +1187,11 @@ or
 <dt id="sep_set">sep_set </dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { sep_set =&gt; [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot; ] });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { sep_set =&gt; [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot; ] });</code></pre>
 
 <p>The list of legal separators defaults to <code>[ &quot;;&quot;, &quot;,&quot; ]</code> and can be changed by this option. As this is probably the most often used option, it can be passed on its own as an unnamed argument:</p>
 
-<pre><code> $csv-&gt;header ($fh, [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot;, &quot;::&quot;, &quot;\x{2063}&quot; ]);</code></pre>
+<pre><code>$csv-&gt;header ($fh, [ &quot;;&quot;, &quot;,&quot;, &quot;|&quot;, &quot;\t&quot;, &quot;::&quot;, &quot;\x{2063}&quot; ]);</code></pre>
 
 <p>Multi-byte sequences are allowed, both multi-character and Unicode. See <a href="#sep"><code>sep</code></a>.</p>
 
@@ -1199,7 +1199,7 @@ or
 <dt id="detect_bom">detect_bom </dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { detect_bom =&gt; 1 });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { detect_bom =&gt; 1 });</code></pre>
 
 <p>The default behavior is to detect if the header line starts with a BOM. If the header has a BOM, use that to set the encoding of <code>$fh</code>. This default behavior can be disabled by passing a false value to <code>detect_bom</code>.</p>
 
@@ -1207,7 +1207,7 @@ or
 
 <p>If a supported BOM was detected as start of the stream, it is stored in the object attribute <code>ENCODING</code>.</p>
 
-<pre><code> my $enc = $csv-&gt;{ENCODING};</code></pre>
+<pre><code>my $enc = $csv-&gt;{ENCODING};</code></pre>
 
 <p>The encoding is used with <code>binmode</code> on <code>$fh</code>.</p>
 
@@ -1219,49 +1219,49 @@ or
 
 <p>This option offers the means to modify the column names into something that is most useful to the application. The default is to map all column names to lower case.</p>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;lc&quot; });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; &quot;lc&quot; });</code></pre>
 
 <p>The following values are available:</p>
 
-<pre><code>  lc     - lower case
-  uc     - upper case
-  db     - valid DB field names
-  none   - do not change
-  \%hash - supply a mapping
-  \&amp;cb   - supply a callback</code></pre>
+<pre><code>lc     - lower case
+uc     - upper case
+db     - valid DB field names
+none   - do not change
+\%hash - supply a mapping
+\&amp;cb   - supply a callback</code></pre>
 
 <dl>
 
 <dt id="Lower-case">Lower case</dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;lc&quot; });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; &quot;lc&quot; });</code></pre>
 
 <p>The header is changed to all lower-case</p>
 
-<pre><code> $_ = lc;</code></pre>
+<pre><code>$_ = lc;</code></pre>
 
 </dd>
 <dt id="Upper-case">Upper case</dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;uc&quot; });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; &quot;uc&quot; });</code></pre>
 
 <p>The header is changed to all upper-case</p>
 
-<pre><code> $_ = uc;</code></pre>
+<pre><code>$_ = uc;</code></pre>
 
 </dd>
 <dt id="Literal">Literal</dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;none&quot; });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; &quot;none&quot; });</code></pre>
 
 </dd>
 <dt id="Hash">Hash</dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; { foo =&gt; &quot;sombrero&quot; });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; { foo =&gt; &quot;sombrero&quot; });</code></pre>
 
 <p>if a value does not exist, the original value is used unchanged</p>
 
@@ -1269,7 +1269,7 @@ or
 <dt id="Database">Database</dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; &quot;db&quot; });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; &quot;db&quot; });</code></pre>
 
 <dl>
 
@@ -1293,15 +1293,15 @@ or
 </dd>
 </dl>
 
-<pre><code> $_ = lc (s/\W+/_/gr =~ s/^_+//r);</code></pre>
+<pre><code>$_ = lc (s/\W+/_/gr =~ s/^_+//r);</code></pre>
 
 </dd>
 <dt id="Callback">Callback</dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { munge_column_names =&gt; sub { fc } });
- $csv-&gt;header ($fh, { munge_column_names =&gt; sub { &quot;column_&quot;.$col++ } });
- $csv-&gt;header ($fh, { munge_column_names =&gt; sub { lc (s/\W+/_/gr) } });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { munge_column_names =&gt; sub { fc } });
+$csv-&gt;header ($fh, { munge_column_names =&gt; sub { &quot;column_&quot;.$col++ } });
+$csv-&gt;header ($fh, { munge_column_names =&gt; sub { lc (s/\W+/_/gr) } });</code></pre>
 
 <p>As this callback is called in a <code>map</code>, you can use <code>$_</code> directly.</p>
 
@@ -1312,7 +1312,7 @@ or
 <dt id="set_column_names">set_column_names </dt>
 <dd>
 
-<pre><code> $csv-&gt;header ($fh, { set_column_names =&gt; 1 });</code></pre>
+<pre><code>$csv-&gt;header ($fh, { set_column_names =&gt; 1 });</code></pre>
 
 <p>The default is to set the instances column names using <a href="#column_names">&quot;column_names&quot;</a> if the method is successful, so subsequent calls to <a href="#getline_hr">&quot;getline_hr&quot;</a> can return a hash. Disable setting the header can be forced by using a false value for this option.</p>
 
@@ -1325,38 +1325,38 @@ or
 
 <p>When receiving CSV files from external sources, this method can be used to protect against changes in the layout by restricting to known headers (and typos in the header fields).</p>
 
-<pre><code> my %known = (
-     &quot;record key&quot; =&gt; &quot;c_rec&quot;,
-     &quot;rec id&quot;     =&gt; &quot;c_rec&quot;,
-     &quot;id_rec&quot;     =&gt; &quot;c_rec&quot;,
-     &quot;kode&quot;       =&gt; &quot;code&quot;,
-     &quot;code&quot;       =&gt; &quot;code&quot;,
-     &quot;vaule&quot;      =&gt; &quot;value&quot;,
-     &quot;value&quot;      =&gt; &quot;value&quot;,
-     );
- my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
- open my $fh, &quot;&lt;&quot;, $source or die &quot;$source: $!&quot;;
- $csv-&gt;header ($fh, { munge_column_names =&gt; sub {
-     s/\s+$//;
-     s/^\s+//;
-     $known{lc $_} or die &quot;Unknown column &#39;$_&#39; in $source&quot;;
-     }});
- while (my $row = $csv-&gt;getline_hr ($fh)) {
-     say join &quot;\t&quot;, $row-&gt;{c_rec}, $row-&gt;{code}, $row-&gt;{value};
-     }</code></pre>
+<pre><code>my %known = (
+    &quot;record key&quot; =&gt; &quot;c_rec&quot;,
+    &quot;rec id&quot;     =&gt; &quot;c_rec&quot;,
+    &quot;id_rec&quot;     =&gt; &quot;c_rec&quot;,
+    &quot;kode&quot;       =&gt; &quot;code&quot;,
+    &quot;code&quot;       =&gt; &quot;code&quot;,
+    &quot;vaule&quot;      =&gt; &quot;value&quot;,
+    &quot;value&quot;      =&gt; &quot;value&quot;,
+    );
+my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+open my $fh, &quot;&lt;&quot;, $source or die &quot;$source: $!&quot;;
+$csv-&gt;header ($fh, { munge_column_names =&gt; sub {
+    s/\s+$//;
+    s/^\s+//;
+    $known{lc $_} or die &quot;Unknown column &#39;$_&#39; in $source&quot;;
+    }});
+while (my $row = $csv-&gt;getline_hr ($fh)) {
+    say join &quot;\t&quot;, $row-&gt;{c_rec}, $row-&gt;{code}, $row-&gt;{value};
+    }</code></pre>
 
 <h2 id="bind_columns">bind_columns </h2>
 
 <p>Takes a list of scalar references to be used for output with <a href="#print">&quot;print&quot;</a> or to store in the fields fetched by <a href="#getline">&quot;getline&quot;</a>. When you do not pass enough references to store the fetched fields in, <a href="#getline">&quot;getline&quot;</a> will fail with error <code>3006</code>. If you pass more than there are fields to return, the content of the remaining references is left untouched.</p>
 
-<pre><code> $csv-&gt;bind_columns (\$code, \$name, \$price, \$description);
- while ($csv-&gt;getline ($fh)) {
-     print &quot;The price of a $name is \x{20ac} $price\n&quot;;
-     }</code></pre>
+<pre><code>$csv-&gt;bind_columns (\$code, \$name, \$price, \$description);
+while ($csv-&gt;getline ($fh)) {
+    print &quot;The price of a $name is \x{20ac} $price\n&quot;;
+    }</code></pre>
 
 <p>To reset or clear all column binding, call <a href="#bind_columns">&quot;bind_columns&quot;</a> with the single argument <code>undef</code>. This will also clear column names.</p>
 
-<pre><code> $csv-&gt;bind_columns (undef);</code></pre>
+<pre><code>$csv-&gt;bind_columns (undef);</code></pre>
 
 <p>If no arguments are passed at all, <a href="#bind_columns">&quot;bind_columns&quot;</a> will return the list of current bindings or <code>undef</code> if no binds are active.</p>
 
@@ -1364,44 +1364,44 @@ or
 
 <h2 id="eof">eof </h2>
 
-<pre><code> $eof = $csv-&gt;eof ();</code></pre>
+<pre><code>$eof = $csv-&gt;eof ();</code></pre>
 
 <p>If <a href="#parse">&quot;parse&quot;</a> or <a href="#getline">&quot;getline&quot;</a> was used with an IO stream, this method will return true (1) if the last call hit end of file, otherwise it will return false (&#39;&#39;). This is useful to see the difference between a failure and end of file.</p>
 
 <p>Note that if the parsing of the last line caused an error, <code>eof</code> is still true. That means that if you are <i>not</i> using <a href="#auto_diag">&quot;auto_diag&quot;</a>, an idiom like</p>
 
-<pre><code> while (my $row = $csv-&gt;getline ($fh)) {
-     # ...
-     }
- $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
+<pre><code>while (my $row = $csv-&gt;getline ($fh)) {
+    # ...
+    }
+$csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 
 <p>will <i>not</i> report the error. You would have to change that to</p>
 
-<pre><code> while (my $row = $csv-&gt;getline ($fh)) {
-     # ...
-     }
- +$csv-&gt;error_diag and $csv-&gt;error_diag;</code></pre>
+<pre><code>while (my $row = $csv-&gt;getline ($fh)) {
+    # ...
+    }
++$csv-&gt;error_diag and $csv-&gt;error_diag;</code></pre>
 
 <h2 id="types1">types </h2>
 
-<pre><code> $csv-&gt;types (\@tref);</code></pre>
+<pre><code>$csv-&gt;types (\@tref);</code></pre>
 
 <p>This method is used to force that (all) columns are of a given type. For example, if you have an integer column, two columns with doubles and a string column, then you might do a</p>
 
-<pre><code> $csv-&gt;types ([Text::CSV_XS::IV (),
-               Text::CSV_XS::NV (),
-               Text::CSV_XS::NV (),
-               Text::CSV_XS::PV ()]);</code></pre>
+<pre><code>$csv-&gt;types ([Text::CSV_XS::IV (),
+              Text::CSV_XS::NV (),
+              Text::CSV_XS::NV (),
+              Text::CSV_XS::PV ()]);</code></pre>
 
 <p>Column types are used only for <i>decoding</i> columns while parsing, in other words by the <a href="#parse">&quot;parse&quot;</a> and <a href="#getline">&quot;getline&quot;</a> methods.</p>
 
 <p>You can unset column types by doing a</p>
 
-<pre><code> $csv-&gt;types (undef);</code></pre>
+<pre><code>$csv-&gt;types (undef);</code></pre>
 
 <p>or fetch the current type settings with</p>
 
-<pre><code> $types = $csv-&gt;types ();</code></pre>
+<pre><code>$types = $csv-&gt;types ();</code></pre>
 
 <dl>
 
@@ -1427,7 +1427,7 @@ or
 
 <h2 id="fields">fields </h2>
 
-<pre><code> @columns = $csv-&gt;fields ();</code></pre>
+<pre><code>@columns = $csv-&gt;fields ();</code></pre>
 
 <p>This method returns the input to <a href="#combine">&quot;combine&quot;</a> or the resultant decomposed fields of a successful <a href="#parse">&quot;parse&quot;</a>, whichever was called more recently.</p>
 
@@ -1435,7 +1435,7 @@ or
 
 <h2 id="meta_info">meta_info </h2>
 
-<pre><code> @flags = $csv-&gt;meta_info ();</code></pre>
+<pre><code>@flags = $csv-&gt;meta_info ();</code></pre>
 
 <p>This method returns the &quot;flags&quot; of the input to <a href="#combine">&quot;combine&quot;</a> or the flags of the resultant decomposed fields of <a href="#parse">&quot;parse&quot;</a>, whichever was called more recently.</p>
 
@@ -1461,7 +1461,7 @@ or
 
 <h2 id="is_quoted">is_quoted </h2>
 
-<pre><code> my $quoted = $csv-&gt;is_quoted ($column_idx);</code></pre>
+<pre><code>my $quoted = $csv-&gt;is_quoted ($column_idx);</code></pre>
 
 <p>where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#parse">&quot;parse&quot;</a>.</p>
 
@@ -1471,7 +1471,7 @@ or
 
 <h2 id="is_binary">is_binary </h2>
 
-<pre><code> my $binary = $csv-&gt;is_binary ($column_idx);</code></pre>
+<pre><code>my $binary = $csv-&gt;is_binary ($column_idx);</code></pre>
 
 <p>where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#parse">&quot;parse&quot;</a>.</p>
 
@@ -1481,14 +1481,14 @@ or
 
 <h2 id="is_missing">is_missing </h2>
 
-<pre><code> my $missing = $csv-&gt;is_missing ($column_idx);</code></pre>
+<pre><code>my $missing = $csv-&gt;is_missing ($column_idx);</code></pre>
 
 <p>where <code>$column_idx</code> is the (zero-based) index of the column in the last result of <a href="#getline_hr">&quot;getline_hr&quot;</a>.</p>
 
-<pre><code> $csv-&gt;keep_meta_info (1);
- while (my $hr = $csv-&gt;getline_hr ($fh)) {
-     $csv-&gt;is_missing (0) and next; # This was an empty line
-     }</code></pre>
+<pre><code>$csv-&gt;keep_meta_info (1);
+while (my $hr = $csv-&gt;getline_hr ($fh)) {
+    $csv-&gt;is_missing (0) and next; # This was an empty line
+    }</code></pre>
 
 <p>When using <a href="#getline_hr">&quot;getline_hr&quot;</a>, it is impossible to tell if the parsed fields are <code>undef</code> because they where not filled in the <code>CSV</code> stream or because they were not read at all, as <b>all</b> the fields defined by <a href="#column_names">&quot;column_names&quot;</a> are set in the hash-ref. If you still need to know if all fields in each row are provided, you should enable <a href="#keep_meta_info"><code>keep_meta_info</code></a> so you can check the flags.</p>
 
@@ -1498,7 +1498,7 @@ or
 
 <h2 id="status">status </h2>
 
-<pre><code> $status = $csv-&gt;status ();</code></pre>
+<pre><code>$status = $csv-&gt;status ();</code></pre>
 
 <p>This method returns the status of the last invoked <a href="#combine">&quot;combine&quot;</a> or <a href="#parse">&quot;parse&quot;</a> call. Status is success (true: <code>1</code>) or failure (false: <code>undef</code> or <code>0</code>).</p>
 
@@ -1506,7 +1506,7 @@ or
 
 <h2 id="error_input">error_input </h2>
 
-<pre><code> $bad_argument = $csv-&gt;error_input ();</code></pre>
+<pre><code>$bad_argument = $csv-&gt;error_input ();</code></pre>
 
 <p>This method returns the erroneous argument (if it exists) of <a href="#combine">&quot;combine&quot;</a> or <a href="#parse">&quot;parse&quot;</a>, whichever was called more recently. If the last invocation was successful, <code>error_input</code> will return <code>undef</code>.</p>
 
@@ -1514,11 +1514,11 @@ or
 
 <h2 id="error_diag">error_diag </h2>
 
-<pre><code> Text::CSV_XS-&gt;error_diag ();
- $csv-&gt;error_diag ();
- $error_code               = 0  + $csv-&gt;error_diag ();
- $error_str                = &quot;&quot; . $csv-&gt;error_diag ();
- ($cde, $str, $pos, $rec, $fld) = $csv-&gt;error_diag ();</code></pre>
+<pre><code>Text::CSV_XS-&gt;error_diag ();
+$csv-&gt;error_diag ();
+$error_code               = 0  + $csv-&gt;error_diag ();
+$error_str                = &quot;&quot; . $csv-&gt;error_diag ();
+($cde, $str, $pos, $rec, $fld) = $csv-&gt;error_diag ();</code></pre>
 
 <p>If (and only if) an error occurred, this function returns the diagnostics of that error.</p>
 
@@ -1532,13 +1532,13 @@ or
 
 <h2 id="record_number">record_number </h2>
 
-<pre><code> $recno = $csv-&gt;record_number ();</code></pre>
+<pre><code>$recno = $csv-&gt;record_number ();</code></pre>
 
 <p>Returns the records parsed by this csv instance. This value should be more accurate than <code>$.</code> when embedded newlines come in play. Records written by this instance are not counted.</p>
 
 <h2 id="SetDiag">SetDiag </h2>
 
-<pre><code> $csv-&gt;SetDiag (0);</code></pre>
+<pre><code>$csv-&gt;SetDiag (0);</code></pre>
 
 <p>Use to reset the diagnostics if you are dealing with errors.</p>
 
@@ -1548,42 +1548,42 @@ or
 
 <p>This function is not exported by default and should be explicitly requested:</p>
 
-<pre><code> use Text::CSV_XS qw( csv );</code></pre>
+<pre><code>use Text::CSV_XS qw( csv );</code></pre>
 
 <p>This is a high-level function that aims at simple (user) interfaces. This can be used to read/parse a <code>CSV</code> file or stream (the default behavior) or to produce a file or write to a stream (define the <code>out</code> attribute). It returns an array- or hash-reference on parsing (or <code>undef</code> on fail) or the numeric value of <a href="#error_diag">&quot;error_diag&quot;</a> on writing. When this function fails you can get to the error using the class call to <a href="#error_diag">&quot;error_diag&quot;</a></p>
 
-<pre><code> my $aoa = csv (in =&gt; &quot;test.csv&quot;) or
-     die Text::CSV_XS-&gt;error_diag;</code></pre>
+<pre><code>my $aoa = csv (in =&gt; &quot;test.csv&quot;) or
+    die Text::CSV_XS-&gt;error_diag;</code></pre>
 
 <p>This function takes the arguments as key-value pairs. This can be passed as a list or as an anonymous hash:</p>
 
-<pre><code> my $aoa = csv (  in =&gt; &quot;test.csv&quot;, sep_char =&gt; &quot;;&quot;);
- my $aoh = csv ({ in =&gt; $fh, headers =&gt; &quot;auto&quot; });</code></pre>
+<pre><code>my $aoa = csv (  in =&gt; &quot;test.csv&quot;, sep_char =&gt; &quot;;&quot;);
+my $aoh = csv ({ in =&gt; $fh, headers =&gt; &quot;auto&quot; });</code></pre>
 
 <p>The arguments passed consist of two parts: the arguments to <a href="#csv">&quot;csv&quot;</a> itself and the optional attributes to the <code>CSV</code> object used inside the function as enumerated and explained in <a href="#new">&quot;new&quot;</a>.</p>
 
 <p>If not overridden, the default option used for CSV is</p>
 
-<pre><code> auto_diag   =&gt; 1
- escape_null =&gt; 0</code></pre>
+<pre><code>auto_diag   =&gt; 1
+escape_null =&gt; 0</code></pre>
 
 <p>The option that is always set and cannot be altered is</p>
 
-<pre><code> binary      =&gt; 1</code></pre>
+<pre><code>binary      =&gt; 1</code></pre>
 
 <p>As this function will likely be used in one-liners, it allows <code>quote</code> to be abbreviated as <code>quo</code>, and <code>escape_char</code> to be abbreviated as <code>esc</code> or <code>escape</code>.</p>
 
 <p>Alternative invocations:</p>
 
-<pre><code> my $aoa = Text::CSV_XS::csv (in =&gt; &quot;file.csv&quot;);
+<pre><code>my $aoa = Text::CSV_XS::csv (in =&gt; &quot;file.csv&quot;);
 
- my $csv = Text::CSV_XS-&gt;new ();
- my $aoa = $csv-&gt;csv (in =&gt; &quot;file.csv&quot;);</code></pre>
+my $csv = Text::CSV_XS-&gt;new ();
+my $aoa = $csv-&gt;csv (in =&gt; &quot;file.csv&quot;);</code></pre>
 
 <p>In the latter case, the object attributes are used from the existing object and the attribute arguments in the function call are ignored:</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ sep_char =&gt; &quot;;&quot; });
- my $aoh = $csv-&gt;csv (in =&gt; &quot;file.csv&quot;, bom =&gt; 1);</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ sep_char =&gt; &quot;;&quot; });
+my $aoh = $csv-&gt;csv (in =&gt; &quot;file.csv&quot;, bom =&gt; 1);</code></pre>
 
 <p>will parse using <code>;</code> as <code>sep_char</code>, not <code>,</code>.</p>
 
@@ -1593,75 +1593,75 @@ or
 
 <p>When used with <a href="#out">&quot;out&quot;</a>, <code>in</code> should be a reference to a CSV structure (AoA or AoH) or a CODE-ref that returns an array-reference or a hash-reference. The code-ref will be invoked with no arguments.</p>
 
-<pre><code> my $aoa = csv (in =&gt; &quot;file.csv&quot;);
+<pre><code>my $aoa = csv (in =&gt; &quot;file.csv&quot;);
 
- open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot;;
- my $aoa = csv (in =&gt; $fh);
+open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot;;
+my $aoa = csv (in =&gt; $fh);
 
- my $csv = [ [qw( Foo Bar )], [ 1, 2 ], [ 2, 3 ]];
- my $err = csv (in =&gt; $csv, out =&gt; &quot;file.csv&quot;);</code></pre>
+my $csv = [ [qw( Foo Bar )], [ 1, 2 ], [ 2, 3 ]];
+my $err = csv (in =&gt; $csv, out =&gt; &quot;file.csv&quot;);</code></pre>
 
 <p>If called in void context without the <a href="#out">&quot;out&quot;</a> attribute, the resulting ref will be used as input to a subsequent call to csv:</p>
 
-<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { 2 =&gt; sub { length &gt; 2 }})</code></pre>
+<pre><code>csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { 2 =&gt; sub { length &gt; 2 }})</code></pre>
 
 <p>will be a shortcut to</p>
 
-<pre><code> csv (in =&gt; csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { 2 =&gt; sub { length &gt; 2 }}))</code></pre>
+<pre><code>csv (in =&gt; csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { 2 =&gt; sub { length &gt; 2 }}))</code></pre>
 
 <p>where, in the absence of the <code>out</code> attribute, this is a shortcut to</p>
 
-<pre><code> csv (in  =&gt; csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { 2 =&gt; sub { length &gt; 2 }}),
-      out =&gt; *STDOUT)</code></pre>
+<pre><code>csv (in  =&gt; csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { 2 =&gt; sub { length &gt; 2 }}),
+     out =&gt; *STDOUT)</code></pre>
 
 <h3 id="out">out </h3>
 
-<pre><code> csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;);
- csv (in =&gt; $aoa, out =&gt; $fh);
- csv (in =&gt; $aoa, out =&gt;   STDOUT);
- csv (in =&gt; $aoa, out =&gt;  *STDOUT);
- csv (in =&gt; $aoa, out =&gt; \*STDOUT);
- csv (in =&gt; $aoa, out =&gt; \my $data);
- csv (in =&gt; $aoa, out =&gt;  undef);
- csv (in =&gt; $aoa, out =&gt; \&quot;skip&quot;);
+<pre><code>csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;);
+csv (in =&gt; $aoa, out =&gt; $fh);
+csv (in =&gt; $aoa, out =&gt;   STDOUT);
+csv (in =&gt; $aoa, out =&gt;  *STDOUT);
+csv (in =&gt; $aoa, out =&gt; \*STDOUT);
+csv (in =&gt; $aoa, out =&gt; \my $data);
+csv (in =&gt; $aoa, out =&gt;  undef);
+csv (in =&gt; $aoa, out =&gt; \&quot;skip&quot;);
 
- csv (in =&gt; $fh,  out =&gt; \@aoa);
- csv (in =&gt; $fh,  out =&gt; \@aoh, bom =&gt; 1);
- csv (in =&gt; $fh,  out =&gt; \%hsh, key =&gt; &quot;key&quot;);</code></pre>
+csv (in =&gt; $fh,  out =&gt; \@aoa);
+csv (in =&gt; $fh,  out =&gt; \@aoh, bom =&gt; 1);
+csv (in =&gt; $fh,  out =&gt; \%hsh, key =&gt; &quot;key&quot;);</code></pre>
 
 <p>In output mode, the default CSV options when producing CSV are</p>
 
-<pre><code> eol       =&gt; &quot;\r\n&quot;</code></pre>
+<pre><code>eol       =&gt; &quot;\r\n&quot;</code></pre>
 
 <p>The <a href="#fragment">&quot;fragment&quot;</a> attribute is ignored in output mode.</p>
 
 <p><code>out</code> can be a file name (e.g. <code>&quot;file.csv&quot;</code>), which will be opened for writing and closed when finished, a file handle (e.g. <code>$fh</code> or <code>FH</code>), a reference to a glob (e.g. <code>\*STDOUT</code>), the glob itself (e.g. <code>*STDOUT</code>), or a reference to a scalar (e.g. <code>\my $data</code>).</p>
 
-<pre><code> csv (in =&gt; sub { $sth-&gt;fetch },            out =&gt; &quot;dump.csv&quot;);
- csv (in =&gt; sub { $sth-&gt;fetchrow_hashref }, out =&gt; &quot;dump.csv&quot;,
-      headers =&gt; $sth-&gt;{NAME_lc});</code></pre>
+<pre><code>csv (in =&gt; sub { $sth-&gt;fetch },            out =&gt; &quot;dump.csv&quot;);
+csv (in =&gt; sub { $sth-&gt;fetchrow_hashref }, out =&gt; &quot;dump.csv&quot;,
+     headers =&gt; $sth-&gt;{NAME_lc});</code></pre>
 
 <p>When a code-ref is used for <code>in</code>, the output is generated per invocation, so no buffering is involved. This implies that there is no size restriction on the number of records. The <code>csv</code> function ends when the coderef returns a false value.</p>
 
 <p>If <code>out</code> is set to a reference of the literal string <code>&quot;skip&quot;</code>, the output will be suppressed completely, which might be useful in combination with a filter for side effects only.</p>
 
-<pre><code> my %cache;
- csv (in    =&gt; &quot;dump.csv&quot;,
-      out   =&gt; \&quot;skip&quot;,
-      on_in =&gt; sub { $cache{$_[1][1]}++ });</code></pre>
+<pre><code>my %cache;
+csv (in    =&gt; &quot;dump.csv&quot;,
+     out   =&gt; \&quot;skip&quot;,
+     on_in =&gt; sub { $cache{$_[1][1]}++ });</code></pre>
 
 <p>Currently, setting <code>out</code> to any false value (<code>undef</code>, <code>&quot;&quot;</code>, 0) will be equivalent to <code>\&quot;skip&quot;</code>.</p>
 
 <p>If the <code>in</code> argument point to something to parse, and the <code>out</code> is set to a reference to an <code>ARRAY</code> or a <code>HASH</code>, the output is appended to the data in the existing reference. The result of the parse should match what exists in the reference passed. This might come handy when you have to parse a set of files with similar content (like data stored per period) and you want to collect that into a single data structure:</p>
 
-<pre><code> my %hash;
- csv (in =&gt; $_, out =&gt; \%hash, key =&gt; &quot;id&quot;) for sort glob &quot;foo-[0-9]*.csv&quot;;
+<pre><code>my %hash;
+csv (in =&gt; $_, out =&gt; \%hash, key =&gt; &quot;id&quot;) for sort glob &quot;foo-[0-9]*.csv&quot;;
 
- my @list; # List of arrays
- csv (in =&gt; $_, out =&gt; \@list)              for sort glob &quot;foo-[0-9]*.csv&quot;;
+my @list; # List of arrays
+csv (in =&gt; $_, out =&gt; \@list)              for sort glob &quot;foo-[0-9]*.csv&quot;;
 
- my @list; # List of hashes
- csv (in =&gt; $_, out =&gt; \@list, bom =&gt; 1)    for sort glob &quot;foo-[0-9]*.csv&quot;;</code></pre>
+my @list; # List of hashes
+csv (in =&gt; $_, out =&gt; \@list, bom =&gt; 1)    for sort glob &quot;foo-[0-9]*.csv&quot;;</code></pre>
 
 <h3 id="encoding">encoding </h3>
 
@@ -1671,19 +1671,19 @@ or
 
 <p>Encodings can be stacked, as supported by <code>binmode</code>:</p>
 
-<pre><code> # Using PerlIO::via::gzip
- csv (in       =&gt; \@csv,
-      out      =&gt; &quot;test.csv:via.gz&quot;,
-      encoding =&gt; &quot;:via(gzip):encoding(utf-8)&quot;,
-      );
- $aoa = csv (in =&gt; &quot;test.csv:via.gz&quot;,  encoding =&gt; &quot;:via(gzip)&quot;);
+<pre><code># Using PerlIO::via::gzip
+csv (in       =&gt; \@csv,
+     out      =&gt; &quot;test.csv:via.gz&quot;,
+     encoding =&gt; &quot;:via(gzip):encoding(utf-8)&quot;,
+     );
+$aoa = csv (in =&gt; &quot;test.csv:via.gz&quot;,  encoding =&gt; &quot;:via(gzip)&quot;);
 
- # Using PerlIO::gzip
- csv (in       =&gt; \@csv,
-      out      =&gt; &quot;test.csv:via.gz&quot;,
-      encoding =&gt; &quot;:gzip:encoding(utf-8)&quot;,
-      );
- $aoa = csv (in =&gt; &quot;test.csv:gzip.gz&quot;, encoding =&gt; &quot;:gzip&quot;);</code></pre>
+# Using PerlIO::gzip
+csv (in       =&gt; \@csv,
+     out      =&gt; &quot;test.csv:via.gz&quot;,
+     encoding =&gt; &quot;:gzip:encoding(utf-8)&quot;,
+     );
+$aoa = csv (in =&gt; &quot;test.csv:gzip.gz&quot;, encoding =&gt; &quot;:gzip&quot;);</code></pre>
 
 <h3 id="detect_bom1">detect_bom </h3>
 
@@ -1708,7 +1708,7 @@ or
 
 <p>When <code>skip</code> is used, the header will not be included in the output.</p>
 
-<pre><code> my $aoa = csv (in =&gt; $fh, headers =&gt; &quot;skip&quot;);</code></pre>
+<pre><code>my $aoa = csv (in =&gt; $fh, headers =&gt; &quot;skip&quot;);</code></pre>
 
 </dd>
 <dt id="auto">auto </dt>
@@ -1716,7 +1716,7 @@ or
 
 <p>If <code>auto</code> is used, the first line of the <code>CSV</code> source will be read as the list of field headers and used to produce an array of hashes.</p>
 
-<pre><code> my $aoh = csv (in =&gt; $fh, headers =&gt; &quot;auto&quot;);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; $fh, headers =&gt; &quot;auto&quot;);</code></pre>
 
 </dd>
 <dt id="lc">lc </dt>
@@ -1724,7 +1724,7 @@ or
 
 <p>If <code>lc</code> is used, the first line of the <code>CSV</code> source will be read as the list of field headers mapped to lower case and used to produce an array of hashes. This is a variation of <code>auto</code>.</p>
 
-<pre><code> my $aoh = csv (in =&gt; $fh, headers =&gt; &quot;lc&quot;);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; $fh, headers =&gt; &quot;lc&quot;);</code></pre>
 
 </dd>
 <dt id="uc">uc </dt>
@@ -1732,7 +1732,7 @@ or
 
 <p>If <code>uc</code> is used, the first line of the <code>CSV</code> source will be read as the list of field headers mapped to upper case and used to produce an array of hashes. This is a variation of <code>auto</code>.</p>
 
-<pre><code> my $aoh = csv (in =&gt; $fh, headers =&gt; &quot;uc&quot;);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; $fh, headers =&gt; &quot;uc&quot;);</code></pre>
 
 </dd>
 <dt id="CODE">CODE </dt>
@@ -1740,8 +1740,8 @@ or
 
 <p>If a coderef is used, the first line of the <code>CSV</code> source will be read as the list of mangled field headers in which each field is passed as the only argument to the coderef. This list is used to produce an array of hashes.</p>
 
-<pre><code> my $aoh = csv (in      =&gt; $fh,
-                headers =&gt; sub { lc ($_[0]) =~ s/kode/code/gr });</code></pre>
+<pre><code>my $aoh = csv (in      =&gt; $fh,
+               headers =&gt; sub { lc ($_[0]) =~ s/kode/code/gr });</code></pre>
 
 <p>this example is a variation of using <code>lc</code> where all occurrences of <code>kode</code> are replaced with <code>code</code>.</p>
 
@@ -1751,8 +1751,8 @@ or
 
 <p>If <code>headers</code> is an anonymous list, the entries in the list will be used as field names. The first line is considered data instead of headers.</p>
 
-<pre><code> my $aoh = csv (in =&gt; $fh, headers =&gt; [qw( Foo Bar )]);
- csv (in =&gt; $aoa, out =&gt; $fh, headers =&gt; [qw( code description price )]);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; $fh, headers =&gt; [qw( Foo Bar )]);
+csv (in =&gt; $aoa, out =&gt; $fh, headers =&gt; [qw( code description price )]);</code></pre>
 
 </dd>
 <dt id="HASH">HASH </dt>
@@ -1760,21 +1760,21 @@ or
 
 <p>If <code>headers</code> is a hash reference, this implies <code>auto</code>, but header fields that exist as key in the hashref will be replaced by the value for that key. Given a CSV file like</p>
 
-<pre><code> post-kode,city,name,id number,fubble
- 1234AA,Duckstad,Donald,13,&quot;X313DF&quot;</code></pre>
+<pre><code>post-kode,city,name,id number,fubble
+1234AA,Duckstad,Donald,13,&quot;X313DF&quot;</code></pre>
 
 <p>using</p>
 
-<pre><code> csv (headers =&gt; { &quot;post-kode&quot; =&gt; &quot;pc&quot;, &quot;id number&quot; =&gt; &quot;ID&quot; }, ...</code></pre>
+<pre><code>csv (headers =&gt; { &quot;post-kode&quot; =&gt; &quot;pc&quot;, &quot;id number&quot; =&gt; &quot;ID&quot; }, ...</code></pre>
 
 <p>will return an entry like</p>
 
-<pre><code> { pc     =&gt; &quot;1234AA&quot;,
-   city   =&gt; &quot;Duckstad&quot;,
-   name   =&gt; &quot;Donald&quot;,
-   ID     =&gt; &quot;13&quot;,
-   fubble =&gt; &quot;X313DF&quot;,
-   }</code></pre>
+<pre><code>{ pc     =&gt; &quot;1234AA&quot;,
+  city   =&gt; &quot;Duckstad&quot;,
+  name   =&gt; &quot;Donald&quot;,
+  ID     =&gt; &quot;13&quot;,
+  fubble =&gt; &quot;X313DF&quot;,
+  }</code></pre>
 
 </dd>
 </dl>
@@ -1791,67 +1791,67 @@ or
 
 <p>If passed, will default <a href="#headers"><code>headers</code></a> to <code>&quot;auto&quot;</code> and return a hashref instead of an array of hashes. Allowed values are simple scalars or array-references where the first element is the joiner and the rest are the fields to join to combine the key.</p>
 
-<pre><code> my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; &quot;code&quot;);
- my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ]);</code></pre>
+<pre><code>my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; &quot;code&quot;);
+my $ref = csv (in =&gt; &quot;test.csv&quot;, key =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ]);</code></pre>
 
 <p>with test.csv like</p>
 
-<pre><code> code,product,price,color
- 1,pc,850,gray
- 2,keyboard,12,white
- 3,mouse,5,black</code></pre>
+<pre><code>code,product,price,color
+1,pc,850,gray
+2,keyboard,12,white
+3,mouse,5,black</code></pre>
 
 <p>the first example will return</p>
 
-<pre><code>  { 1   =&gt; {
-        code    =&gt; 1,
-        color   =&gt; &#39;gray&#39;,
-        price   =&gt; 850,
-        product =&gt; &#39;pc&#39;
-        },
-    2   =&gt; {
-        code    =&gt; 2,
-        color   =&gt; &#39;white&#39;,
-        price   =&gt; 12,
-        product =&gt; &#39;keyboard&#39;
-        },
-    3   =&gt; {
-        code    =&gt; 3,
-        color   =&gt; &#39;black&#39;,
-        price   =&gt; 5,
-        product =&gt; &#39;mouse&#39;
-        }
-    }</code></pre>
+<pre><code>{ 1   =&gt; {
+      code    =&gt; 1,
+      color   =&gt; &#39;gray&#39;,
+      price   =&gt; 850,
+      product =&gt; &#39;pc&#39;
+      },
+  2   =&gt; {
+      code    =&gt; 2,
+      color   =&gt; &#39;white&#39;,
+      price   =&gt; 12,
+      product =&gt; &#39;keyboard&#39;
+      },
+  3   =&gt; {
+      code    =&gt; 3,
+      color   =&gt; &#39;black&#39;,
+      price   =&gt; 5,
+      product =&gt; &#39;mouse&#39;
+      }
+  }</code></pre>
 
 <p>the second example will return</p>
 
-<pre><code>  { &quot;1:gray&quot;    =&gt; {
-        code    =&gt; 1,
-        color   =&gt; &#39;gray&#39;,
-        price   =&gt; 850,
-        product =&gt; &#39;pc&#39;
-        },
-    &quot;2:white&quot;   =&gt; {
-        code    =&gt; 2,
-        color   =&gt; &#39;white&#39;,
-        price   =&gt; 12,
-        product =&gt; &#39;keyboard&#39;
-        },
-    &quot;3:black&quot;   =&gt; {
-        code    =&gt; 3,
-        color   =&gt; &#39;black&#39;,
-        price   =&gt; 5,
-        product =&gt; &#39;mouse&#39;
-        }
-    }</code></pre>
+<pre><code>{ &quot;1:gray&quot;    =&gt; {
+      code    =&gt; 1,
+      color   =&gt; &#39;gray&#39;,
+      price   =&gt; 850,
+      product =&gt; &#39;pc&#39;
+      },
+  &quot;2:white&quot;   =&gt; {
+      code    =&gt; 2,
+      color   =&gt; &#39;white&#39;,
+      price   =&gt; 12,
+      product =&gt; &#39;keyboard&#39;
+      },
+  &quot;3:black&quot;   =&gt; {
+      code    =&gt; 3,
+      color   =&gt; &#39;black&#39;,
+      price   =&gt; 5,
+      product =&gt; &#39;mouse&#39;
+      }
+  }</code></pre>
 
 <p>The <code>key</code> attribute can be combined with <a href="#headers"><code>headers</code></a> for <code>CSV</code> date that has no header line, like</p>
 
-<pre><code> my $ref = csv (
-     in      =&gt; &quot;foo.csv&quot;,
-     headers =&gt; [qw( c_foo foo bar description stock )],
-     key     =&gt;     &quot;c_foo&quot;,
-     );</code></pre>
+<pre><code>my $ref = csv (
+    in      =&gt; &quot;foo.csv&quot;,
+    headers =&gt; [qw( c_foo foo bar description stock )],
+    key     =&gt;     &quot;c_foo&quot;,
+    );</code></pre>
 
 <h3 id="value">value </h3>
 
@@ -1859,73 +1859,73 @@ or
 
 <p>Only allowed when <code>key</code> is valid. A <code>value</code> can be either a single column label or an anonymous list of column labels. In the first case, the value will be a simple scalar value, in the latter case, it will be a hashref.</p>
 
-<pre><code> my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; &quot;code&quot;,
-                                  value =&gt; &quot;price&quot;);
- my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; &quot;code&quot;,
-                                  value =&gt; [ &quot;product&quot;, &quot;price&quot; ]);
- my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ],
-                                  value =&gt; &quot;price&quot;);
- my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ],
-                                  value =&gt; [ &quot;product&quot;, &quot;price&quot; ]);</code></pre>
+<pre><code>my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; &quot;code&quot;,
+                                 value =&gt; &quot;price&quot;);
+my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; &quot;code&quot;,
+                                 value =&gt; [ &quot;product&quot;, &quot;price&quot; ]);
+my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ],
+                                 value =&gt; &quot;price&quot;);
+my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; &quot;code&quot;, &quot;color&quot; ],
+                                 value =&gt; [ &quot;product&quot;, &quot;price&quot; ]);</code></pre>
 
 <p>with test.csv like</p>
 
-<pre><code> code,product,price,color
- 1,pc,850,gray
- 2,keyboard,12,white
- 3,mouse,5,black</code></pre>
+<pre><code>code,product,price,color
+1,pc,850,gray
+2,keyboard,12,white
+3,mouse,5,black</code></pre>
 
 <p>the first example will return</p>
 
-<pre><code>  { 1 =&gt; 850,
-    2 =&gt;  12,
-    3 =&gt;   5,
-    }</code></pre>
+<pre><code>{ 1 =&gt; 850,
+  2 =&gt;  12,
+  3 =&gt;   5,
+  }</code></pre>
 
 <p>the second example will return</p>
 
-<pre><code>  { 1   =&gt; {
-        price   =&gt; 850,
-        product =&gt; &#39;pc&#39;
-        },
-    2   =&gt; {
-        price   =&gt; 12,
-        product =&gt; &#39;keyboard&#39;
-        },
-    3   =&gt; {
-        price   =&gt; 5,
-        product =&gt; &#39;mouse&#39;
-        }
-    }</code></pre>
+<pre><code>{ 1   =&gt; {
+      price   =&gt; 850,
+      product =&gt; &#39;pc&#39;
+      },
+  2   =&gt; {
+      price   =&gt; 12,
+      product =&gt; &#39;keyboard&#39;
+      },
+  3   =&gt; {
+      price   =&gt; 5,
+      product =&gt; &#39;mouse&#39;
+      }
+  }</code></pre>
 
 <p>the third example will return</p>
 
-<pre><code>  { &quot;1:gray&quot;    =&gt; 850,
-    &quot;2:white&quot;   =&gt;  12,
-    &quot;3:black&quot;   =&gt;   5,
-    }</code></pre>
+<pre><code>{ &quot;1:gray&quot;    =&gt; 850,
+  &quot;2:white&quot;   =&gt;  12,
+  &quot;3:black&quot;   =&gt;   5,
+  }</code></pre>
 
 <p>the fourth example will return</p>
 
-<pre><code>  { &quot;1:gray&quot;    =&gt; {
-        price   =&gt; 850,
-        product =&gt; &#39;pc&#39;
-        },
-    &quot;2:white&quot;   =&gt; {
-        price   =&gt; 12,
-        product =&gt; &#39;keyboard&#39;
-        },
-    &quot;3:black&quot;   =&gt; {
-        price   =&gt; 5,
-        product =&gt; &#39;mouse&#39;
-        }
-    }</code></pre>
+<pre><code>{ &quot;1:gray&quot;    =&gt; {
+      price   =&gt; 850,
+      product =&gt; &#39;pc&#39;
+      },
+  &quot;2:white&quot;   =&gt; {
+      price   =&gt; 12,
+      product =&gt; &#39;keyboard&#39;
+      },
+  &quot;3:black&quot;   =&gt; {
+      price   =&gt; 5,
+      product =&gt; &#39;mouse&#39;
+      }
+  }</code></pre>
 
 <h3 id="keep_headers">keep_headers   </h3>
 
 <p>When using hashes, keep the column names into the arrayref passed, so all headers are available after the call in the original order.</p>
 
-<pre><code> my $aoh = csv (in =&gt; &quot;file.csv&quot;, keep_headers =&gt; \my @hdr);</code></pre>
+<pre><code>my $aoh = csv (in =&gt; &quot;file.csv&quot;, keep_headers =&gt; \my @hdr);</code></pre>
 
 <p>This attribute can be abbreviated to <code>kh</code> or passed as <code>keep_column_names</code>.</p>
 
@@ -1937,15 +1937,15 @@ or
 
 <p>Combining all of them could give something like</p>
 
-<pre><code> use Text::CSV_XS qw( csv );
- my $aoh = csv (
-     in       =&gt; &quot;test.txt&quot;,
-     encoding =&gt; &quot;utf-8&quot;,
-     headers  =&gt; &quot;auto&quot;,
-     sep_char =&gt; &quot;|&quot;,
-     fragment =&gt; &quot;row=3;6-9;15-*&quot;,
-     );
- say $aoh-&gt;[15]{Foo};</code></pre>
+<pre><code>use Text::CSV_XS qw( csv );
+my $aoh = csv (
+    in       =&gt; &quot;test.txt&quot;,
+    encoding =&gt; &quot;utf-8&quot;,
+    headers  =&gt; &quot;auto&quot;,
+    sep_char =&gt; &quot;|&quot;,
+    fragment =&gt; &quot;row=3;6-9;15-*&quot;,
+    );
+say $aoh-&gt;[15]{Foo};</code></pre>
 
 <h3 id="sep_set1">sep_set  </h3>
 
@@ -1963,29 +1963,29 @@ or
 
 <p>With an input-file like</p>
 
-<pre><code> bAr,foo
- 1,2
- 3,4,5</code></pre>
+<pre><code>bAr,foo
+1,2
+3,4,5</code></pre>
 
 <p>This call</p>
 
-<pre><code> my $aoa = csv (in =&gt; $file, set_column_names =&gt; 0);</code></pre>
+<pre><code>my $aoa = csv (in =&gt; $file, set_column_names =&gt; 0);</code></pre>
 
 <p>will result in</p>
 
-<pre><code> [[ &quot;bar&quot;, &quot;foo&quot;     ],
-  [ &quot;1&quot;,   &quot;2&quot;       ],
-  [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
+<pre><code>[[ &quot;bar&quot;, &quot;foo&quot;     ],
+ [ &quot;1&quot;,   &quot;2&quot;       ],
+ [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
 
 <p>and</p>
 
-<pre><code> my $aoa = csv (in =&gt; $file, set_column_names =&gt; 0, munge =&gt; &quot;none&quot;);</code></pre>
+<pre><code>my $aoa = csv (in =&gt; $file, set_column_names =&gt; 0, munge =&gt; &quot;none&quot;);</code></pre>
 
 <p>will result in</p>
 
-<pre><code> [[ &quot;bAr&quot;, &quot;foo&quot;     ],
-  [ &quot;1&quot;,   &quot;2&quot;       ],
-  [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
+<pre><code>[[ &quot;bAr&quot;, &quot;foo&quot;     ],
+ [ &quot;1&quot;,   &quot;2&quot;       ],
+ [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
 
 <h2 id="Callbacks">Callbacks </h2>
 
@@ -1998,50 +1998,50 @@ or
 <dt id="error">error </dt>
 <dd>
 
-<pre><code> $csv-&gt;callbacks (error =&gt; sub { $csv-&gt;SetDiag (0) });</code></pre>
+<pre><code>$csv-&gt;callbacks (error =&gt; sub { $csv-&gt;SetDiag (0) });</code></pre>
 
 <p>the <code>error</code> callback is invoked when an error occurs, but <i>only</i> when <a href="#auto_diag">&quot;auto_diag&quot;</a> is set to a true value. A callback is invoked with the values returned by <a href="#error_diag">&quot;error_diag&quot;</a>:</p>
 
-<pre><code> my ($c, $s);
+<pre><code>my ($c, $s);
 
- sub ignore3006 {
-     my ($err, $msg, $pos, $recno, $fldno) = @_;
-     if ($err == 3006) {
-         # ignore this error
-         ($c, $s) = (undef, undef);
-         Text::CSV_XS-&gt;SetDiag (0);
-         }
-     # Any other error
-     return;
-     } # ignore3006
+sub ignore3006 {
+    my ($err, $msg, $pos, $recno, $fldno) = @_;
+    if ($err == 3006) {
+        # ignore this error
+        ($c, $s) = (undef, undef);
+        Text::CSV_XS-&gt;SetDiag (0);
+        }
+    # Any other error
+    return;
+    } # ignore3006
 
- $csv-&gt;callbacks (error =&gt; \&amp;ignore3006);
- $csv-&gt;bind_columns (\$c, \$s);
- while ($csv-&gt;getline ($fh)) {
-     # Error 3006 will not stop the loop
-     }</code></pre>
+$csv-&gt;callbacks (error =&gt; \&amp;ignore3006);
+$csv-&gt;bind_columns (\$c, \$s);
+while ($csv-&gt;getline ($fh)) {
+    # Error 3006 will not stop the loop
+    }</code></pre>
 
 </dd>
 <dt id="after_parse">after_parse </dt>
 <dd>
 
-<pre><code> $csv-&gt;callbacks (after_parse =&gt; sub { push @{$_[1]}, &quot;NEW&quot; });
- while (my $row = $csv-&gt;getline ($fh)) {
-     $row-&gt;[-1] eq &quot;NEW&quot;;
-     }</code></pre>
+<pre><code>$csv-&gt;callbacks (after_parse =&gt; sub { push @{$_[1]}, &quot;NEW&quot; });
+while (my $row = $csv-&gt;getline ($fh)) {
+    $row-&gt;[-1] eq &quot;NEW&quot;;
+    }</code></pre>
 
 <p>This callback is invoked after parsing with <a href="#getline">&quot;getline&quot;</a> only if no error occurred. The callback is invoked with two arguments: the current <code>CSV</code> parser object and an array reference to the fields parsed.</p>
 
 <p>The return code of the callback is ignored unless it is a reference to the string &quot;skip&quot;, in which case the record will be skipped in <a href="#getline_all">&quot;getline_all&quot;</a>.</p>
 
-<pre><code> sub add_from_db {
-     my ($csv, $row) = @_;
-     $sth-&gt;execute ($row-&gt;[4]);
-     push @$row, $sth-&gt;fetchrow_array;
-     } # add_from_db
+<pre><code>sub add_from_db {
+    my ($csv, $row) = @_;
+    $sth-&gt;execute ($row-&gt;[4]);
+    push @$row, $sth-&gt;fetchrow_array;
+    } # add_from_db
 
- my $aoa = csv (in =&gt; &quot;file.csv&quot;, callbacks =&gt; {
-     after_parse =&gt; \&amp;add_from_db });</code></pre>
+my $aoa = csv (in =&gt; &quot;file.csv&quot;, callbacks =&gt; {
+    after_parse =&gt; \&amp;add_from_db });</code></pre>
 
 <p>This hook can be used for validation: </p>
 
@@ -2052,10 +2052,10 @@ or
 
 <p>Die if any of the records does not validate a rule:</p>
 
-<pre><code> after_parse =&gt; sub {
-     $_[1][4] =~ m/^[0-9]{4}\s?[A-Z]{2}$/ or
-         die &quot;5th field does not have a valid Dutch zipcode&quot;;
-     }</code></pre>
+<pre><code>after_parse =&gt; sub {
+    $_[1][4] =~ m/^[0-9]{4}\s?[A-Z]{2}$/ or
+        die &quot;5th field does not have a valid Dutch zipcode&quot;;
+    }</code></pre>
 
 </dd>
 <dt id="DEFAULT">DEFAULT</dt>
@@ -2063,7 +2063,7 @@ or
 
 <p>Replace invalid fields with a default value:</p>
 
-<pre><code> after_parse =&gt; sub { $_[1][2] =~ m/^\d+$/ or $_[1][2] = 0 }</code></pre>
+<pre><code>after_parse =&gt; sub { $_[1][2] =~ m/^\d+$/ or $_[1][2] = 0 }</code></pre>
 
 </dd>
 <dt id="SKIP">SKIP</dt>
@@ -2071,7 +2071,7 @@ or
 
 <p>Skip records that have invalid fields (only applies to <a href="#getline_all">&quot;getline_all&quot;</a>):</p>
 
-<pre><code> after_parse =&gt; sub { $_[1][0] =~ m/^\d+$/ or return \&quot;skip&quot;; }</code></pre>
+<pre><code>after_parse =&gt; sub { $_[1][0] =~ m/^\d+$/ or return \&quot;skip&quot;; }</code></pre>
 
 </dd>
 </dl>
@@ -2080,21 +2080,21 @@ or
 <dt id="before_print">before_print </dt>
 <dd>
 
-<pre><code> my $idx = 1;
- $csv-&gt;callbacks (before_print =&gt; sub { $_[1][0] = $idx++ });
- $csv-&gt;print (*STDOUT, [ 0, $_ ]) for @members;</code></pre>
+<pre><code>my $idx = 1;
+$csv-&gt;callbacks (before_print =&gt; sub { $_[1][0] = $idx++ });
+$csv-&gt;print (*STDOUT, [ 0, $_ ]) for @members;</code></pre>
 
 <p>This callback is invoked before printing with <a href="#print">&quot;print&quot;</a> only if no error occurred. The callback is invoked with two arguments: the current <code>CSV</code> parser object and an array reference to the fields passed.</p>
 
 <p>The return code of the callback is ignored.</p>
 
-<pre><code> sub max_4_fields {
-     my ($csv, $row) = @_;
-     @$row &gt; 4 and splice @$row, 4;
-     } # max_4_fields
+<pre><code>sub max_4_fields {
+    my ($csv, $row) = @_;
+    @$row &gt; 4 and splice @$row, 4;
+    } # max_4_fields
 
- csv (in =&gt; csv (in =&gt; &quot;file.csv&quot;), out =&gt; *STDOUT,
-     callbacks =&gt; { before_print =&gt; \&amp;max_4_fields });</code></pre>
+csv (in =&gt; csv (in =&gt; &quot;file.csv&quot;), out =&gt; *STDOUT,
+    callbacks =&gt; { before_print =&gt; \&amp;max_4_fields });</code></pre>
 
 <p>This callback is not active for <a href="#combine">&quot;combine&quot;</a>.</p>
 
@@ -2105,23 +2105,23 @@ or
 
 <p>The <a href="#csv">&quot;csv&quot;</a> allows for some callbacks that do not integrate in XS internals but only feature the <a href="#csv">&quot;csv&quot;</a> function.</p>
 
-<pre><code>  csv (in        =&gt; &quot;file.csv&quot;,
-       callbacks =&gt; {
-           filter       =&gt; { 6 =&gt; sub { $_ &gt; 15 } },    # first
-           after_parse  =&gt; sub { say &quot;AFTER PARSE&quot;;  }, # first
-           after_in     =&gt; sub { say &quot;AFTER IN&quot;;     }, # second
-           on_in        =&gt; sub { say &quot;ON IN&quot;;        }, # third
-           },
-       );
+<pre><code>csv (in        =&gt; &quot;file.csv&quot;,
+     callbacks =&gt; {
+         filter       =&gt; { 6 =&gt; sub { $_ &gt; 15 } },    # first
+         after_parse  =&gt; sub { say &quot;AFTER PARSE&quot;;  }, # first
+         after_in     =&gt; sub { say &quot;AFTER IN&quot;;     }, # second
+         on_in        =&gt; sub { say &quot;ON IN&quot;;        }, # third
+         },
+     );
 
-  csv (in        =&gt; $aoh,
-       out       =&gt; &quot;file.csv&quot;,
-       callbacks =&gt; {
-           on_in        =&gt; sub { say &quot;ON IN&quot;;        }, # first
-           before_out   =&gt; sub { say &quot;BEFORE OUT&quot;;   }, # second
-           before_print =&gt; sub { say &quot;BEFORE PRINT&quot;; }, # third
-           },
-       );</code></pre>
+csv (in        =&gt; $aoh,
+     out       =&gt; &quot;file.csv&quot;,
+     callbacks =&gt; {
+         on_in        =&gt; sub { say &quot;ON IN&quot;;        }, # first
+         before_out   =&gt; sub { say &quot;BEFORE OUT&quot;;   }, # second
+         before_print =&gt; sub { say &quot;BEFORE PRINT&quot;; }, # third
+         },
+     );</code></pre>
 
 <dl>
 
@@ -2137,12 +2137,12 @@ or
 
 <p>The keys are the index to the row (the field name or field number, 1-based) and the values are subs to return a true or false value.</p>
 
-<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; {
-            3 =&gt; sub { m/a/ },       # third field should contain an &quot;a&quot;
-            5 =&gt; sub { length &gt; 4 }, # length of the 5th field minimal 5
-            });
+<pre><code>csv (in =&gt; &quot;file.csv&quot;, filter =&gt; {
+           3 =&gt; sub { m/a/ },       # third field should contain an &quot;a&quot;
+           5 =&gt; sub { length &gt; 4 }, # length of the 5th field minimal 5
+           });
 
- csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { foo =&gt; sub { $_ &gt; 4 }});</code></pre>
+csv (in =&gt; &quot;file.csv&quot;, filter =&gt; { foo =&gt; sub { $_ &gt; 4 }});</code></pre>
 
 <p>If the keys to the filter hash contain any character that is not a digit it will also implicitly set <a href="#headers">&quot;headers&quot;</a> to <code>&quot;auto&quot;</code> unless <a href="#headers">&quot;headers&quot;</a> was already passed as argument. When headers are active, returning an array of hashes, the filter is not applicable to the header itself.</p>
 
@@ -2150,55 +2150,55 @@ or
 
 <p>The context of the callback sets <code>$_</code> localized to the field indicated by the filter. The two arguments are as with all other callbacks, so the other fields in the current row can be seen:</p>
 
-<pre><code> filter =&gt; { 3 =&gt; sub { $_ &gt; 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}</code></pre>
+<pre><code>filter =&gt; { 3 =&gt; sub { $_ &gt; 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}</code></pre>
 
 <p>If the context is set to return a list of hashes (<a href="#headers">&quot;headers&quot;</a> is defined), the current record will also be available in the localized <code>%_</code>:</p>
 
-<pre><code> filter =&gt; { 3 =&gt; sub { $_ &gt; 100 &amp;&amp; $_{foo} =~ m/A/ &amp;&amp; $_{bar} &lt; 1000  }}</code></pre>
+<pre><code>filter =&gt; { 3 =&gt; sub { $_ &gt; 100 &amp;&amp; $_{foo} =~ m/A/ &amp;&amp; $_{bar} &lt; 1000  }}</code></pre>
 
 <p>If the filter is used to <i>alter</i> the content by changing <code>$_</code>, make sure that the sub returns true in order not to have that record skipped:</p>
 
-<pre><code> filter =&gt; { 2 =&gt; sub { $_ = uc }}</code></pre>
+<pre><code>filter =&gt; { 2 =&gt; sub { $_ = uc }}</code></pre>
 
 <p>will upper-case the second field, and then skip it if the resulting content evaluates to false. To always accept, end with truth:</p>
 
-<pre><code> filter =&gt; { 2 =&gt; sub { $_ = uc; 1 }}</code></pre>
+<pre><code>filter =&gt; { 2 =&gt; sub { $_ = uc; 1 }}</code></pre>
 
 </dd>
 <dt id="coderef">coderef</dt>
 <dd>
 
-<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; sub { $n++; 0; });</code></pre>
+<pre><code>csv (in =&gt; &quot;file.csv&quot;, filter =&gt; sub { $n++; 0; });</code></pre>
 
 <p>If the argument to <code>filter</code> is a coderef, it is an alias or shortcut to a filter on column 0:</p>
 
-<pre><code> csv (filter =&gt; sub { $n++; 0 });</code></pre>
+<pre><code>csv (filter =&gt; sub { $n++; 0 });</code></pre>
 
 <p>is equal to</p>
 
-<pre><code> csv (filter =&gt; { 0 =&gt; sub { $n++; 0 });</code></pre>
+<pre><code>csv (filter =&gt; { 0 =&gt; sub { $n++; 0 });</code></pre>
 
 </dd>
 <dt id="filter-name">filter-name</dt>
 <dd>
 
-<pre><code> csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_blank&quot;);
- csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_empty&quot;);
- csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;filled&quot;);</code></pre>
+<pre><code>csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_blank&quot;);
+csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;not_empty&quot;);
+csv (in =&gt; &quot;file.csv&quot;, filter =&gt; &quot;filled&quot;);</code></pre>
 
 <p>These are predefined filters</p>
 
 <p>Given a file like (line numbers prefixed for doc purpose only):</p>
 
-<pre><code> 1:1,2,3
- 2:
- 3:,
- 4:&quot;&quot;
- 5:,,
- 6:, ,
- 7:&quot;&quot;,
- 8:&quot; &quot;
- 9:4,5,6</code></pre>
+<pre><code>1:1,2,3
+2:
+3:,
+4:&quot;&quot;
+5:,,
+6:, ,
+7:&quot;&quot;,
+8:&quot; &quot;
+9:4,5,6</code></pre>
 
 <dl>
 
@@ -2209,8 +2209,8 @@ or
 
 <p>This filter is a shortcut for</p>
 
-<pre><code> filter =&gt; { 0 =&gt; sub { @{$_[1]} &gt; 1 or
-             defined $_[1][0] &amp;&amp; $_[1][0] ne &quot;&quot; } }</code></pre>
+<pre><code>filter =&gt; { 0 =&gt; sub { @{$_[1]} &gt; 1 or
+            defined $_[1][0] &amp;&amp; $_[1][0] ne &quot;&quot; } }</code></pre>
 
 <p>Due to the implementation, it is currently impossible to also filter lines that consists only of a quoted empty field. These lines are also considered blank lines.</p>
 
@@ -2224,7 +2224,7 @@ or
 
 <p>This filter is a shortcut for</p>
 
-<pre><code> filter =&gt; { 0 =&gt; sub { grep { defined &amp;&amp; $_ ne &quot;&quot; } @{$_[1]} } }</code></pre>
+<pre><code>filter =&gt; { 0 =&gt; sub { grep { defined &amp;&amp; $_ ne &quot;&quot; } @{$_[1]} } }</code></pre>
 
 <p>A space is not regarded being empty, so given the example data, lines 2, 3, 4, 5, and 7 are skipped.</p>
 
@@ -2236,7 +2236,7 @@ or
 
 <p>This filter is a shortcut for</p>
 
-<pre><code> filter =&gt; { 0 =&gt; sub { grep { defined &amp;&amp; m/\S/ } @{$_[1]} } }</code></pre>
+<pre><code>filter =&gt; { 0 =&gt; sub { grep { defined &amp;&amp; m/\S/ } @{$_[1]} } }</code></pre>
 
 <p>This filter rejects all lines that <i>not</i> have at least one field that does not evaluate to the empty string.</p>
 
@@ -2250,22 +2250,22 @@ or
 
 <p>One could also use modules like <a>Types::Standard</a>:</p>
 
-<pre><code> use Types::Standard -types;
+<pre><code>use Types::Standard -types;
 
- my $type   = Tuple[Str, Str, Int, Bool, Optional[Num]];
- my $check  = $type-&gt;compiled_check;
+my $type   = Tuple[Str, Str, Int, Bool, Optional[Num]];
+my $check  = $type-&gt;compiled_check;
 
- # filter with compiled check and warnings
- my $aoa = csv (
-    in     =&gt; \$data,
-    filter =&gt; {
-        0 =&gt; sub {
-            my $ok = $check-&gt;($_[1]) or
-                warn $type-&gt;get_message ($_[1]), &quot;\n&quot;;
-            return $ok;
-            },
-        },
-    );</code></pre>
+# filter with compiled check and warnings
+my $aoa = csv (
+   in     =&gt; \$data,
+   filter =&gt; {
+       0 =&gt; sub {
+           my $ok = $check-&gt;($_[1]) or
+               warn $type-&gt;get_message ($_[1]), &quot;\n&quot;;
+           return $ok;
+           },
+       },
+   );</code></pre>
 
 </dd>
 <dt id="after_in">after_in </dt>
@@ -2295,21 +2295,21 @@ or
 
 <p>This callback makes the row available in <code>%_</code> if the row is a hashref. In this case <code>%_</code> is writable and will change the original row. So e.g. with</p>
 
-<pre><code>  my $aoh = csv (
-      in      =&gt; \&quot;foo\n1\n2\n&quot;,
-      headers =&gt; &quot;auto&quot;,
-      on_in   =&gt; sub { $_{bar} = 2; },
-      );</code></pre>
+<pre><code>my $aoh = csv (
+    in      =&gt; \&quot;foo\n1\n2\n&quot;,
+    headers =&gt; &quot;auto&quot;,
+    on_in   =&gt; sub { $_{bar} = 2; },
+    );</code></pre>
 
 <p><code>$aoh</code> will be:</p>
 
-<pre><code>  [ { foo =&gt; 1,
-      bar =&gt; 2,
-      }
-    { foo =&gt; 2,
-      bar =&gt; 2,
-      }
-    ]</code></pre>
+<pre><code>[ { foo =&gt; 1,
+    bar =&gt; 2,
+    }
+  { foo =&gt; 2,
+    bar =&gt; 2,
+    }
+  ]</code></pre>
 
 </dd>
 <dt id="csv1">csv</dt>
@@ -2317,10 +2317,10 @@ or
 
 <p>The <i>function</i> <a href="#csv">&quot;csv&quot;</a> can also be called as a method or with an existing Text::CSV_XS object. This could help if the function is to be invoked a lot of times and the overhead of creating the object internally over and over again would be prevented by passing an existing instance.</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
 
- my $aoa = $csv-&gt;csv (in =&gt; $fh);
- my $aoa = csv (in =&gt; $fh, csv =&gt; $csv);</code></pre>
+my $aoa = $csv-&gt;csv (in =&gt; $fh);
+my $aoa = csv (in =&gt; $fh, csv =&gt; $csv);</code></pre>
 
 <p>both act the same. Running this 20000 times on a 20 lines CSV file, showed a 53% speedup.</p>
 
@@ -2347,69 +2347,69 @@ or
 
 <h2 id="Reading-a-CSV-file-line-by-line">Reading a CSV file line by line:</h2>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
- open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot; or die &quot;file.csv: $!&quot;;
- while (my $row = $csv-&gt;getline ($fh)) {
-     # do something with @$row
-     }
- close $fh or die &quot;file.csv: $!&quot;;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot; or die &quot;file.csv: $!&quot;;
+while (my $row = $csv-&gt;getline ($fh)) {
+    # do something with @$row
+    }
+close $fh or die &quot;file.csv: $!&quot;;</code></pre>
 
 <p>or</p>
 
-<pre><code> my $aoa = csv (in =&gt; &quot;file.csv&quot;, on_in =&gt; sub {
-     # do something with %_
-     });</code></pre>
+<pre><code>my $aoa = csv (in =&gt; &quot;file.csv&quot;, on_in =&gt; sub {
+    # do something with %_
+    });</code></pre>
 
 <h3 id="Reading-only-a-single-column">Reading only a single column</h3>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
- open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot; or die &quot;file.csv: $!&quot;;
- # get only the 4th column
- my @column = map { $_-&gt;[3] } @{$csv-&gt;getline_all ($fh)};
- close $fh or die &quot;file.csv: $!&quot;;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+open my $fh, &quot;&lt;&quot;, &quot;file.csv&quot; or die &quot;file.csv: $!&quot;;
+# get only the 4th column
+my @column = map { $_-&gt;[3] } @{$csv-&gt;getline_all ($fh)};
+close $fh or die &quot;file.csv: $!&quot;;</code></pre>
 
 <p>with <a href="#csv">&quot;csv&quot;</a>, you could do</p>
 
-<pre><code> my @column = map { $_-&gt;[0] }
-     @{csv (in =&gt; &quot;file.csv&quot;, fragment =&gt; &quot;col=4&quot;)};</code></pre>
+<pre><code>my @column = map { $_-&gt;[0] }
+    @{csv (in =&gt; &quot;file.csv&quot;, fragment =&gt; &quot;col=4&quot;)};</code></pre>
 
 <h2 id="Parsing-CSV-strings">Parsing CSV strings:</h2>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ keep_meta_info =&gt; 1, binary =&gt; 1 });
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ keep_meta_info =&gt; 1, binary =&gt; 1 });
 
- my $sample_input_string =
-     qq{&quot;I said, &quot;&quot;Hi!&quot;&quot;&quot;,Yes,&quot;&quot;,2.34,,&quot;1.09&quot;,&quot;\x{20ac}&quot;,};
- if ($csv-&gt;parse ($sample_input_string)) {
-     my @field = $csv-&gt;fields;
-     foreach my $col (0 .. $#field) {
-         my $quo = $csv-&gt;is_quoted ($col) ? $csv-&gt;{quote_char} : &quot;&quot;;
-         printf &quot;%2d: %s%s%s\n&quot;, $col, $quo, $field[$col], $quo;
-         }
-     }
- else {
-     print STDERR &quot;parse () failed on argument: &quot;,
-         $csv-&gt;error_input, &quot;\n&quot;;
-     $csv-&gt;error_diag ();
-     }</code></pre>
+my $sample_input_string =
+    qq{&quot;I said, &quot;&quot;Hi!&quot;&quot;&quot;,Yes,&quot;&quot;,2.34,,&quot;1.09&quot;,&quot;\x{20ac}&quot;,};
+if ($csv-&gt;parse ($sample_input_string)) {
+    my @field = $csv-&gt;fields;
+    foreach my $col (0 .. $#field) {
+        my $quo = $csv-&gt;is_quoted ($col) ? $csv-&gt;{quote_char} : &quot;&quot;;
+        printf &quot;%2d: %s%s%s\n&quot;, $col, $quo, $field[$col], $quo;
+        }
+    }
+else {
+    print STDERR &quot;parse () failed on argument: &quot;,
+        $csv-&gt;error_input, &quot;\n&quot;;
+    $csv-&gt;error_diag ();
+    }</code></pre>
 
 <h3 id="Parsing-CSV-from-memory">Parsing CSV from memory</h3>
 
 <p>Given a complete CSV data-set in scalar <code>$data</code>, generate a list of lists to represent the rows and fields</p>
 
-<pre><code> # The data
- my $data = join &quot;\r\n&quot; =&gt; map { join &quot;,&quot; =&gt; 0 .. 5 } 0 .. 5;
+<pre><code># The data
+my $data = join &quot;\r\n&quot; =&gt; map { join &quot;,&quot; =&gt; 0 .. 5 } 0 .. 5;
 
- # in a loop
- my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
- open my $fh, &quot;&lt;&quot;, \$data;
- my @foo;
- while (my $row = $csv-&gt;getline ($fh)) {
-     push @foo, $row;
-     }
- close $fh;
+# in a loop
+my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+open my $fh, &quot;&lt;&quot;, \$data;
+my @foo;
+while (my $row = $csv-&gt;getline ($fh)) {
+    push @foo, $row;
+    }
+close $fh;
 
- # a single call
- my $foo = csv (in =&gt; \$data);</code></pre>
+# a single call
+my $foo = csv (in =&gt; \$data);</code></pre>
 
 <h2 id="Printing-CSV-data">Printing CSV data</h2>
 
@@ -2417,117 +2417,117 @@ or
 
 <p>An example for creating <code>CSV</code> files using the <a href="#print">&quot;print&quot;</a> method:</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, eol =&gt; $/ });
- open my $fh, &quot;&gt;&quot;, &quot;foo.csv&quot; or die &quot;foo.csv: $!&quot;;
- for (1 .. 10) {
-     $csv-&gt;print ($fh, [ $_, &quot;$_&quot; ]) or $csv-&gt;error_diag;
-     }
- close $fh or die &quot;$tbl.csv: $!&quot;;</code></pre>
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, eol =&gt; $/ });
+open my $fh, &quot;&gt;&quot;, &quot;foo.csv&quot; or die &quot;foo.csv: $!&quot;;
+for (1 .. 10) {
+    $csv-&gt;print ($fh, [ $_, &quot;$_&quot; ]) or $csv-&gt;error_diag;
+    }
+close $fh or die &quot;$tbl.csv: $!&quot;;</code></pre>
 
 <h3 id="The-slow-way:-using-combine-and-string">The slow way: using <a href="#combine">&quot;combine&quot;</a> and <a href="#string">&quot;string&quot;</a></h3>
 
 <p>or using the slower <a href="#combine">&quot;combine&quot;</a> and <a href="#string">&quot;string&quot;</a> methods:</p>
 
-<pre><code> my $csv = Text::CSV_XS-&gt;new;
+<pre><code>my $csv = Text::CSV_XS-&gt;new;
 
- open my $csv_fh, &quot;&gt;&quot;, &quot;hello.csv&quot; or die &quot;hello.csv: $!&quot;;
+open my $csv_fh, &quot;&gt;&quot;, &quot;hello.csv&quot; or die &quot;hello.csv: $!&quot;;
 
- my @sample_input_fields = (
-     &#39;You said, &quot;Hello!&quot;&#39;,   5.67,
-     &#39;&quot;Surely&quot;&#39;,   &#39;&#39;,   &#39;3.14159&#39;);
- if ($csv-&gt;combine (@sample_input_fields)) {
-     print $csv_fh $csv-&gt;string, &quot;\n&quot;;
-     }
- else {
-     print &quot;combine () failed on argument: &quot;,
-         $csv-&gt;error_input, &quot;\n&quot;;
-     }
- close $csv_fh or die &quot;hello.csv: $!&quot;;</code></pre>
+my @sample_input_fields = (
+    &#39;You said, &quot;Hello!&quot;&#39;,   5.67,
+    &#39;&quot;Surely&quot;&#39;,   &#39;&#39;,   &#39;3.14159&#39;);
+if ($csv-&gt;combine (@sample_input_fields)) {
+    print $csv_fh $csv-&gt;string, &quot;\n&quot;;
+    }
+else {
+    print &quot;combine () failed on argument: &quot;,
+        $csv-&gt;error_input, &quot;\n&quot;;
+    }
+close $csv_fh or die &quot;hello.csv: $!&quot;;</code></pre>
 
 <h3 id="Generating-CSV-into-memory">Generating CSV into memory</h3>
 
 <p>Format a data-set (<code>@foo</code>) into a scalar value in memory (<code>$data</code>):</p>
 
-<pre><code> # The data
- my @foo = map { [ 0 .. 5 ] } 0 .. 3;
+<pre><code># The data
+my @foo = map { [ 0 .. 5 ] } 0 .. 3;
 
- # in a loop
- my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1, eol =&gt; &quot;\r\n&quot; });
- open my $fh, &quot;&gt;&quot;, \my $data;
- $csv-&gt;print ($fh, $_) for @foo;
- close $fh;
+# in a loop
+my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1, eol =&gt; &quot;\r\n&quot; });
+open my $fh, &quot;&gt;&quot;, \my $data;
+$csv-&gt;print ($fh, $_) for @foo;
+close $fh;
 
- # a single call
- csv (in =&gt; \@foo, out =&gt; \my $data);</code></pre>
+# a single call
+csv (in =&gt; \@foo, out =&gt; \my $data);</code></pre>
 
 <h2 id="Rewriting-CSV">Rewriting CSV</h2>
 
 <p>Rewrite <code>CSV</code> files with <code>;</code> as separator character to well-formed <code>CSV</code>:</p>
 
-<pre><code> use Text::CSV_XS qw( csv );
- csv (in =&gt; csv (in =&gt; &quot;bad.csv&quot;, sep_char =&gt; &quot;;&quot;), out =&gt; *STDOUT);</code></pre>
+<pre><code>use Text::CSV_XS qw( csv );
+csv (in =&gt; csv (in =&gt; &quot;bad.csv&quot;, sep_char =&gt; &quot;;&quot;), out =&gt; *STDOUT);</code></pre>
 
 <p>As <code>STDOUT</code> is now default in <a href="#csv">&quot;csv&quot;</a>, a one-liner converting a UTF-16 CSV file with BOM and TAB-separation to valid UTF-8 CSV could be:</p>
 
-<pre><code> $ perl -C3 -MText::CSV_XS=csv -we\
-    &#39;csv(in=&gt;&quot;utf16tab.csv&quot;,encoding=&gt;&quot;utf16&quot;,sep=&gt;&quot;\t&quot;)&#39; &gt;utf8.csv</code></pre>
+<pre><code>$ perl -C3 -MText::CSV_XS=csv -we\
+   &#39;csv(in=&gt;&quot;utf16tab.csv&quot;,encoding=&gt;&quot;utf16&quot;,sep=&gt;&quot;\t&quot;)&#39; &gt;utf8.csv</code></pre>
 
 <h2 id="Dumping-database-tables-to-CSV">Dumping database tables to CSV</h2>
 
 <p>Dumping a database table can be simple as this (TIMTOWTDI):</p>
 
-<pre><code> my $dbh = DBI-&gt;connect (...);
- my $sql = &quot;select * from foo&quot;;
+<pre><code>my $dbh = DBI-&gt;connect (...);
+my $sql = &quot;select * from foo&quot;;
 
- # using your own loop
- open my $fh, &quot;&gt;&quot;, &quot;foo.csv&quot; or die &quot;foo.csv: $!\n&quot;;
- my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, eol =&gt; &quot;\r\n&quot; });
- my $sth = $dbh-&gt;prepare ($sql); $sth-&gt;execute;
- $csv-&gt;print ($fh, $sth-&gt;{NAME_lc});
- while (my $row = $sth-&gt;fetch) {
-     $csv-&gt;print ($fh, $row);
-     }
+# using your own loop
+open my $fh, &quot;&gt;&quot;, &quot;foo.csv&quot; or die &quot;foo.csv: $!\n&quot;;
+my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, eol =&gt; &quot;\r\n&quot; });
+my $sth = $dbh-&gt;prepare ($sql); $sth-&gt;execute;
+$csv-&gt;print ($fh, $sth-&gt;{NAME_lc});
+while (my $row = $sth-&gt;fetch) {
+    $csv-&gt;print ($fh, $row);
+    }
 
- # using the csv function, all in memory
- csv (out =&gt; &quot;foo.csv&quot;, in =&gt; $dbh-&gt;selectall_arrayref ($sql));
+# using the csv function, all in memory
+csv (out =&gt; &quot;foo.csv&quot;, in =&gt; $dbh-&gt;selectall_arrayref ($sql));
 
- # using the csv function, streaming with callbacks
- my $sth = $dbh-&gt;prepare ($sql); $sth-&gt;execute;
- csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch            });
- csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetchrow_hashref });</code></pre>
+# using the csv function, streaming with callbacks
+my $sth = $dbh-&gt;prepare ($sql); $sth-&gt;execute;
+csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch            });
+csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetchrow_hashref });</code></pre>
 
 <p>Note that this does not discriminate between &quot;empty&quot; values and NULL-values from the database, as both will be the same empty field in CSV. To enable distinction between the two, use <a href="#quote_empty"><code>quote_empty</code></a>.</p>
 
-<pre><code> csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch }, quote_empty =&gt; 1);</code></pre>
+<pre><code>csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch }, quote_empty =&gt; 1);</code></pre>
 
 <p>If the database import utility supports special sequences to insert <code>NULL</code> values into the database, like MySQL/MariaDB supports <code>\N</code>, use a filter or a map</p>
 
-<pre><code> csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch },
-                     on_in =&gt; sub { $_ //= &quot;\\N&quot; for @{$_[1]} });
+<pre><code>csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch },
+                    on_in =&gt; sub { $_ //= &quot;\\N&quot; for @{$_[1]} });
 
- while (my $row = $sth-&gt;fetch) {
-     $csv-&gt;print ($fh, [ map { $_ // &quot;\\N&quot; } @$row ]);
-     }</code></pre>
+while (my $row = $sth-&gt;fetch) {
+    $csv-&gt;print ($fh, [ map { $_ // &quot;\\N&quot; } @$row ]);
+    }</code></pre>
 
 <p>Note that this will not work as expected when choosing the backslash (<code>\</code>) as <code>escape_char</code>, as that will cause the <code>\</code> to need to be escaped by yet another <code>\</code>, which will cause the field to need quotation and thus ending up as <code>&quot;\\N&quot;</code> instead of <code>\N</code>. See also <a href="#undef_str"><code>undef_str</code></a>.</p>
 
-<pre><code> csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch }, undef_str =&gt; &quot;\\N&quot;);</code></pre>
+<pre><code>csv (out =&gt; &quot;foo.csv&quot;, in =&gt; sub { $sth-&gt;fetch }, undef_str =&gt; &quot;\\N&quot;);</code></pre>
 
 <p>These special sequences are not recognized by Text::CSV_XS on parsing the CSV generated like this, but map and filter are your friends again</p>
 
-<pre><code> while (my $row = $csv-&gt;getline ($fh)) {
-     $sth-&gt;execute (map { $_ eq &quot;\\N&quot; ? undef : $_ } @$row);
-     }
+<pre><code>while (my $row = $csv-&gt;getline ($fh)) {
+    $sth-&gt;execute (map { $_ eq &quot;\\N&quot; ? undef : $_ } @$row);
+    }
 
- csv (in =&gt; &quot;foo.csv&quot;, filter =&gt; { 1 =&gt; sub {
-     $sth-&gt;execute (map { $_ eq &quot;\\N&quot; ? undef : $_ } @{$_[1]}); 0; }});</code></pre>
+csv (in =&gt; &quot;foo.csv&quot;, filter =&gt; { 1 =&gt; sub {
+    $sth-&gt;execute (map { $_ eq &quot;\\N&quot; ? undef : $_ } @{$_[1]}); 0; }});</code></pre>
 
 <h2 id="The-examples-folder">The examples folder</h2>
 
 <p>For more extended examples, see the <i>examples/</i> <code>1</code>. sub-directory in the original distribution or the git repository <code>2</code>.</p>
 
-<pre><code> 1. https://github.com/Tux/Text-CSV_XS/tree/master/examples
- 2. https://github.com/Tux/Text-CSV_XS</code></pre>
+<pre><code>1. https://github.com/Tux/Text-CSV_XS/tree/master/examples
+2. https://github.com/Tux/Text-CSV_XS</code></pre>
 
 <p>The following files can be found there:</p>
 
@@ -2538,7 +2538,7 @@ or
 
 <p>This can be used as a boilerplate to parse invalid <code>CSV</code> and parse beyond (expected) errors alternative to using the <a href="#error">&quot;error&quot;</a> callback.</p>
 
-<pre><code> $ perl examples/parser-xs.pl bad.csv &gt;good.csv</code></pre>
+<pre><code>$ perl examples/parser-xs.pl bad.csv &gt;good.csv</code></pre>
 
 </dd>
 <dt id="csv-check">csv-check </dt>
@@ -2546,11 +2546,11 @@ or
 
 <p>This is a command-line tool that uses parser-xs.pl techniques to check the <code>CSV</code> file and report on its content.</p>
 
-<pre><code> $ csv-check files/utf8.csv
- Checked files/utf8.csv  with csv-check 1.9
- using Text::CSV_XS 1.32 with perl 5.26.0 and Unicode 9.0.0
- OK: rows: 1, columns: 2
-     sep = &lt;,&gt;, quo = &lt;&quot;&gt;, bin = &lt;1&gt;, eol = &lt;&quot;\n&quot;&gt;</code></pre>
+<pre><code>$ csv-check files/utf8.csv
+Checked files/utf8.csv  with csv-check 1.9
+using Text::CSV_XS 1.32 with perl 5.26.0 and Unicode 9.0.0
+OK: rows: 1, columns: 2
+    sep = &lt;,&gt;, quo = &lt;&quot;&gt;, bin = &lt;1&gt;, eol = &lt;&quot;\n&quot;&gt;</code></pre>
 
 </dd>
 <dt id="csv-split">csv-split </dt>
@@ -2576,7 +2576,7 @@ or
 
 <p>A script that provides colorized diff on sorted CSV files, assuming first line is header and first field is the key. Output options include colorized ANSI escape codes or HTML.</p>
 
-<pre><code> $ csvdiff --html --output=diff.html file1.csv file2.csv</code></pre>
+<pre><code>$ csvdiff --html --output=diff.html file1.csv file2.csv</code></pre>
 
 </dd>
 <dt id="rewrite.pl">rewrite.pl </dt>
@@ -2599,7 +2599,7 @@ or
 
 <p>As of version 1.17, a lone first line with just</p>
 
-<pre><code>  sep=;</code></pre>
+<pre><code>sep=;</code></pre>
 
 <p>will be recognized and honored when parsing with <a href="#getline">&quot;getline&quot;</a>.</p>
 
@@ -2622,8 +2622,8 @@ or
 
 <p>Future extensions might include extending the <a href="#meta_info">&quot;meta_info&quot;</a>, <a href="#is_quoted">&quot;is_quoted&quot;</a>, and <a href="#is_binary">&quot;is_binary&quot;</a> to accept setting these flags for fields, so you can specify which fields are quoted in the <a href="#combine">&quot;combine&quot;</a>/<a href="#string">&quot;string&quot;</a> combination.</p>
 
-<pre><code> $csv-&gt;meta_info (0, 1, 1, 3, 0, 0);
- $csv-&gt;is_quoted (3, 1);</code></pre>
+<pre><code>$csv-&gt;meta_info (0, 1, 1, 3, 0, 0);
+$csv-&gt;is_quoted (3, 1);</code></pre>
 
 <p><a href="http://w3c.github.io/csvw/metadata/">Metadata Vocabulary for Tabular Data</a> (a W3C editor&#39;s draft) could be an example for supporting more metadata.</p>
 
@@ -2633,17 +2633,17 @@ or
 
 <p>Implement new methods or functions that enable parsing of a complete file at once, returning a list of hashes. Possible extension to this could be to enable a column selection on the call:</p>
 
-<pre><code> my @AoH = $csv-&gt;parse_file ($filename, { cols =&gt; [ 1, 4..8, 12 ]});</code></pre>
+<pre><code>my @AoH = $csv-&gt;parse_file ($filename, { cols =&gt; [ 1, 4..8, 12 ]});</code></pre>
 
 <p>returning something like</p>
 
-<pre><code> [ { fields =&gt; [ 1, 2, &quot;foo&quot;, 4.5, undef, &quot;&quot;, 8 ],
-     flags  =&gt; [ ... ],
-     },
-   { fields =&gt; [ ... ],
-     .
-     },
-   ]</code></pre>
+<pre><code>[ { fields =&gt; [ 1, 2, &quot;foo&quot;, 4.5, undef, &quot;&quot;, 8 ],
+    flags  =&gt; [ ... ],
+    },
+  { fields =&gt; [ ... ],
+    .
+    },
+  ]</code></pre>
 
 <p>Note that the <a href="#csv">&quot;csv&quot;</a> function already supports most of this, but does not return flags. <a href="#getline_all">&quot;getline_all&quot;</a> returns all rows for an open stream, but this will not return flags either. <a href="#fragment">&quot;fragment&quot;</a> can reduce the required rows <i>or</i> columns, but cannot combine them.</p>
 
@@ -2662,10 +2662,12 @@ or
 <p>Steal good new ideas and features from <a href="http://papaparse.com">PapaParse</a> or <a href="http://csvkit.readthedocs.org">csvkit</a>.</p>
 
 </dd>
-<dt id="Perl6-support">Perl6 support</dt>
+<dt id="Raku-support">Raku support</dt>
 <dd>
 
-<p>I&#39;m already working on perl6 support <a href="https://github.com/Tux/CSV">here</a>. No promises yet on when it is finished (or fast). Trying to keep the API alike as much as possible.</p>
+<p>Raku support can be found <a href="https://github.com/Tux/CSV">here</a>. The interface is richer in support than the Perl5 API, as Raku supports more types.</p>
+
+<p>The Raku version does not (yet) support pure binary CSV datasets.</p>
 
 </dd>
 </dl>
@@ -2699,7 +2701,7 @@ or
 
 <p>Opening <code>EBCDIC</code> encoded files on <code>ASCII</code>+ systems is likely to succeed using Encode&#39;s <code>cp37</code>, <code>cp1047</code>, or <code>posix-bc</code>:</p>
 
-<pre><code> open my $fh, &quot;&lt;:encoding(cp1047)&quot;, &quot;ebcdic_file.csv&quot; or die &quot;...&quot;;</code></pre>
+<pre><code>open my $fh, &quot;&lt;:encoding(cp1047)&quot;, &quot;ebcdic_file.csv&quot; or die &quot;...&quot;;</code></pre>
 
 <h1 id="DIAGNOSTICS">DIAGNOSTICS</h1>
 
@@ -2965,7 +2967,7 @@ or
 
 <p><a>IO::File</a>, <a>IO::Handle</a>, <a>IO::Wrap</a>, <a>Text::CSV</a>, <a>Text::CSV_PP</a>, <a>Text::CSV::Encoded</a>, <a>Text::CSV::Separator</a>, <a>Text::CSV::Slurp</a>, <a>Spreadsheet::CSV</a> and <a>Spreadsheet::Read</a>, and of course <a>perl</a>.</p>
 
-<p>If you are using perl6, you can have a look at <code>Text::CSV</code> in the perl6 ecosystem, offering the same features.</p>
+<p>If you are using Raku, have a look at <code>Text::CSV</code> in the Raku ecosystem, offering the same features.</p>
 
 <h3 id="non-perl">non-perl</h3>
 
@@ -2983,9 +2985,9 @@ or
 
 <h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
 
-<pre><code> Copyright (C) 2007-2021 H.Merijn Brand.  All rights reserved.
- Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
- Copyright (C) 1997      Alan Citterman.  All rights reserved.</code></pre>
+<pre><code>Copyright (C) 2007-2021 H.Merijn Brand.  All rights reserved.
+Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
+Copyright (C) 1997      Alan Citterman.  All rights reserved.</code></pre>
 
 <p>This library is free software; you can redistribute and/or modify it under the same terms as Perl itself.</p>
 

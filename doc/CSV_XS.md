@@ -2883,11 +2883,12 @@ will be recognized and honored when parsing with ["getline"](#getline).
     Steal good new ideas and features from [PapaParse](http://papaparse.com) or
     [csvkit](http://csvkit.readthedocs.org).
 
-- Perl6 support
+- Raku support
 
-    I'm already working on perl6 support [here](https://github.com/Tux/CSV). No
-    promises yet on when it is finished (or fast). Trying to keep the API alike
-    as much as possible.
+    Raku support can be found [here](https://github.com/Tux/CSV). The interface
+    is richer in support than the Perl5 API, as Raku supports more types.
+
+    The Raku version does not (yet) support pure binary CSV datasets.
 
 ## NOT TODO
 
@@ -3182,8 +3183,8 @@ And below should be the complete list of error codes that can be returned:
 [Text::CSV::Encoded](https://metacpan.org/pod/Text%3A%3ACSV%3A%3AEncoded),     [Text::CSV::Separator](https://metacpan.org/pod/Text%3A%3ACSV%3A%3ASeparator),    [Text::CSV::Slurp](https://metacpan.org/pod/Text%3A%3ACSV%3A%3ASlurp),
 [Spreadsheet::CSV](https://metacpan.org/pod/Spreadsheet%3A%3ACSV) and [Spreadsheet::Read](https://metacpan.org/pod/Spreadsheet%3A%3ARead), and of course [perl](https://metacpan.org/pod/perl).
 
-If you are using perl6,  you can have a look at  `Text::CSV`  in the perl6
-ecosystem, offering the same features.
+If you are using Raku,  have a look at `Text::CSV` in the Raku ecosystem,
+offering the same features.
 
 ### non-perl
 

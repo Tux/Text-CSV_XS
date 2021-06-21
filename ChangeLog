@@ -1,6 +1,7 @@
-1.47	- 2021-05-11, H.Merijn Brand
+1.47	- 2021-06-21, H.Merijn Brand
     * Make error 2014 catchable
     * Suppress empty lines on empty input (issue 34)
+    * Perl 6 -> Raku in docs (RT#136864)
 
 1.46	- 2021-03-24, H.Merijn Brand
     * It's 2021
