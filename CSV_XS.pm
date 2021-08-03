@@ -1676,9 +1676,9 @@ meaning of possible present BOM.
 
 =head1 SPECIFICATION
 
-While no formal specification for CSV exists, L<RFC 4180|https://tools.ietf.org/html/rfc4180>
+While no formal specification for CSV exists, L<RFC 4180|https://datatracker.ietf.org/doc/html/rfc4180>
 (I<1>) describes the common format and establishes  C<text/csv> as the MIME
-type registered with the IANA. L<RFC 7111|http://tools.ietf.org/html/rfc7111>
+type registered with the IANA. L<RFC 7111|https://datatracker.ietf.org/doc/html/rfc7111>
 (I<2>) adds fragments to CSV.
 
 Many informal documents exist that describe the C<CSV> format.   L<"How To:
@@ -1686,8 +1686,8 @@ The Comma Separated Value (CSV) File Format"|http://creativyst.com/Doc/Articles/
 (I<3>)  provides an overview of the  C<CSV>  format in the most widely used
 applications and explains how it can best be used and supported.
 
- 1) https://tools.ietf.org/html/rfc4180
- 2) https://tools.ietf.org/html/rfc7111
+ 1) https://datatracker.ietf.org/doc/html/rfc4180
+ 2) https://datatracker.ietf.org/doc/html/rfc7111
  3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml
 
 The basic rules are as follows:
@@ -2666,7 +2666,7 @@ supposed to croak and set error 1500.
 X<fragment>
 
 This function tries to implement RFC7111  (URI Fragment Identifiers for the
-text/csv Media Type) - http://tools.ietf.org/html/rfc7111
+text/csv Media Type) - https://datatracker.ietf.org/doc/html/rfc7111
 
  my $AoA = $csv->fragment ($fh, $spec);
 
@@ -2749,7 +2749,7 @@ C<cell=1,1-3,3;2,2-4,4;2,3;4,2> will return:
 
 =back
 
-L<RFC7111|http://tools.ietf.org/html/rfc7111> does  B<not>  allow different
+L<RFC7111|https://datatracker.ietf.org/doc/html/rfc7111> does  B<not>  allow different
 types of specs to be combined   (either C<row> I<or> C<col> I<or> C<cell>).
 Passing an invalid fragment specification will croak and set error 2013.
 
