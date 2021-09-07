@@ -149,9 +149,9 @@ meaning of possible present BOM.
 
 # SPECIFICATION
 
-While no formal specification for CSV exists, [RFC 4180](https://tools.ietf.org/html/rfc4180)
+While no formal specification for CSV exists, [RFC 4180](https://datatracker.ietf.org/doc/html/rfc4180)
 (_1_) describes the common format and establishes  `text/csv` as the MIME
-type registered with the IANA. [RFC 7111](http://tools.ietf.org/html/rfc7111)
+type registered with the IANA. [RFC 7111](https://datatracker.ietf.org/doc/html/rfc7111)
 (_2_) adds fragments to CSV.
 
 Many informal documents exist that describe the `CSV` format.   ["How To:
@@ -159,8 +159,8 @@ The Comma Separated Value (CSV) File Format"](http://creativyst.com/Doc/Articles
 (_3_)  provides an overview of the  `CSV`  format in the most widely used
 applications and explains how it can best be used and supported.
 
-    1) https://tools.ietf.org/html/rfc4180
-    2) https://tools.ietf.org/html/rfc7111
+    1) https://datatracker.ietf.org/doc/html/rfc4180
+    2) https://datatracker.ietf.org/doc/html/rfc7111
     3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml
 
 The basic rules are as follows:
@@ -1106,7 +1106,7 @@ supposed to croak and set error 1500.
 
 
 This function tries to implement RFC7111  (URI Fragment Identifiers for the
-text/csv Media Type) - http://tools.ietf.org/html/rfc7111
+text/csv Media Type) - https://datatracker.ietf.org/doc/html/rfc7111
 
     my $AoA = $csv->fragment ($fh, $spec);
 
@@ -1185,7 +1185,7 @@ parsed and skipped before the fragment.
         31,32,33,34
         42,43,44
 
-[RFC7111](http://tools.ietf.org/html/rfc7111) does  **not**  allow different
+[RFC7111](https://datatracker.ietf.org/doc/html/rfc7111) does  **not**  allow different
 types of specs to be combined   (either `row` _or_ `col` _or_ `cell`).
 Passing an invalid fragment specification will croak and set error 2013.
 

@@ -154,10 +154,10 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 [1mSPECIFICATION[0m
        While no formal specification for CSV exists, RFC 4180
-       <https://tools.ietf.org/html/rfc4180> ([4m1[24m) describes the common format
-       and establishes  "text/csv" as the MIME type registered with the IANA.
-       RFC 7111 <http://tools.ietf.org/html/rfc7111> ([4m2[24m) adds fragments to
-       CSV.
+       <https://datatracker.ietf.org/doc/html/rfc4180> ([4m1[24m) describes the
+       common format and establishes  "text/csv" as the MIME type registered
+       with the IANA. RFC 7111 <https://datatracker.ietf.org/doc/html/rfc7111>
+       ([4m2[24m) adds fragments to CSV.
 
        Many informal documents exist that describe the "CSV" format.   "How
        To: The Comma Separated Value (CSV) File Format"
@@ -165,8 +165,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        overview of the  "CSV"  format in the most widely used applications and
        explains how it can best be used and supported.
 
-        1) https://tools.ietf.org/html/rfc4180
-        2) https://tools.ietf.org/html/rfc7111
+        1) https://datatracker.ietf.org/doc/html/rfc4180
+        2) https://datatracker.ietf.org/doc/html/rfc7111
         3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml
 
        The basic rules are as follows:
@@ -1063,7 +1063,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
    [1mfragment[0m
        This function tries to implement RFC7111  (URI Fragment Identifiers for
-       the text/csv Media Type) - http://tools.ietf.org/html/rfc7111
+       the text/csv Media Type) -
+       https://datatracker.ietf.org/doc/html/rfc7111
 
         my $AoA = $csv->fragment ($fh, $spec);
 
@@ -1142,10 +1143,10 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
           31,32,33,34
           42,43,44
 
-       RFC7111 <http://tools.ietf.org/html/rfc7111> does  [1mnot  [22mallow different
-       types of specs to be combined   (either "row" [4mor[24m "col" [4mor[24m "cell").
-       Passing an invalid fragment specification will croak and set error
-       2013.
+       RFC7111 <https://datatracker.ietf.org/doc/html/rfc7111> does  [1mnot[0m
+       allow different types of specs to be combined   (either "row" [4mor[24m "col"
+       [4mor[24m "cell").  Passing an invalid fragment specification will croak and
+       set error 2013.
 
    [1mcolumn_names[0m
        Set the "keys" that will be used in the  "getline_hr"  calls.  If no
@@ -3042,4 +3043,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.34.0                      2021-06-21                          STDIN(1)
+perl v5.34.0                      2021-09-07                          STDIN(1)

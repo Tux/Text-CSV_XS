@@ -297,12 +297,12 @@ $csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; undef }); # default
 
 <h1 id="SPECIFICATION">SPECIFICATION</h1>
 
-<p>While no formal specification for CSV exists, <a href="https://tools.ietf.org/html/rfc4180">RFC 4180</a> (<i>1</i>) describes the common format and establishes <code>text/csv</code> as the MIME type registered with the IANA. <a href="http://tools.ietf.org/html/rfc7111">RFC 7111</a> (<i>2</i>) adds fragments to CSV.</p>
+<p>While no formal specification for CSV exists, <a href="https://datatracker.ietf.org/doc/html/rfc4180">RFC 4180</a> (<i>1</i>) describes the common format and establishes <code>text/csv</code> as the MIME type registered with the IANA. <a href="https://datatracker.ietf.org/doc/html/rfc7111">RFC 7111</a> (<i>2</i>) adds fragments to CSV.</p>
 
 <p>Many informal documents exist that describe the <code>CSV</code> format. <a href="http://creativyst.com/Doc/Articles/CSV/CSV01.shtml">&quot;How To: The Comma Separated Value (CSV) File Format&quot;</a> (<i>3</i>) provides an overview of the <code>CSV</code> format in the most widely used applications and explains how it can best be used and supported.</p>
 
-<pre><code>1) https://tools.ietf.org/html/rfc4180
-2) https://tools.ietf.org/html/rfc7111
+<pre><code>1) https://datatracker.ietf.org/doc/html/rfc4180
+2) https://datatracker.ietf.org/doc/html/rfc7111
 3) http://creativyst.com/Doc/Articles/CSV/CSV01.shtml</code></pre>
 
 <p>The basic rules are as follows:</p>
@@ -1043,7 +1043,7 @@ $arrayref = $csv-&gt;getline_hr_all ($fh, $offset, $length);</code></pre>
 
 <h2 id="fragment">fragment </h2>
 
-<p>This function tries to implement RFC7111 (URI Fragment Identifiers for the text/csv Media Type) - http://tools.ietf.org/html/rfc7111</p>
+<p>This function tries to implement RFC7111 (URI Fragment Identifiers for the text/csv Media Type) - https://datatracker.ietf.org/doc/html/rfc7111</p>
 
 <pre><code>my $AoA = $csv-&gt;fragment ($fh, $spec);</code></pre>
 
@@ -1121,7 +1121,7 @@ cell=3,2-*,*    # strip row 1 and 2, and column 1</code></pre>
 </dd>
 </dl>
 
-<p><a href="http://tools.ietf.org/html/rfc7111">RFC7111</a> does <b>not</b> allow different types of specs to be combined (either <code>row</code> <i>or</i> <code>col</code> <i>or</i> <code>cell</code>). Passing an invalid fragment specification will croak and set error 2013.</p>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc7111">RFC7111</a> does <b>not</b> allow different types of specs to be combined (either <code>row</code> <i>or</i> <code>col</code> <i>or</i> <code>cell</code>). Passing an invalid fragment specification will croak and set error 2013.</p>
 
 <h2 id="column_names">column_names </h2>
 
