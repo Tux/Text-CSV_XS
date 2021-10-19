@@ -4340,6 +4340,19 @@ CSV generated like this, but map and filter are your friends again
  csv (in => "foo.csv", filter => { 1 => sub {
      $sth->execute (map { $_ eq "\\N" ? undef : $_ } @{$_[1]}); 0; }});
 
+=head2 Converting CSV to JSON
+
+ use Text::CSV_XS qw( csv );
+ use JSON; # or Cpanel::JSON::XS for better performance
+
+ # AoA (no header interpretation)
+ say encode_json (csv (in => "file.csv"));
+
+ # AoH (convert to structures)
+ say encode_json (csv (in => "file.csv", bom => 1));
+
+Yes, it is that simple.
+
 =head2 The examples folder
 
 For more extended examples, see the F<examples/> C<1>. sub-directory in the

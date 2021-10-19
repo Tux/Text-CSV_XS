@@ -6,6 +6,18 @@ Description:
     of comma-separated values.   An instance of the Text::CSV_XS class can
     combine fields into a CSV string and parse a CSV string into fields.
 
+    Program to process a CSV file:
+    ------------------------------
+    This distribution provides several examples of scripts that convert CSV
+    files or data streams into XLS or XLSX  or simply check if the CSV data
+    is valid. It is easy to amend those scripts to do whatever the end-user
+    actually requires.  The full documentation also provaides various small
+    snippets of example code.
+
+    Convert a CSV file into JSON:
+    -----------------------------
+    That process is described in the documentation.
+
 Copying:
     Copyright (c) 2007-2021 H.Merijn Brand.  All rights reserved.
     Copyright (c) 1998-2001 Jochen Wiedmann. All rights reserved.
