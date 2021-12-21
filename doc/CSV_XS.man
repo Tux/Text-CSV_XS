@@ -2594,6 +2594,18 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         csv (in => "foo.csv", filter => { 1 => sub {
             $sth->execute (map { $_ eq "\\N" ? undef : $_ } @{$_[1]}); 0; }});
 
+   [1mConverting CSV to JSON[0m
+        use Text::CSV_XS qw( csv );
+        use JSON; # or Cpanel::JSON::XS for better performance
+
+        # AoA (no header interpretation)
+        say encode_json (csv (in => "file.csv"));
+
+        # AoH (convert to structures)
+        say encode_json (csv (in => "file.csv", bom => 1));
+
+       Yes, it is that simple.
+
    [1mThe examples folder[0m
        For more extended examples, see the [4mexamples/[24m 1. sub-directory in the
        original distribution or the git repository 2.
@@ -3043,4 +3055,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.34.0                      2021-09-07                          STDIN(1)
+perl v5.34.0                      2021-12-21                          STDIN(1)

@@ -143,6 +143,7 @@
       </li>
       <li><a href="#Rewriting-CSV">Rewriting CSV</a></li>
       <li><a href="#Dumping-database-tables-to-CSV">Dumping database tables to CSV</a></li>
+      <li><a href="#Converting-CSV-to-JSON">Converting CSV to JSON</a></li>
       <li><a href="#The-examples-folder">The examples folder</a></li>
     </ul>
   </li>
@@ -2521,6 +2522,19 @@ while (my $row = $sth-&gt;fetch) {
 
 csv (in =&gt; &quot;foo.csv&quot;, filter =&gt; { 1 =&gt; sub {
     $sth-&gt;execute (map { $_ eq &quot;\\N&quot; ? undef : $_ } @{$_[1]}); 0; }});</code></pre>
+
+<h2 id="Converting-CSV-to-JSON">Converting CSV to JSON</h2>
+
+<pre><code>use Text::CSV_XS qw( csv );
+use JSON; # or Cpanel::JSON::XS for better performance
+
+# AoA (no header interpretation)
+say encode_json (csv (in =&gt; &quot;file.csv&quot;));
+
+# AoH (convert to structures)
+say encode_json (csv (in =&gt; &quot;file.csv&quot;, bom =&gt; 1));</code></pre>
+
+<p>Yes, it is that simple.</p>
 
 <h2 id="The-examples-folder">The examples folder</h2>
 

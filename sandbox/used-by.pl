@@ -3,7 +3,7 @@
 use 5.26.0;
 use warnings;
 
-our $VERSION = "2.01 - 20210324";
+our $VERSION = "2.02 - 20211221";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -69,6 +69,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "chart",				# Questions (in Apache-Wyrd)
     "CohortExplorer",			# Unmet prerequisites
     "Connector",			# No Makefile.PL (in Annelidous)
+    "Data-Importer",			# test fail in DBIx::Class::Storage::DBI::insert
     "DBIx-Class-DigestColumns",		# unmet prereqs
     "DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet prereqs
     # DBIx-Class-EncodedColumn",	# Busted configuration
@@ -79,6 +80,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "DBIx-Class-Loader",		# ::CSV Deprecated
     "DBIx-Class-QueryProfiler",		# ::CSV - Kwalitee test (2011)
     "DBIx-Class-RDBOHelpers",		# ::CSV - Unmet prereqs
+    "DBIx-Class-ResultSet-WithMetaData",# Bad test, deep list is unsorted RT#113517
     "DBIx-Class-Schema-Slave",		# ::CSV - Tests br0ken
     "DBIx-Class-Snowflake",		# ::CSV - Bad tests. SQLite fail
     "DBIx-Class-StorageReadOnly",	# ::CSV - POD coverage
@@ -105,6 +107,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "OWL-DirectSemantics",		# dot-in-INC problem
     "Parse-CSV-Colnames",		# ::CSV - Fails because of Parse::CSV
     "Pcore",				# Unmet prereqs (common::header)
+    "PkgForge-Registry",		# Moose conflict
     "Plack-Middleware-DBIC-QueryLog",	# maint/Maker.pm
     "Plack-Middleware-Debug-DBIC-QueryLog",	# maint/Maker.pm
     "RDF-RDB2RDF",			# ::CSV - Bad tests

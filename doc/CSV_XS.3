@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2021-09-07" "perl v5.34.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2021-12-21" "perl v5.34.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -3306,6 +3306,20 @@ These special sequences are not recognized by  Text::CSV_XS  on parsing the
 \& csv (in => "foo.csv", filter => { 1 => sub {
 \&     $sth\->execute (map { $_ eq "\e\eN" ? undef : $_ } @{$_[1]}); 0; }});
 .Ve
+.SS "Converting \s-1CSV\s0 to \s-1JSON\s0"
+.IX Subsection "Converting CSV to JSON"
+.Vb 2
+\& use Text::CSV_XS qw( csv );
+\& use JSON; # or Cpanel::JSON::XS for better performance
+\&
+\& # AoA (no header interpretation)
+\& say encode_json (csv (in => "file.csv"));
+\&
+\& # AoH (convert to structures)
+\& say encode_json (csv (in => "file.csv", bom => 1));
+.Ve
+.PP
+Yes, it is that simple.
 .SS "The examples folder"
 .IX Subsection "The examples folder"
 For more extended examples, see the \fIexamples/\fR \f(CW1\fR. sub-directory in the
