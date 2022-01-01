@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # rewrite.pl: Convert csv to csv
-#	   (m)'17 [20 Sep 2017] Copyright H.M.Brand 2014-2021
+#	   (m)'17 [20 Sep 2017] Copyright H.M.Brand 2014-2022
 
 our $VERSION = "0.05 - 20170920";
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright PROCURA B.V. (c) 2006-2021 H.Merijn Brand
+# Copyright PROCURA B.V. (c) 2006-2022 H.Merijn Brand
 
 require 5.006001; # <- also see postamble at the bottom for META.yml
 use strict;
@@ -20,7 +20,7 @@ my %wm = (
     NAME         => "Text::CSV_XS",
     DISTNAME     => "Text-CSV_XS",
     ABSTRACT     => "Comma-Separated Values manipulation routines",
-    AUTHOR       => "H.Merijn Brand <h.m.brand\@xs4all.nl>",
+    AUTHOR       => "H.Merijn Brand <hmbrand\@cpan.org>",
     VERSION_FROM => "CSV_XS.pm",
     PREREQ_PM	 => { "XSLoader"	=> 0,
 		      "Config"		=> 0,
