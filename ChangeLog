@@ -1,11 +1,13 @@
-1.48	- 2022-01-01, H.Merijn Brand
+1.48	- 2022-02-02, H.Merijn Brand
     * It's 2022
+    * Update to Devel::PPPort-3.64
 
 1.47	- 2021-12-21, H.Merijn Brand
     * Make error 2014 catchable
     * Suppress empty lines on empty input (issue 34)
     * Perl 6 -> Raku in docs (RT#136864)
     * IETF changed their URLs
+    * Update to Devel::PPPort-3.63
     * Add some documentation for Google hist (Nigel)
 
 1.46	- 2021-03-24, H.Merijn Brand
