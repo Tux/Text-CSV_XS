@@ -107,6 +107,7 @@ my %attr_alias = (
     );
 my $last_new_err = Text::CSV_XS->SetDiag (0);
 my $ebcdic       = ord ("A") == 0xC1;	# Faster than $Config{'ebcdic'}
+my @internal_kh;
 
 # NOT a method: is also used before bless
 sub _unhealthy_whitespace {
@@ -1275,6 +1276,9 @@ sub _csv_attr {
 	or croak ($last_new_err);
     defined $form and $csv->formula ($form);
 
+    $kh && !ref $kh && $kh =~ m/^(?:1|yes|true|internal|auto)$/i and
+	$kh = \@internal_kh;
+
     return {
 	'csv'  => $csv,
 	'attr' => { %attr },
@@ -1314,6 +1318,9 @@ sub csv {
 	}
 
     if ($c->{'out'} && !$c->{'sink'}) {
+	!$hdrs && ref $c->{'kh'} && $c->{'kh'} == \@internal_kh and
+	    $hdrs = $c->{'kh'};
+
 	if (ref $in eq "CODE") {
 	    my $hdr = 1;
 	    while (my $row = $in->($csv)) {
@@ -1370,6 +1377,7 @@ sub csv {
 	}
 
     if ($c->{'kh'}) {
+	@internal_kh = ();
 	ref $c->{'kh'} eq "ARRAY" or croak ($csv->SetDiag (1501));
 	$hdrs ||= "auto";
 	}
@@ -1381,7 +1389,7 @@ sub csv {
 	}
     my $val = $c->{'val'};
     if ($val) {
-	$key					      or croak ($csv->SetDiag (1502));
+	$key						or croak ($csv->SetDiag (1502));
 	!ref $val or ref $val eq "ARRAY" && @{$val} > 0 or croak ($csv->SetDiag (1503));
 	}
 
@@ -3714,6 +3722,21 @@ headers are available after the call in the original order.
 This attribute can be abbreviated to C<kh> or passed as C<keep_column_names>.
 
 This attribute implies a default of C<auto> for the C<headers> attribute.
+
+X<stable header order>
+X<internal headers>
+The headers can also be kept internally to keep stable header order:
+
+ csv (in      => csv (in => "file.csv", kh => "internal"),
+      out     => "new.csv",
+      kh      => "internal");
+
+where C<internal> can also be C<1>, C<yes>, or C<true>. This is similar to
+
+ my @h;
+ csv (in      => csv (in => "file.csv", kh => \@h),
+      out     => "new.csv",
+      headers => \@h);
 
 =head3 fragment
 X<fragment>
