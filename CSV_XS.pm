@@ -26,7 +26,7 @@ use XSLoader;
 use Carp;
 
 use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.47";
+$VERSION   = "1.48";
 @ISA       = qw( Exporter );
 @EXPORT_OK = qw( csv );
 XSLoader::load ("Text::CSV_XS", $VERSION);
