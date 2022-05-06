@@ -4,7 +4,7 @@ my $void = <<'SKIP';
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version 3.67
+    ppport.h -- Perl/Pollution/Portability Version 3.68
 
     Automatically created by Devel::PPPort running under perl 5.034000.
 
@@ -21,7 +21,7 @@ SKIP
 
 =head1 NAME
 
-ppport.h - Perl/Pollution/Portability version 3.67
+ppport.h - Perl/Pollution/Portability version 3.68
 
 =head1 SYNOPSIS
 
@@ -588,7 +588,7 @@ BEGIN { require warnings if "$]" > '5.006' }
 # Disable broken TRIE-optimization
 BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= "5.009004" && "$]" <= "5.009005"}
 
-my $VERSION = 3.67;
+my $VERSION = 3.68;
 
 my %opt = (
   quiet     => 0,
@@ -11567,7 +11567,7 @@ __DATA__
 #define DPPP_CAT2(x,y) CAT2(x,y)
 #define DPPP_(name) DPPP_CAT2(DPPP_NAMESPACE, name)
 
-#define D_PPP_RELEASE_DATE 1646697600 /* 2022-03-08 */
+#define D_PPP_RELEASE_DATE 1647561600 /* 2022-03-18 */
 
 #if ! defined(PERL_REVISION) && ! defined(PERL_VERSION_MAJOR)
 #  if   !   defined(__PATCHLEVEL_H_INCLUDED__)                                  \
@@ -12732,8 +12732,12 @@ DPPP_(my_newCONSTSUB)(HV *stash, const char *name, SV *sv)
 #  define NOOP                           /*EMPTY*/(void)0
 #endif
 
+#if (PERL_BCDVERSION < 0x5006001) && (PERL_BCDVERSION < 0x5027007)
+#undef dNOOP
 #ifndef dNOOP
-#  define dNOOP                          extern int /*@unused@*/ Perl___notused PERL_UNUSED_DECL
+#  define dNOOP                          struct Perl___notused_struct
+#endif
+
 #endif
 
 #ifndef NVTYPE
@@ -15993,17 +15997,17 @@ DPPP_(my_load_module)(U32 flags, SV *name, SV *ver, ...)
 #  if defined(PERL_USE_GCC_BRACE_GROUPS)
 #    define  newSVsv_flags(sv, flags)                       \
         ({                                                  \
-            SV *new = newSV(0);                             \
-            sv_setsv_flags(new, (sv), (flags));             \
-            new;                                            \
+            SV *n= newSV(0);                             \
+            sv_setsv_flags(n, (sv), (flags));             \
+            n;                                            \
         })
 #  else
     PERL_STATIC_INLINE SV* D_PPP_newSVsv_flags(SV *const old, I32 flags)
         {
             dTHX;
-            SV *new = newSV(0);
-            sv_setsv_flags(new, old, flags);
-            return new;
+            SV *n= newSV(0);
+            sv_setsv_flags(n, old, flags);
+            return n;
         }
 #    define  newSVsv_flags(sv, flags) D_PPP_newSVsv_flags(sv, flags)
 #  endif

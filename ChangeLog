@@ -4,6 +4,7 @@
     * kh => 1 (use internal headers)
     * Update to Devel::PPPort-3.67
     * Add constants for META flags (RT#142508)
+    * Update to Devel::PPPort-3.68
 
 1.47	- 2021-12-21, H.Merijn Brand
     * Make error 2014 catchable
