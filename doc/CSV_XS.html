@@ -741,7 +741,7 @@ my $f = $csv-&gt;quote_empty;</code></pre>
         $csv-&gt;quote_binary (0);
 my $f = $csv-&gt;quote_binary;</code></pre>
 
-<p>By default, all &quot;unsafe&quot; bytes inside a string cause the combined field to be quoted. By setting this attribute to <code>0</code>, you can disable that trigger for bytes &gt;= <code>0x7F</code>.</p>
+<p>By default, all &quot;unsafe&quot; bytes inside a string cause the combined field to be quoted. By setting this attribute to <code>0</code>, you can disable that trigger for bytes <code>&gt;= 0x7F</code>.</p>
 
 <h3 id="escape_null">escape_null  </h3>
 

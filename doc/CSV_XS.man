@@ -687,7 +687,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        By default,  all "unsafe" bytes inside a string cause the combined
        field to be quoted.  By setting this attribute to 0, you can disable
-       that trigger for bytes >= 0x7F.
+       that trigger for bytes ">= 0x7F".
 
        [4mescape_null[0m
 

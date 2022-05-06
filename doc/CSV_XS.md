@@ -706,7 +706,7 @@ quoted, see ["blank\_is\_undef"](#blank_is_undef)). See also [`always_quote`](#a
 
 By default,  all "unsafe" bytes inside a string cause the combined field to
 be quoted.  By setting this attribute to `0`, you can disable that trigger
-for bytes >= `0x7F`.
+for bytes `>= 0x7F`.
 
 ### escape\_null
 

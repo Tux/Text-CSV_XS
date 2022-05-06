@@ -976,7 +976,7 @@ quoted, see \*(L"blank_is_undef\*(R"). See also \f(CW\*(C`always_quote\*(C'\fR.
 .PP
 By default,  all \*(L"unsafe\*(R" bytes inside a string cause the combined field to
 be quoted.  By setting this attribute to \f(CW0\fR, you can disable that trigger
-for bytes >= \f(CW0x7F\fR.
+for bytes \f(CW\*(C`>= 0x7F\*(C'\fR.
 .PP
 \fIescape_null\fR
 .IX Xref "escape_null quote_null"

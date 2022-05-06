@@ -2279,7 +2279,7 @@ X<quote_binary>
 
 By default,  all "unsafe" bytes inside a string cause the combined field to
 be quoted.  By setting this attribute to C<0>, you can disable that trigger
-for bytes E<gt>= C<0x7F>.
+for bytes C<< >= 0x7F >>.
 
 =head3 escape_null
 X<escape_null>
