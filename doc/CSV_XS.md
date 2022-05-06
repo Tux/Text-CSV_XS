@@ -335,7 +335,7 @@ If instead you want to escape the  [`quote_char`](#quote_char) by doubling
 it you will need to also change the  `escape_char`  to be the same as what
 you have changed the [`quote_char`](#quote_char) to.
 
-Setting `escape_char` to &lt;undef> or `""` will disable escaping completely
+Setting `escape_char` to `undef` or `""` will completely disable escapes
 and is greatly discouraged. This will also disable `escape_null`.
 
 The escape character can not be equal to the separation character.
@@ -1536,13 +1536,27 @@ For each field,  a meta\_info field will hold  flags that  inform  something
 about  the  field  returned  by  the  ["fields"](#fields)  method or  passed to  the
 ["combine"](#combine) method. The flags are bit-wise-`or`'d like:
 
-- ` `0x0001
+- `0x0001`
+- `CSV_FLAGS_IS_QUOTED`
 
     The field was quoted.
 
-- ` `0x0002
+- `0x0002`
+- `CSV_FLAGS_IS_BINARY`
 
     The field was binary.
+
+- `0x0004`
+- `CSV_FLAGS_ERROR_IN_FIELD`
+
+    The field was invalid.
+
+    Currently only used when `allow_loose_quotes` is active.
+
+- `0x0010`
+- `CSV_FLAGS_IS_MISSING`
+
+    The field was missing.
 
 See the `is_***` methods below.
 
@@ -2126,6 +2140,21 @@ headers are available after the call in the original order.
 This attribute can be abbreviated to `kh` or passed as `keep_column_names`.
 
 This attribute implies a default of `auto` for the `headers` attribute.
+
+
+
+The headers can also be kept internally to keep stable header order:
+
+    csv (in      => csv (in => "file.csv", kh => "internal"),
+         out     => "new.csv",
+         kh      => "internal");
+
+where `internal` can also be `1`, `yes`, or `true`. This is similar to
+
+    my @h;
+    csv (in      => csv (in => "file.csv", kh => \@h),
+         out     => "new.csv",
+         headers => \@h);
 
 ### fragment
 
@@ -3224,7 +3253,7 @@ the documentation,   fixed most RT bugs,  added all the allow flags and the
 
 # COPYRIGHT AND LICENSE
 
-    Copyright (C) 2007-2021 H.Merijn Brand.  All rights reserved.
+    Copyright (C) 2007-2022 H.Merijn Brand.  All rights reserved.
     Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
     Copyright (C) 1997      Alan Citterman.  All rights reserved.
 

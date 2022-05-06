@@ -1904,7 +1904,7 @@ If instead you want to escape the  L<C<quote_char>|/quote_char> by doubling
 it you will need to also change the  C<escape_char>  to be the same as what
 you have changed the L<C<quote_char>|/quote_char> to.
 
-Setting C<escape_char> to <undef> or C<""> will disable escaping completely
+Setting C<escape_char> to C<undef> or C<""> will completely disable escapes
 and is greatly discouraged. This will also disable C<escape_null>.
 
 The escape character can not be equal to the separation character.
@@ -2279,7 +2279,7 @@ X<quote_binary>
 
 By default,  all "unsafe" bytes inside a string cause the combined field to
 be quoted.  By setting this attribute to C<0>, you can disable that trigger
-for bytes >= C<0x7F>.
+for bytes E<gt>= C<0x7F>.
 
 =head3 escape_null
 X<escape_null>
@@ -3131,29 +3131,29 @@ L</combine> method. The flags are bit-wise-C<or>'d like:
 
 =over 2
 
-=item C< >0x0001
+=item C<0x0001>
 
-=item C< >CSV_FLAGS_IS_QUOTED
+=item C<CSV_FLAGS_IS_QUOTED>
 
 The field was quoted.
 
-=item C< >0x0002
+=item C<0x0002>
 
-=item C< >CSV_FLAGS_IS_BINARY
+=item C<CSV_FLAGS_IS_BINARY>
 
 The field was binary.
 
-=item C< >0x0004
+=item C<0x0004>
 
-=item C< >CSV_FLAGS_ERROR_IN_FIELD
+=item C<CSV_FLAGS_ERROR_IN_FIELD>
 
 The field was invalid.
 
 Currently only used when C<allow_loose_quotes> is active.
 
-=item C< >0x0010
+=item C<0x0010>
 
-=item C< >CSV_FLAGS_IS_MISSING
+=item C<CSV_FLAGS_IS_MISSING>
 
 The field was missing.
 

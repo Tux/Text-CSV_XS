@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2021-12-21" "perl v5.34.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2022-05-06" "perl v5.34.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -513,7 +513,7 @@ If instead you want to escape the  \f(CW\*(C`quote_char\*(C'\fR by doubling
 it you will need to also change the  \f(CW\*(C`escape_char\*(C'\fR  to be the same as what
 you have changed the \f(CW\*(C`quote_char\*(C'\fR to.
 .PP
-Setting \f(CW\*(C`escape_char\*(C'\fR to <undef> or \f(CW""\fR will disable escaping completely
+Setting \f(CW\*(C`escape_char\*(C'\fR to \f(CW\*(C`undef\*(C'\fR or \f(CW""\fR will completely disable escapes
 and is greatly discouraged. This will also disable \f(CW\*(C`escape_null\*(C'\fR.
 .PP
 The escape character can not be equal to the separation character.
@@ -1932,14 +1932,44 @@ recently.
 For each field,  a meta_info field will hold  flags that  inform  something
 about  the  field  returned  by  the  \*(L"fields\*(R"  method or  passed to  the
 \&\*(L"combine\*(R" method. The flags are bit\-wise\-\f(CW\*(C`or\*(C'\fR'd like:
-.ie n .IP """ ""0x0001" 2
-.el .IP "\f(CW \fR0x0001" 2
-.IX Item " 0x0001"
+.ie n .IP "0x0001" 2
+.el .IP "\f(CW0x0001\fR" 2
+.IX Item "0x0001"
+.PD 0
+.ie n .IP """CSV_FLAGS_IS_QUOTED""" 2
+.el .IP "\f(CWCSV_FLAGS_IS_QUOTED\fR" 2
+.IX Item "CSV_FLAGS_IS_QUOTED"
+.PD
 The field was quoted.
-.ie n .IP """ ""0x0002" 2
-.el .IP "\f(CW \fR0x0002" 2
-.IX Item " 0x0002"
+.ie n .IP "0x0002" 2
+.el .IP "\f(CW0x0002\fR" 2
+.IX Item "0x0002"
+.PD 0
+.ie n .IP """CSV_FLAGS_IS_BINARY""" 2
+.el .IP "\f(CWCSV_FLAGS_IS_BINARY\fR" 2
+.IX Item "CSV_FLAGS_IS_BINARY"
+.PD
 The field was binary.
+.ie n .IP "0x0004" 2
+.el .IP "\f(CW0x0004\fR" 2
+.IX Item "0x0004"
+.PD 0
+.ie n .IP """CSV_FLAGS_ERROR_IN_FIELD""" 2
+.el .IP "\f(CWCSV_FLAGS_ERROR_IN_FIELD\fR" 2
+.IX Item "CSV_FLAGS_ERROR_IN_FIELD"
+.PD
+The field was invalid.
+.Sp
+Currently only used when \f(CW\*(C`allow_loose_quotes\*(C'\fR is active.
+.ie n .IP "0x0010" 2
+.el .IP "\f(CW0x0010\fR" 2
+.IX Item "0x0010"
+.PD 0
+.ie n .IP """CSV_FLAGS_IS_MISSING""" 2
+.el .IP "\f(CWCSV_FLAGS_IS_MISSING\fR" 2
+.IX Item "CSV_FLAGS_IS_MISSING"
+.PD
+The field was missing.
 .PP
 See the \f(CW\*(C`is_***\*(C'\fR methods below.
 .SS "is_quoted"
@@ -2608,6 +2638,26 @@ headers are available after the call in the original order.
 This attribute can be abbreviated to \f(CW\*(C`kh\*(C'\fR or passed as \f(CW\*(C`keep_column_names\*(C'\fR.
 .PP
 This attribute implies a default of \f(CW\*(C`auto\*(C'\fR for the \f(CW\*(C`headers\*(C'\fR attribute.
+.PP
+
+
+The headers can also be kept internally to keep stable header order:
+.IX Xref "stable header order internal headers"
+.PP
+.Vb 3
+\& csv (in      => csv (in => "file.csv", kh => "internal"),
+\&      out     => "new.csv",
+\&      kh      => "internal");
+.Ve
+.PP
+where \f(CW\*(C`internal\*(C'\fR can also be \f(CW1\fR, \f(CW\*(C`yes\*(C'\fR, or \f(CW\*(C`true\*(C'\fR. This is similar to
+.PP
+.Vb 4
+\& my @h;
+\& csv (in      => csv (in => "file.csv", kh => \e@h),
+\&      out     => "new.csv",
+\&      headers => \e@h);
+.Ve
 .PP
 \fIfragment\fR
 .IX Xref "fragment"
@@ -3820,7 +3870,7 @@ the documentation,   fixed most \s-1RT\s0 bugs,  added all the allow flags and t
 .SH "COPYRIGHT AND LICENSE"
 .IX Header "COPYRIGHT AND LICENSE"
 .Vb 3
-\& Copyright (C) 2007\-2021 H.Merijn Brand.  All rights reserved.
+\& Copyright (C) 2007\-2022 H.Merijn Brand.  All rights reserved.
 \& Copyright (C) 1998\-2001 Jochen Wiedmann. All rights reserved.
 \& Copyright (C) 1997      Alan Citterman.  All rights reserved.
 .Ve

@@ -438,7 +438,7 @@ my $c = $csv-&gt;escape_char;</code></pre>
 
 <p>If you change the <a href="#quote_char"><code>quote_char</code></a> without changing the <code>escape_char</code>, the <code>escape_char</code> will still be the double-quote (<code>&quot;</code>). If instead you want to escape the <a href="#quote_char"><code>quote_char</code></a> by doubling it you will need to also change the <code>escape_char</code> to be the same as what you have changed the <a href="#quote_char"><code>quote_char</code></a> to.</p>
 
-<p>Setting <code>escape_char</code> to &lt;undef&gt; or <code>&quot;&quot;</code> will disable escaping completely and is greatly discouraged. This will also disable <code>escape_null</code>.</p>
+<p>Setting <code>escape_char</code> to <code>undef</code> or <code>&quot;&quot;</code> will completely disable escapes and is greatly discouraged. This will also disable <code>escape_null</code>.</p>
 
 <p>The escape character can not be equal to the separation character.</p>
 
@@ -1444,16 +1444,46 @@ $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 
 <dl>
 
-<dt id="x0001"><code> </code>0x0001</dt>
+<dt id="x0001"><code>0x0001</code></dt>
+<dd>
+
+</dd>
+<dt id="CSV_FLAGS_IS_QUOTED"><code>CSV_FLAGS_IS_QUOTED</code></dt>
 <dd>
 
 <p>The field was quoted.</p>
 
 </dd>
-<dt id="x0002"><code> </code>0x0002</dt>
+<dt id="x0002"><code>0x0002</code></dt>
+<dd>
+
+</dd>
+<dt id="CSV_FLAGS_IS_BINARY"><code>CSV_FLAGS_IS_BINARY</code></dt>
 <dd>
 
 <p>The field was binary.</p>
+
+</dd>
+<dt id="x0004"><code>0x0004</code></dt>
+<dd>
+
+</dd>
+<dt id="CSV_FLAGS_ERROR_IN_FIELD"><code>CSV_FLAGS_ERROR_IN_FIELD</code></dt>
+<dd>
+
+<p>The field was invalid.</p>
+
+<p>Currently only used when <code>allow_loose_quotes</code> is active.</p>
+
+</dd>
+<dt id="x0010"><code>0x0010</code></dt>
+<dd>
+
+</dd>
+<dt id="CSV_FLAGS_IS_MISSING"><code>CSV_FLAGS_IS_MISSING</code></dt>
+<dd>
+
+<p>The field was missing.</p>
 
 </dd>
 </dl>
@@ -1931,6 +1961,19 @@ my $ref = csv (in =&gt; &quot;test.csv&quot;, key   =&gt; [ &quot;:&quot; =&gt; 
 <p>This attribute can be abbreviated to <code>kh</code> or passed as <code>keep_column_names</code>.</p>
 
 <p>This attribute implies a default of <code>auto</code> for the <code>headers</code> attribute.</p>
+
+<p>  The headers can also be kept internally to keep stable header order:</p>
+
+<pre><code>csv (in      =&gt; csv (in =&gt; &quot;file.csv&quot;, kh =&gt; &quot;internal&quot;),
+     out     =&gt; &quot;new.csv&quot;,
+     kh      =&gt; &quot;internal&quot;);</code></pre>
+
+<p>where <code>internal</code> can also be <code>1</code>, <code>yes</code>, or <code>true</code>. This is similar to</p>
+
+<pre><code>my @h;
+csv (in      =&gt; csv (in =&gt; &quot;file.csv&quot;, kh =&gt; \@h),
+     out     =&gt; &quot;new.csv&quot;,
+     headers =&gt; \@h);</code></pre>
 
 <h3 id="fragment1">fragment </h3>
 
@@ -2999,7 +3042,7 @@ $csv-&gt;is_quoted (3, 1);</code></pre>
 
 <h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
 
-<pre><code>Copyright (C) 2007-2021 H.Merijn Brand.  All rights reserved.
+<pre><code>Copyright (C) 2007-2022 H.Merijn Brand.  All rights reserved.
 Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
 Copyright (C) 1997      Alan Citterman.  All rights reserved.</code></pre>
 
