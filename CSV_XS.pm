@@ -763,21 +763,21 @@ sub is_quoted {
     my ($self, $idx) = @_;
     ref $self->{'_FFLAGS'} &&
 	$idx >= 0 && $idx < @{$self->{'_FFLAGS'}} or return;
-    $self->{'_FFLAGS'}[$idx] & CSV_FLAGS_IS_QUOTED  ? 1 : 0;
+    $self->{'_FFLAGS'}[$idx] & CSV_FLAGS_IS_QUOTED  () ? 1 : 0;
     } # is_quoted
 
 sub is_binary {
     my ($self, $idx) = @_;
     ref $self->{'_FFLAGS'} &&
 	$idx >= 0 && $idx < @{$self->{'_FFLAGS'}} or return;
-    $self->{'_FFLAGS'}[$idx] & CSV_FLAGS_IS_BINARY  ? 1 : 0;
+    $self->{'_FFLAGS'}[$idx] & CSV_FLAGS_IS_BINARY  () ? 1 : 0;
     } # is_binary
 
 sub is_missing {
     my ($self, $idx) = @_;
     $idx < 0 || !ref $self->{'_FFLAGS'} and return;
     $idx >= @{$self->{'_FFLAGS'}} and return 1;
-    $self->{'_FFLAGS'}[$idx] & CSV_FLAGS_IS_MISSING ? 1 : 0;
+    $self->{'_FFLAGS'}[$idx] & CSV_FLAGS_IS_MISSING () ? 1 : 0;
     } # is_missing
 
 # combine
@@ -1018,10 +1018,10 @@ sub getline_hr {
     $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3002));
     my $fr = $self->getline (@args) or return;
     if (ref $self->{'_FFLAGS'}) { # missing
-	$self->{'_FFLAGS'}[$_] = CSV_FLAGS_IS_MISSING
+	$self->{'_FFLAGS'}[$_] = CSV_FLAGS_IS_MISSING ()
 	    for (@{$fr} ? $#{$fr} + 1 : 0) .. $#{$self->{'_COLUMN_NAMES'}};
 	@{$fr} == 1 && (!defined $fr->[0] || $fr->[0] eq "") and
-	    $self->{'_FFLAGS'}[0] ||= CSV_FLAGS_IS_MISSING;
+	    $self->{'_FFLAGS'}[0] ||= CSV_FLAGS_IS_MISSING ();
 	}
     @hr{@{$self->{'_COLUMN_NAMES'}}} = @{$fr};
     \%hr;
