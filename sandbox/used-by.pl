@@ -117,6 +117,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "Template-Provider-DBIC",		# weird
     "Template-Provider-PrefixDBIC",	# weird
     "Test-DBIC",			# ::CSV - Insecure -T in C3
+    "Text-AutoCSV",			# Test fails in date compare
 #   "Text-CSV-Encoded",			# ::CSV - Encoding, patch filed at RT
     "Text-CSV_PP-Simple",		# ::CSV - Syntax errors, bad archive
 #   "Text-CSV-Track",			# Encoding, patch filed at RT
