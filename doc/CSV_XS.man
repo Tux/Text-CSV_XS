@@ -384,6 +384,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        [4mformula_handling[0m
 
+       Alias for "formula"
+
        [4mformula[0m
 
         my $csv = Text::CSV_XS->new ({ formula => "none" });
@@ -1437,11 +1439,17 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
         $types = $csv->types ();
 
-       IV  Set field type to integer.
+       IV
+       CSV_TYPE_IV
+           Set field type to integer.
 
-       NV  Set field type to numeric/float.
+       NV
+       CSV_TYPE_NV
+           Set field type to numeric/float.
 
-       PV  Set field type to string.
+       PV
+       CSV_TYPE_PV
+           Set field type to string.
 
    [1mfields[0m
         @columns = $csv->fields ();
@@ -1597,6 +1605,24 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         $csv->SetDiag (0);
 
        Use to reset the diagnostics if you are dealing with errors.
+
+[1mIMPORTS/EXPORTS[0m
+       By default, only method "new" is exported. These are the other options:
+
+       csv
+          use Text::CSV_XS qw( csv );
+
+         Import the function "csv" function. See below.
+
+       :CONSTANTS
+          use Text::CSV_XS qw( :CONSTANTS );
+
+         Import module constants  "CSV_FLAGS_IS_QUOTED",
+         "CSV_FLAGS_IS_BINARY", "CSV_FLAGS_ERROR_IN_FIELD",
+         "CSV_FLAGS_IS_MISSING",   "CSV_TYPE_PV", "CSV_TYPE_IV", and
+         "CSV_TYPE_NV". Each can be imported alone
+
+          use Text::CSV_XS qw( CSV_FLAS_IS_BINARY CSV_TYPE_NV );
 
 [1mFUNCTIONS[0m
    [1mcsv[0m
@@ -3080,4 +3106,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.34.0                      2022-05-06                          STDIN(1)
+perl v5.34.0                      2022-05-07                          STDIN(1)

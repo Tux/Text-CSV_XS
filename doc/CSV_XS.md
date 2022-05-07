@@ -381,8 +381,10 @@ This attribute is only used in parsing.
 
 ### formula\_handling
 
-### formula
 
+Alias for ["formula"](#formula)
+
+### formula
 
 
     my $csv = Text::CSV_XS->new ({ formula => "none" });
@@ -1499,15 +1501,21 @@ or fetch the current type settings with
 
 - IV
 
+- CSV\_TYPE\_IV
+
 
     Set field type to integer.
 
 - NV
 
+- CSV\_TYPE\_NV
+
 
     Set field type to numeric/float.
 
 - PV
+
+- CSV\_TYPE\_PV
 
 
     Set field type to string.
@@ -1539,15 +1547,18 @@ about  the  field  returned  by  the  ["fields"](#fields)  method or  passed to 
 - `0x0001`
 - `CSV_FLAGS_IS_QUOTED`
 
+
     The field was quoted.
 
 - `0x0002`
 - `CSV_FLAGS_IS_BINARY`
 
+
     The field was binary.
 
 - `0x0004`
 - `CSV_FLAGS_ERROR_IN_FIELD`
+
 
     The field was invalid.
 
@@ -1555,6 +1566,7 @@ about  the  field  returned  by  the  ["fields"](#fields)  method or  passed to 
 
 - `0x0010`
 - `CSV_FLAGS_IS_MISSING`
+
 
     The field was missing.
 
@@ -1688,6 +1700,26 @@ this instance are not counted.
     $csv->SetDiag (0);
 
 Use to reset the diagnostics if you are dealing with errors.
+
+# IMPORTS/EXPORTS
+
+By default, only method ["new"](#new) is exported. These are the other options:
+
+- csv
+
+        use Text::CSV_XS qw( csv );
+
+    Import the function ["csv"](#csv) function. See below.
+
+- :CONSTANTS
+
+        use Text::CSV_XS qw( :CONSTANTS );
+
+    Import module constants  ["CSV\_FLAGS\_IS\_QUOTED"](#csv_flags_is_quoted),  ["CSV\_FLAGS\_IS\_BINARY"](#csv_flags_is_binary),
+    ["CSV\_FLAGS\_ERROR\_IN\_FIELD"](#csv_flags_error_in_field),  ["CSV\_FLAGS\_IS\_MISSING"](#csv_flags_is_missing),   ["CSV\_TYPE\_PV"](#csv_type_pv),
+    ["CSV\_TYPE\_IV"](#csv_type_iv), and ["CSV\_TYPE\_NV"](#csv_type_nv). Each can be imported alone
+
+        use Text::CSV_XS qw( CSV_FLAS_IS_BINARY CSV_TYPE_NV );
 
 # FUNCTIONS
 

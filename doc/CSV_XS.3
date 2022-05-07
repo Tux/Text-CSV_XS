@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2022-05-06" "perl v5.34.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2022-05-07" "perl v5.34.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -567,10 +567,13 @@ one single empty field.
 This attribute is only used in parsing.
 .PP
 \fIformula_handling\fR
+.IX Xref "formula_handling"
 .IX Subsection "formula_handling"
 .PP
+Alias for \*(L"formula\*(R"
+.PP
 \fIformula\fR
-.IX Xref "formula_handling formula"
+.IX Xref "formula"
 .IX Subsection "formula"
 .PP
 .Vb 3
@@ -1897,14 +1900,29 @@ or fetch the current type settings with
 .IP "\s-1IV\s0" 4
 .IX Xref "IV"
 .IX Item "IV"
+.PD 0
+.IP "\s-1CSV_TYPE_IV\s0" 4
+.IX Xref "CSV_TYPE_IV"
+.IX Item "CSV_TYPE_IV"
+.PD
 Set field type to integer.
 .IP "\s-1NV\s0" 4
 .IX Xref "NV"
 .IX Item "NV"
+.PD 0
+.IP "\s-1CSV_TYPE_NV\s0" 4
+.IX Xref "CSV_TYPE_NV"
+.IX Item "CSV_TYPE_NV"
+.PD
 Set field type to numeric/float.
 .IP "\s-1PV\s0" 4
 .IX Xref "PV"
 .IX Item "PV"
+.PD 0
+.IP "\s-1CSV_TYPE_PV\s0" 4
+.IX Xref "CSV_TYPE_PV"
+.IX Item "CSV_TYPE_PV"
+.PD
 Set field type to string.
 .SS "fields"
 .IX Xref "fields"
@@ -1938,6 +1956,7 @@ about  the  field  returned  by  the  \*(L"fields\*(R"  method or  passed to  th
 .PD 0
 .ie n .IP """CSV_FLAGS_IS_QUOTED""" 2
 .el .IP "\f(CWCSV_FLAGS_IS_QUOTED\fR" 2
+.IX Xref "CSV_FLAGS_IS_QUOTED"
 .IX Item "CSV_FLAGS_IS_QUOTED"
 .PD
 The field was quoted.
@@ -1947,6 +1966,7 @@ The field was quoted.
 .PD 0
 .ie n .IP """CSV_FLAGS_IS_BINARY""" 2
 .el .IP "\f(CWCSV_FLAGS_IS_BINARY\fR" 2
+.IX Xref "CSV_FLAGS_IS_BINARY"
 .IX Item "CSV_FLAGS_IS_BINARY"
 .PD
 The field was binary.
@@ -1956,6 +1976,7 @@ The field was binary.
 .PD 0
 .ie n .IP """CSV_FLAGS_ERROR_IN_FIELD""" 2
 .el .IP "\f(CWCSV_FLAGS_ERROR_IN_FIELD\fR" 2
+.IX Xref "CSV_FLAGS_ERROR_IN_FIELD"
 .IX Item "CSV_FLAGS_ERROR_IN_FIELD"
 .PD
 The field was invalid.
@@ -1967,6 +1988,7 @@ Currently only used when \f(CW\*(C`allow_loose_quotes\*(C'\fR is active.
 .PD 0
 .ie n .IP """CSV_FLAGS_IS_MISSING""" 2
 .el .IP "\f(CWCSV_FLAGS_IS_MISSING\fR" 2
+.IX Xref "CSV_FLAGS_IS_MISSING"
 .IX Item "CSV_FLAGS_IS_MISSING"
 .PD
 The field was missing.
@@ -2111,6 +2133,29 @@ this instance are not counted.
 .Ve
 .PP
 Use to reset the diagnostics if you are dealing with errors.
+.SH "IMPORTS/EXPORTS"
+.IX Header "IMPORTS/EXPORTS"
+By default, only method \*(L"new\*(R" is exported. These are the other options:
+.IP "csv" 2
+.IX Item "csv"
+.Vb 1
+\& use Text::CSV_XS qw( csv );
+.Ve
+.Sp
+Import the function \*(L"csv\*(R" function. See below.
+.IP ":CONSTANTS" 2
+.IX Item ":CONSTANTS"
+.Vb 1
+\& use Text::CSV_XS qw( :CONSTANTS );
+.Ve
+.Sp
+Import module constants  \*(L"\s-1CSV_FLAGS_IS_QUOTED\*(R"\s0,  \*(L"\s-1CSV_FLAGS_IS_BINARY\*(R"\s0,
+\&\*(L"\s-1CSV_FLAGS_ERROR_IN_FIELD\*(R"\s0,  \*(L"\s-1CSV_FLAGS_IS_MISSING\*(R"\s0,   \*(L"\s-1CSV_TYPE_PV\*(R"\s0,
+\&\*(L"\s-1CSV_TYPE_IV\*(R"\s0, and \*(L"\s-1CSV_TYPE_NV\*(R"\s0. Each can be imported alone
+.Sp
+.Vb 1
+\& use Text::CSV_XS qw( CSV_FLAS_IS_BINARY CSV_TYPE_NV );
+.Ve
 .SH "FUNCTIONS"
 .IX Header "FUNCTIONS"
 .SS "csv"

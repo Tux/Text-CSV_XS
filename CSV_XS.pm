@@ -25,20 +25,33 @@ require Exporter;
 use XSLoader;
 use Carp;
 
-use vars   qw( $VERSION @ISA @EXPORT_OK );
-$VERSION   = "1.48";
-@ISA       = qw( Exporter );
-@EXPORT_OK = qw( csv );
+use vars qw( $VERSION @ISA @EXPORT_OK %EXPORT_TAGS );
+$VERSION = "1.48";
+@ISA     = qw( Exporter );
 XSLoader::load ("Text::CSV_XS", $VERSION);
 
-sub PV { 0 }
-sub IV { 1 }
-sub NV { 2 }
+sub PV { 0 } sub CSV_TYPE_PV { PV }
+sub IV { 1 } sub CSV_TYPE_IV { IV }
+sub NV { 2 } sub CSV_TYPE_NV { NV }
 
 sub CSV_FLAGS_IS_QUOTED		{ 0x0001 }
 sub CSV_FLAGS_IS_BINARY		{ 0x0002 }
 sub CSV_FLAGS_ERROR_IN_FIELD	{ 0x0004 }
 sub CSV_FLAGS_IS_MISSING	{ 0x0010 }
+
+%EXPORT_TAGS = (
+    CONSTANTS	=> [qw( 
+	CSV_FLAGS_IS_QUOTED
+	CSV_FLAGS_IS_BINARY
+	CSV_FLAGS_ERROR_IN_FIELD
+	CSV_FLAGS_IS_MISSING
+
+	CSV_TYPE_PV
+	CSV_TYPE_IV
+	CSV_TYPE_NV
+	)],
+    );
+@EXPORT_OK = (qw( csv PV IV NV ), @{$EXPORT_TAGS{CONSTANTS}});
 
 if ($] < 5.008002) {
     no warnings "redefine";
@@ -1949,9 +1962,11 @@ one single empty field.
 This attribute is only used in parsing.
 
 =head3 formula_handling
+X<formula_handling>
+
+Alias for L</formula>
 
 =head3 formula
-X<formula_handling>
 X<formula>
 
  my $csv = Text::CSV_XS->new ({ formula => "none" });
@@ -3091,15 +3106,24 @@ or fetch the current type settings with
 =item IV
 X<IV>
 
+=item CSV_TYPE_IV
+X<CSV_TYPE_IV>
+
 Set field type to integer.
 
 =item NV
 X<NV>
 
+=item CSV_TYPE_NV
+X<CSV_TYPE_NV>
+
 Set field type to numeric/float.
 
 =item PV
 X<PV>
+
+=item CSV_TYPE_PV
+X<CSV_TYPE_PV>
 
 Set field type to string.
 
@@ -3134,18 +3158,21 @@ L</combine> method. The flags are bit-wise-C<or>'d like:
 =item C<0x0001>
 
 =item C<CSV_FLAGS_IS_QUOTED>
+X<CSV_FLAGS_IS_QUOTED>
 
 The field was quoted.
 
 =item C<0x0002>
 
 =item C<CSV_FLAGS_IS_BINARY>
+X<CSV_FLAGS_IS_BINARY>
 
 The field was binary.
 
 =item C<0x0004>
 
 =item C<CSV_FLAGS_ERROR_IN_FIELD>
+X<CSV_FLAGS_ERROR_IN_FIELD>
 
 The field was invalid.
 
@@ -3154,6 +3181,7 @@ Currently only used when C<allow_loose_quotes> is active.
 =item C<0x0010>
 
 =item C<CSV_FLAGS_IS_MISSING>
+X<CSV_FLAGS_IS_MISSING>
 
 The field was missing.
 
@@ -3289,6 +3317,30 @@ X<SetDiag>
  $csv->SetDiag (0);
 
 Use to reset the diagnostics if you are dealing with errors.
+
+=head1 IMPORTS/EXPORTS
+
+By default, only method L</new> is exported. These are the other options:
+
+=over 2
+
+=item csv
+
+ use Text::CSV_XS qw( csv );
+
+Import the function L</csv> function. See below.
+
+=item :CONSTANTS
+
+ use Text::CSV_XS qw( :CONSTANTS );
+
+Import module constants  L</CSV_FLAGS_IS_QUOTED>,  L</CSV_FLAGS_IS_BINARY>,
+L</CSV_FLAGS_ERROR_IN_FIELD>,  L</CSV_FLAGS_IS_MISSING>,   L</CSV_TYPE_PV>,
+L</CSV_TYPE_IV>, and L</CSV_TYPE_NV>. Each can be imported alone
+
+ use Text::CSV_XS qw( CSV_FLAS_IS_BINARY CSV_TYPE_NV );
+
+=back
 
 =head1 FUNCTIONS
 

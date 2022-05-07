@@ -10,6 +10,7 @@ ppport.h		Perl/Pollution/Portability script/include file
 t/10_base.t		Base tests (combine and parse only)
 t/12_acc.t		Accessor methods
 t/15_flags.t		Basic flag tests
+t/16_import.t		Imports/exports of constants
 t/20_file.t		IO tests (print and getline) global  handles
 t/21_lexicalio.t	IO tests (print and getline) lexical handles
 t/22_scalario.t		IO tests (print and getline) scalar io (perlio)

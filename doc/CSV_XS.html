@@ -36,8 +36,8 @@
           <li><a href="#binary">binary </a></li>
           <li><a href="#strict">strict </a></li>
           <li><a href="#skip_empty_rows">skip_empty_rows </a></li>
-          <li><a href="#formula_handling">formula_handling</a></li>
-          <li><a href="#formula">formula  </a></li>
+          <li><a href="#formula_handling">formula_handling </a></li>
+          <li><a href="#formula">formula </a></li>
           <li><a href="#decode_utf8">decode_utf8 </a></li>
           <li><a href="#auto_diag">auto_diag </a></li>
           <li><a href="#diag_verbose">diag_verbose </a></li>
@@ -96,9 +96,10 @@
       <li><a href="#SetDiag">SetDiag </a></li>
     </ul>
   </li>
+  <li><a href="#IMPORTS-EXPORTS">IMPORTS/EXPORTS</a></li>
   <li><a href="#FUNCTIONS">FUNCTIONS</a>
     <ul>
-      <li><a href="#csv">csv </a>
+      <li><a href="#csv1">csv </a>
         <ul>
           <li><a href="#in">in </a></li>
           <li><a href="#out">out </a></li>
@@ -470,9 +471,11 @@ my $f = $csv-&gt;skip_empty_rows;</code></pre>
 
 <p>This attribute is only used in parsing.</p>
 
-<h3 id="formula_handling">formula_handling</h3>
+<h3 id="formula_handling">formula_handling </h3>
 
-<h3 id="formula">formula  </h3>
+<p>Alias for <a href="#formula">&quot;formula&quot;</a></p>
+
+<h3 id="formula">formula </h3>
 
 <pre><code>my $csv = Text::CSV_XS-&gt;new ({ formula =&gt; &quot;none&quot; });
         $csv-&gt;formula (&quot;none&quot;);
@@ -1409,16 +1412,28 @@ $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 <dt id="IV">IV </dt>
 <dd>
 
+</dd>
+<dt id="CSV_TYPE_IV">CSV_TYPE_IV </dt>
+<dd>
+
 <p>Set field type to integer.</p>
 
 </dd>
 <dt id="NV">NV </dt>
 <dd>
 
+</dd>
+<dt id="CSV_TYPE_NV">CSV_TYPE_NV </dt>
+<dd>
+
 <p>Set field type to numeric/float.</p>
 
 </dd>
 <dt id="PV">PV </dt>
+<dd>
+
+</dd>
+<dt id="CSV_TYPE_PV">CSV_TYPE_PV </dt>
 <dd>
 
 <p>Set field type to string.</p>
@@ -1448,7 +1463,7 @@ $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 <dd>
 
 </dd>
-<dt id="CSV_FLAGS_IS_QUOTED"><code>CSV_FLAGS_IS_QUOTED</code></dt>
+<dt id="CSV_FLAGS_IS_QUOTED"><code>CSV_FLAGS_IS_QUOTED</code> </dt>
 <dd>
 
 <p>The field was quoted.</p>
@@ -1458,7 +1473,7 @@ $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 <dd>
 
 </dd>
-<dt id="CSV_FLAGS_IS_BINARY"><code>CSV_FLAGS_IS_BINARY</code></dt>
+<dt id="CSV_FLAGS_IS_BINARY"><code>CSV_FLAGS_IS_BINARY</code> </dt>
 <dd>
 
 <p>The field was binary.</p>
@@ -1468,7 +1483,7 @@ $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 <dd>
 
 </dd>
-<dt id="CSV_FLAGS_ERROR_IN_FIELD"><code>CSV_FLAGS_ERROR_IN_FIELD</code></dt>
+<dt id="CSV_FLAGS_ERROR_IN_FIELD"><code>CSV_FLAGS_ERROR_IN_FIELD</code> </dt>
 <dd>
 
 <p>The field was invalid.</p>
@@ -1480,7 +1495,7 @@ $csv-&gt;eof or $csv-&gt;error_diag;</code></pre>
 <dd>
 
 </dd>
-<dt id="CSV_FLAGS_IS_MISSING"><code>CSV_FLAGS_IS_MISSING</code></dt>
+<dt id="CSV_FLAGS_IS_MISSING"><code>CSV_FLAGS_IS_MISSING</code> </dt>
 <dd>
 
 <p>The field was missing.</p>
@@ -1573,9 +1588,35 @@ $error_str                = &quot;&quot; . $csv-&gt;error_diag ();
 
 <p>Use to reset the diagnostics if you are dealing with errors.</p>
 
+<h1 id="IMPORTS-EXPORTS">IMPORTS/EXPORTS</h1>
+
+<p>By default, only method <a href="#new">&quot;new&quot;</a> is exported. These are the other options:</p>
+
+<dl>
+
+<dt id="csv">csv</dt>
+<dd>
+
+<pre><code>use Text::CSV_XS qw( csv );</code></pre>
+
+<p>Import the function <a href="#csv">&quot;csv&quot;</a> function. See below.</p>
+
+</dd>
+<dt id="CONSTANTS">:CONSTANTS</dt>
+<dd>
+
+<pre><code>use Text::CSV_XS qw( :CONSTANTS );</code></pre>
+
+<p>Import module constants <a href="#CSV_FLAGS_IS_QUOTED">&quot;CSV_FLAGS_IS_QUOTED&quot;</a>, <a href="#CSV_FLAGS_IS_BINARY">&quot;CSV_FLAGS_IS_BINARY&quot;</a>, <a href="#CSV_FLAGS_ERROR_IN_FIELD">&quot;CSV_FLAGS_ERROR_IN_FIELD&quot;</a>, <a href="#CSV_FLAGS_IS_MISSING">&quot;CSV_FLAGS_IS_MISSING&quot;</a>, <a href="#CSV_TYPE_PV">&quot;CSV_TYPE_PV&quot;</a>, <a href="#CSV_TYPE_IV">&quot;CSV_TYPE_IV&quot;</a>, and <a href="#CSV_TYPE_NV">&quot;CSV_TYPE_NV&quot;</a>. Each can be imported alone</p>
+
+<pre><code>use Text::CSV_XS qw( CSV_FLAS_IS_BINARY CSV_TYPE_NV );</code></pre>
+
+</dd>
+</dl>
+
 <h1 id="FUNCTIONS">FUNCTIONS</h1>
 
-<h2 id="csv">csv </h2>
+<h2 id="csv1">csv </h2>
 
 <p>This function is not exported by default and should be explicitly requested:</p>
 
@@ -2356,7 +2397,7 @@ my $aoa = csv (
   ]</code></pre>
 
 </dd>
-<dt id="csv1">csv</dt>
+<dt id="csv2">csv</dt>
 <dd>
 
 <p>The <i>function</i> <a href="#csv">&quot;csv&quot;</a> can also be called as a method or with an existing Text::CSV_XS object. This could help if the function is to be invoked a lot of times and the overhead of creating the object internally over and over again would be prevented by passing an existing instance.</p>
