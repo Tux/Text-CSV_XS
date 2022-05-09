@@ -3320,7 +3320,7 @@ Use to reset the diagnostics if you are dealing with errors.
 
 =head1 IMPORTS/EXPORTS
 
-By default, only method L</new> is exported. These are the other options:
+By default none of these are exported.
 
 =over 2
 

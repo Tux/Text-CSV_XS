@@ -1,4 +1,4 @@
-1.48	- 2022-05-07, H.Merijn Brand
+1.48	- 2022-05-09, H.Merijn Brand
     * It's 2022
     * Update to Devel::PPPort-3.64
     * kh => 1 (use internal headers)
