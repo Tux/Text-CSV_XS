@@ -1385,7 +1385,7 @@ sub csv {
     my @row1;
     if (defined $c->{'hd_s'} || defined $c->{'hd_b'} || defined $c->{'hd_m'} || defined $c->{'hd_c'}) {
 	my %harg;
-	defined $c->{'hd_s'} and $harg{'set_set'}            = $c->{'hd_s'};
+	defined $c->{'hd_s'} and $harg{'sep_set'}            = $c->{'hd_s'};
 	defined $c->{'hd_d'} and $harg{'detect_bom'}         = $c->{'hd_b'};
 	defined $c->{'hd_m'} and $harg{'munge_column_names'} = $hdrs ? "none" : $c->{'hd_m'};
 	defined $c->{'hd_c'} and $harg{'set_column_names'}   = $hdrs ? 0      : $c->{'hd_c'};

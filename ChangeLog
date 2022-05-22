@@ -1,4 +1,4 @@
-1.48	- 2022-05-09, H.Merijn Brand
+1.48	- 2022-05-22, H.Merijn Brand
     * It's 2022
     * Update to Devel::PPPort-3.64
     * kh => 1 (use internal headers)
@@ -6,6 +6,7 @@
     * Add constants for META flags (RT#142508)
     * Update to Devel::PPPort-3.68
     * Export :CONSTANTS
+    * Fix sep_set typo (issue 37)
 
 1.47	- 2021-12-21, H.Merijn Brand
     * Make error 2014 catchable
@@ -73,7 +74,7 @@
     * [csv2xlsx] sheetnames are restricted to 31 characters
     * Generate cpanfile
     * Add munge type "db"
-    * [csv2xls/csv2xlsx] do not generate xls/xlsx on empty CSV (issue#18)
+    * [csv2xls/csv2xlsx] do not generate xls/xlsx on empty CSV (issue 18)
     * New: support $csv->formula (sub { ... })
     * Support stacked encodings
 
@@ -187,7 +188,7 @@
     * Add some docs for bind_columns
 
 1.24	- 2016-07-09, H.Merijn Brand
-    * Fix typo in docs example code (issue#4, joevak)
+    * Fix typo in docs example code (issue 4, joevak)
     * Set auto-wrap on for csv2xls with embedded newlines
     * Add examples/csv2xlsx, the MSExcel-2007+ version of csv2xls
       Includes new feature to merge multiple CSV's into a single xlsx
