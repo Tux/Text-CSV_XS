@@ -1607,7 +1607,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        Use to reset the diagnostics if you are dealing with errors.
 
 [1mIMPORTS/EXPORTS[0m
-       By default, only method "new" is exported. These are the other options:
+       By default none of these are exported.
 
        csv
           use Text::CSV_XS qw( csv );
@@ -3106,4 +3106,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.34.0                      2022-05-07                          STDIN(1)
+perl v5.36.0                      2022-05-24                          STDIN(1)

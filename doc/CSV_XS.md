@@ -1703,7 +1703,7 @@ Use to reset the diagnostics if you are dealing with errors.
 
 # IMPORTS/EXPORTS
 
-By default, only method ["new"](#new) is exported. These are the other options:
+By default none of these are exported.
 
 - csv
 
