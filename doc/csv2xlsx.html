@@ -1,0 +1,383 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>csv2xlsx - Convert CSV to Excel 2007+</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:hmbrand@cpan.org" />
+</head>
+
+<body>
+
+
+
+<ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+  <li><a href="#DESCRIPTION">DESCRIPTION</a></li>
+  <li><a href="#OPTIONS">OPTIONS</a></li>
+  <li><a href="#SEE-ALSO">SEE ALSO</a></li>
+  <li><a href="#AUTHOR">AUTHOR</a></li>
+  <li><a href="#COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+<h1 id="NAME">NAME</h1>
+
+<p>csv2xlsx - Convert CSV to Excel 2007+</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<pre><code>csv2xlsx [options] [file.csv]
+
+csv2xlsx test.csv
+
+csv2xlsx -f -o merged.xlsx -m foobar*.csv</code></pre>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p>This tool converts CSV data to Excel-2007+. It can convert the CSV into a single sheet, merge CSV files into multiple sheets in a workbook or split a single CSV into multiple sheets.</p>
+
+<p>The tool supports encoding, formula handle, date conversion and some more.</p>
+
+<h1 id="OPTIONS">OPTIONS</h1>
+
+<dl>
+
+<dt id="s-S">-s S</dt>
+<dd>
+
+</dd>
+<dt id="sep-S">--sep=S</dt>
+<dd>
+
+<p>use <code>S</code> as separator character, auto-detect, default = <code>,</code>.</p>
+
+<p>The literal string <code>tab</code> is allowed.</p>
+
+</dd>
+<dt id="q-Q">-q Q</dt>
+<dd>
+
+</dd>
+<dt id="quo-Q">--quo=Q</dt>
+<dd>
+
+<p>use <code>Q</code> as quotation character, auto-detect, default = <code>&quot;</code>.</p>
+
+<p>The literal string <code>undef</code> is allowed to disable quotation.</p>
+
+</dd>
+<dt id="e-E">-e E</dt>
+<dd>
+
+</dd>
+<dt id="esc-E">--esc=E</dt>
+<dd>
+
+<p>use <code>E</code> as escape character, auto-detect, default = <code>&quot;</code>.</p>
+
+<p>The literal string <code>undef</code> is allowed to disable escapes.</p>
+
+</dd>
+<dt id="w-W">-w W</dt>
+<dd>
+
+</dd>
+<dt id="width-W">--width=W</dt>
+<dd>
+
+<p>Set column width. Default is to auto-size per column per sheet with a minimum width of <code>4</code>.</p>
+
+</dd>
+<dt id="o-FILE.xlsx">-o FILE.xlsx</dt>
+<dd>
+
+</dd>
+<dt id="x-FILE.xlsx">-x FILE.xlsx</dt>
+<dd>
+
+</dd>
+<dt id="out-FILE.xlsx">--out=FILE.xlsx</dt>
+<dd>
+
+<p>Specify the output filename. Default it the same name as the input-file where the trailing <code>.csv</code> will be replaced with <code>.xlsx</code>.</p>
+
+<p>If a filename can not be automatically generated, it will default to <code>csv2xlsx.xlsx</code>.</p>
+
+</dd>
+<dt id="d-format">-d format</dt>
+<dd>
+
+</dd>
+<dt id="date-fmt-format">--date-fmt=format</dt>
+<dd>
+
+<p>Use <code>format</code> as date formats. Default = <code>dd-mm-yyyy</code>.</p>
+
+</dd>
+<dt id="D-range">-D range</dt>
+<dd>
+
+</dd>
+<dt id="date-col-range">--date-col=range</dt>
+<dd>
+
+<p>Only convert dates in columns <code>range</code>. Default is everywhere.</p>
+
+<p>Ranges are numeric, where the first column has index <code>1</code>. A range is a definition of sections joined by <code>,</code>s. A section is either a single column or a start/finish-pair joined with a dash. A missing finish index on the last segment is an open range (till the end of the line).</p>
+
+<p>If the range is <code>0</code>, date conversion is disabled.</p>
+
+<pre><code>-D 0
+-D 1,2,6
+-D 2,4-8,12-</code></pre>
+
+</dd>
+<dt id="C-format">-C format</dt>
+<dd>
+
+</dd>
+<dt id="curr-fmt-format">--curr-fmt=format</dt>
+<dd>
+
+<p>Use <code>format</code> as currency formats for currency &lt;C&gt;, no default.</p>
+
+<pre><code>-C &#39;$:### ### ##0.00&#39;</code></pre>
+
+</dd>
+<dt id="f">-f</dt>
+<dd>
+
+</dd>
+<dt id="force">--force</dt>
+<dd>
+
+<p>Force usage of the output file if it already exists (unlink before use).</p>
+
+</dd>
+<dt id="F">-F</dt>
+<dd>
+
+</dd>
+<dt id="formulas">--formulas</dt>
+<dd>
+
+<p>Allow formula&#39;s. Otherwise fields starting with an equal sign <code>=</code> are forced to string type.</p>
+
+<p>There are several shortcuts here to specify different behavior:</p>
+
+<dl>
+
+<dt id="Fa-a">--Fa=a</dt>
+<dd>
+
+<p>Define formula action: <code>none</code>/<code>die</code>/<code>croak</code>/<code>diag</code>/<code>empty</code>/<code>undef</code></p>
+
+</dd>
+<dt id="Ft">--Ft</dt>
+<dd>
+
+<p>Formula&#39;s will be stored as text (formula actions: none)</p>
+
+</dd>
+<dt id="Fd">--Fd</dt>
+<dd>
+
+<p>Formula&#39;s will cause a die</p>
+
+</dd>
+<dt id="Fc">--Fc</dt>
+<dd>
+
+<p>Formula&#39;s will cause a croak</p>
+
+</dd>
+<dt id="FD">--FD</dt>
+<dd>
+
+<p>Formula&#39;s will cause a warning (this is the default)</p>
+
+</dd>
+<dt id="Fe">--Fe</dt>
+<dd>
+
+<p>Formula&#39;s will be replaced by the empty string</p>
+
+</dd>
+<dt id="Fu">--Fu</dt>
+<dd>
+
+<p>Formula&#39;s will be replaced with an undefined cell</p>
+
+</dd>
+</dl>
+
+</dd>
+<dt id="u">-u</dt>
+<dd>
+
+</dd>
+<dt id="utf-8">--utf-8</dt>
+<dd>
+
+</dd>
+<dt id="utf8">--utf8</dt>
+<dd>
+
+<p>CSV is UTF-8 encoded. Likely not needed, as most is auto-detected.</p>
+
+</dd>
+<dt id="de">--de</dt>
+<dd>
+
+</dd>
+<dt id="fix-utf8">--fix-utf8</dt>
+<dd>
+
+<p>Attempt to fix double-encoded UTF-8. e.g. <code>\x{00c3}\x{00ab}</code> should have been <code>\x0100}</code>. YMMV.</p>
+
+</dd>
+<dt id="m">-m</dt>
+<dd>
+
+</dd>
+<dt id="merge">--merge</dt>
+<dd>
+
+<p>Merge multiple CSV&#39;s into a single Excel (separate sheets).</p>
+
+<p>With this option, the option <code>-o</code> is required. All arguments should be existing files. Piping is not supported.</p>
+
+</dd>
+<dt id="L-N">-L N</dt>
+<dd>
+
+</dd>
+<dt id="row-limit-N">--row-limit=N</dt>
+<dd>
+
+<p>Limit export to <code>N</code> rows.</p>
+
+</dd>
+<dt id="S-CxP">-S CxP</dt>
+<dd>
+
+</dd>
+<dt id="split-CxP">--split=CxP</dt>
+<dd>
+
+<p>When dealing with big CSV datasets, it this option enables you to split the data over several sheets. When all the <code>-S</code> options match is a single row, that row will be the first row of a new sheet. (see also <code>--sl=C</code>)</p>
+
+<dl>
+
+<dt id="C">C</dt>
+<dd>
+
+<p>The column that should be examined. <code>A</code> = <code>1</code>. If lower case, the value of that column is matched case insensitive when appropriate.</p>
+
+<pre><code>-S 7=ab      Column G is literal &quot;ab&quot;
+-S G=ab      Column G is literal &quot;ab&quot;
+-S g=ab      Column G is literal &quot;ab&quot;, or &quot;aB&quot;, or &quot;Ab&quot;, or &quot;AB&quot;</code></pre>
+
+</dd>
+<dt id="x">x</dt>
+<dd>
+
+<p>Defines the operation on the column</p>
+
+<dl>
+
+<dt id="pod">=</dt>
+<dd>
+
+<p>Literal match</p>
+
+<pre><code>-S G=ab      Column G is literal &quot;ab&quot;
+-S g=ab      Column G is literal &quot;ab&quot;, or &quot;aB&quot;, or &quot;Ab&quot;, or &quot;AB&quot;</code></pre>
+
+</dd>
+<dt id="pod1">/</dt>
+<dd>
+
+<p>Regex match</p>
+
+<pre><code>-S G/b[a-z]  Column G matches /b[a-z]/
+-S g/b[a-z]  Column G matches /b[a-z]/i</code></pre>
+
+</dd>
+<dt id="u-U">u U</dt>
+<dd>
+
+<p>Check for defined</p>
+
+<pre><code>-S Gu        Column G is undefined
+-S GU        Column G is defined</code></pre>
+
+<p>Similar for emptiness</p>
+
+<pre><code>-S G=        Column G is defined but empty
+-S G/.       Column G is defined and not empty</code></pre>
+
+</dd>
+<dt id="">&lt; &gt;</dt>
+<dd>
+
+<p>Compare. If the value in the column is defined compare. If the values only holds digits, do a numeric compare, otherwise do a string compare.</p>
+
+<pre><code>-S G&lt;42      Column G is defined and less than 42 (numeric)
+-S G&lt;ab      Column G is defined and less than 42 (string)
+
+-S G&gt;42      Column G is defined and greater than 42 (numeric)
+-S G&gt;ab      Column G is defined and greater than 42 (string)</code></pre>
+
+</dd>
+</dl>
+
+</dd>
+<dt id="P">P</dt>
+<dd>
+
+<p>pattern or literal string. Quotation might be required differing per OS and shell-environment.</p>
+
+</dd>
+</dl>
+
+</dd>
+<dt id="sl-C">--sl=C</dt>
+<dd>
+
+<p>When splitting with <code>-S</code> / <code>--split</code>, if all criteria match and a new sheet is to be created, use the value in column <code>C</code> of the matching row as new sheet label.</p>
+
+</dd>
+<dt id="v-V">-v [V]</dt>
+<dd>
+
+</dd>
+<dt id="verbose-V">--verbose[=V]</dt>
+<dd>
+
+<p>Set verbosity level. Default = 1. No argument will set to 2.</p>
+
+</dd>
+</dl>
+
+<h1 id="SEE-ALSO">SEE ALSO</h1>
+
+<p>csv2xls - Convert CSV to old Excel</p>
+
+<h1 id="AUTHOR">AUTHOR</h1>
+
+<p>H.Merijn Brand</p>
+
+<h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
+
+<pre><code>Copyright (C) 2016-2022 H.Merijn Brand.  All rights reserved.</code></pre>
+
+<p>This library is free software; you can redistribute and/or modify it under the same terms as Perl itself.</p>
+
+
+</body>
+
+</html>
+
+

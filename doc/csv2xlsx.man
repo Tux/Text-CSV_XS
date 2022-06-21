@@ -1,0 +1,210 @@
+STDIN(1)              User Contributed Perl Documentation             STDIN(1)
+
+
+
+[1mNAME[0m
+       csv2xlsx - Convert CSV to Excel 2007+
+
+[1mSYNOPSIS[0m
+        csv2xlsx [options] [file.csv]
+
+        csv2xlsx test.csv
+
+        csv2xlsx -f -o merged.xlsx -m foobar*.csv
+
+[1mDESCRIPTION[0m
+       This tool converts CSV data to Excel-2007+. It can convert the CSV into
+       a single sheet, merge CSV files into multiple sheets in a workbook or
+       split a single CSV into multiple sheets.
+
+       The tool supports encoding, formula handle, date conversion and some
+       more.
+
+[1mOPTIONS[0m
+       -s S
+       --sep=S
+         use "S" as separator character, auto-detect, default = ",".
+
+         The literal string "tab" is allowed.
+
+       -q Q
+       --quo=Q
+         use "Q" as quotation character, auto-detect, default = """.
+
+         The literal string "undef" is allowed to disable quotation.
+
+       -e E
+       --esc=E
+         use "E" as escape character, auto-detect, default = """.
+
+         The literal string "undef" is allowed to disable escapes.
+
+       -w W
+       --width=W
+         Set column width. Default is to auto-size per column per sheet with a
+         minimum width of 4.
+
+       -o FILE.xlsx
+       -x FILE.xlsx
+       --out=FILE.xlsx
+         Specify the output filename. Default it the same name as the input-
+         file where the trailing ".csv" will be replaced with ".xlsx".
+
+         If a filename can not be automatically generated, it will default to
+         "csv2xlsx.xlsx".
+
+       -d format
+       --date-fmt=format
+         Use "format" as date formats. Default = "dd-mm-yyyy".
+
+       -D range
+       --date-col=range
+         Only convert dates in columns "range". Default is everywhere.
+
+         Ranges are numeric, where the first column has index 1. A range is a
+         definition of sections joined by ","s. A section is either a single
+         column or a start/finish-pair joined with a dash. A missing finish
+         index on the last segment is an open range (till the end of the
+         line).
+
+         If the range is 0, date conversion is disabled.
+
+          -D 0
+          -D 1,2,6
+          -D 2,4-8,12-
+
+       -C format
+       --curr-fmt=format
+         Use "format" as currency formats for currency <C>, no default.
+
+          -C '$:### ### ##0.00'
+
+       -f
+       --force
+         Force usage of the output file if it already exists (unlink before
+         use).
+
+       -F
+       --formulas
+         Allow formula's. Otherwise fields starting with an equal sign "=" are
+         forced to string type.
+
+         There are several shortcuts here to specify different behavior:
+
+         --Fa=a
+           Define formula action: "none"/"die"/"croak"/"diag"/"empty"/"undef"
+
+         --Ft
+           Formula's will be stored as text (formula actions: none)
+
+         --Fd
+           Formula's will cause a die
+
+         --Fc
+           Formula's will cause a croak
+
+         --FD
+           Formula's will cause a warning (this is the default)
+
+         --Fe
+           Formula's will be replaced by the empty string
+
+         --Fu
+           Formula's will be replaced with an undefined cell
+
+       -u
+       --utf-8
+       --utf8
+         CSV is UTF-8 encoded. Likely not needed, as most is auto-detected.
+
+       --de
+       --fix-utf8
+         Attempt to fix double-encoded UTF-8. e.g. "\x{00c3}\x{00ab}" should
+         have been "\x0100}". YMMV.
+
+       -m
+       --merge
+         Merge multiple CSV's into a single Excel (separate sheets).
+
+         With this option, the option "-o" is required. All arguments should
+         be existing files. Piping is not supported.
+
+       -L N
+       --row-limit=N
+         Limit export to "N" rows.
+
+       -S CxP
+       --split=CxP
+         When dealing with big CSV datasets, it this option enables you to
+         split the data over several sheets. When all the "-S" options match
+         is a single row, that row will be the first row of a new sheet. (see
+         also "--sl=C")
+
+         C The column that should be examined. "A" = 1. If lower case, the
+           value of that column is matched case insensitive when appropriate.
+
+            -S 7=ab      Column G is literal "ab"
+            -S G=ab      Column G is literal "ab"
+            -S g=ab      Column G is literal "ab", or "aB", or "Ab", or "AB"
+
+         x Defines the operation on the column
+
+           = Literal match
+
+              -S G=ab      Column G is literal "ab"
+              -S g=ab      Column G is literal "ab", or "aB", or "Ab", or "AB"
+
+           / Regex match
+
+              -S G/b[a-z]  Column G matches /b[a-z]/
+              -S g/b[a-z]  Column G matches /b[a-z]/i
+
+           u U
+             Check for defined
+
+              -S Gu        Column G is undefined
+              -S GU        Column G is defined
+
+             Similar for emptiness
+
+              -S G=        Column G is defined but empty
+              -S G/.       Column G is defined and not empty
+
+           < >
+             Compare. If the value in the column is defined compare. If the
+             values only holds digits, do a numeric compare, otherwise do a
+             string compare.
+
+              -S G<42      Column G is defined and less than 42 (numeric)
+              -S G<ab      Column G is defined and less than 42 (string)
+
+              -S G>42      Column G is defined and greater than 42 (numeric)
+              -S G>ab      Column G is defined and greater than 42 (string)
+
+         P pattern or literal string. Quotation might be required differing
+           per OS and shell-environment.
+
+       --sl=C
+         When splitting with "-S" / "--split", if all criteria match and a new
+         sheet is to be created, use the value in column "C" of the matching
+         row as new sheet label.
+
+       -v [V]
+       --verbose[=V]
+         Set verbosity level. Default = 1. No argument will set to 2.
+
+[1mSEE ALSO[0m
+       csv2xls - Convert CSV to old Excel
+
+[1mAUTHOR[0m
+       H.Merijn Brand
+
+[1mCOPYRIGHT AND LICENSE[0m
+        Copyright (C) 2016-2022 H.Merijn Brand.  All rights reserved.
+
+       This library is free software;  you can redistribute and/or modify it
+       under the same terms as Perl itself.
+
+
+
+perl v5.36.0                      2022-06-21                          STDIN(1)
