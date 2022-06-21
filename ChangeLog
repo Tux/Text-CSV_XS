@@ -1,5 +1,6 @@
-1.49	- 2022-06-19, H.Merijn Brand
-    * csv2xlsx --split=C:P [--split-label=C]
+1.49	- 2022-06-21, H.Merijn Brand
+    * csv2xlsx --split=CxP [--split-label=C]
+    * Full documentation/manual for csv2xlsx
 
 1.48	- 2022-05-24, H.Merijn Brand
     * It's 2022
