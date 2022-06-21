@@ -1,4 +1,4 @@
-personal_ws-1.1 en 42 
+personal_ws-1.1 en 53 
 AoA
 API
 ASV
@@ -8,10 +8,12 @@ BOCU
 bom
 ChangeLog
 Citterman
+CxP
 csvdiff
 csvkit
 dcsv
 DDumper
+de
 diag
 EBCDIC
 ECB
@@ -24,6 +26,8 @@ ENF
 eol
 EOL
 ESC
+Fd
+Fu
 fc
 FULLWIDTH
 getline
@@ -44,6 +48,7 @@ SCSU
 sep
 SetDiag
 STDERR
-UTF
+utf
 Wiedmann
+xlsx
 xs

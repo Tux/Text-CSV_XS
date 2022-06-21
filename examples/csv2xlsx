@@ -1,19 +1,19 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'22 [19 Jun 2022] Copyright H.M.Brand 2007-2022
+#	   (m)'22 Copyright H.M.Brand 2007-2022
 
 use 5.014000;
 use warnings;
 
-our $VERSION = "1.12";
+our $VERSION = "1.20 - 2022-06-21";
 
 sub usage {
     my $err = shift and select STDERR;
     print <<"EOU";
-usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
-               [-o <xlsx>] [file.csv]
-       -s <sep>   use <sep>   as seperator char, auto-detect, default = ','
+usage: csv2xlsx [options] [-o <xlsx>] [file.csv]
+       csv2xlsx --help | --man | --info
+       -s <sep>   use <sep>   as separator char, auto-detect, default = ','
                   The string "tab" is allowed.
        -e <esc>   use <esc>   as escape    char, auto-detect, default = '"'
                   The string "undef" is allowed.
@@ -35,20 +35,27 @@ usage: csv2xlsx [-s <sep>] [-q <quot>] [-w <width>] [-d <dtfmt>]
        -f         force usage of <xlsx> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -C <C:fmt> use <fmt> as currency formats for currency <C>, no default
-       -D cols    only convert dates in columns <cols>. Default is everywhere.
+       -D cols    only convert dates in columns <cols>.
+                  Default is everywhere. -D0 is disable
        -L N       limit export to N rows
        -u         CSV is UTF8
          --de     Some CSV fields might be double-encoded. Try to fix that.
        -m         merge multiple CSV's into a single xlsx (separate sheets)
-		    -o is required, all arguments should be existing files
-       -S <cp>    Split CSV on COLUMN:PAT into seperate sheets (e.g. "C:foo")
+                    -o is required, all arguments should be existing files
+       -S <cp>    Split CSV on COLUMNxPAT into separate sheets. See --man
+                  or --info for options/features and examples. May repeat.
          --sl=C   Use column C as sheet label when splitting with -S
        -v [<lvl>] verbosity (default = 1)
 EOU
     exit $err;
     } # usage
 
-use Getopt::Long qw(:config bundling passthrough);
+use Text::CSV_XS;
+use Excel::Writer::XLSX;
+use List::Util   qw( first                       );
+use Date::Calc   qw( Delta_Days Days_in_Month    );
+use Encode       qw( from_to                     );
+use Getopt::Long qw(:config bundling passthrough );
 my $quo = '"';
 my $esc = '"';
 my $wdt = 4;		# Default minimal column width
@@ -59,8 +66,10 @@ my $opt_v = 1;
 my $dtc;
 
 GetOptions (
-    "help|?"		=> sub { usage (0); },
     "V|version"		=> sub { say $0 =~ s{.*/}{}r, " [$VERSION]"; exit 0; },
+      "help|?"		=> sub { usage (0); },
+      "man"		=> sub { pod_nroff (); },
+      "info"		=> sub { pod_text  (); },
 
     "c|s|sep=s"		=> \my $sep, # Set after reading first line in attempt to auto-detect
     "q|quo=s"		=> \$quo,
@@ -82,11 +91,33 @@ GetOptions (
     "u|utf-8|utf8!"	=> \my $utf,
       "de|fix-utf8!"	=> \my $dutf, # double encoded? \x{c3}\x{ab} => \x{100}
     "m|merge!"		=> \my $mrg,
-    "S|split=s"		=> \my $split,
+    "S|split=s"		=> \my @split,
       "sl|split-label=s"=> \my $split_sl,
     "L|row-limit=i"	=> \my $row_limit,
-    "v|verbose:1"	=> \$opt_v,
+    "v|verbose:2"	=> \$opt_v,
     ) or usage (1);
+
+sub pod_text {
+    require Pod::Text::Color;
+    my $m = $ENV{NO_COLOR} ? "Pod::Text" : "Pod::Text::Color";
+    my $p = $m->new ();
+    open my $fh, ">", \my $out or die "Cannot generate manual: $!\n";
+    $p->parse_from_file ($0, $fh);
+    close $fh;
+    print $out;
+    exit 0;
+    } # pod_text
+
+sub pod_nroff {
+    first { -x "$_/nroff" } grep { -d } split m/:+/ => $ENV{PATH} or pod_text ();
+
+    require Pod::Man;
+    my $p = Pod::Man->new ();
+    open my $fh, "|-", "nroff", "-man" or die "Cannot generate manual: $!\n";
+    $p->parse_from_file ($0, $fh);
+    close $fh;
+    exit 0;
+    } # pod_nroff
 
 if ($mrg) {
     my @csv;
@@ -111,18 +142,29 @@ sub col2col {
     my $l = shift;
     $l =~ m/^[0-9]/ and return $l;
     my $c = 0;
-    while ($l =~ s/^([A-Z])//) {
-	$c = 26 * $c + 1 + ord ($1) - ord ("A");
+    while ($l =~ s/^([A-Za-z])//) {
+	$c = 26 * $c + 1 + ord (uc $1) - ord ("A");
 	}
     $c;
     } # col2col
 
-if ($split) {
-    my ($col, $pat) = ($split =~ m/^([0-9]+|[A-Z]+):(.+)/) or usage (1);
-    $split = [ col2col ($col), $pat, undef ];
+foreach my $split (@split) {
+    my ($col, $operator, $pat) = ($split =~ m{^
+	([0-9]+|[A-Z]+|[a-z]+)	# Column: A, AB, 1, 14
+	([=/uU<>])		# Operator
+	(.*)			# Pattern/string
+	\z}x) or usage (1);
+    my $case = $col =~ m/^[a-z]/ ? 1 : 0;
+    $split = {
+	col => col2col ($col),
+	op  => $operator,
+	str => $pat,
+	ic  => $case,
+	lbl => undef,
+	};
     if ($split_sl) {
-	($col) =   ($split_sl =~ m/^([0-9]+|[A-Z]+)$/)     or usage (1);
-	$split->[-1] = col2col ($col);
+	($col) = ($split_sl =~ m/^([0-9]+|[A-Z]+)$/) or usage (1);
+	$split->{lbl} = col2col ($col);
 	}
     }
 
@@ -141,12 +183,6 @@ if (-s $xls) {
     close $fh;
     unlink $xls;
     }
-
-# Don't split ourselves when modules do it _much_ better, and follow the standards
-use Text::CSV_XS;
-use Date::Calc qw( Delta_Days Days_in_Month );
-use Excel::Writer::XLSX;
-use Encode qw( from_to );
 
 if ($dutf) {
     eval { require Encode::DoubleEncodedUTF8; };
@@ -172,7 +208,9 @@ my @args = @ARGV ? @ARGV : ("");
 foreach my $csvf (@args) {
     my $sheetname = $csvf =~ s{\.\w+$}{}ir =~ s{.*/}{}r || "Sheet 1";
     ($_ = length $sheetname) > 31 and substr $sheetname, 31, $_ - 31, "";
-    my $wks;
+    my ($wks, $w, $h);
+
+    $opt_v > 7 and warn "Parsing $csvf into $xls.$sheetname ...\n";
 
     if ($csvf =~ m/\.(png|jpe?g|bmp|gif|tiff|xpm)$/i) {
 	$wks = $wbk->add_worksheet ($sheetname);
@@ -240,27 +278,64 @@ foreach my $csvf (@args) {
 	    }
 	}
 
-    if (my $rows = $dtc) {
-	$rows =~ s/-$/-999/;			# 3,6-
-	$rows =~ s/-/../g;
-	eval "\$dtc = { map { \$_ => 1 } $rows }";
+    if (length $dtc) {
+	if ($dtc eq "0") {
+	    $dtc = { -2 => 0 };
+	    }
+	else {
+	    my $rows = $dtc;
+	    $rows =~ s/-$/-999/;			# 3,6-
+	    $rows =~ s/-/../g;
+	    eval "\$dtc = { map { \$_ => 1 } $rows }";
+	    }
 	}
 
-    my ($h, $w, @w); # data height, -width, and default column widths
+    my @w; # data height, -width, and default column widths
     while ($row && @$row or $row = $csv->getline ($fh)) {
 	$row_limit and $csv->record_number > $row_limit and last;
 	my @row = @$row;
 
-	if ($split) {
-	    my $i = $split->[0] - 1;
-	    if (defined $row[$i] and $row[$i] =~ m/$split->[1]/i) {
+	$opt_v > 8 and warn "@row\n";
+	if (@split) {
+	    my $ns = 0;
+	    foreach my $split (@split) {
+		my ($i, $op, $str, $case) = @{$split}{qw( col op str ic )};
+		my $v = $row[$i - 1]; # Column-index is one-based
+		if (defined $v) {
+		    $op eq "U"          and $ns += 1;
+		    if ($case) {
+			$op eq "="      and $ns += ( lc $v eq lc $v	);
+			$op eq "/"      and $ns += ( $v =~ m/$str/i	);
+			}
+		    else {
+			$op eq "="      and $ns += ( $v eq   $str	);
+			$op eq "/"      and $ns += ( $v =~ m/$str/	);
+			if ($v =~ m/^[0-9]+$/) {
+			    $op eq "<"  and $ns += ( $v <  $str	);
+			    $op eq ">"  and $ns += ( $v >  $str	);
+			    }
+			else {
+			    $op eq "<"  and $ns += ( $v lt $str	);
+			    $op eq ">"  and $ns += ( $v gt $str	);
+			    }
+			}
+		    }
+		else {
+		    $op eq "u"          and $ns += 1;
+		    }
+		}
+
+	    $opt_v > 8 and warn join " " => "Record", $csv->record_number,
+		"matched", $ns, "out of", scalar @split, "criteria\n";
+	    if ($ns == @split) {	# All criteria PASS
 		if (@w) {
 		    $wks->set_column ($_, $_, $w[$_]) for 0 .. $#w;
 		    $wks = undef;
 		    }
-		$split->[2] and $sheetname = $row[$split->[2] - 1];
+		$split[0]{lbl} and $sheetname = $row[$split[0]{lbl} - 1];
 		}
 	    }
+
 	unless ($wks) {
 	    $wks = $wbk->add_worksheet ($sheetname);
 	    $utf && !$wks->can ("write_unicode") and $utf = 0;
@@ -334,3 +409,282 @@ foreach my $csvf (@args) {
     }
 $opt_v and say "Writing $xls";
 $wbk->close ();
+
+__END__
+
+=head1 NAME
+
+csv2xlsx - Convert CSV to Excel 2007+
+
+=head1 SYNOPSIS
+
+ csv2xlsx [options] [file.csv]
+
+ csv2xlsx test.csv
+
+ csv2xlsx -f -o merged.xlsx -m foobar*.csv
+
+=head1 DESCRIPTION
+
+This tool converts CSV data to Excel-2007+. It can convert the CSV into a
+single sheet, merge CSV files into multiple sheets in a workbook or split
+a single CSV into multiple sheets.
+
+The tool supports encoding, formula handle, date conversion and some more.
+
+=head1 OPTIONS
+
+=over 2
+
+=item -s S
+
+=item --sep=S
+
+use C<S> as separator character, auto-detect, default = C<,>.
+
+The literal string C<tab> is allowed.
+
+=item -q Q
+
+=item --quo=Q
+
+use C<Q> as quotation character, auto-detect, default = C<">.
+
+The literal string C<undef> is allowed to disable quotation.
+
+=item -e E
+
+=item --esc=E
+
+use C<E> as escape character, auto-detect, default = C<">.
+
+The literal string C<undef> is allowed to disable escapes.
+
+=item -w W
+
+=item --width=W
+
+Set column width. Default is to auto-size per column per sheet with a
+minimum width of C<4>.
+
+=item -o FILE.xlsx
+
+=item -x FILE.xlsx
+
+=item --out=FILE.xlsx
+
+Specify the output filename. Default it the same name as the input-file
+where the trailing C<.csv> will be replaced with C<.xlsx>.
+
+If a filename can not be automatically generated, it will default to
+C<csv2xlsx.xlsx>.
+
+=item -d format
+
+=item --date-fmt=format
+
+Use C<format> as date formats. Default = C<dd-mm-yyyy>.
+
+=item -D range
+
+=item --date-col=range
+
+Only convert dates in columns C<range>. Default is everywhere.
+
+Ranges are numeric, where the first column has index C<1>. A range is a
+definition of sections joined by C<,>s. A section is either a single column
+or a start/finish-pair joined with a dash. A missing finish index on the
+last segment is an open range (till the end of the line).
+
+If the range is C<0>, date conversion is disabled.
+
+ -D 0
+ -D 1,2,6
+ -D 2,4-8,12-
+
+=item -C format
+
+=item --curr-fmt=format
+
+Use C<format> as currency formats for currency <C>, no default.
+
+ -C '$:### ### ##0.00'
+
+=item -f
+
+=item --force
+
+Force usage of the output file if it already exists (unlink before use).
+
+=item -F
+
+=item --formulas
+
+Allow formula's. Otherwise fields starting with an equal sign C<=> are
+forced to string type.
+
+There are several shortcuts here to specify different behavior:
+
+=over 2
+
+=item --Fa=a
+
+Define formula action: C<none>/C<die>/C<croak>/C<diag>/C<empty>/C<undef>
+
+=item --Ft
+
+Formula's will be stored as text (formula actions: none)
+
+=item --Fd
+
+Formula's will cause a die
+
+=item --Fc
+
+Formula's will cause a croak
+
+=item --FD
+
+Formula's will cause a warning (this is the default)
+
+=item --Fe
+
+Formula's will be replaced by the empty string
+
+=item --Fu
+
+Formula's will be replaced with an undefined cell
+
+=back
+
+=item -u
+
+=item --utf-8
+
+=item --utf8
+
+CSV is UTF-8 encoded. Likely not needed, as most is auto-detected.
+
+=item --de
+
+=item --fix-utf8
+
+Attempt to fix double-encoded UTF-8. e.g. C<\x{00c3}\x{00ab}> should have
+been C<\x0100}>. YMMV.
+
+=item -m
+
+=item --merge
+
+Merge multiple CSV's into a single Excel (separate sheets).
+
+With this option, the option C<-o> is required. All arguments should be
+existing files. Piping is not supported.
+
+=item -L N
+
+=item --row-limit=N
+
+Limit export to C<N> rows.
+
+=item -S CxP
+
+=item --split=CxP
+
+When dealing with big CSV datasets, it this option enables you to split the
+data over several sheets. When all the C<-S> options match is a single row,
+that row will be the first row of a new sheet. (see also C<--sl=C>)
+
+=over 2
+
+=item C
+
+The column that should be examined. C<A> = C<1>. If lower case, the value
+of that column is matched case insensitive when appropriate.
+
+ -S 7=ab      Column G is literal "ab"
+ -S G=ab      Column G is literal "ab"
+ -S g=ab      Column G is literal "ab", or "aB", or "Ab", or "AB"
+
+=item x
+
+Defines the operation on the column
+
+=over 2
+
+=item =
+
+Literal match
+
+ -S G=ab      Column G is literal "ab"
+ -S g=ab      Column G is literal "ab", or "aB", or "Ab", or "AB"
+
+=item /
+
+Regex match
+
+ -S G/b[a-z]  Column G matches /b[a-z]/
+ -S g/b[a-z]  Column G matches /b[a-z]/i
+
+=item u U
+
+Check for defined
+
+ -S Gu        Column G is undefined
+ -S GU        Column G is defined
+
+Similar for emptiness
+
+ -S G=        Column G is defined but empty
+ -S G/.       Column G is defined and not empty
+
+=item < >
+
+Compare. If the value in the column is defined compare. If the values only
+holds digits, do a numeric compare, otherwise do a string compare.
+
+ -S G<42      Column G is defined and less than 42 (numeric)
+ -S G<ab      Column G is defined and less than 42 (string)
+
+ -S G>42      Column G is defined and greater than 42 (numeric)
+ -S G>ab      Column G is defined and greater than 42 (string)
+
+=back
+
+=item P
+
+pattern or literal string. Quotation might be required differing per OS and
+shell-environment.
+
+=back
+
+=item --sl=C
+
+When splitting with C<-S> / C<--split>, if all criteria match and a new
+sheet is to be created, use the value in column C<C> of the matching row
+as new sheet label.
+
+=item -v [V]
+
+=item --verbose[=V]
+
+Set verbosity level. Default = 1. No argument will set to 2.
+
+=back
+
+=head1 SEE ALSO
+
+csv2xls - Convert CSV to old Excel
+
+=head1 AUTHOR
+
+H.Merijn Brand
+
+=head1 COPYRIGHT AND LICENSE
+
+ Copyright (C) 2016-2022 H.Merijn Brand.  All rights reserved.
+
+This library is free software;  you can redistribute and/or modify it under
+the same terms as Perl itself.
+
+=cut
