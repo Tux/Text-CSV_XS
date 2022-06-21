@@ -154,8 +154,8 @@ The tool supports encoding, formula handle, date conversion and some more.
 - -S CxP
 - --split=CxP
 
-    When dealing with big CSV datasets, it this option enables you to split the
-    data over several sheets. When all the `-S` options match is a single row,
+    When dealing with big CSV datasets, this option enables you to split the
+    data over several sheets. When all the `-S` options match in a single row,
     that row will be the first row of a new sheet. (see also `--sl=C`)
 
     - C
@@ -217,7 +217,7 @@ The tool supports encoding, formula handle, date conversion and some more.
 
     When splitting with `-S` / `--split`, if all criteria match and a new
     sheet is to be created, use the value in column `C` of the matching row
-    as new sheet label.
+    as the new sheet label.
 
 - -v \[V\]
 - --verbose\[=V\]
