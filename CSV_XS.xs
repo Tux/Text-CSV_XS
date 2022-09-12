@@ -2195,14 +2195,14 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len) {
 
     SetupCsv (&csv, hv, self);
 
-    if (SvIOK (off)) {
+    if (SvOK (off)) {
 	skip = SvIV (off);
 	if (skip < 0) {
 	    tail = -skip;
 	    skip = -1;
 	    }
 	}
-    if (SvIOK (len))
+    if (SvOK (len))
 	length = SvIV (len);
 
     while (c_xsParse (csv, hv, row, NULL, io, 1)) {

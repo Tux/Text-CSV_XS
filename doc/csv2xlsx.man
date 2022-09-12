@@ -135,10 +135,10 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        -S CxP
        --split=CxP
-         When dealing with big CSV datasets, this option enables you to
-         split the data over several sheets. When all the "-S" options match
-         in a single row, that row will be the first row of a new sheet. (see
-         also "--sl=C")
+         When dealing with big CSV datasets, this option enables you to split
+         the data over several sheets. When all the "-S" options match in a
+         single row, that row will be the first row of a new sheet. (see also
+         "--sl=C")
 
          C The column that should be examined. "A" = 1. If lower case, the
            value of that column is matched case insensitive when appropriate.
@@ -207,4 +207,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.36.0                      2022-06-21                          STDIN(1)
+perl v5.36.0                      2022-06-22                          STDIN(1)

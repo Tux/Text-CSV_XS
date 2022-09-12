@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2022-06-21" "perl v5.36.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2022-09-12" "perl v5.36.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1342,7 +1342,8 @@ The \*(L"string\*(R", \*(L"fields\*(R", and \*(L"status\*(R" methods are meaning
 This will return a reference to a list of getline ($fh) results.
 In this call, \f(CW\*(C`keep_meta_info\*(C'\fR is disabled.  If \f(CW$offset\fR is negative, as
 with \f(CW\*(C`splice\*(C'\fR, only the last  \f(CW\*(C`abs ($offset)\*(C'\fR records of \f(CW$fh\fR are taken
-into consideration.
+into consideration. Parameters \f(CW$offset\fR and \f(CW$length\fR are expected to be
+an integers. Non-integer values are interpreted as integer without check.
 .PP
 Given a \s-1CSV\s0 file with 10 lines:
 .PP

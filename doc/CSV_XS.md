@@ -1022,7 +1022,8 @@ The ["string"](#string), ["fields"](#fields), and ["status"](#status) methods ar
 This will return a reference to a list of [getline ($fh)](#getline) results.
 In this call, `keep_meta_info` is disabled.  If `$offset` is negative, as
 with `splice`, only the last  `abs ($offset)` records of `$fh` are taken
-into consideration.
+into consideration. Parameters `$offset` and `$length` are expected to be
+an integers. Non-integer values are interpreted as integer without check.
 
 Given a CSV file with 10 lines:
 

@@ -986,7 +986,9 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        This will return a reference to a list of getline ($fh) results.  In
        this call, "keep_meta_info" is disabled.  If $offset is negative, as
        with "splice", only the last  "abs ($offset)" records of $fh are taken
-       into consideration.
+       into consideration. Parameters $offset and $length are expected to be
+       an integers. Non-integer values are interpreted as integer without
+       check.
 
        Given a CSV file with 10 lines:
 
@@ -3106,4 +3108,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.36.0                      2022-06-21                          STDIN(1)
+perl v5.36.0                      2022-09-12                          STDIN(1)

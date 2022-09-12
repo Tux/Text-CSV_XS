@@ -979,7 +979,7 @@ $csv-&gt;print ($fh,   undef  );   # 48500 recs/sec</code></pre>
 $arrayref = $csv-&gt;getline_all ($fh, $offset);
 $arrayref = $csv-&gt;getline_all ($fh, $offset, $length);</code></pre>
 
-<p>This will return a reference to a list of <a href="#getline">getline ($fh)</a> results. In this call, <code>keep_meta_info</code> is disabled. If <code>$offset</code> is negative, as with <code>splice</code>, only the last <code>abs ($offset)</code> records of <code>$fh</code> are taken into consideration.</p>
+<p>This will return a reference to a list of <a href="#getline">getline ($fh)</a> results. In this call, <code>keep_meta_info</code> is disabled. If <code>$offset</code> is negative, as with <code>splice</code>, only the last <code>abs ($offset)</code> records of <code>$fh</code> are taken into consideration. Parameters <code>$offset</code> and <code>$length</code> are expected to be an integers. Non-integer values are interpreted as integer without check.</p>
 
 <p>Given a CSV file with 10 lines:</p>
 
