@@ -914,5 +914,5 @@
     * Moved encoding and decoding to XS; added binary mode; added
       print () and getline () methods.
 
-1998-06-05  Alan Citterman  <alan@mfgrtl.com>
+0.01	- 1998-06-05  Alan Citterman  <alan@mfgrtl.com>
     * Initial version
