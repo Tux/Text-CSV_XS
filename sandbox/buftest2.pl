@@ -1,6 +1,6 @@
 #!/pro/bin/perl
 
-use 5.016;
+use 5.016000;
 use warnings;
 
 use lib qw( blib/lib blib/arch );

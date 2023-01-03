@@ -2,7 +2,7 @@
 
 # Read the export from Thumbs Plus including keywords from filename given.
 
-use 5.18.2;	# 5.12 or later to get "unicode_strings" feature
+use 5.018002;	# 5.12 or later to get "unicode_strings" feature
 use utf8;	# so literals and identifiers can be in UTF-8
 use warnings  qw(FATAL utf8);    # fatalize encoding glitches
 use Data::Peek;	# debug

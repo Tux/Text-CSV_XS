@@ -3,7 +3,7 @@
 # Read the export from Thumbs Plus including keywords from filename given. Make a useful
 # in-memory data structure and then store that in some useful format (JSON?).
 
-use 5.18.2;	# or later to get "unicode_strings" feature
+use 5.018002;	# or later to get "unicode_strings" feature
 use warnings  qw(FATAL utf8);	# fatalize encoding glitches
 use utf8;	# so literals and identifiers can be in UTF-8
 use open      qw(:std :utf8);	# undeclared streams in UTF-8

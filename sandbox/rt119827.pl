@@ -1,6 +1,6 @@
 #!/pro/bin/perl
 
-use 5.18.2;
+use 5.018002;
 use warnings;
 use Text::CSV_XS;
 my $csv = Text::CSV_XS->new ({binary => 1, auto_diag => 1, eol => $/});

@@ -1,6 +1,6 @@
 #!/pro/bin/perl
 
-use 5.18.1;
+use 5.018001;
 use warnings;
 use Text::CSV_XS;
 
