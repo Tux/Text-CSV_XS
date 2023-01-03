@@ -42,7 +42,7 @@ H.Merijn Brand <h.m.brand@xs4all.nl>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2014-2022 H.Merijn Brand
+Copyright (C) 2014-2023 H.Merijn Brand
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

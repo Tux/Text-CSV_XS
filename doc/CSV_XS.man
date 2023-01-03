@@ -1781,7 +1781,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
        [4mencoding[0m
 
-       If passed,  it should be an encoding accepted by the  ":encoding()"
+       If passed,  it should be an encoding accepted by the  :encoding()
        option to "open". There is no default value. This attribute does not
        work in perl 5.6.x.  "encoding" can be abbreviated to "enc" for ease of
        use in command line invocations.
@@ -3099,7 +3099,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        the "csv" function. See ChangeLog releases 0.25 and on.
 
 [1mCOPYRIGHT AND LICENSE[0m
-        Copyright (C) 2007-2022 H.Merijn Brand.  All rights reserved.
+        Copyright (C) 2007-2023 H.Merijn Brand.  All rights reserved.
         Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
         Copyright (C) 1997      Alan Citterman.  All rights reserved.
 
@@ -3108,4 +3108,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.36.0                      2022-09-12                          STDIN(1)
+perl v5.36.0                      2023-01-03                          STDIN(1)

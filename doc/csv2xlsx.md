@@ -234,7 +234,7 @@ H.Merijn Brand
 
 # COPYRIGHT AND LICENSE
 
-    Copyright (C) 2016-2022 H.Merijn Brand.  All rights reserved.
+    Copyright (C) 2016-2023 H.Merijn Brand.  All rights reserved.
 
 This library is free software;  you can redistribute and/or modify it under
 the same terms as Perl itself.

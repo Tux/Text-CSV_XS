@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # csvdiff: Show differences between CSV files
-#	   (m)'19 [05 Mar 2019] Copyright H.M.Brand 2009-2022
+#	   (m)'19 [05 Mar 2019] Copyright H.M.Brand 2009-2023
 
 our $VERSION = "1.02 - 20190305";
 

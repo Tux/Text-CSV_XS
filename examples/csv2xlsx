@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'22 Copyright H.M.Brand 2007-2022
+#	   (m)'22 Copyright H.M.Brand 2007-2023
 
 use 5.014000;
 use warnings;
@@ -682,7 +682,7 @@ H.Merijn Brand
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2016-2022 H.Merijn Brand.  All rights reserved.
+ Copyright (C) 2016-2023 H.Merijn Brand.  All rights reserved.
 
 This library is free software;  you can redistribute and/or modify it under
 the same terms as Perl itself.
