@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 58;
+ use Test::More tests => 79;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -247,4 +247,35 @@ close $fh;
 {   my $n = 0;
     csv (in => $tfn, on_in => sub { $n++; 0; }, out => \"skip");
     is ($n, 4, "Count rows with on_in and skipped out");
+    }
+
+# sep_set, seps, sep on problematic header
+foreach my $sep (",", ";", "\t") {
+    my $ph = "Problematic header";
+
+    open  $fh, ">", $tfn or die "$tfn: $!";
+    print $fh qq{foo${sep}"bar: a, b"${sep}"c;d"${sep}"e"\n};
+    print $fh qq{1${sep}2${sep}3${sep}4\n};
+    close $fh;
+
+    my $exp = [{
+	"foo"       => 1,
+	"bar: a, b" => 2,
+	"c;d"       => 3,
+	"e"         => 4,
+	}];
+
+    ok (csv (in => $tfn, allow_loose_quotes => 1), "$ph, AoA");
+
+    my @err;
+    is (eval {
+	local $SIG{__WARN__} = sub { push @err => @_ };
+	csv (in => $tfn, bom => 1);
+	}, undef, "$ph: cannot decide on sep");
+    like ($err[0], qr{ERROR: 1011\b}, "$ph: error 1011");
+
+    is_deeply (csv (in => $tfn, bom => 1, sep_set  => [ $sep ]), $exp, "$ph: sep_set");
+    is_deeply (csv (in => $tfn, bom => 1, seps     => [ $sep ]), $exp, "$ph: seps");
+    is_deeply (csv (in => $tfn, bom => 1, sep_char =>   $sep  ), $exp, "$ph: sep_char");
+    is_deeply (csv (in => $tfn, bom => 1, sep      =>   $sep  ), $exp, "$ph: sep");
     }

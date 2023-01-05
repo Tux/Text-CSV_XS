@@ -1,3 +1,6 @@
+1.50	- 2023-01-04, H.Merijn Brand
+    * Promote sep to sep_set in csv () with auto-headers
+
 1.49	- 2023-01-03, H.Merijn Brand
     * csv2xlsx --split=CxP [--split-label=C]
     * Full documentation/manual for csv2xlsx

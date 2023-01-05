@@ -26,7 +26,7 @@ use XSLoader;
 use Carp;
 
 use vars qw( $VERSION @ISA @EXPORT_OK %EXPORT_TAGS );
-$VERSION = "1.49";
+$VERSION = "1.50";
 @ISA     = qw( Exporter );
 XSLoader::load ("Text::CSV_XS", $VERSION);
 
@@ -898,10 +898,10 @@ sub header {
     $self->{'_COLUMN_NAMES'}	= undef if $args{'set_column_names'};
     $self->{'_BOUND_COLUMNS'}	= undef if $args{'set_column_names'};
 
-    if (defined $args{'sep_set'}) {
-	ref $args{'sep_set'} eq "ARRAY" or
+    if (defined   $args{'sep_set'}) {
+	ref       $args{'sep_set'} eq "ARRAY" or
 	    croak ($self->_SetDiagInfo (1500, "sep_set should be an array ref"));
-	@seps =  @{$args{'sep_set'}};
+	@seps = @{$args{'sep_set'}};
 	}
 
     $^O eq "MSWin32" and binmode $fh;
@@ -1385,10 +1385,14 @@ sub csv {
     my @row1;
     if (defined $c->{'hd_s'} || defined $c->{'hd_b'} || defined $c->{'hd_m'} || defined $c->{'hd_c'}) {
 	my %harg;
-	defined $c->{'hd_s'} and $harg{'sep_set'}            = $c->{'hd_s'};
-	defined $c->{'hd_d'} and $harg{'detect_bom'}         = $c->{'hd_b'};
-	defined $c->{'hd_m'} and $harg{'munge_column_names'} = $hdrs ? "none" : $c->{'hd_m'};
-	defined $c->{'hd_c'} and $harg{'set_column_names'}   = $hdrs ? 0      : $c->{'hd_c'};
+	!defined $c->{'hd_s'} &&  $c->{'attr'}{'sep_char'} and
+	         $c->{'hd_s'} = [ $c->{'attr'}{'sep_char'} ];
+	!defined $c->{'hd_s'} &&  $c->{'attr'}{'sep'} and
+	         $c->{'hd_s'} = [ $c->{'attr'}{'sep'} ];
+	defined  $c->{'hd_s'} and $harg{'sep_set'}            = $c->{'hd_s'};
+	defined  $c->{'hd_d'} and $harg{'detect_bom'}         = $c->{'hd_b'};
+	defined  $c->{'hd_m'} and $harg{'munge_column_names'} = $hdrs ? "none" : $c->{'hd_m'};
+	defined  $c->{'hd_c'} and $harg{'set_column_names'}   = $hdrs ? 0      : $c->{'hd_c'};
 	@row1 = $csv->header ($fh, \%harg);
 	my @hdr = $csv->column_names ();
 	@hdr and $hdrs ||= \@hdr;
@@ -3839,7 +3843,8 @@ X<seps>
 If C<sep_set> is set, the method L</header> is invoked on the opened stream
 to detect and set L<C<sep_char>|/sep_char> with the given set.
 
-C<sep_set> can be abbreviated to C<seps>.
+C<sep_set> can be abbreviated to C<seps>. If neither C<sep_set> not C<seps>
+is given, but C<sep> is defined, C<sep_set> defaults to C<[ sep ]>.
 
 Note that as the  L</header> method is invoked,  its default is to also set
 the headers.
