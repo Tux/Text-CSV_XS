@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2023-01-03 "perl v5.36.0" "User Contributed Perl Documentation"
+.TH STDIN 1 2023-02-28 "perl v5.36.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2655,7 +2655,8 @@ Combining all of them could give something like
 If \f(CW\*(C`sep_set\*(C'\fR is set, the method "header" is invoked on the opened stream
 to detect and set \f(CW\*(C`sep_char\*(C'\fR with the given set.
 .PP
-\&\f(CW\*(C`sep_set\*(C'\fR can be abbreviated to \f(CW\*(C`seps\*(C'\fR.
+\&\f(CW\*(C`sep_set\*(C'\fR can be abbreviated to \f(CW\*(C`seps\*(C'\fR. If neither \f(CW\*(C`sep_set\*(C'\fR not \f(CW\*(C`seps\*(C'\fR
+is given, but \f(CW\*(C`sep\*(C'\fR is defined, \f(CW\*(C`sep_set\*(C'\fR defaults to \f(CW\*(C`[ sep ]\*(C'\fR.
 .PP
 Note that as the  "header" method is invoked,  its default is to also set
 the headers.

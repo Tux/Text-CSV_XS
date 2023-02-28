@@ -2214,7 +2214,8 @@ Combining all of them could give something like
 If `sep_set` is set, the method ["header"](#header) is invoked on the opened stream
 to detect and set [`sep_char`](#sep_char) with the given set.
 
-`sep_set` can be abbreviated to `seps`.
+`sep_set` can be abbreviated to `seps`. If neither `sep_set` not `seps`
+is given, but `sep` is defined, `sep_set` defaults to `[ sep ]`.
 
 Note that as the  ["header"](#header) method is invoked,  its default is to also set
 the headers.

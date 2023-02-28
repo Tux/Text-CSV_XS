@@ -2036,7 +2036,7 @@ say $aoh-&gt;[15]{Foo};</code></pre>
 
 <p>If <code>sep_set</code> is set, the method <a href="#header">&quot;header&quot;</a> is invoked on the opened stream to detect and set <a href="#sep_char"><code>sep_char</code></a> with the given set.</p>
 
-<p><code>sep_set</code> can be abbreviated to <code>seps</code>.</p>
+<p><code>sep_set</code> can be abbreviated to <code>seps</code>. If neither <code>sep_set</code> not <code>seps</code> is given, but <code>sep</code> is defined, <code>sep_set</code> defaults to <code>[ sep ]</code>.</p>
 
 <p>Note that as the <a href="#header">&quot;header&quot;</a> method is invoked, its default is to also set the headers.</p>
 
