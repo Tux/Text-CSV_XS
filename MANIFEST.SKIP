@@ -1,6 +1,7 @@
 \.[oc]$
 \.bs$
 \.tgz$
+\.tar$
 \.tar\.gz$
 \.git
 \.gcov$
