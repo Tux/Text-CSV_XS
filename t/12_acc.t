@@ -189,19 +189,23 @@ foreach my $esc (undef, "", " ", "\t", "!!!!!!") {
     foreach my $quo (undef, "", " ", "\t", "!!!!!!") {
 	defined $esc && $esc =~ m/[ \t]/ or 
 	defined $quo && $quo =~ m/[ \t]/ or next;
+	my $wc = join " " => map { !defined ? "<undef>" :
+		 s/^$/<empty>/r =~ s/ /<sp>/r =~ s/\t/<tab>/r }
+	    "esc:", $esc, "quo:", $quo;
 	eval { $csv = Text::CSV_XS->new ({
 	    escape           => $esc,
 	    quote            => $quo,
 	    allow_whitespace => 1,
 	    }) };
-	like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo - error message");
-	is   ((Text::CSV_XS::error_diag)[0], 1002, "Wrong combo - numeric error");
+	like ((Text::CSV_XS::error_diag)[1], qr{^INI - allow_whitespace}, "Wrong combo - error message: $wc");
+	is   ((Text::CSV_XS::error_diag)[0], 1002, "Wrong combo - numeric error: $wc");
 	}
     }
 
 # Test 1003 in constructor
 foreach my $x ("\r", "\n", "\r\n", "x\n", "\rx") {
     foreach my $attr (qw( sep_char quote_char escape_char )) {
+	#ok (1, "attr: $attr => ", $x =~ s/\n/\\n/gr =~ s/\r/\\r/gr);
 	eval { $csv = Text::CSV_XS->new ({ $attr => $x }) };
 	is ((Text::CSV_XS::error_diag)[0], 1003, "eol in $attr");
 	}
