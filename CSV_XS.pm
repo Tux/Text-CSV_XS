@@ -3844,7 +3844,8 @@ If C<sep_set> is set, the method L</header> is invoked on the opened stream
 to detect and set L<C<sep_char>|/sep_char> with the given set.
 
 C<sep_set> can be abbreviated to C<seps>. If neither C<sep_set> not C<seps>
-is given, but C<sep> is defined, C<sep_set> defaults to C<[ sep ]>.
+is given, but C<sep> is defined, C<sep_set> defaults to C<[ sep ]>. This is
+only supported for perl version 5.10 and up.
 
 Note that as the  L</header> method is invoked,  its default is to also set
 the headers.

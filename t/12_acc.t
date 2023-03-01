@@ -190,10 +190,10 @@ foreach my $esc (undef, "", " ", "\t", "!!!!!!") {
 	defined $esc && $esc =~ m/[ \t]/ or 
 	defined $quo && $quo =~ m/[ \t]/ or next;
 	my $wc = join " " => map {
-		!defined   ? "<undef>" :
-		$_ eq ""   ? "<empty>" :
-		$_ eq " "  ? "<sp>"    :
-		$_ eq "\t" ? "<tab>"   : $_ }
+		!defined $_ ? "<undef>" :
+		$_ eq ""    ? "<empty>" :
+		$_ eq " "   ? "<sp>"    :
+		$_ eq "\t"  ? "<tab>"   : $_ }
 	    "esc:", $esc, "quo:", $quo;
 	eval { $csv = Text::CSV_XS->new ({
 	    escape           => $esc,
