@@ -1,6 +1,7 @@
 [ ] 0:00:01  perl Makefile.PL
-[ ] 0:00:44  make test
-[ ] 0:00:23  yath
+[ ] 0:00:39  make test
+[ ] 0:00:14  prove -j 9 -wbs
+[ ] 0:00:30  yath
 
 [ ] 0:00:02  make tgzdist
 [ ] 0:00:01  make docs
