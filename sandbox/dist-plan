@@ -11,12 +11,15 @@
 
 [ ] 1:10:00  env HARNESS_OPTIONS=j8 release -t
 
+[ ] 0:00:01  make distclean
 [ ] 0:00:01  perl Makefile.PL
-[ ] 0:00:44  make test
+[ ] 0:00:44  prove -j 9 -wbs
 [ ] 0:00:01  make install UNINST=1
-[ ] 0:22:00  perl sandbox/used-by.pl
+[ ] 0:20:03  perl sandbox/used-by.pl
 
 [ ] 0:09:00  cd ../CSV ; Text-CSV-speed.pl --run --top --graph --no-ask
+[ ]          cd ../CSV ; run-perl.pl -gbls -t1 ;\
+                         Text-CSV-speed.pl --perl --graph --log=CSV-5.0*.log
 
 [ ]          scp -p Text-CSV_XS.tgz ...
 [ ]          other architectures and OS versions
