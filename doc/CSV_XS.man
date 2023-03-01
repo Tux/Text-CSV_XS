@@ -2094,7 +2094,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        stream to detect and set "sep_char" with the given set.
 
        "sep_set" can be abbreviated to "seps". If neither "sep_set" not "seps"
-       is given, but "sep" is defined, "sep_set" defaults to "[ sep ]".
+       is given, but "sep" is defined, "sep_set" defaults to "[ sep ]". This
+       is only supported for perl version 5.10 and up.
 
        Note that as the  "header" method is invoked,  its default is to also
        set the headers.
@@ -3109,4 +3110,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.36.0                      2023-02-28                          STDIN(1)
+perl v5.36.0                      2023-03-01                          STDIN(1)
