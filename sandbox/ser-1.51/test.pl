@@ -1,32 +1,33 @@
 #!/pro/bin/perl
 
 use 5.036000;
-use Text::CSV_XS 1.50 qw(csv);
+use Text::CSV_XS 1.51 qw(csv);
 use utf8;
 use Data::Peek;
 
 # Test input is CRLF.
-my $ifn = shift or die "usage: $0 file.csv\n";
+open my $fh, "<", shift or die;
 
-my %dta;
-my $sct = "pt0";
-my @hdr;
+my $csv = Text::CSV_XS->new ({
+    skip_empty_rows => 2,       # stop
+    binary          => 1,
+    auto_diag       => 2,
+    });
 
-csv (in    => $ifn,
-     out   => undef,
-     on_in => sub {
-	DDumper $_[1];
-	if (@{$_[1]} == 1 && $_[1][0] eq "") {	# Empty row
-	    @hdr = ();
-	    $sct++;
-	    return;
-	    }
-	unless (@hdr) {
-	    @hdr = @{$_[1]};
-	    return;
-	    }
-	my %r; @r{@hdr} = @{$_[1]};
-	push @{$dta{$sct}} => \%r;
-	},
+my $res;
+# 1st CSV: Groups
+$res = $csv->csv (
+    in              => $fh,
+    skip_empty_rows => 2,       # stop
+    headers         => "auto"
     );
-DDumper \%dta;
+DDumper ($res);
+
+warn ("POS: ", $fh->tell, "\n");
+$csv->column_names (undef);
+$res = $csv->csv (
+    in              => $fh,
+    skip_empty_rows => 2,       # stop
+    headers         => "auto"
+    );
+DDumper ($res);
