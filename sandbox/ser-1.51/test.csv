@@ -1,0 +1,12 @@
+_id
+Group1
+Group2
+
+_id,store,note,validfrom,expiry,balance,balancetype,cardid,barcodeid,barcodetype,headercolor,starstatus,lastused,archive
+2,ffff,,,,0,,ab1234xxx,0123456,CODE_39,-957596,1,1680094026,0
+1,sss,This is a not€,1679954400000,1680213600000,10,EUR,012345688888,,EAN_13,-5414233,0,1680094628,0
+3,sssdup,,,,0,,012345688888,,EAN_13,-5414233,0,1680094138,1
+
+cardId,groupId
+1,Group1
+1,Group2
