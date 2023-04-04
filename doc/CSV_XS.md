@@ -3003,6 +3003,18 @@ will be recognized and honored when parsing with ["getline"](#getline).
     will not return flags either.  ["fragment"](#fragment)  can reduce the  required  rows
     _or_ columns, but cannot combine them.
 
+- provider
+
+        csv (in => $fh) vs csv (provider => sub { get_line });
+
+    Whatever the attribute name might end up to be,  this should make it easier
+    to add input providers for parsing.   Currently most special variations for
+    the `in` attribute are aimed at CSV generation: e.g. a callback is defined
+    to return a reference to a record. This new attribute should enable passing
+    data to parse, like getline.
+
+    Suggested by Johan Vromans.
+
 - Cookbook
 
     Write a document that has recipes for  most known  non-standard  (and maybe

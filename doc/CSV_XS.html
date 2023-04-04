@@ -2813,6 +2813,16 @@ $csv-&gt;is_quoted (3, 1);</code></pre>
 <p>Note that the <a href="#csv">&quot;csv&quot;</a> function already supports most of this, but does not return flags. <a href="#getline_all">&quot;getline_all&quot;</a> returns all rows for an open stream, but this will not return flags either. <a href="#fragment">&quot;fragment&quot;</a> can reduce the required rows <i>or</i> columns, but cannot combine them.</p>
 
 </dd>
+<dt id="provider">provider</dt>
+<dd>
+
+<pre><code>csv (in =&gt; $fh) vs csv (provider =&gt; sub { get_line });</code></pre>
+
+<p>Whatever the attribute name might end up to be, this should make it easier to add input providers for parsing. Currently most special variations for the <code>in</code> attribute are aimed at CSV generation: e.g. a callback is defined to return a reference to a record. This new attribute should enable passing data to parse, like getline.</p>
+
+<p>Suggested by Johan Vromans.</p>
+
+</dd>
 <dt id="Cookbook">Cookbook</dt>
 <dd>
 

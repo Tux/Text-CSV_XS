@@ -3550,6 +3550,19 @@ Note that the "csv" function already supports most of this,  but does not
 return flags. "getline_all" returns all rows for an open stream, but this
 will not return flags either.  "fragment"  can reduce the  required  rows
 \&\fIor\fR columns, but cannot combine them.
+.IP provider 2
+.IX Item "provider"
+.Vb 1
+\& csv (in => $fh) vs csv (provider => sub { get_line });
+.Ve
+.Sp
+Whatever the attribute name might end up to be,  this should make it easier
+to add input providers for parsing.   Currently most special variations for
+the \f(CW\*(C`in\*(C'\fR attribute are aimed at CSV generation: e.g. a callback is defined
+to return a reference to a record. This new attribute should enable passing
+data to parse, like getline.
+.Sp
+Suggested by Johan Vromans.
 .IP Cookbook 2
 .IX Item "Cookbook"
 Write a document that has recipes for  most known  non-standard  (and maybe

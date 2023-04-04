@@ -4688,6 +4688,18 @@ return flags. L</getline_all> returns all rows for an open stream, but this
 will not return flags either.  L</fragment>  can reduce the  required  rows
 I<or> columns, but cannot combine them.
 
+=item provider
+
+ csv (in => $fh) vs csv (provider => sub { get_line });
+
+Whatever the attribute name might end up to be,  this should make it easier
+to add input providers for parsing.   Currently most special variations for
+the C<in> attribute are aimed at CSV generation: e.g. a callback is defined
+to return a reference to a record. This new attribute should enable passing
+data to parse, like getline.
+
+Suggested by Johan Vromans.
+
 =item Cookbook
 
 Write a document that has recipes for  most known  non-standard  (and maybe
