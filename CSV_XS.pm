@@ -461,14 +461,15 @@ sub _supported_skip_empty_rows {
     defined $f or return 0;
     if ($self && $f && ref $f && ref $f eq "CODE") {
 	$self->{'_EMPTROW_CB'} = $f;
-	return 5;
+	return 6;
 	}
     $f =~ m/^(?: 0 | undef         )$/xi ? 0 :
     $f =~ m/^(?: 1 | skip          )$/xi ? 1 :
     $f =~ m/^(?: 2 | eof   | stop  )$/xi ? 2 :
     $f =~ m/^(?: 3 | die           )$/xi ? 3 :
     $f =~ m/^(?: 4 | croak         )$/xi ? 4 :
-    $f =~ m/^(?: 5 | cb            )$/xi ? 5 : do {
+    $f =~ m/^(?: 5 | error         )$/xi ? 5 :
+    $f =~ m/^(?: 6 | cb            )$/xi ? 6 : do {
 	$self ||= "Text::CSV_XS";
 	croak ($self->_SetDiagInfo (1500, "skip_empty_rows '$f' is not supported"));
 	};
@@ -478,9 +479,10 @@ sub skip_empty_rows {
     my $self = shift;
     @_ and $self->_set_attr_N ("skip_empty_rows", _supported_skip_empty_rows ($self, shift));
     my $ser = $self->{'skip_empty_rows'};
-    $ser == 5 or $self->{'_EMPTROW_CB'} = undef;
-    $ser <= 1 ? $ser : $ser == 2 ? "eof"   : $ser == 3 ? "die" :
-		       $ser == 4 ? "croak" : $self->{'_EMPTROW_CB'};
+    $ser == 6 or $self->{'_EMPTROW_CB'} = undef;
+    $ser <= 1 ? $ser : $ser == 2 ? "eof"   : $ser == 3 ? "die"   :
+		       $ser == 4 ? "croak" : $ser == 5 ? "error" :
+		       $self->{'_EMPTROW_CB'};
     } # skip_empty_rows
 
 sub _SetDiagInfo {
@@ -2027,6 +2029,13 @@ parser will C<die>.
 
 The parsing will stop.  The internal error code will be set to 2015 and the
 parser will C<croak>.
+
+=item 5 | "error"
+
+ my $csv = Text::CSV_XS->new ({ skip_empty_rows => 5 });
+ $csv->skip_empty_rows ("error");
+
+The parsing will fail.  The internal error code will be set to 2015.
 
 =item callback
 

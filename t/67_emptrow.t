@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 38;
+use Test::More tests => 47;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -28,6 +28,9 @@ is ($csv->skip_empty_rows ("DIE"),	"die",		"DIE");
 is ($csv->skip_empty_rows (4),		"croak",	"+4");
 is ($csv->skip_empty_rows ("croak"),	"croak",	"croak");
 is ($csv->skip_empty_rows ("CROAK"),	"croak",	"CROAK");
+is ($csv->skip_empty_rows (5),		"error",	"+5");
+is ($csv->skip_empty_rows ("error"),	"error",	"error");
+is ($csv->skip_empty_rows ("ERROR"),	"error",	"ERROR");
 
 sub cba { [      3,      42,      undef,      3 ] }
 sub cbh { { a => 3, b => 42, c => undef, d => 3 } }
@@ -69,6 +72,12 @@ like ($@, qr{^Empty row},					"A msg");
 is (eval { csv (@parg, skip_empty_rows => 4); }, undef,		"A croak");
 like ($@, qr{^Empty row},					"A msg");
 
+$@ = "";
+$csv = Text::CSV_XS->new ({ skip_empty_rows => 5 });
+is_deeply ($csv->csv (@parg), \@head,				"A error");
+is ($@, "",							"A msg");
+is (0 + $csv->error_diag, 2015,					"A code");
+
 is_deeply (csv (@parg, skip_empty_rows => sub {\@repl}), [ @head,
     $ea,[8,2,7,1],$ea,$ea,[5,7,9,3],$ea],			"A Callback");
 is_deeply (csv (@parg, skip_empty_rows => sub {0}), \@head,	"A Callback 0");
@@ -93,6 +102,12 @@ like ($@, qr{^Empty row},					"H msg");
 
 is (eval { csv (@parg, skip_empty_rows => 4); }, undef,		"H croak");
 like ($@, qr{^Empty row},					"H msg");
+
+$@ = "";
+$csv = Text::CSV_XS->new ({ skip_empty_rows => 5 });
+is_deeply ($csv->csv (@parg), \@head,				"H error");
+is ($@, "",							"H msg");
+is (0 + $csv->error_diag, 2015,					"H code");
 
 $eh = { a => 1, b => 2, c => 3, d => 4 };
 is_deeply (csv (@parg, skip_empty_rows => sub {\@repl}), [ @head, $eh,

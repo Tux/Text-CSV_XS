@@ -957,6 +957,7 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 									\
     if (ser == 3) { (void)SetDiag (csv, 2015); die   ("Empty row"); }	\
     if (ser == 4) { (void)SetDiag (csv, 2015); croak ("Empty row"); }	\
+    if (ser == 5) { (void)SetDiag (csv, 2015); return FALSE;        }	\
 									\
     if (ser <= 2) {	/* skip & eof */				\
 	csv->fld_idx = 0;						\
@@ -970,7 +971,7 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	    }								\
 	}								\
 									\
-    if (ser == 5) {							\
+    if (ser == 6) {							\
 	int  result, n, i;						\
 	SV  *rv, **svp = hv_fetchs (csv->self, "_EMPTROW_CB", FALSE);	\
 	AV  *avp;							\
