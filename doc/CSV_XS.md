@@ -370,14 +370,71 @@ of fields than the previous row will cause the parser to throw error 2014.
 
 
     my $csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });
-            $csv->skip_empty_rows (0);
+            $csv->skip_empty_rows ("eof");
     my $f = $csv->skip_empty_rows;
 
-If this attribute is set to `1`,  any row that has an  ["eol"](#eol) immediately
-following the start of line will be skipped.  Default behavior is to return
-one single empty field.
+This attribute defines the behavior for empty rows:  an ["eol"](#eol) immediately
+following the start of line. Default behavior is to return one single empty
+field.
 
-This attribute is only used in parsing.
+This attribute is only used in parsing.  This attribute is ineffective when
+using ["parse"](#parse) and ["fields"](#fields).
+
+Possible values for this attribute are
+
+- 0 | undef
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 0 });
+        $csv->skip_empty_rows (undef);
+
+    No special action is taken. The result will be one single empty field.
+
+- 1 | "skip"
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 1 });
+        $csv->skip_empty_rows ("skip");
+
+    The row will be skipped.
+
+- 2 | "eof" | "stop"
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 2 });
+        $csv->skip_empty_rows ("eof");
+
+    The parsing will stop as if an ["eof"](#eof) was detected.
+
+- 3 | "die"
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 3 });
+        $csv->skip_empty_rows ("die");
+
+    The parsing will stop.  The internal error code will be set to 2015 and the
+    parser will `die`.
+
+- 4 | "croak"
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 4 });
+        $csv->skip_empty_rows ("croak");
+
+    The parsing will stop.  The internal error code will be set to 2015 and the
+    parser will `croak`.
+
+- callback
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => sub { [] } });
+        $csv->skip_empty_rows (sub { [ 42, $., undef, "empty" ] });
+
+    The callback is invoked and its result used instead.  If you want the parse
+    to stop after the callback, make sure to return a false value.
+
+    The returned value from the callback should be an array-ref. Any other type
+    will cause the parse to stop, so these are equivalent in behavior:
+
+        csv (in => $fh, skip_empty_rows => "stop");
+        csv (in => $fh. skip_empty_rows => sub { 0; });
+
+Without arguments, the current value is returned: `0`, `1`, `eof`, `die`,
+`croak` or the callback.
 
 ### formula\_handling
 
@@ -3172,6 +3229,11 @@ And below should be the complete list of error codes that can be returned:
 
 
     Inconsistent number of fields under strict parsing.
+
+- 2015 "ERW - Empty row"
+
+
+    An empty row was not allowed.
 
 - 2021 "EIQ - NL char inside quotes, binary off"
 

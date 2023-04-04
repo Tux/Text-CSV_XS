@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2023-03-01 "perl v5.36.0" "User Contributed Perl Documentation"
+.TH STDIN 1 2023-04-04 "perl v5.36.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -478,15 +478,80 @@ of fields than the previous row will cause the parser to throw error 2014.
 .PP
 .Vb 3
 \& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 1 });
-\&         $csv\->skip_empty_rows (0);
+\&         $csv\->skip_empty_rows ("eof");
 \& my $f = $csv\->skip_empty_rows;
 .Ve
 .PP
-If this attribute is set to \f(CW1\fR,  any row that has an  "eol" immediately
-following the start of line will be skipped.  Default behavior is to return
-one single empty field.
+This attribute defines the behavior for empty rows:  an "eol" immediately
+following the start of line. Default behavior is to return one single empty
+field.
 .PP
-This attribute is only used in parsing.
+This attribute is only used in parsing.  This attribute is ineffective when
+using "parse" and "fields".
+.PP
+Possible values for this attribute are
+.IP "0 | undef" 2
+.IX Item "0 | undef"
+.Vb 2
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 0 });
+\& $csv\->skip_empty_rows (undef);
+.Ve
+.Sp
+No special action is taken. The result will be one single empty field.
+.IP "1 | ""skip""" 2
+.IX Item "1 | ""skip"""
+.Vb 2
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 1 });
+\& $csv\->skip_empty_rows ("skip");
+.Ve
+.Sp
+The row will be skipped.
+.IP "2 | ""eof"" | ""stop""" 2
+.IX Item "2 | ""eof"" | ""stop"""
+.Vb 2
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 2 });
+\& $csv\->skip_empty_rows ("eof");
+.Ve
+.Sp
+The parsing will stop as if an "eof" was detected.
+.IP "3 | ""die""" 2
+.IX Item "3 | ""die"""
+.Vb 2
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 3 });
+\& $csv\->skip_empty_rows ("die");
+.Ve
+.Sp
+The parsing will stop.  The internal error code will be set to 2015 and the
+parser will \f(CW\*(C`die\*(C'\fR.
+.IP "4 | ""croak""" 2
+.IX Item "4 | ""croak"""
+.Vb 2
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => 4 });
+\& $csv\->skip_empty_rows ("croak");
+.Ve
+.Sp
+The parsing will stop.  The internal error code will be set to 2015 and the
+parser will \f(CW\*(C`croak\*(C'\fR.
+.IP callback 2
+.IX Item "callback"
+.Vb 2
+\& my $csv = Text::CSV_XS\->new ({ skip_empty_rows => sub { [] } });
+\& $csv\->skip_empty_rows (sub { [ 42, $., undef, "empty" ] });
+.Ve
+.Sp
+The callback is invoked and its result used instead.  If you want the parse
+to stop after the callback, make sure to return a false value.
+.Sp
+The returned value from the callback should be an array-ref. Any other type
+will cause the parse to stop, so these are equivalent in behavior:
+.Sp
+.Vb 2
+\& csv (in => $fh, skip_empty_rows => "stop");
+\& csv (in => $fh. skip_empty_rows => sub { 0; });
+.Ve
+.PP
+Without arguments, the current value is returned: \f(CW0\fR, \f(CW1\fR, \f(CW\*(C`eof\*(C'\fR, \f(CW\*(C`die\*(C'\fR,
+\&\f(CW\*(C`croak\*(C'\fR or the callback.
 .PP
 \fIformula_handling\fR
 .IX Xref "formula_handling"
@@ -3707,6 +3772,11 @@ Invalid specification for URI "fragment" specification.
 .IX Xref "2014"
 .Sp
 Inconsistent number of fields under strict parsing.
+.IP \(bu 2
+2015 "ERW \- Empty row"
+.IX Xref "2015"
+.Sp
+An empty row was not allowed.
 .IP \(bu 2
 2021 "EIQ \- NL char inside quotes, binary off"
 .IX Xref "2021"

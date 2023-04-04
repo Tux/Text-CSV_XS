@@ -464,12 +464,79 @@ my $f = $csv-&gt;strict;</code></pre>
 <h3 id="skip_empty_rows">skip_empty_rows </h3>
 
 <pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 1 });
-        $csv-&gt;skip_empty_rows (0);
+        $csv-&gt;skip_empty_rows (&quot;eof&quot;);
 my $f = $csv-&gt;skip_empty_rows;</code></pre>
 
-<p>If this attribute is set to <code>1</code>, any row that has an <a href="#eol">&quot;eol&quot;</a> immediately following the start of line will be skipped. Default behavior is to return one single empty field.</p>
+<p>This attribute defines the behavior for empty rows: an <a href="#eol">&quot;eol&quot;</a> immediately following the start of line. Default behavior is to return one single empty field.</p>
 
-<p>This attribute is only used in parsing.</p>
+<p>This attribute is only used in parsing. This attribute is ineffective when using <a href="#parse">&quot;parse&quot;</a> and <a href="#fields">&quot;fields&quot;</a>.</p>
+
+<p>Possible values for this attribute are</p>
+
+<dl>
+
+<dt id="undef">0 | undef</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 0 });
+$csv-&gt;skip_empty_rows (undef);</code></pre>
+
+<p>No special action is taken. The result will be one single empty field.</p>
+
+</dd>
+<dt id="skip">1 | &quot;skip&quot;</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 1 });
+$csv-&gt;skip_empty_rows (&quot;skip&quot;);</code></pre>
+
+<p>The row will be skipped.</p>
+
+</dd>
+<dt id="eof-stop">2 | &quot;eof&quot; | &quot;stop&quot;</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 2 });
+$csv-&gt;skip_empty_rows (&quot;eof&quot;);</code></pre>
+
+<p>The parsing will stop as if an <a href="#eof">&quot;eof&quot;</a> was detected.</p>
+
+</dd>
+<dt id="die">3 | &quot;die&quot;</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 3 });
+$csv-&gt;skip_empty_rows (&quot;die&quot;);</code></pre>
+
+<p>The parsing will stop. The internal error code will be set to 2015 and the parser will <code>die</code>.</p>
+
+</dd>
+<dt id="croak">4 | &quot;croak&quot;</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 4 });
+$csv-&gt;skip_empty_rows (&quot;croak&quot;);</code></pre>
+
+<p>The parsing will stop. The internal error code will be set to 2015 and the parser will <code>croak</code>.</p>
+
+</dd>
+<dt id="callback">callback</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; sub { [] } });
+$csv-&gt;skip_empty_rows (sub { [ 42, $., undef, &quot;empty&quot; ] });</code></pre>
+
+<p>The callback is invoked and its result used instead. If you want the parse to stop after the callback, make sure to return a false value.</p>
+
+<p>The returned value from the callback should be an array-ref. Any other type will cause the parse to stop, so these are equivalent in behavior:</p>
+
+<pre><code>csv (in =&gt; $fh, skip_empty_rows =&gt; &quot;stop&quot;);
+csv (in =&gt; $fh. skip_empty_rows =&gt; sub { 0; });</code></pre>
+
+</dd>
+</dl>
+
+<p>Without arguments, the current value is returned: <code>0</code>, <code>1</code>, <code>eof</code>, <code>die</code>, <code>croak</code> or the callback.</p>
 
 <h3 id="formula_handling">formula_handling </h3>
 
@@ -501,7 +568,7 @@ my $f = $csv-&gt;formula_handling;</code></pre>
 <pre><code>$csv-&gt;formula (&quot;none&quot;);</code></pre>
 
 </dd>
-<dt id="die">die</dt>
+<dt id="die1">die</dt>
 <dd>
 
 <p>Cause the process to <code>die</code> whenever a leading <code>=</code> is encountered.</p>
@@ -509,7 +576,7 @@ my $f = $csv-&gt;formula_handling;</code></pre>
 <pre><code>$csv-&gt;formula (&quot;die&quot;);</code></pre>
 
 </dd>
-<dt id="croak">croak</dt>
+<dt id="croak1">croak</dt>
 <dd>
 
 <p>Cause the process to <code>croak</code> whenever a leading <code>=</code> is encountered. (See <a>Carp</a>)</p>
@@ -534,7 +601,7 @@ my $f = $csv-&gt;formula_handling;</code></pre>
 $csv-&gt;formula (&quot;&quot;);</code></pre>
 
 </dd>
-<dt id="undef">undef</dt>
+<dt id="undef1">undef</dt>
 <dd>
 
 <p>Replace the content of fields that start with a <code>=</code> with <code>undef</code>.</p>
@@ -1775,7 +1842,7 @@ $aoa = csv (in =&gt; &quot;test.csv:gzip.gz&quot;, encoding =&gt; &quot;:gzip&qu
 
 <dl>
 
-<dt id="skip">skip </dt>
+<dt id="skip1">skip </dt>
 <dd>
 
 <p>When <code>skip</code> is used, the header will not be included in the output.</p>
@@ -2966,6 +3033,11 @@ $csv-&gt;is_quoted (3, 1);</code></pre>
 <li><p>2014 &quot;ENF - Inconsistent number of fields&quot; </p>
 
 <p>Inconsistent number of fields under strict parsing.</p>
+
+</li>
+<li><p>2015 &quot;ERW - Empty row&quot; </p>
+
+<p>An empty row was not allowed.</p>
 
 </li>
 <li><p>2021 &quot;EIQ - NL char inside quotes, binary off&quot; </p>
