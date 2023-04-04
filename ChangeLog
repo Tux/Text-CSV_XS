@@ -1,3 +1,6 @@
+1.51	- 2023-04-04, H.Merijn Brand
+    * Attribute skip_empty_rows extended
+
 1.50	- 2023-03-01, H.Merijn Brand
     * Promote sep to sep_set in csv () with auto-headers
     * Fix bug in set_diag surfaced by PERL_RC_STACK
