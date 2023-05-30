@@ -11,7 +11,7 @@ Description:
     This distribution provides several examples of scripts that convert CSV
     files or data streams into XLS or XLSX  or simply check if the CSV data
     is valid. It is easy to amend those scripts to do whatever the end-user
-    actually requires.  The full documentation also provaides various small
+    actually requires.  The full documentation also provides various small
     snippets of example code.
 
     Convert a CSV file into JSON:
