@@ -5142,7 +5142,7 @@ C by implementing a simple finite-state machine.   He added variable quote,
 escape and separator characters, the binary mode and the print and getline
 methods. See F<ChangeLog> releases 0.10 through 0.23.
 
-H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>> cleaned up the code,  added
+H.Merijn Brand F<E<lt>hmbrand@cpan.orgE<gt>> cleaned up the code,  added
 the field flags methods,  wrote the major part of the test suite, completed
 the documentation,   fixed most RT bugs,  added all the allow flags and the
 L</csv> function. See ChangeLog releases 0.25 and on.
