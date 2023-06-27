@@ -1014,7 +1014,11 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	for (i = 0; i <= n; i++) {					\
 	    SV **svp = av_fetch (avp, i, FALSE);			\
 	    sv = svp && *svp ? *svp : NULL;				\
-	    if (sv) SvREFCNT_inc (sv);					\
+	    if (sv) {							\
+		SvREFCNT_inc (sv);					\
+		/* upgrade IV to IVPV if needed */			\
+		(void)SvPV_nolen (sv);					\
+		}							\
 	    AV_PUSH;							\
 	    }								\
 	return TRUE;							\
@@ -1358,11 +1362,13 @@ int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l) {
 #endif
 
 #define AV_PUSH { \
+    int svc;								\
     *SvEND (sv) = (char)0;						\
+    svc = SvCUR (sv);							\
     SvUTF8_off (sv);							\
-    if (csv->formula && SvCUR (sv) && *(SvPV_nolen (sv)) == '=')	\
+    if (svc && csv->formula && *(SvPV_nolen (sv)) == '=')		\
 	(void)_formula (csv, sv, NULL, fnum);				\
-    if (SvCUR (sv) == 0 && (						\
+    if (svc == 0 && (							\
 	    csv->empty_is_undef ||					\
 	    (!(f & CSV_FLAGS_QUO) && csv->blank_is_undef)))		\
 	SvSetUndef (sv);						\
