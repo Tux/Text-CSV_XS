@@ -518,7 +518,7 @@ sub formula {
     @_ and $self->_set_attr_N ("formula", _supported_formula ($self, shift));
     $self->{'formula'} == 6 or $self->{'_FORMULA_CB'} = undef;
     [qw( none die croak diag empty undef cb )]->[_supported_formula ($self, $self->{'formula'})];
-    } # always_quote
+    } # formula
 
 sub formula_handling {
     my $self = shift;
