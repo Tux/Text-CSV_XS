@@ -454,7 +454,7 @@ sub strict {
     my $self = shift;
     @_ and $self->_set_attr_X ("strict", shift);
     $self->{'strict'};
-    } # always_quote
+    } # strict
 
 sub _supported_skip_empty_rows {
     my ($self, $f) = @_;
@@ -518,7 +518,7 @@ sub formula {
     @_ and $self->_set_attr_N ("formula", _supported_formula ($self, shift));
     $self->{'formula'} == 6 or $self->{'_FORMULA_CB'} = undef;
     [qw( none die croak diag empty undef cb )]->[_supported_formula ($self, $self->{'formula'})];
-    } # always_quote
+    } # formula
 
 sub formula_handling {
     my $self = shift;
