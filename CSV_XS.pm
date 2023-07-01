@@ -454,7 +454,7 @@ sub strict {
     my $self = shift;
     @_ and $self->_set_attr_X ("strict", shift);
     $self->{'strict'};
-    } # always_quote
+    } # strict
 
 sub _supported_skip_empty_rows {
     my ($self, $f) = @_;
