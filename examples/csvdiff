@@ -15,7 +15,7 @@ sub usage {
 	"  assuming first line is header and first field is the key\n",
 	"          --no-color               do not use colors\n",
 	"    -h    --html                   produce HTML output\n",
-	"    -w    --ignore-all-space       ignore all whitespace in all fields\n",
+	"    -w    --ignore-all-space       ignore all whitespaces in all fields\n",
 	"    -b    --ignore-space-change    ignore whitespace length changes\n",
 	"    -Z    --ignore-trailing-space  ignore trailing whitespace per field\n",
 	"    -o F  --output=F               send output to file F\n";
