@@ -2334,9 +2334,7 @@ BOOT:
     Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT, newSVpvs ("IO::Handle"), NULL, NULL, NULL);
 
 void
-SetDiag (self, xse, ...)
-    SV		*self
-    int		 xse
+SetDiag (SV *self, int xse, ...)
 
   PPCODE:
     HV		*hv;
@@ -2361,8 +2359,7 @@ SetDiag (self, xse, ...)
     /* XS SetDiag */
 
 void
-error_input (self)
-    SV		*self
+error_input (SV *self)
 
   PPCODE:
     if (self && SvOK (self) && SvROK (self) && SvTYPE (SvRV (self)) == SVt_PVHV) {
@@ -2380,11 +2377,7 @@ error_input (self)
     /* XS error_input */
 
 void
-Combine (self, dst, fields, useIO)
-    SV		*self
-    SV		*dst
-    SV		*fields
-    bool	 useIO
+Combine (SV *self, SV *dst, SV *fields, bool useIO)
 
   PPCODE:
     HV	*hv;
@@ -2397,11 +2390,7 @@ Combine (self, dst, fields, useIO)
     /* XS Combine */
 
 void
-Parse (self, src, fields, fflags)
-    SV		*self
-    SV		*src
-    SV		*fields
-    SV		*fflags
+Parse (SV *self, SV *src, SV *fields, SV *fflags)
 
   PPCODE:
     HV	*hv;
@@ -2417,10 +2406,7 @@ Parse (self, src, fields, fflags)
     /* XS Parse */
 
 void
-print (self, io, fields)
-    SV		*self
-    SV		*io
-    SV		*fields
+print (SV *self, SV *io, SV *fields)
 
   PPCODE:
     HV	 *hv;
@@ -2441,9 +2427,7 @@ print (self, io, fields)
     /* XS print */
 
 void
-getline (self, io)
-    SV		*self
-    SV		*io
+getline (SV *self, SV *io)
 
   PPCODE:
     HV	*hv;
@@ -2460,9 +2444,7 @@ getline (self, io)
     /* XS getline */
 
 void
-getline_all (self, io, ...)
-    SV		*self
-    SV		*io
+getline_all (SV *self, SV *io, ...)
 
   PPCODE:
     HV	*hv;
@@ -2478,10 +2460,7 @@ getline_all (self, io, ...)
     /* XS getline_all */
 
 void
-_cache_set (self, idx, val)
-    SV		*self
-    int		 idx
-    SV		*val
+_cache_set (SV *self, int idx, SV *val)
 
   PPCODE:
     HV	*hv;
@@ -2492,8 +2471,7 @@ _cache_set (self, idx, val)
     /* XS _cache_set */
 
 void
-_cache_diag (self)
-    SV		*self
+_cache_diag (SV *self)
 
   PPCODE:
     HV	*hv;
