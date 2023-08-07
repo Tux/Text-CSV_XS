@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
-use strict;
+use 5.012000;
 use warnings;
 
 # csvdiff: Show differences between CSV files
-#	   (m)'19 [05 Mar 2019] Copyright H.M.Brand 2009-2023
+#	   (m)'23 [05 Aug 2023] Copyright H.M.Brand 2009-2023
 
-our $VERSION = "1.02 - 20190305";
+our $VERSION = "1.03 - 20230805";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -51,14 +51,15 @@ my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 0 });
 
 if ($opt_h) {
     binmode STDOUT, ":encoding(utf-8)";
-    print <<EOH;
+    my $name = $^O eq "MSWin32" ? Win32::LoginName () : scalar getpwuid $<;
+    print <<"EOH";
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <title>CFI School updates</title>
   <meta name="Generator"     content="perl $]" />
-  <meta name="Author"        content="@{[scalar getpwuid $<]}" />
+  <meta name="Author"        content="$name" />
   <meta name="Description"   content="CSV diff @ARGV" />
   <style type="text/css">
     .rd { background:	#ffe0e0;	}
@@ -99,7 +100,7 @@ my @n   = map { $#{$f[$_]} } 0, 1;
 my @i   = (1, 1);
 my $hdr = "# csvdiff   < $ARGV[0]    > $ARGV[1]\n";
 
-$f[$_][1+$n[$_]][0] = $opt_n ? 2147483647 : "\xff\xff\xff\xff" for 0, 1;
+$f[$_][1+$n[$_]][0] = $opt_n ? 0x7FFFFFFF : "\xff\xff\xff\xff" for 0, 1;
 
 my %cls;
    %cls = (
