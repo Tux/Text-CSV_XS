@@ -1,6 +1,9 @@
-1.51	- 2023-06-27, H.Merijn Brand
+1.51	- 2023-08-07, H.Merijn Brand
     * Contact e-mail update
     * Attribute skip_empty_rows extended
+    * Fix comments (PR#45)
+    * Fix help (x12340, PR#46)
+    * Update to Devel::PPPort-3.71
 
 1.50	- 2023-03-01, H.Merijn Brand
     * Promote sep to sep_set in csv () with auto-headers
