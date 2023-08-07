@@ -5,6 +5,7 @@
     * Fix help (x12340, PR#46)
     * Update to Devel::PPPort-3.71
     * Fix HTML on Windows
+    * Fix double header-interpretation on bom + headers => "auto" (issue 47)
 
 1.50	- 2023-03-01, H.Merijn Brand
     * Promote sep to sep_set in csv () with auto-headers

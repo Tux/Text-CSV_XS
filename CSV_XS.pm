@@ -48,7 +48,7 @@ sub CSV_FLAGS_IS_MISSING	{ 0x0010 }
 	CSV_TYPE_NV
 	)],
     );
-@EXPORT_OK = (qw( csv PV IV NV ), @{$EXPORT_TAGS{CONSTANTS}});
+@EXPORT_OK = (qw( csv PV IV NV ), @{$EXPORT_TAGS{'CONSTANTS'}});
 
 if ($] < 5.008002) {
     no warnings "redefine";
@@ -1019,7 +1019,7 @@ sub header {
     ref $args{'munge_column_names'} eq "HASH" and
 	@hdr = map { $args{'munge_column_names'}->{$_} || $_ } @hdr;
     my %hdr; $hdr{$_}++ for @hdr;
-    exists $hdr{""} and croak ($self->SetDiag (1012));
+    exists $hdr{''} and croak ($self->SetDiag (1012));
     unless (keys %hdr == @hdr) {
 	croak ($self->_SetDiagInfo (1013, join ", " =>
 	    map { "$_ ($hdr{$_})" } grep { $hdr{$_} > 1 } keys %hdr));
@@ -1413,7 +1413,7 @@ sub csv {
 	!defined $c->{'hd_s'} &&  $c->{'attr'}{'sep'} and
 	         $c->{'hd_s'} = [ $c->{'attr'}{'sep'} ];
 	defined  $c->{'hd_s'} and $harg{'sep_set'}            = $c->{'hd_s'};
-	defined  $c->{'hd_d'} and $harg{'detect_bom'}         = $c->{'hd_b'};
+	defined  $c->{'hd_b'} and $harg{'detect_bom'}         = $c->{'hd_b'};
 	defined  $c->{'hd_m'} and $harg{'munge_column_names'} = $hdrs ? "none" : $c->{'hd_m'};
 	defined  $c->{'hd_c'} and $harg{'set_column_names'}   = $hdrs ? 0      : $c->{'hd_c'};
 	@row1 = $csv->header ($fh, \%harg);
@@ -1440,27 +1440,32 @@ sub csv {
 
     $c->{'fltr'} && grep m/\D/ => keys %{$c->{'fltr'}} and $hdrs ||= "auto";
     if (defined $hdrs) {
-	if (!ref $hdrs) {
-	    if ($hdrs eq "skip") {
-		$csv->getline ($fh); # discard;
+	if (!ref $hdrs or ref $hdrs eq "CODE") {
+	    my $h = $c->{'hd_b'}
+		? [ $csv->column_names () ]
+		:   $csv->getline ($fh);
+	    my $has_h = $h && @$h;
+
+	    if (ref $hdrs) {
+		$has_h or return;
+		my $cr = $hdrs;
+		$hdrs  = [ map {  $cr->($hdr{$_} || $_) } @{$h} ];
+		}
+	    elsif ($hdrs eq "skip") {
+		# discard;
 		}
 	    elsif ($hdrs eq "auto") {
-		my $h = $csv->getline ($fh) or return;
+		$has_h or return;
 		$hdrs = [ map {      $hdr{$_} || $_ } @{$h} ];
 		}
 	    elsif ($hdrs eq "lc") {
-		my $h = $csv->getline ($fh) or return;
+		$has_h or return;
 		$hdrs = [ map { lc ($hdr{$_} || $_) } @{$h} ];
 		}
 	    elsif ($hdrs eq "uc") {
-		my $h = $csv->getline ($fh) or return;
+		$has_h or return;
 		$hdrs = [ map { uc ($hdr{$_} || $_) } @{$h} ];
 		}
-	    }
-	elsif (ref $hdrs eq "CODE") {
-	    my $h  = $csv->getline ($fh) or return;
-	    my $cr = $hdrs;
-	    $hdrs  = [ map {  $cr->($hdr{$_} || $_) } @{$h} ];
 	    }
 	$c->{'kh'} and $hdrs and @{$c->{'kh'}} = @{$hdrs};
 	}
@@ -1493,7 +1498,7 @@ sub csv {
 	  do {
 	    my @h = $csv->column_names ($hdrs);
 	    my %h; $h{$_}++ for @h;
-	    exists $h{""} and croak ($csv->SetDiag (1012));
+	    exists $h{''} and croak ($csv->SetDiag (1012));
 	    unless (keys %h == @h) {
 		croak ($csv->_SetDiagInfo (1013, join ", " =>
 		    map { "$_ ($h{$_})" } grep { $h{$_} > 1 } keys %h));
@@ -3653,6 +3658,8 @@ X<skip>
 When C<skip> is used, the header will not be included in the output.
 
  my $aoa = csv (in => $fh, headers => "skip");
+
+C<skip> is invalid/ignored in combinations with L<C<detect_bom>|/detect_bom>.
 
 =item auto
 X<auto>
