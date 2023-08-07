@@ -644,7 +644,7 @@ sub status {
 sub eof {
     my $self = shift;
     return $self->{'_EOF'};
-    } # status
+    } # eof
 
 sub types {
     my $self = shift;
