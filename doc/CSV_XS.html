@@ -137,8 +137,8 @@
       </li>
       <li><a href="#Printing-CSV-data">Printing CSV data</a>
         <ul>
-          <li><a href="#The-fast-way:-using-print">The fast way: using &quot;print&quot;</a></li>
-          <li><a href="#The-slow-way:-using-combine-and-string">The slow way: using &quot;combine&quot; and &quot;string&quot;</a></li>
+          <li><a href="#The-fast-way%3A-using-print">The fast way: using &quot;print&quot;</a></li>
+          <li><a href="#The-slow-way%3A-using-combine-and-string">The slow way: using &quot;combine&quot; and &quot;string&quot;</a></li>
           <li><a href="#Generating-CSV-into-memory">Generating CSV into memory</a></li>
         </ul>
       </li>
@@ -189,7 +189,7 @@ my $aoh = csv (in =&gt; &quot;data.csv&quot;,
                headers =&gt; &quot;auto&quot;);   # as array of hash
 
 # Write array of arrays as csv file
-csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;, sep_char=&gt; &quot;;&quot;);
+csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;, sep_char =&gt; &quot;;&quot;);
 
 # Only show lines where &quot;code&quot; is odd
 csv (in =&gt; &quot;data.csv&quot;, filter =&gt; { code =&gt; sub { $_ % 2 }});
@@ -518,6 +518,15 @@ $csv-&gt;skip_empty_rows (&quot;die&quot;);</code></pre>
 $csv-&gt;skip_empty_rows (&quot;croak&quot;);</code></pre>
 
 <p>The parsing will stop. The internal error code will be set to 2015 and the parser will <code>croak</code>.</p>
+
+</dd>
+<dt id="error">5 | &quot;error&quot;</dt>
+<dd>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ skip_empty_rows =&gt; 5 });
+$csv-&gt;skip_empty_rows (&quot;error&quot;);</code></pre>
+
+<p>The parsing will fail. The internal error code will be set to 2015.</p>
 
 </dd>
 <dt id="callback">callback</dt>
@@ -1046,7 +1055,7 @@ $csv-&gt;print ($fh,   undef  );   # 48500 recs/sec</code></pre>
 $arrayref = $csv-&gt;getline_all ($fh, $offset);
 $arrayref = $csv-&gt;getline_all ($fh, $offset, $length);</code></pre>
 
-<p>This will return a reference to a list of <a href="#getline">getline ($fh)</a> results. In this call, <code>keep_meta_info</code> is disabled. If <code>$offset</code> is negative, as with <code>splice</code>, only the last <code>abs ($offset)</code> records of <code>$fh</code> are taken into consideration. Parameters <code>$offset</code> and <code>$length</code> are expected to be an integers. Non-integer values are interpreted as integer without check.</p>
+<p>This will return a reference to a list of <a href="#getline">getline ($fh)</a> results. In this call, <code>keep_meta_info</code> is disabled. If <code>$offset</code> is negative, as with <code>splice</code>, only the last <code>abs ($offset)</code> records of <code>$fh</code> are taken into consideration. Parameters <code>$offset</code> and <code>$length</code> are expected to be integers. Non-integer values are interpreted as integer without check.</p>
 
 <p>Given a CSV file with 10 lines:</p>
 
@@ -1849,6 +1858,8 @@ $aoa = csv (in =&gt; &quot;test.csv:gzip.gz&quot;, encoding =&gt; &quot;:gzip&qu
 
 <pre><code>my $aoa = csv (in =&gt; $fh, headers =&gt; &quot;skip&quot;);</code></pre>
 
+<p><code>skip</code> is invalid/ignored in combinations with <a href="#detect_bom"><code>detect_bom</code></a>.</p>
+
 </dd>
 <dt id="auto">auto </dt>
 <dd>
@@ -2147,7 +2158,7 @@ say $aoh-&gt;[15]{Foo};</code></pre>
 
 <dl>
 
-<dt id="error">error </dt>
+<dt id="error1">error </dt>
 <dd>
 
 <pre><code>$csv-&gt;callbacks (error =&gt; sub { $csv-&gt;SetDiag (0) });</code></pre>
@@ -3161,7 +3172,7 @@ $csv-&gt;is_quoted (3, 1);</code></pre>
 
 <p>Jochen Wiedmann <i>&lt;joe@ispsoft.de&gt;</i> rewrote the en- and decoding in C by implementing a simple finite-state machine. He added variable quote, escape and separator characters, the binary mode and the print and getline methods. See <i>ChangeLog</i> releases 0.10 through 0.23.</p>
 
-<p>H.Merijn Brand <i>&lt;h.m.brand@xs4all.nl&gt;</i> cleaned up the code, added the field flags methods, wrote the major part of the test suite, completed the documentation, fixed most RT bugs, added all the allow flags and the <a href="#csv">&quot;csv&quot;</a> function. See ChangeLog releases 0.25 and on.</p>
+<p>H.Merijn Brand <i>&lt;hmbrand@cpan.org&gt;</i> cleaned up the code, added the field flags methods, wrote the major part of the test suite, completed the documentation, fixed most RT bugs, added all the allow flags and the <a href="#csv">&quot;csv&quot;</a> function. See ChangeLog releases 0.25 and on.</p>
 
 <h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
 

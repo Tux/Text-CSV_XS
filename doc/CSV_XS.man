@@ -15,7 +15,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
                        headers => "auto");   # as array of hash
 
         # Write array of arrays as csv file
-        csv (in => $aoa, out => "file.csv", sep_char=> ";");
+        csv (in => $aoa, out => "file.csv", sep_char => ";");
 
         # Only show lines where "code" is odd
         csv (in => "data.csv", filter => { code => sub { $_ % 2 }});
@@ -417,6 +417,12 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
          The parsing will stop.  The internal error code will be set to 2015
          and the parser will "croak".
+
+       5 | "error"
+          my $csv = Text::CSV_XS->new ({ skip_empty_rows => 5 });
+          $csv->skip_empty_rows ("error");
+
+         The parsing will fail.  The internal error code will be set to 2015.
 
        callback
           my $csv = Text::CSV_XS->new ({ skip_empty_rows => sub { [] } });
@@ -1040,8 +1046,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        this call, "keep_meta_info" is disabled.  If $offset is negative, as
        with "splice", only the last  "abs ($offset)" records of $fh are taken
        into consideration. Parameters $offset and $length are expected to be
-       an integers. Non-integer values are interpreted as integer without
-       check.
+       integers. Non-integer values are interpreted as integer without check.
 
        Given a CSV file with 10 lines:
 
@@ -1886,6 +1891,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
          When "skip" is used, the header will not be included in the output.
 
           my $aoa = csv (in => $fh, headers => "skip");
+
+         "skip" is invalid/ignored in combinations with "detect_bom".
 
        auto
          If "auto" is used, the first line of the "CSV" source will be read as
@@ -3163,10 +3170,10 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        escape and separator characters, the binary mode and the print and
        getline methods. See [4mChangeLog[24m releases 0.10 through 0.23.
 
-       H.Merijn Brand [4m<h.m.brand@xs4all.nl>[24m cleaned up the code,  added the
-       field flags methods,  wrote the major part of the test suite, completed
-       the documentation,   fixed most RT bugs,  added all the allow flags and
-       the "csv" function. See ChangeLog releases 0.25 and on.
+       H.Merijn Brand [4m<hmbrand@cpan.org>[24m cleaned up the code,  added the field
+       flags methods,  wrote the major part of the test suite, completed the
+       documentation,   fixed most RT bugs,  added all the allow flags and the
+       "csv" function. See ChangeLog releases 0.25 and on.
 
 [1mCOPYRIGHT AND LICENSE[0m
         Copyright (C) 2007-2023 H.Merijn Brand.  All rights reserved.
@@ -3178,4 +3185,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.36.0                      2023-04-04                          STDIN(1)
+perl v5.38.0                      2023-08-12                          STDIN(1)

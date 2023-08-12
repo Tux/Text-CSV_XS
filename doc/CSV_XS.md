@@ -13,7 +13,7 @@ Text::CSV\_XS - comma-separated values manipulation routines
                    headers => "auto");   # as array of hash
 
     # Write array of arrays as csv file
-    csv (in => $aoa, out => "file.csv", sep_char=> ";");
+    csv (in => $aoa, out => "file.csv", sep_char => ";");
 
     # Only show lines where "code" is odd
     csv (in => "data.csv", filter => { code => sub { $_ % 2 }});
@@ -418,6 +418,13 @@ Possible values for this attribute are
 
     The parsing will stop.  The internal error code will be set to 2015 and the
     parser will `croak`.
+
+- 5 | "error"
+
+        my $csv = Text::CSV_XS->new ({ skip_empty_rows => 5 });
+        $csv->skip_empty_rows ("error");
+
+    The parsing will fail.  The internal error code will be set to 2015.
 
 - callback
 
@@ -1080,7 +1087,7 @@ This will return a reference to a list of [getline ($fh)](#getline) results.
 In this call, `keep_meta_info` is disabled.  If `$offset` is negative, as
 with `splice`, only the last  `abs ($offset)` records of `$fh` are taken
 into consideration. Parameters `$offset` and `$length` are expected to be
-an integers. Non-integer values are interpreted as integer without check.
+integers. Non-integer values are interpreted as integer without check.
 
 Given a CSV file with 10 lines:
 
@@ -1992,6 +1999,8 @@ or `skip`.
     When `skip` is used, the header will not be included in the output.
 
         my $aoa = csv (in => $fh, headers => "skip");
+
+    `skip` is invalid/ignored in combinations with [`detect_bom`](#detect_bom).
 
 - auto
 
@@ -3355,7 +3364,7 @@ C by implementing a simple finite-state machine.   He added variable quote,
 escape and separator characters, the binary mode and the print and getline
 methods. See `ChangeLog` releases 0.10 through 0.23.
 
-H.Merijn Brand `<h.m.brand@xs4all.nl>` cleaned up the code,  added
+H.Merijn Brand `<hmbrand@cpan.org>` cleaned up the code,  added
 the field flags methods,  wrote the major part of the test suite, completed
 the documentation,   fixed most RT bugs,  added all the allow flags and the
 ["csv"](#csv) function. See ChangeLog releases 0.25 and on.
