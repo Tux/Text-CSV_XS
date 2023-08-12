@@ -102,7 +102,6 @@ Bundle-Test-SQL-Statement
 Business-AU-Data-ANZIC
 Business-Cart-Generic
 Business-DPD
-Business-OnlinePayment-AuthorizeNet
 Business-OnlinePayment-Vanco
 Business-Shipping-DataTools
 BuzzSaw

@@ -63,6 +63,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "App-Framework",			# Questions
     "App-mojopaste",			# failing internet connections
     "ASNMTAP",				# Questions
+    "Business-OnlinePayment-AuthorizeNet",# Timeout
     "Business-Shipping-DataTools",	# Questions and unmet prereqs
     "Catalyst-TraitFor-Model-DBIC-Schema-QueryLog-AdoptPlack", # maint/Maker.pm
     "CGI-Application-Framework",	# Unmet prerequisites
