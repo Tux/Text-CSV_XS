@@ -556,26 +556,14 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
     } /* _pretty_str */
 
 #define _cache_show_byte(trim,c) \
-    warn ("  %-21s %02x:%3d\n", trim, c, c)
+    warn ("  %-21s  %02x:%3d\n", trim, c, c)
 #define _cache_show_char(trim,c) \
-    warn ("  %-21s %02x:%s\n",  trim, c, _pretty_str (&c, 1))
+    warn ("  %-21s  %02x:%s\n",  trim, c, _pretty_str (&c, 1))
 #define _cache_show_str(trim,l,str) \
-    warn ("  %-21s %02d:%s\n",  trim, l, _pretty_str (str, l))
+    warn ("  %-21s %3d:%s\n",  trim, l, _pretty_str (str, l))
 
-#define xs_cache_diag(hv)	cx_xs_cache_diag (aTHX_ hv)
-static void cx_xs_cache_diag (pTHX_ HV *hv) {
-    SV   **svp;
-    byte  *cache;
-    csv_t  csvs;
-    csv_t *csv = &csvs;
-
-    unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp) {
-	warn ("CACHE: invalid\n");
-	return;
-	}
-
-    cache = (byte *)SvPV_nolen (*svp);
-    (void)memcpy (csv, cache, sizeof (csv_t));
+#define _csv_diag(csv)	_xs_csv_diag (aTHX_ csv)
+static void _xs_csv_diag (pTHX_ csv_t *csv) {
     warn ("CACHE:\n");
     _cache_show_char ("quote_char",		CH_QUOTE);
     _cache_show_char ("escape_char",		csv->escape_char);
@@ -625,6 +613,27 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
 	char *s = SvPV_nolen (csv->tmp);
 	_cache_show_str ("tmp",  (int)strlen (s), (byte *)s);
 	}
+    if (csv->cache)
+	warn ("  %-20s %4d:0x%08x\n", "cache", sizeof (csv_t), csv->cache);
+    else
+	warn ("  %-22s --:no cache yet\n", "cache");
+    } /* _csv_diag */
+
+#define xs_cache_diag(hv)	cx_xs_cache_diag (aTHX_ hv)
+static void cx_xs_cache_diag (pTHX_ HV *hv) {
+    SV   **svp;
+    byte  *cache;
+    csv_t  csvs;
+    csv_t *csv = &csvs;
+
+    unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp) {
+	warn ("CACHE: invalid\n");
+	return;
+	}
+
+    cache = (byte *)SvPV_nolen (*svp);
+    (void)memcpy (csv, cache, sizeof (csv_t));
+    _csv_diag (csv);
     } /* xs_cache_diag */
 
 #define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
@@ -2181,8 +2190,14 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 		}
 	    }
 	}
-    else /* just copy the cache */
-	(void)memcpy (csv.cache, &csv, sizeof (csv_t));
+    else { /* just copy to the cache */
+	byte *copy = malloc (sizeof (csv_t) + 4);
+	/* &csv -> csv.cache will fail; in some environments where
+	 * overwriting yourself is not allowed, issue-49 */
+	(void)memcpy (copy,     &csv,  sizeof (csv_t));
+	(void)memcpy (csv.cache, copy, sizeof (csv_t));
+	(void)free (copy);
+	}
 
     if (result && csv.types) {
 	STRLEN	i;

@@ -1,5 +1,5 @@
-1.52	- 2023-08-07, H.Merijn Brand
-    * 
+1.52	- 2023-09-19, H.Merijn Brand
+    * Fix possible coredump in cache on non-IO parse (issue 49)
 
 1.51	- 2023-08-07, H.Merijn Brand
     * Contact e-mail update
