@@ -2191,12 +2191,12 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	    }
 	}
     else { /* just copy to the cache */
-	byte *copy = malloc (sizeof (csv_t) + 4);
-	/* &csv -> csv.cache will fail; in some environments where
-	 * overwriting yourself is not allowed, issue-49 */
-	(void)memcpy (copy,     &csv,  sizeof (csv_t));
-	(void)memcpy (csv.cache, copy, sizeof (csv_t));
-	(void)free (copy);
+	SV **svp;
+
+	if ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp)
+	    (void)memcpy ((byte *)SvPV_nolen (*svp), &csv, sizeof (csv_t));
+	else
+	    (void)memcpy (csv.cache, &csv, sizeof (csv_t));
 	}
 
     if (result && csv.types) {
