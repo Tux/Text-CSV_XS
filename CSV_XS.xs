@@ -2191,12 +2191,11 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 	    }
 	}
     else { /* just copy to the cache */
-	SV **svp;
+	SV **svp = hv_fetchs (hv, "_CACHE", FALSE);
 
-	if ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp)
-	    (void)memcpy ((byte *)SvPV_nolen (*svp), &csv, sizeof (csv_t));
-	else
-	    (void)memcpy (csv.cache, &csv, sizeof (csv_t));
+	if (svp && *svp)
+	    csv.cache = (byte *)SvPV_nolen (*svp);
+	(void)memcpy (csv.cache, &csv, sizeof (csv_t));
 	}
 
     if (result && csv.types) {
