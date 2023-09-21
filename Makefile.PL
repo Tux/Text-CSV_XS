@@ -169,7 +169,7 @@ sub postamble {
 	'doc/CSV_XS.3:		CSV_XS.pm',
 	'	pod2man       < $? > $@',
 	'doc/CSV_XS.man:	doc/CSV_XS.3',
-	'	nroff -mandoc < $? > $@',
+	'	nroff2man     < $? > $@',
 	'doc/csv2xlsx.md:	examples/csv2xlsx',
 	'	pod2markdown  < $? > $@',
 	'doc/csv2xlsx.html:	examples/csv2xlsx',
