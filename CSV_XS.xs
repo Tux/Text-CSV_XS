@@ -614,7 +614,7 @@ static void _xs_csv_diag (pTHX_ csv_t *csv) {
 	_cache_show_str ("tmp",  (int)strlen (s), (byte *)s);
 	}
     if (csv->cache)
-	warn ("  %-20s %4d:0x%08x\n", "cache", sizeof (csv_t), csv->cache);
+	warn ("  %-20s %4d:0x%08lx\n", "cache", (int)sizeof (csv_t), (unsigned long)csv->cache);
     else
 	warn ("  %-22s --:no cache yet\n", "cache");
     } /* _csv_diag */
