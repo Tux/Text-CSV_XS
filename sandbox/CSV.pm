@@ -38,7 +38,7 @@ Uses L<JSON>'s decode_json to convert the result of C<csv> to JSON.
 
 =head1 AUTHOR
 
-H.Merijn Brand <hmbrand.org>
+H.Merijn Brand <hmbrand@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 

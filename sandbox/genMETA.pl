@@ -61,7 +61,7 @@ version:                 VERSION
 abstract:                Comma-Separated Values manipulation routines
 license:                 perl
 author:
-    - H.Merijn Brand <hmbrand.org>
+    - H.Merijn Brand <hmbrand@cpan.org>
 generated_by:            Author
 distribution_type:       module
 provides:
