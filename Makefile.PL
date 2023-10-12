@@ -177,7 +177,7 @@ sub postamble {
 	'doc/csv2xlsx.3:	examples/csv2xlsx',
 	'	pod2man       < $? > $@',
 	'doc/csv2xlsx.man:	doc/csv2xlsx.3',
-	'	nroff -mandoc < $? > $@',
+	'	nroff2man     < $? > $@',
 	'',
 	$min_vsn;
     } # postamble
