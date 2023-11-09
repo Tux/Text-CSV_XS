@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'22 Copyright H.M.Brand 2007-2023
+#	   (m)'23 Copyright H.M.Brand 2007-2023
 
 use 5.014000;
 use warnings;
 
-our $VERSION = "1.20 - 2022-06-21";
+our $VERSION = "1.22 - 2023-11-09";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -42,6 +42,7 @@ usage: csv2xlsx [options] [-o <xlsx>] [file.csv]
          --de     Some CSV fields might be double-encoded. Try to fix that.
        -m         merge multiple CSV's into a single xlsx (separate sheets)
                     -o is required, all arguments should be existing files
+         --skip-empty Skip empty files on merge
        -S <cp>    Split CSV on COLUMNxPAT into separate sheets. See --man
                   or --info for options/features and examples. May repeat.
          --sl=C   Use column C as sheet label when splitting with -S
@@ -91,6 +92,7 @@ GetOptions (
     "u|utf-8|utf8!"	=> \my $utf,
       "de|fix-utf8!"	=> \my $dutf, # double encoded? \x{c3}\x{ab} => \x{100}
     "m|merge!"		=> \my $mrg,
+      "skip-empty!"	=> \my $skip_empty,
     "S|split=s"		=> \my @split,
       "sl|split-label=s"=> \my $split_sl,
     "L|row-limit=i"	=> \my $row_limit,
@@ -131,8 +133,10 @@ if ($mrg) {
 	    push @csv => $_;
 	    next;
 	    }
-	warn "Argument $_ is not an existing (CSV) file\n";
-	usage (1);
+	unless ($skip_empty) {
+	    warn "Argument $_ is not an existing (CSV) file\n";
+	    usage (1);
+	    }
 	}
     $xls && @csv or usage (1);
     @ARGV = @csv;
@@ -580,6 +584,11 @@ Merge multiple CSV's into a single Excel (separate sheets).
 
 With this option, the option C<-o> is required. All arguments should be
 existing files. Piping is not supported.
+
+=item --skip-empty
+
+When merging CSV files with C<-m>, skip empty files. The default is to exit
+with an error message.
 
 =item -L N
 
