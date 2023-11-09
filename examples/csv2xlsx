@@ -35,6 +35,9 @@ usage: csv2xlsx [options] [-o <xlsx>] [file.csv]
        -f         force usage of <xlsx> if already exists (unlink before use)
        -d <dtfmt> use <dtfmt> as date formats.   Default = 'dd-mm-yyyy'
        -C <C:fmt> use <fmt> as currency formats for currency <C>, no default
+         --font=F set default font (default Calibri)
+         --fs=N   set font size    (default 10)
+                  'M' = 'mono', 'D' = 'DejaVu Sans', 'DM' = 'DejaVu Sans Mono'
        -D cols    only convert dates in columns <cols>.
                   Default is everywhere. -D0 is disable
        -L N       limit export to N rows
@@ -80,6 +83,8 @@ GetOptions (
     "d|date-fmt=s"	=> \$dtf,
     "D|date-col=s"	=> \$dtc,
     "C|curr-fmt=s"	=> \$crf,
+      "font=s"		=> \my $font,
+      "fs|font-size=i"	=> \my $font_size,
     "f|force!"		=> \my $frc,
     "F|formulas!"	=> \my $frm,
       "Fa=s"		=> \$fac,
@@ -199,6 +204,7 @@ if ($dutf) {
 my $wbk = Excel::Writer::XLSX->new ($xls);
    $dtf =~ s/j/y/g;
 my %fmt = (
+    dflt => $wbk->add_format (),
     date => $wbk->add_format (align => "center", num_format => $dtf),
     rest => $wbk->add_format (align => "left"),
     wrap => $wbk->add_format (text_wrap => 1),
@@ -207,6 +213,15 @@ $crf =~ s/^([^:]+):(.*)/$1/ and $fmt{currency} = $wbk->add_format (
     num_format	=> "$1 $2",
     align	=> "right",
     );
+if ($font) {
+    $font eq "M"  and $font = "mono";
+    $font eq "D"  and $font = "DejaVu Sans";
+    $font eq "DM" and $font = "DejaVu Sans Mono";
+    $_->set_font ($font)      for values %fmt;
+    }
+if ($font_size) {
+    $_->set_size ($font_size) for values %fmt;
+    }
 
 my @args = @ARGV ? @ARGV : ("");
 foreach my $csvf (@args) {
@@ -367,12 +382,12 @@ foreach my $csvf (@args) {
 		    from_to ($val, "utf-8", "ucs2");
 		    $val =~ m/\n/
 			? $wks->write_unicode ($h, $c, $val, $fmt{wrap})
-			: $wks->write_unicode ($h, $c, $val);
+			: $wks->write_unicode ($h, $c, $val, $fmt{dflt});
 		    }
 		else {
 		    $val =~ m/\n/
 			? $wks->write_string  ($h, $c, $val, $fmt{wrap})
-			: $wks->write_string  ($h, $c, $val);
+			: $wks->write_string  ($h, $c, $val, $fmt{dflt});
 		    }
 		next;
 		}
@@ -401,7 +416,7 @@ foreach my $csvf (@args) {
 		$wks->write_string  ($h, $c, $val);
 		}
 	    else {
-		$wks->write ($h, $c, $val);
+		$wks->write ($h, $c, $val, $fmt{dflt});
 		}
 	    }
 	++$h % 100 or $opt_v && printf STDERR "%6d x %6d\r", $w, $h;
@@ -513,6 +528,28 @@ If the range is C<0>, date conversion is disabled.
 Use C<format> as currency formats for currency <C>, no default.
 
  -C '$:### ### ##0.00'
+
+=item --font=Calibri
+
+You can set the default font. The XLSX writer used sets the default font
+face to C<Calibri>.
+
+ --font=Arial
+
+There are 3 default shortcuts
+
+ --font=M
+ --font=D
+ --font=DM
+
+Setting the font to C<mono>, C<DejaVu Sans>, or C<DejaVu Sans Mono>.
+
+=item --fs=10
+
+=item --font-size=10
+
+Optional set the default font-size to anything other than the default 10.
+Must be a positive integer. No checks.
 
 =item -f
 
