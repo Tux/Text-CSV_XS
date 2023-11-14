@@ -1,12 +1,12 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'20 [25 Mar 2020] Copyright H.M.Brand 2007-2023
+#	   (m)'23 [14 Nov 2023] Copyright H.M.Brand 2007-2023
 
 use 5.012000;
 use warnings;
 
-our $VERSION = "1.80";
+our $VERSION = "1.81";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -41,7 +41,7 @@ EOU
     exit $err;
     } # usage
 
-use Getopt::Long qw(:config bundling nopermute passthrough);
+use Getopt::Long qw(:config bundling nopermute noignorecase passthrough);
 my $sep;	# Set after reading first line in a flurry attempt to auto-detect
 my $quo = '"';
 my $esc = '"';

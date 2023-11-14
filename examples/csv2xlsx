@@ -6,7 +6,7 @@
 use 5.014000;
 use warnings;
 
-our $VERSION = "1.22 - 2023-11-09";
+our $VERSION = "1.23 - 2023-11-14";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -56,10 +56,10 @@ EOU
 
 use Text::CSV_XS;
 use Excel::Writer::XLSX;
-use List::Util   qw( first                       );
-use Date::Calc   qw( Delta_Days Days_in_Month    );
-use Encode       qw( from_to                     );
-use Getopt::Long qw(:config bundling passthrough );
+use List::Util   qw( first                                    );
+use Date::Calc   qw( Delta_Days Days_in_Month                 );
+use Encode       qw( from_to                                  );
+use Getopt::Long qw(:config bundling passthrough noignorecase );
 my $quo = '"';
 my $esc = '"';
 my $wdt = 4;		# Default minimal column width
