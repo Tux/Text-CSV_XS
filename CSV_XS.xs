@@ -974,7 +974,7 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	if (c == EOF || ser == 2) {					\
 	    sv_free (sv);						\
 	    sv = NULL;							\
-	    seenSomething = 0;					\
+	    seenSomething = 0;						\
 	    if (ser == 2) return FALSE;					\
 	    break;							\
 	    }								\

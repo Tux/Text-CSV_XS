@@ -1,7 +1,8 @@
-1.53	- 2023-11-09, H.Merijn Brand
+1.53	- 2023-11-20, H.Merijn Brand
     * Two casts for -Wformat (issue 50)
     * Add --skip-empty to csv2xlsx
     * Add --font and --font-size to csv2xlsx
+    * Fix skip_empty_rows ("skip") and trailing newlines (Corey Hickey, PR#52)
 
 1.52	- 2023-09-21, H.Merijn Brand
     * Fix possible coredump in cache on non-IO parse (issue 49)
