@@ -1,4 +1,4 @@
-1.53	- 2023-11-20, H.Merijn Brand
+1.53	- 2023-11-22, H.Merijn Brand
     * Two casts for -Wformat (issue 50)
     * Add --skip-empty to csv2xlsx
     * Add --font and --font-size to csv2xlsx

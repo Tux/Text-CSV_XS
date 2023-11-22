@@ -85,6 +85,27 @@ The tool supports encoding, formula handle, date conversion and some more.
 
         -C '$:### ### ##0.00'
 
+- --font=Calibri
+
+    You can set the default font. The XLSX writer used sets the default font
+    face to `Calibri`.
+
+        --font=Arial
+
+    There are 3 default shortcuts
+
+        --font=M
+        --font=D
+        --font=DM
+
+    Setting the font to `mono`, `DejaVu Sans`, or `DejaVu Sans Mono`.
+
+- --fs=10
+- --font-size=10
+
+    Optional set the default font-size to anything other than the default 10.
+    Must be a positive integer. No checks.
+
 - -f
 - --force
 
@@ -145,6 +166,11 @@ The tool supports encoding, formula handle, date conversion and some more.
 
     With this option, the option `-o` is required. All arguments should be
     existing files. Piping is not supported.
+
+- --skip-empty
+
+    When merging CSV files with `-m`, skip empty files. The default is to exit
+    with an error message.
 
 - -L N
 - --row-limit=N

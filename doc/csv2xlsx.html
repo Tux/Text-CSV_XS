@@ -145,6 +145,32 @@ csv2xlsx -f -o merged.xlsx -m foobar*.csv</code></pre>
 <pre><code>-C &#39;$:### ### ##0.00&#39;</code></pre>
 
 </dd>
+<dt id="font-Calibri">--font=Calibri</dt>
+<dd>
+
+<p>You can set the default font. The XLSX writer used sets the default font face to <code>Calibri</code>.</p>
+
+<pre><code>--font=Arial</code></pre>
+
+<p>There are 3 default shortcuts</p>
+
+<pre><code>--font=M
+--font=D
+--font=DM</code></pre>
+
+<p>Setting the font to <code>mono</code>, <code>DejaVu Sans</code>, or <code>DejaVu Sans Mono</code>.</p>
+
+</dd>
+<dt id="fs-10">--fs=10</dt>
+<dd>
+
+</dd>
+<dt id="font-size-10">--font-size=10</dt>
+<dd>
+
+<p>Optional set the default font-size to anything other than the default 10. Must be a positive integer. No checks.</p>
+
+</dd>
 <dt id="f">-f</dt>
 <dd>
 
@@ -247,6 +273,12 @@ csv2xlsx -f -o merged.xlsx -m foobar*.csv</code></pre>
 <p>Merge multiple CSV&#39;s into a single Excel (separate sheets).</p>
 
 <p>With this option, the option <code>-o</code> is required. All arguments should be existing files. Piping is not supported.</p>
+
+</dd>
+<dt id="skip-empty">--skip-empty</dt>
+<dd>
+
+<p>When merging CSV files with <code>-m</code>, skip empty files. The default is to exit with an error message.</p>
 
 </dd>
 <dt id="L-N">-L N</dt>

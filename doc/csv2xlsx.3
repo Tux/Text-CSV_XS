@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2023-10-12 "perl v5.38.0" "User Contributed Perl Documentation"
+.TH STDIN 1 2023-11-22 "perl v5.38.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -166,6 +166,32 @@ Use \f(CW\*(C`format\*(C'\fR as currency formats for currency <C>, no default.
 .Vb 1
 \& \-C \*(Aq$:### ### ##0.00\*(Aq
 .Ve
+.IP \-\-font=Calibri 2
+.IX Item "--font=Calibri"
+You can set the default font. The XLSX writer used sets the default font
+face to \f(CW\*(C`Calibri\*(C'\fR.
+.Sp
+.Vb 1
+\& \-\-font=Arial
+.Ve
+.Sp
+There are 3 default shortcuts
+.Sp
+.Vb 3
+\& \-\-font=M
+\& \-\-font=D
+\& \-\-font=DM
+.Ve
+.Sp
+Setting the font to \f(CW\*(C`mono\*(C'\fR, \f(CW\*(C`DejaVu Sans\*(C'\fR, or \f(CW\*(C`DejaVu Sans Mono\*(C'\fR.
+.IP \-\-fs=10 2
+.IX Item "--fs=10"
+.PD 0
+.IP \-\-font\-size=10 2
+.IX Item "--font-size=10"
+.PD
+Optional set the default font-size to anything other than the default 10.
+Must be a positive integer. No checks.
 .IP \-f 2
 .IX Item "-f"
 .PD 0
@@ -235,6 +261,10 @@ Merge multiple CSV's into a single Excel (separate sheets).
 .Sp
 With this option, the option \f(CW\*(C`\-o\*(C'\fR is required. All arguments should be
 existing files. Piping is not supported.
+.IP \-\-skip\-empty 2
+.IX Item "--skip-empty"
+When merging CSV files with \f(CW\*(C`\-m\*(C'\fR, skip empty files. The default is to exit
+with an error message.
 .IP "\-L N" 2
 .IX Item "-L N"
 .PD 0

@@ -77,9 +77,28 @@ OPTIONS
 
           -C '$:### ### ##0.00'
 
+       --font=Calibri
+         You  can  set the default font. The XLSX writer used sets the default
+         font face to "Calibri".
+
+          --font=Arial
+
+         There are 3 default shortcuts
+
+          --font=M
+          --font=D
+          --font=DM
+
+         Setting the font to "mono", "DejaVu Sans", or "DejaVu Sans Mono".
+
+       --fs=10
+       --font-size=10
+         Optional set the default font-size to anything other than the default
+         10.  Must be a positive integer. No checks.
+
        -f
        --force
-         Force  usage  of  the output file if it already exists (unlink before
+         Force usage of the output file if it already  exists  (unlink  before
          use).
 
        -F
@@ -117,15 +136,19 @@ OPTIONS
 
        --de
        --fix-utf8
-         Attempt to fix double-encoded UTF-8. e.g.  "\x{00c3}\x{00ab}"  should
+         Attempt  to  fix double-encoded UTF-8. e.g. "\x{00c3}\x{00ab}" should
          have been "\x0100}". YMMV.
 
        -m
        --merge
          Merge multiple CSV's into a single Excel (separate sheets).
 
-         With  this  option, the option "-o" is required. All arguments should
+         With this option, the option "-o" is required. All  arguments  should
          be existing files. Piping is not supported.
+
+       --skip-empty
+         When merging CSV files with "-m", skip empty files. The default is to
+         exit with an error message.
 
        -L N
        --row-limit=N
@@ -133,12 +156,12 @@ OPTIONS
 
        -S CxP
        --split=CxP
-         When dealing with big CSV datasets, this option enables you to  split
-         the  data  over  several sheets. When all the "-S" options match in a
-         single row, that row will be the first row of a new sheet. (see  also
+         When  dealing with big CSV datasets, this option enables you to split
+         the data over several sheets. When all the "-S" options  match  in  a
+         single  row, that row will be the first row of a new sheet. (see also
          "--sl=C")
 
-         C The  column  that  should  be examined. "A" = 1. If lower case, the
+         C The column that should be examined. "A" = 1.  If  lower  case,  the
            value of that column is matched case insensitive when appropriate.
 
             -S 7=ab      Column G is literal "ab"
@@ -169,8 +192,8 @@ OPTIONS
               -S G/.       Column G is defined and not empty
 
            < >
-             Compare. If the value in the column is defined  compare.  If  the
-             values  only  holds  digits, do a numeric compare, otherwise do a
+             Compare.  If  the  value in the column is defined compare. If the
+             values only holds digits, do a numeric compare,  otherwise  do  a
              string compare.
 
               -S G<42      Column G is defined and less than 42 (numeric)
@@ -179,12 +202,12 @@ OPTIONS
               -S G>42      Column G is defined and greater than 42 (numeric)
               -S G>ab      Column G is defined and greater than 42 (string)
 
-         P pattern or literal string. Quotation might  be  required  differing
+         P pattern  or  literal  string. Quotation might be required differing
            per OS and shell-environment.
 
        --sl=C
          When splitting with "-S" / "--split", if all criteria match and a new
-         sheet  is  to be created, use the value in column "C" of the matching
+         sheet is to be created, use the value in column "C" of  the  matching
          row as the new sheet label.
 
        -v [V]
@@ -200,7 +223,7 @@ AUTHOR
 COPYRIGHT AND LICENSE
         Copyright (C) 2016-2023 H.Merijn Brand.  All rights reserved.
 
-       This library is free software;  you can redistribute and/or  modify  it
+       This  library  is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.38.0                      2023-10-12                          STDIN(1)
+perl v5.38.0                      2023-11-22                          STDIN(1)
