@@ -334,7 +334,7 @@ $csv = Text::CSV::Encoded-&gt;new ({ encoding  =&gt; undef }); # default
 <li><p>Line termination by a single carriage return is accepted by default</p>
 
 </li>
-<li><p>The separation-, escape-, and escape- characters can be any ASCII character in the range from <code>0x20</code> (space) to <code>0x7E</code> (tilde). Characters outside this range may or may not work as expected. Multibyte characters, like UTF <code>U+060C</code> (ARABIC COMMA), <code>U+FF0C</code> (FULLWIDTH COMMA), <code>U+241B</code> (SYMBOL FOR ESCAPE), <code>U+2424</code> (SYMBOL FOR NEWLINE), <code>U+FF02</code> (FULLWIDTH QUOTATION MARK), and <code>U+201C</code> (LEFT DOUBLE QUOTATION MARK) (to give some examples of what might look promising) work for newer versions of perl for <code>sep_char</code>, and <code>quote_char</code> but not for <code>escape_char</code>.</p>
+<li><p>The separation-, quote-, and escape character(s) can be any ASCII character in the range from <code>0x20</code> (space) to <code>0x7E</code> (tilde). Characters outside this range may or may not work as expected. Multibyte characters, like UTF <code>U+060C</code> (ARABIC COMMA), <code>U+FF0C</code> (FULLWIDTH COMMA), <code>U+241B</code> (SYMBOL FOR ESCAPE), <code>U+2424</code> (SYMBOL FOR NEWLINE), <code>U+FF02</code> (FULLWIDTH QUOTATION MARK), and <code>U+201C</code> (LEFT DOUBLE QUOTATION MARK) (to give some examples of what might look promising) work for newer versions of perl for <code>sep_char</code>, and <code>quote_char</code> but not for <code>escape_char</code>.</p>
 
 <p>If you use perl-5.8.2 or higher these three attributes are utf8-decoded, to increase the likelihood of success. This way <code>U+00FE</code> will be allowed as a quote character.</p>
 

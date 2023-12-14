@@ -23,7 +23,7 @@ use XSLoader;
 use Carp;
 
 use vars qw( $VERSION @ISA @EXPORT_OK %EXPORT_TAGS );
-$VERSION = "1.53";
+$VERSION = "1.54";
 @ISA     = qw( Exporter );
 XSLoader::load ("Text::CSV_XS", $VERSION);
 
@@ -1795,7 +1795,7 @@ Line termination by a single carriage return is accepted by default
 
 =item *
 
-The separation-, escape-, and escape- characters can be any ASCII character
+The separation-, quote-, and escape character(s) can be any ASCII character
 in the range from  C<0x20> (space) to  C<0x7E> (tilde).  Characters outside
 this range may or may not work as expected.  Multibyte characters, like UTF
 C<U+060C> (ARABIC COMMA),   C<U+FF0C> (FULLWIDTH COMMA),  C<U+241B> (SYMBOL

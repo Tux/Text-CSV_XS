@@ -1,3 +1,6 @@
+1.54	- 2023-12-14, H.Merijn Brand
+    * Fix doc (Jean Forget, RT#150757)
+
 1.53	- 2023-11-22, H.Merijn Brand
     * Two casts for -Wformat (issue 50)
     * Add --skip-empty to csv2xlsx

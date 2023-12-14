@@ -197,7 +197,7 @@ SPECIFICATION
 
        • Line termination by a single carriage return is accepted by default
 
-       • The separation-, escape-, and escape- characters  can  be  any  ASCII
+       • The separation-, quote-, and escape character(s)  can  be  any  ASCII
          character   in  the  range  from   0x20  (space)  to   0x7E  (tilde).
          Characters outside this range  may  or  may  not  work  as  expected.
          Multibyte  characters,  like  UTF "U+060C" (ARABIC COMMA),   "U+FF0C"
@@ -3181,4 +3181,4 @@ COPYRIGHT AND LICENSE
        This  library  is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.38.0                      2023-10-12                          STDIN(1)
+perl v5.38.2                      2023-12-14                          STDIN(1)

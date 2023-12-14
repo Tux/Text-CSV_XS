@@ -188,7 +188,7 @@ Though this is the most clear and restrictive definition,  Text::CSV\_XS  is
 way more liberal than this, and allows extension:
 
 - Line termination by a single carriage return is accepted by default
-- The separation-, escape-, and escape- characters can be any ASCII character
+- The separation-, quote-, and escape character(s) can be any ASCII character
 in the range from  `0x20` (space) to  `0x7E` (tilde).  Characters outside
 this range may or may not work as expected.  Multibyte characters, like UTF
 `U+060C` (ARABIC COMMA),   `U+FF0C` (FULLWIDTH COMMA),  `U+241B` (SYMBOL
