@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv-check: Check validity of CSV file and report
-#	   (m)'20 [21 May 2020] Copyright H.M.Brand 2007-2023
+#	   (m)'20 [21 May 2020] Copyright H.M.Brand 2007-2024
 
 # This code requires the defined-or feature and PerlIO
 

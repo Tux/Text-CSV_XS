@@ -3371,7 +3371,7 @@ the documentation,   fixed most RT bugs,  added all the allow flags and the
 
 # COPYRIGHT AND LICENSE
 
-    Copyright (C) 2007-2023 H.Merijn Brand.  All rights reserved.
+    Copyright (C) 2007-2024 H.Merijn Brand.  All rights reserved.
     Copyright (C) 1998-2001 Jochen Wiedmann. All rights reserved.
     Copyright (C) 1997      Alan Citterman.  All rights reserved.
 

@@ -1,5 +1,6 @@
-1.54	- 2023-12-14, H.Merijn Brand
+1.54	- 2024-01-04, H.Merijn Brand
     * Fix doc (Jean Forget, RT#150757)
+    * It's 2024
 
 1.53	- 2023-11-22, H.Merijn Brand
     * Two casts for -Wformat (issue 50)
