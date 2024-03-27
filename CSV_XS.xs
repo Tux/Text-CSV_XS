@@ -1995,9 +1995,10 @@ EOLX:
 		       (csv->size - csv->used >= cl - 1 &&
 			 !memcmp (csv->bptr + csv->used, csv->comment_str + 1, cl - 1) &&
 			 (csv->used += cl - 1)))) {
-			csv->used    = csv->size;
-			csv->fld_idx = 0;
-			c = CSV_GET;
+			csv->used     = csv->size;
+			csv->fld_idx  = 0;
+			csv->strict_n = 0;
+			c             = CSV_GET;
 			seenSomething = FALSE;
 #if MAINT_DEBUG > 5
 			(void)fprintf (stderr, "# COMMENT, SKIPPED\n");
