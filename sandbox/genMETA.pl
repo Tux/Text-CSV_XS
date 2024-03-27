@@ -73,7 +73,7 @@ requires:
     XSLoader:            0
     IO::Handle:          0
 recommends:
-    Encode:              3.20
+    Encode:              3.21
 configure_requires:
     ExtUtils::MakeMaker: 0
 configure_recommends:
