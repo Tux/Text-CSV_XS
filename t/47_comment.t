@@ -12,7 +12,7 @@ BEGIN {
 	}
     else {
 	require Encode;
-	plan tests => 62;
+	plan tests => 64;
 	}
     require "./t/util.pl";
     }
@@ -79,5 +79,26 @@ is_deeply (csv (
     comment_str      => "#",
     strict           => 1,
     ), [{ id => 42, name => "foo" }], "Last record is comment, under strict");
+
+$data .= "3\n";
+is_deeply (csv (
+    in               => \$data,
+    sep_char         => "|",
+    headers          => "auto",
+    allow_whitespace => 1,
+    comment_str      => "#",
+    strict           => 0,
+    ), [{ id => 42, name => "foo" },
+	{ id =>  3, name => undef },
+	], "Valid record past comment");
+is_deeply (csv (
+    in               => \$data,
+    sep_char         => "|",
+    headers          => "auto",
+    allow_whitespace => 1,
+    comment_str      => "#",
+    strict           => 1,
+    auto_diag        => 0,	# Suppress error 2014
+    ), [{ id => 42, name => "foo" }], "Invalid record past comment, under strict");
 
 1;

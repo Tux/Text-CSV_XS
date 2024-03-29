@@ -584,6 +584,7 @@ static void _xs_csv_diag (pTHX_ csv_t *csv) {
     _cache_show_byte ("diag_verbose",		csv->diag_verbose);
     _cache_show_byte ("formula",		csv->formula);
     _cache_show_byte ("strict",			csv->strict);
+    _cache_show_byte ("strict_n",		csv->strict_n);
     _cache_show_byte ("skip_empty_rows",	csv->skip_empty_rows);
     _cache_show_byte ("has_error_input",	csv->has_error_input);
     _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
@@ -592,6 +593,7 @@ static void _xs_csv_diag (pTHX_ csv_t *csv) {
     _cache_show_byte ("keep_meta_info",		csv->keep_meta_info);
     _cache_show_byte ("verbatim",		csv->verbatim);
 
+    _cache_show_byte ("useIO",			csv->useIO);
     _cache_show_byte ("has_hooks",		csv->has_hooks);
     _cache_show_byte ("eol_is_cr",		csv->eol_is_cr);
     _cache_show_byte ("eol_len",		csv->eol_len);
@@ -1996,8 +1998,7 @@ EOLX:
 			 !memcmp (csv->bptr + csv->used, csv->comment_str + 1, cl - 1) &&
 			 (csv->used += cl - 1)))) {
 			csv->used     = csv->size;
-			csv->fld_idx  = 0;
-			csv->strict_n = 0;
+			csv->fld_idx  = csv->strict_n ? csv->strict_n - 1 : 0;
 			c             = CSV_GET;
 			seenSomething = FALSE;
 #if MAINT_DEBUG > 5
@@ -2164,7 +2165,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 
     if (csv.strict) {
 	unless (csv.strict_n) csv.strict_n = (short)csv.fld_idx;
-	if (csv.fld_idx != csv.strict_n) {
+	unless (csv.fld_idx == csv.strict_n) {
 	    unless (csv.useIO & useIO_EOF)
 		ParseError (&csv, 2014, csv.used);
 	    if (last_error) /* an error callback can reset and accept */
