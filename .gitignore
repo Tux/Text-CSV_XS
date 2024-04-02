@@ -12,6 +12,7 @@ Text
 *.o
 *.c
 *.bs
+*.exp
 *.gcov
 *.gcda
 *.gcno
