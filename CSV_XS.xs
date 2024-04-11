@@ -547,13 +547,23 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
     (void)memcpy (cache, csv, sizeof (csv_t));
     } /* cache_set */
 
-#define _pretty_strl(csv)	cx_pretty_str (aTHX_ csv, strlen (csv))
-#define _pretty_str(csv,xse)	cx_pretty_str (aTHX_ csv, xse)
+#define _pretty_strl(cp)	cx_pretty_str (aTHX_ cp, strlen (cp))
+#define _pretty_str(cp,xse)	cx_pretty_str (aTHX_ cp, xse)
 static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
     SV *dsv = newSVpvs_flags ("", SVs_TEMP);
     return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
 	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
     } /* _pretty_str */
+#define _pretty_sv(cp)		cx_pretty_sv  (aTHX_ cp)
+static char *cx_pretty_sv (pTHX_ SV *sv) {
+    SV *dsv = newSVpvs_flags ("", SVs_TEMP);
+    if (SvOK (sv) && SvPOK (sv)) {
+	STRLEN l;
+	char *s = SvPV (sv, l);
+	return _pretty_str (s, l);
+	}
+    return ("");
+    } /* _pretty_sv */
 
 #define _cache_show_byte(trim,c) \
     warn ("  %-21s  %02x:%3d\n", trim, c, c)
@@ -1112,9 +1122,13 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 		    char	*ptr2;
 		    STRLEN	 l;
 
-#if MAINT_DEBUG > 4
-		    (void)fprintf (stderr, "# Combine:\n");
+#if MAINT_DEBUG > 6
+		    (void)fprintf (stderr, "# %04d Combine:\n", __LINE__);
 		    sv_dump (sv);
+#else
+#if MAINT_DEBUG > 4
+		    (void)fprintf (stderr, "# %04d Combine: '%s'\n", __LINE__, _pretty_sv (sv));
+#endif
 #endif
 		    for (ptr2 = ptr, l = len; l; ++ptr2, --l) {
 			byte c = *ptr2;
@@ -1254,9 +1268,13 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
 	csv->tmp = result ? POPs : NULL;
 	PUTBACK;
 
-#if MAINT_DEBUG > 4
-	(void)fprintf (stderr, "getline () returned:\n");
+#if MAINT_DEBUG > 6
+	(void)fprintf (stderr, "# %04d getline () returned:\n", __LINE__);
 	sv_dump (csv->tmp);
+#else
+#if MAINT_DEBUG > 4
+	(void)fprintf (stderr, "# %04d getline () returned: '%s'\n", __LINE__, _pretty_sv (csv->tmp));
+#endif
 #endif
 	}
     if (csv->tmp && SvOK (csv->tmp)) {
@@ -1274,7 +1292,7 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
 		}
 	    if (match) {
 #if MAINT_DEBUG > 4
-		(void)fprintf (stderr, "# EOLX match, size: %d\n", csv->size);
+		(void)fprintf (stderr, "# %04d EOLX match, size: %d\n", __LINE__, csv->size);
 #endif
 		csv->size -= csv->eol_len;
 		unless (csv->verbatim)
@@ -1305,14 +1323,18 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
     }
 
 #if MAINT_DEBUG > 4
-#define PUT_RPT       (void)fprintf (stderr, "# CSV_PUT  @ %4d: 0x%02x '%c'\n", __LINE__, c, isprint (c) ? c : '?')
-#define PUT_SEPX_RPT1 (void)fprintf (stderr, "# PUT SEPX @ %4d\n", __LINE__)
-#define PUT_SEPX_RPT2 (void)fprintf (stderr, "# Done putting SEPX\n")
-#define PUT_QUOX_RPT1 (void)fprintf (stderr, "# PUT QUOX @ %4d\n", __LINE__)
-#define PUT_QUOX_RPT2 (void)fprintf (stderr, "# Done putting QUOX\n")
-#define PUT_EOLX_RPT1 (void)fprintf (stderr, "# PUT EOLX @ %4d\n", __LINE__)
-#define PUT_EOLX_RPT2 (void)fprintf (stderr, "# Done putting EOLX\n")
-#define PUSH_RPT      (void)fprintf (stderr, "# AV_PUSHd @ %4d\n", __LINE__); sv_dump (sv)
+#define PUT_RPT       (void)fprintf (stderr, "# %04d CSV_PUT: 0x%02x '%c'\n", __LINE__, c, isprint (c) ? c : '?')
+#define PUT_SEPX_RPT1 (void)fprintf (stderr, "# %04d PUT SEPX\n", __LINE__)
+#define PUT_SEPX_RPT2 (void)fprintf (stderr, "# %04d Done putting SEPX\n")
+#define PUT_QUOX_RPT1 (void)fprintf (stderr, "# %04d PUT QUOX\n", __LINE__)
+#define PUT_QUOX_RPT2 (void)fprintf (stderr, "# %04d Done putting QUOX\n")
+#define PUT_EOLX_RPT1 (void)fprintf (stderr, "# %04d PUT EOLX\n", __LINE__)
+#define PUT_EOLX_RPT2 (void)fprintf (stderr, "# %04d Done putting EOLX\n")
+#if MAINT_DEBUG > 6
+#define PUSH_RPT      (void)fprintf (stderr, "# %04d AV_PUSHd\n", __LINE__); sv_dump (sv)
+#else
+#define PUSH_RPT      (void)fprintf (stderr, "# %04d AV_PUSHd '%s'\n", __LINE__, _pretty_sv (sv))
+#endif
 #else
 #define PUT_RPT
 #define PUT_SEPX_RPT1
@@ -1362,9 +1384,9 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
 #if MAINT_DEBUG > 3
 int CSV_GET_ (pTHX_ csv_t *csv, SV *src, int l) {
     int c;
-    (void)fprintf (stderr, "# 1-CSV_GET @ %4d: (used: %d, size: %d, eol_pos: %d, eolx = %d)\n", l, csv->used, csv->size, csv->eol_pos, csv->eolx);
+    (void)fprintf (stderr, "# %04d 1-CSV_GET: (used: %d, size: %d, eol_pos: %d, eolx = %d)\n", l, csv->used, csv->size, csv->eol_pos, csv->eolx);
     c = CSV_GET1;
-    (void)fprintf (stderr, "# 2-CSV_GET @ %4d: 0x%02x '%c'\n", l, c, isprint (c) ? c : '?');
+    (void)fprintf (stderr, "# %04d 2-CSV_GET: 0x%02x '%c'\n", l, c, isprint (c) ? c : '?');
     return (c);
     } /* CSV_GET_ */
 #define CSV_GET CSV_GET_ (aTHX_ csv, src, __LINE__)
@@ -1464,13 +1486,13 @@ static int cx_Parse (pTHX_ csv_t *csv, SV *src, AV *fields, AV *fflags) {
 #endif
 restart:
 #if MAINT_DEBUG > 9
-	(void)fprintf (stderr, "# at restart: %d/%d/%03x pos %d = 0x%02x\n",
-	    waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
+	(void)fprintf (stderr, "# %04d at restart: %d/%d/%03x pos %d = 0x%02x\n",
+	    __LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c);
 #endif
 	if (is_SEP (c)) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = SEP %s\t%s\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = SEP %s\t%s\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
 		_sep_string (csv), _pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (waitingForField) {
@@ -1504,8 +1526,8 @@ restart:
 	else
 	if (is_QUOTE (c)) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = QUO '%c'\t\t%s\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = QUO '%c'\t\t%s\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
 		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (waitingForField) {
@@ -1685,8 +1707,8 @@ restart:
 	else
 	if (c == csv->escape_char && csv->escape_char) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = ESC '%c'\t%s\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = ESC '%c'\t%s\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
 		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    /* This means quote_char != escape_char */
@@ -1761,8 +1783,8 @@ restart:
 	if (c == CH_NL || is_EOL (c)) {
 EOLX:
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = NL\t%s\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = NL\t%s\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
 		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
@@ -1835,8 +1857,8 @@ EOLX:
 	else
 	if (c == CH_CR && !(csv->verbatim)) {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = CR\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl);
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = CR\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl);
 #endif
 	    if (waitingForField) {
 		int	c2;
@@ -1858,8 +1880,8 @@ EOLX:
 		    c = EOF;
 
 #if MAINT_DEBUG > 9
-		    (void)fprintf (stderr, "# (%d) ... CR EOF 0x%x\n",
-			seenSomething, c);
+		    (void)fprintf (stderr, "# %04d (%d) ... CR EOF 0x%x\n",
+			__LINE__, seenSomething, c);
 #endif
 		    unless (seenSomething)
 			break;
@@ -1968,8 +1990,8 @@ EOLX:
 	    } /* CH_CR */
 	else {
 #if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %d/%d/%03x pos %d = CCC '%c'\t\t%s\n",
-		waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = CCC '%c'\t\t%s\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, c,
 		_pretty_strl (csv->bptr + csv->used));
 #endif
 	    /* Needed for non-IO parse, where EOL is not set during read */
@@ -1979,7 +2001,7 @@ EOLX:
 		 (csv->used += csv->eol_len - 1)) {
 		c = CH_EOLX;
 #if MAINT_DEBUG > 5
-		(void)fprintf (stderr, "# -> EOLX (0x%x)\n", c);
+		(void)fprintf (stderr, "# %04d -> EOLX (0x%x)\n", __LINE__, c);
 #endif
 		goto EOLX;
 		}
@@ -1990,8 +2012,8 @@ EOLX:
 
 #if MAINT_DEBUG > 5
 		    (void)fprintf (stderr,
-			"COMMENT? cl = %d, size = %d, used = %d\n",
-			cl, csv->size, csv->used);
+			"# %04d COMMENT? cl = %d, size = %d, used = %d\n",
+			__LINE__, cl, csv->size, csv->used);
 #endif
 		    if (cl == 1 || (
 		       (csv->size - csv->used >= cl - 1 &&
@@ -2002,7 +2024,7 @@ EOLX:
 			c             = CSV_GET;
 			seenSomething = FALSE;
 #if MAINT_DEBUG > 5
-			(void)fprintf (stderr, "# COMMENT, SKIPPED\n");
+			(void)fprintf (stderr, "# %04d COMMENT, SKIPPED\n", __LINE__);
 #endif
 			if (c == EOF)
 			    break;
@@ -2014,7 +2036,7 @@ EOLX:
 		    do {
 			c = CSV_GET;
 #if MAINT_DEBUG > 5
-			(void)fprintf (stderr, "# WS next got (0x%x)\n", c);
+			(void)fprintf (stderr, "# %04d WS next got (0x%x)\n", __LINE__, c);
 #endif
 			} while (is_whitespace (c));
 		    if (c == EOF)
@@ -2026,8 +2048,8 @@ EOLX:
 		}
 
 #if MAINT_DEBUG > 5
-	    (void)fprintf (stderr, "# %sc 0x%x is%s binary %s utf8\n",
-		f & CSV_FLAGS_QUO ? "quoted " : "", c,
+	    (void)fprintf (stderr, "# %04d %sc 0x%x is%s binary %s utf8\n",
+		__LINE__, f & CSV_FLAGS_QUO ? "quoted " : "", c,
 		is_csv_binary (c) ? "" : " not",
 		csv->utf8 ? "is" : "not");
 #endif
@@ -2091,7 +2113,7 @@ static int hook (pTHX_ HV *hv, char *cb_name, AV *av) {
     int res;
 
 #if MAINT_DEBUG > 1
-    (void)fprintf (stderr, "# HOOK %s %x\n", cb_name, av);
+    (void)fprintf (stderr, "# %04d HOOK %s %x\n", __LINE__, cb_name, av);
 #endif
     unless ((svp = hv_fetchs (hv, "callbacks", FALSE)) && _is_hashref (*svp))
 	return 0; /* uncoverable statement defensive programming */
@@ -2164,8 +2186,14 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     (void)hv_store (hv, "_EOF",   4, &PL_sv_no,             0);
 
     if (csv.strict) {
-	unless (csv.strict_n) csv.strict_n = (short)csv.fld_idx;
-	unless (csv.fld_idx == csv.strict_n) {
+	STRLEN nf = av_len (av);
+#if MAINT_DEBUG > 6
+	(void)fprintf (stderr, "# %04d Strict nf = %2d, n = %2d, idx = %2d, recno = %2d, res = %d\n",
+	    __LINE__, nf, csv.strict_n, csv.fld_idx, csv.recno, result);
+#endif
+
+	if (nf && !csv.strict_n) csv.strict_n = (short)nf;
+	if (csv.strict_n > 0 && nf != csv.strict_n) {
 	    unless (csv.useIO & useIO_EOF)
 		ParseError (&csv, 2014, csv.used);
 	    if (last_error) /* an error callback can reset and accept */

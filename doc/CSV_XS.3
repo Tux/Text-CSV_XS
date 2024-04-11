@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2023-12-14 "perl v5.38.2" "User Contributed Perl Documentation"
+.TH STDIN 1 2024-04-11 "perl v5.38.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -471,6 +471,9 @@ so setting \f(CW\*(C`{ binary => 1 }\*(C'\fR is still a wise option.
 .PP
 If this attribute is set to \f(CW1\fR, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
+.PP
+Empty rows or rows that result in no fields (like comment lines) are exempt
+from these checks.
 .PP
 \fIskip_empty_rows\fR
 .IX Xref "skip_empty_rows"
@@ -3933,7 +3936,7 @@ the documentation,   fixed most RT bugs,  added all the allow flags and the
 .SH "COPYRIGHT AND LICENSE"
 .IX Header "COPYRIGHT AND LICENSE"
 .Vb 3
-\& Copyright (C) 2007\-2023 H.Merijn Brand.  All rights reserved.
+\& Copyright (C) 2007\-2024 H.Merijn Brand.  All rights reserved.
 \& Copyright (C) 1998\-2001 Jochen Wiedmann. All rights reserved.
 \& Copyright (C) 1997      Alan Citterman.  All rights reserved.
 .Ve

@@ -12,7 +12,7 @@ BEGIN {
 	}
     else {
 	require Encode;
-	plan tests => 64;
+	plan tests => 65;
 	}
     require "./t/util.pl";
     }
@@ -100,5 +100,13 @@ is_deeply (csv (
     strict           => 1,
     auto_diag        => 0,	# Suppress error 2014
     ), [{ id => 42, name => "foo" }], "Invalid record past comment, under strict");
+is_deeply (csv (
+    in               => \"# comment\n42 | foo\n53 | bar\n",
+    sep_char         => "|",
+    allow_whitespace => 1,
+    comment_str      => "#",
+    strict           => 1,
+    auto_diag        => 1,
+    ), [[ 42, "foo" ], [ 53, "bar" ]], "Comment on first line, under strict");
 
 1;

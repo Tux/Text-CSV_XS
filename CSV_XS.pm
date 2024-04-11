@@ -1980,6 +1980,9 @@ X<strict>
 If this attribute is set to C<1>, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
 
+Empty rows or rows that result in no fields (like comment lines) are exempt
+from these checks.
+
 =head3 skip_empty_rows
 X<skip_empty_rows>
 

@@ -366,6 +366,9 @@ so setting `{ binary => 1 }` is still a wise option.
 If this attribute is set to `1`, any row that parses to a different number
 of fields than the previous row will cause the parser to throw error 2014.
 
+Empty rows or rows that result in no fields (like comment lines) are exempt
+from these checks.
+
 ### skip\_empty\_rows
 
 

@@ -226,4 +226,4 @@ COPYRIGHT AND LICENSE
        This  library  is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.38.0                      2023-11-22                          STDIN(1)
+perl v5.38.2                      2024-04-11                          STDIN(1)
