@@ -113,6 +113,7 @@
           <li><a href="#fragment1">fragment </a></li>
           <li><a href="#sep_set1">sep_set  </a></li>
           <li><a href="#set_column_names1">set_column_names </a></li>
+          <li><a href="#csv2">csv </a></li>
         </ul>
       </li>
       <li><a href="#Callbacks">Callbacks </a>
@@ -2152,6 +2153,17 @@ say $aoh-&gt;[15]{Foo};</code></pre>
  [ &quot;1&quot;,   &quot;2&quot;       ],
  [ &quot;3&quot;,   &quot;4&quot;,  &quot;5&quot; ]]</code></pre>
 
+<h3 id="csv2">csv </h3>
+
+<p>The <i>function</i> <a href="#csv">&quot;csv&quot;</a> can also be called as a method or with an existing Text::CSV_XS object. This could help if the function is to be invoked a lot of times and the overhead of creating the object internally over and over again would be prevented by passing an existing instance.</p>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
+
+my $aoa = $csv-&gt;csv (in =&gt; $fh);
+my $aoa = csv (in =&gt; $fh, csv =&gt; $csv);</code></pre>
+
+<p>both act the same. Running this 20000 times on a 20 lines CSV file, showed a 53% speedup.</p>
+
 <h2 id="Callbacks">Callbacks </h2>
 
 <p>Callbacks enable actions triggered from the <i>inside</i> of Text::CSV_XS.</p>
@@ -2475,19 +2487,6 @@ my $aoa = csv (
     bar =&gt; 2,
     }
   ]</code></pre>
-
-</dd>
-<dt id="csv2">csv</dt>
-<dd>
-
-<p>The <i>function</i> <a href="#csv">&quot;csv&quot;</a> can also be called as a method or with an existing Text::CSV_XS object. This could help if the function is to be invoked a lot of times and the overhead of creating the object internally over and over again would be prevented by passing an existing instance.</p>
-
-<pre><code>my $csv = Text::CSV_XS-&gt;new ({ binary =&gt; 1, auto_diag =&gt; 1 });
-
-my $aoa = $csv-&gt;csv (in =&gt; $fh);
-my $aoa = csv (in =&gt; $fh, csv =&gt; $csv);</code></pre>
-
-<p>both act the same. Running this 20000 times on a 20 lines CSV file, showed a 53% speedup.</p>
 
 </dd>
 </dl>

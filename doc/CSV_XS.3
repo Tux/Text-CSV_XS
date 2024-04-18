@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2024-04-11 "perl v5.38.2" "User Contributed Perl Documentation"
+.TH STDIN 1 2024-04-18 "perl v5.38.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2785,6 +2785,25 @@ will result in
 \&  [ "1",   "2"       ],
 \&  [ "3",   "4",  "5" ]]
 .Ve
+.PP
+\fIcsv\fR
+.IX Xref "csv"
+.IX Subsection "csv"
+.PP
+The \fIfunction\fR  "csv" can also be called as a method or with an existing
+Text::CSV_XS object. This could help if the function is to be invoked a lot
+of times and the overhead of creating the object internally over  and  over
+again would be prevented by passing an existing instance.
+.PP
+.Vb 1
+\& my $csv = Text::CSV_XS\->new ({ binary => 1, auto_diag => 1 });
+\&
+\& my $aoa = $csv\->csv (in => $fh);
+\& my $aoa = csv (in => $fh, csv => $csv);
+.Ve
+.PP
+both act the same. Running this 20000 times on a 20 lines CSV file,  showed
+a 53% speedup.
 .SS Callbacks
 .IX Xref "Callbacks"
 .IX Subsection "Callbacks"
@@ -3154,22 +3173,6 @@ this case \f(CW%_\fR is writable and will change the original row. So e.g. with
 \&      }
 \&    ]
 .Ve
-.IP csv 2
-.IX Item "csv"
-The \fIfunction\fR  "csv" can also be called as a method or with an existing
-Text::CSV_XS object. This could help if the function is to be invoked a lot
-of times and the overhead of creating the object internally over  and  over
-again would be prevented by passing an existing instance.
-.Sp
-.Vb 1
-\& my $csv = Text::CSV_XS\->new ({ binary => 1, auto_diag => 1 });
-\&
-\& my $aoa = $csv\->csv (in => $fh);
-\& my $aoa = csv (in => $fh, csv => $csv);
-.Ve
-.Sp
-both act the same. Running this 20000 times on a 20 lines CSV file,  showed
-a 53% speedup.
 .SH INTERNALS
 .IX Header "INTERNALS"
 .IP "Combine (...)" 4

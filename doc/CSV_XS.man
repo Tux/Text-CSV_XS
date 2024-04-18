@@ -2195,18 +2195,33 @@ FUNCTIONS
          [ "1",   "2"       ],
          [ "3",   "4",  "5" ]]
 
+       csv
+
+       The function  "csv" can also be called as a method or with an  existing
+       Text::CSV_XS object. This could help if the function is to be invoked a
+       lot  of  times  and the overhead of creating the object internally over
+       and  over again would be prevented by passing an existing instance.
+
+        my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+
+        my $aoa = $csv->csv (in => $fh);
+        my $aoa = csv (in => $fh, csv => $csv);
+
+       both act the same. Running this 20000 times on a  20  lines  CSV  file,
+       showed a 53% speedup.
+
    Callbacks
        Callbacks enable actions triggered from the inside of Text::CSV_XS.
 
-       While most of what this enables  can easily be  done  in  an   unrolled
-       loop  as  described  in  the  "SYNOPSIS"  callbacks can be used to meet
+       While  most  of  what  this enables  can easily be done in an  unrolled
+       loop as described in the "SYNOPSIS"  callbacks  can  be  used  to  meet
        special demands or enhance the "csv" function.
 
        error
           $csv->callbacks (error => sub { $csv->SetDiag (0) });
 
-         the "error"  callback is invoked when an  error  occurs,   but   only
-         when  "auto_diag"  is set to a true value. A callback is invoked with
+         the  "error"   callback  is  invoked when an error occurs,  but  only
+         when "auto_diag" is set to a true value. A callback is  invoked  with
          the values returned by "error_diag":
 
           my ($c, $s);
@@ -2234,13 +2249,13 @@ FUNCTIONS
               $row->[-1] eq "NEW";
               }
 
-         This callback is invoked after parsing with  "getline"   only  if  no
-         error  occurred.   The  callback is invoked with two arguments:   the
-         current "CSV" parser object and an  array  reference  to  the  fields
+         This  callback  is  invoked after parsing with  "getline"  only if no
+         error occurred.  The callback is invoked with  two  arguments:    the
+         current  "CSV"  parser  object  and  an array reference to the fields
          parsed.
 
-         The  return code of the callback is ignored  unless it is a reference
-         to the string "skip", in which case the record  will  be  skipped  in
+         The return code of the callback is ignored  unless it is a  reference
+         to  the  string  "skip",  in which case the record will be skipped in
          "getline_all".
 
           sub add_from_db {
@@ -2268,7 +2283,7 @@ FUNCTIONS
             after_parse => sub { $_[1][2] =~ m/^\d+$/ or $_[1][2] = 0 }
 
          SKIP
-           Skip   records   that   have   invalid   fields  (only  applies  to
+           Skip  records  that  have   invalid   fields   (only   applies   to
            "getline_all"):
 
             after_parse => sub { $_[1][0] =~ m/^\d+$/ or return \"skip"; }
@@ -2278,9 +2293,9 @@ FUNCTIONS
           $csv->callbacks (before_print => sub { $_[1][0] = $idx++ });
           $csv->print (*STDOUT, [ 0, $_ ]) for @members;
 
-         This callback is invoked  before printing with  "print"  only  if  no
-         error  occurred.   The  callback  is invoked with two arguments:  the
-         current  "CSV" parser object and an array  reference  to  the  fields
+         This  callback  is invoked  before printing with  "print"  only if no
+         error occurred.  The callback is invoked  with  two  arguments:   the
+         current   "CSV"  parser  object  and an array reference to the fields
          passed.
 
          The return code of the callback is ignored.
@@ -2297,7 +2312,7 @@ FUNCTIONS
 
        Callbacks for csv ()
 
-       The  "csv"  allows  for  some  callbacks  that  do  not integrate in XS
+       The "csv" allows for  some  callbacks  that  do  not  integrate  in  XS
        internals but only feature the "csv" function.
 
          csv (in        => "file.csv",
@@ -2323,7 +2338,7 @@ FUNCTIONS
          a new record has been scanned.  The callback accepts a:
 
          hashref
-           The keys are the index to the row (the field name or field  number,
+           The  keys are the index to the row (the field name or field number,
            1-based) and the values are subs to return a true or false value.
 
             csv (in => "file.csv", filter => {
@@ -2333,28 +2348,28 @@ FUNCTIONS
 
             csv (in => "file.csv", filter => { foo => sub { $_ > 4 }});
 
-           If  the keys to the filter hash contain any character that is not a
-           digit it will also  implicitly  set  "headers"  to  "auto"   unless
-           "headers"   was  already  passed  as  argument.   When  headers are
-           active, returning an array of hashes, the filter is not  applicable
+           If the keys to the filter hash contain any character that is not  a
+           digit  it  will  also  implicitly  set  "headers" to "auto"  unless
+           "headers"  was  already  passed  as  argument.   When  headers  are
+           active,  returning an array of hashes, the filter is not applicable
            to the header itself.
 
            All sub results should match, as in AND.
 
-           The  context  of  the  callback  sets   $_  localized  to the field
-           indicated by the filter. The two arguments are as  with  all  other
+           The context of  the  callback  sets   $_  localized  to  the  field
+           indicated  by  the  filter. The two arguments are as with all other
            callbacks, so the other fields in the current row can be seen:
 
             filter => { 3 => sub { $_ > 100 ? $_[1][1] =~ m/A/ : $_[1][6] =~ m/B/ }}
 
-           If  the  context  is  set to return a list of hashes  ("headers" is
+           If the context is set to return a list  of  hashes   ("headers"  is
            defined),  the  current  record  will  also  be  available  in  the
            localized %_:
 
             filter => { 3 => sub { $_ > 100 && $_{foo} =~ m/A/ && $_{bar} < 1000  }}
 
-           If  the  filter  is used to alter the content by changing $_,  make
-           sure that the sub returns true in order not  to  have  that  record
+           If the filter is used to alter the content by  changing  $_,   make
+           sure  that  the  sub  returns true in order not to have that record
            skipped:
 
             filter => { 2 => sub { $_ = uc }}
@@ -2367,7 +2382,7 @@ FUNCTIONS
          coderef
             csv (in => "file.csv", filter => sub { $n++; 0; });
 
-           If  the  argument  to  "filter"  is  a  coderef,  it is an alias or
+           If the argument to "filter" is  a  coderef,   it  is  an  alias  or
            shortcut to a filter on column 0:
 
             csv (filter => sub { $n++; 0 });
@@ -2403,8 +2418,8 @@ FUNCTIONS
               filter => { 0 => sub { @{$_[1]} > 1 or
                           defined $_[1][0] && $_[1][0] ne "" } }
 
-             Due to the implementation,  it is currently  impossible  to  also
-             filter  lines  that  consists only of a quoted empty field. These
+             Due  to  the  implementation,  it is currently impossible to also
+             filter lines that consists only of a quoted  empty  field.  These
              lines are also considered blank lines.
 
              With the given example, lines 2 and 4 will be skipped.
@@ -2416,7 +2431,7 @@ FUNCTIONS
 
               filter => { 0 => sub { grep { defined && $_ ne "" } @{$_[1]} } }
 
-             A space is not regarded being empty, so given the  example  data,
+             A  space  is not regarded being empty, so given the example data,
              lines 2, 3, 4, 5, and 7 are skipped.
 
            filled
@@ -2426,10 +2441,10 @@ FUNCTIONS
 
               filter => { 0 => sub { grep { defined && m/\S/ } @{$_[1]} } }
 
-             This  filter  rejects  all lines that not have at least one field
+             This filter rejects all lines that not have at  least  one  field
              that does not evaluate to the empty string.
 
-             With the given example data,  this  filter  would  skip  lines  2
+             With  the  given  example  data,  this  filter would skip lines 2
              through 8.
 
          One could also use modules like Types::Standard:
@@ -2452,36 +2467,36 @@ FUNCTIONS
              );
 
        after_in
-         This  callback is invoked for each record after all records have been
+         This callback is invoked for each record after all records have  been
          parsed but before returning the reference to the caller.  The hook is
          invoked with two arguments:  the current  "CSV"  parser object  and a
-         reference to the record.   The reference can  be  a  reference  to  a
+         reference  to  the  record.    The  reference can be a reference to a
          HASH  or a reference to an ARRAY as determined by the arguments.
 
-         This  callback  can  also  be  passed  as   an  attribute without the
+         This callback can  also  be  passed  as   an  attribute  without  the
          "callbacks" wrapper.
 
        before_out
-         This callback is  invoked  for  each  record  before  the  record  is
-         printed.   The hook is invoked with two arguments:  the current "CSV"
+         This  callback  is  invoked  for  each  record  before  the record is
+         printed.  The hook is invoked with two arguments:  the current  "CSV"
          parser object and a reference to the record.   The reference can be a
-         reference to a  HASH or a reference to an ARRAY as determined by  the
+         reference  to a  HASH or a reference to an ARRAY as determined by the
          arguments.
-
-         This  callback  can  also  be  passed  as  an  attribute  without the
-         "callbacks" wrapper.
-
-         This callback makes the row available in %_ if the row is a  hashref.
-         In this case %_ is writable and will change the original row.
-
-       on_in
-         This  callback  acts  exactly  as  the "after_in" or the "before_out"
-         hooks.
 
          This callback can  also  be  passed  as  an  attribute   without  the
          "callbacks" wrapper.
 
          This  callback makes the row available in %_ if the row is a hashref.
+         In this case %_ is writable and will change the original row.
+
+       on_in
+         This callback acts exactly as  the  "after_in"  or  the  "before_out"
+         hooks.
+
+         This  callback  can  also  be  passed  as  an  attribute  without the
+         "callbacks" wrapper.
+
+         This callback makes the row available in %_ if the row is a  hashref.
          In this case %_ is writable and will change the original row. So e.g.
          with
 
@@ -2500,21 +2515,6 @@ FUNCTIONS
                bar => 2,
                }
              ]
-
-       csv
-         The function  "csv" can also  be  called  as  a  method  or  with  an
-         existing  Text::CSV_XS  object. This could help if the function is to
-         be invoked a lot of times and the overhead  of  creating  the  object
-         internally  over   and   over  again would be prevented by passing an
-         existing instance.
-
-          my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
-
-          my $aoa = $csv->csv (in => $fh);
-          my $aoa = csv (in => $fh, csv => $csv);
-
-         both act the same. Running this 20000 times on a 20 lines  CSV  file,
-         showed a 53% speedup.
 
 INTERNALS
        Combine (...)
@@ -3184,4 +3184,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or  modify  it
        under the same terms as Perl itself.
 
-perl v5.38.2                      2024-04-11                          STDIN(1)
+perl v5.38.2                      2024-04-18                          STDIN(1)

@@ -1,7 +1,8 @@
-1.54	- 2024-04-11, H.Merijn Brand
+1.54	- 2024-04-18, H.Merijn Brand
     * Fix doc (Jean Forget, RT#150757)
     * It's 2024
     * Fix comment_str with strict
+    * Doc fixup (RT#151546)
 
 1.53	- 2023-11-22, H.Merijn Brand
     * Two casts for -Wformat (issue 50)

@@ -2325,6 +2325,22 @@ will result in
      [ "1",   "2"       ],
      [ "3",   "4",  "5" ]]
 
+### csv
+
+
+The _function_  ["csv"](#csv) can also be called as a method or with an existing
+Text::CSV\_XS object. This could help if the function is to be invoked a lot
+of times and the overhead of creating the object internally over  and  over
+again would be prevented by passing an existing instance.
+
+    my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
+
+    my $aoa = $csv->csv (in => $fh);
+    my $aoa = csv (in => $fh, csv => $csv);
+
+both act the same. Running this 20000 times on a 20 lines CSV file,  showed
+a 53% speedup.
+
 ## Callbacks
 
 
@@ -2645,21 +2661,6 @@ but only feature the ["csv"](#csv) function.
             bar => 2,
             }
           ]
-
-- csv
-
-    The _function_  ["csv"](#csv) can also be called as a method or with an existing
-    Text::CSV\_XS object. This could help if the function is to be invoked a lot
-    of times and the overhead of creating the object internally over  and  over
-    again would be prevented by passing an existing instance.
-
-        my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
-
-        my $aoa = $csv->csv (in => $fh);
-        my $aoa = csv (in => $fh, csv => $csv);
-
-    both act the same. Running this 20000 times on a 20 lines CSV file,  showed
-    a 53% speedup.
 
 # INTERNALS
 
