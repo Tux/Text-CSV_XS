@@ -1,3 +1,6 @@
+1.55	- 2024-05-07, H.Merijn Brand
+    * More fixes for strict under bind_columns (issue 54)
+
 1.54	- 2024-04-18, H.Merijn Brand
     * Fix doc (Jean Forget, RT#150757)
     * It's 2024

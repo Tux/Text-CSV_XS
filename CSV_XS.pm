@@ -3133,7 +3133,8 @@ Takes a list of scalar references to be used for output with  L</print>  or
 to store in the fields fetched by L</getline>.  When you do not pass enough
 references to store the fetched fields in, L</getline> will fail with error
 C<3006>.  If you pass more than there are fields to return,  the content of
-the remaining references is left untouched.
+the remaining references is left untouched.  Under C<strict> the two should
+match, otherwise L</getline> will fail with error C<2014>.
 
  $csv->bind_columns (\$code, \$name, \$price, \$description);
  while ($csv->getline ($fh)) {
@@ -3405,6 +3406,18 @@ the diagnostics message in string context.
 
 When called as a class method or a  direct function call,  the  diagnostics
 are that of the last L</new> call.
+
+=head3 _cache_diag
+
+Note: This is an internal function, and output cannot be reliead upon.  Use
+at own risk.
+
+If debugging beyond what L</error_diag> is able to show, the internal cache
+can be shown with this function.
+
+ # Something failed ..
+ $csv->error_diag;
+ $csv->_cache_diag ();
 
 =head2 record_number
 X<record_number>
