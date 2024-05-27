@@ -3409,8 +3409,8 @@ are that of the last L</new> call.
 
 =head3 _cache_diag
 
-Note: This is an internal function, and output cannot be reliead upon.  Use
-at own risk.
+Note: This is an internal function only,  and output cannot be relied upon.
+Use at own risk.
 
 If debugging beyond what L</error_diag> is able to show, the internal cache
 can be shown with this function.
