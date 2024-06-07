@@ -29,6 +29,7 @@ t/66_formula.t		Formula behavior
 t/67_emptrow.t		Empty row behavior
 t/68_header.t		Test header option combinations
 t/70_rt.t		Tests based on RT reports
+t/71_strict.t		Test strict rrelated issues
 t/75_hashref.t		getline_hr related tests
 t/76_magic.t		array_ref from magic
 t/77_getall.t		Get all rows at once

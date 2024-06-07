@@ -1,0 +1,194 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+ use Test::More tests => 56;
+#use Test::More "no_plan";
+
+my %err;
+
+BEGIN {
+    require_ok "Text::CSV_XS";
+    plan skip_all => "Cannot load Text::CSV_XS" if $@;
+    require "./t/util.pl";
+
+    open my $fh, "<", "CSV_XS.xs" or die "Cannot read error messages from XS\n";
+    while (<$fh>) {
+	m/^    \{ ([0-9]{4}), "([^"]+)"\s+\}/ and $err{$1} = $2;
+	}
+    close $fh;
+    }
+
+my $tfn = "_80test.csv"; END { -f $tfn and unlink $tfn; }
+$| = 1;
+
+my $csv = Text::CSV_XS->new ();
+
+{   my $csv = Text::CSV_XS->new ({ strict => 1 });
+    ok ($csv->parse ("1,2,3"), "Set strict to 3 columns");
+    ok ($csv->parse ("a,b,c"), "3 columns should be correct");
+    is ($csv->parse ("3,4"), 0, "Not enough columns");
+    is (0 + $csv->error_diag, 2014, "Error set correctly");
+    }
+{   my $csv = Text::CSV_XS->new ({ strict => 1 });
+    ok ($csv->parse ("1,2,3"), "Set strict to 3 columns");
+    is ($csv->parse ("3,4,5,6"), 0, "Too many columns");
+    is (0 + $csv->error_diag, 2014, "Error set correctly");
+    }
+{   my $csv = Text::CSV_XS->new ({ strict => 1 });
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    ok ($csv->say ($fh, [ 1, 2, 3 ]), "Write line 1");
+    ok ($csv->say ($fh, [ 1, 2, 3 ]), "Write line 2");
+    close $fh;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
+    ok ((my $r = $csv->getline ($fh)),	"Get line 1 under strict");
+    ok ((   $r = $csv->getline ($fh)),	"Get line 2 under strict");
+    is ($csv->getline ($fh), undef,	"EOF under strict");
+    is (0 + $csv->error_diag, 2012,	"Error is 2012 instead of 2014");
+    ok ($csv->eof,			"EOF is set");
+    close $fh;
+    }
+{   my $csv = Text::CSV_XS->new ({ strict => 1 });
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    ok ($csv->say   ($fh, [ 1, 2, 3 ]), "Write line 1");
+    ok ($csv->print ($fh, [ 1, 2, 3 ]), "Write line 2 no newline");
+    close $fh;
+    open    $fh, "<", $tfn or die "$tfn: $!\n";
+    ok ((my $r = $csv->getline ($fh)),	"Get line 1 under strict");
+    ok ((   $r = $csv->getline ($fh)),	"Get line 2 under strict no newline");
+    is ($csv->getline ($fh), undef,	"EOF under strict");
+    is (0 + $csv->error_diag, 2012,	"Error is 2012 instead of 2014");
+    ok ($csv->eof,			"EOF is set");
+    close $fh;
+    }
+{   my $csv = Text::CSV_XS->new ();
+    open my $fh, ">", $tfn or die "$tfn: $!\n";
+    ok ($csv->say ($fh, [ 1 .. 3 ]),    "Write line 1 (headers)");
+    ok ($csv->say ($fh, [ 1 .. 4 ]),    "Write line 2 (data)");
+    close $fh;
+    my $aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto");
+    is_deeply ($aoh, [{ 1 => 1, 2 => 2, 3 => 3 }], "Column dropped");
+    my @e;
+    eval {
+	local $SIG{__WARN__} = sub { push @e => @_ };
+	$aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto", strict => 1);
+	};
+    is_deeply ($aoh, [],                "Fail under strict");
+    is (scalar @e, 1,			"Got error");
+    like ($e[0], qr{ 2014 },		"Error 2014");
+
+    open $fh, ">", $tfn or die "$tfn: $!\n";
+    ok ($csv->say ($fh, [ 1 .. 4 ]),    "Write line 1 (headers)");
+    ok ($csv->say ($fh, [ 1 .. 3 ]),    "Write line 2 (data)");
+    close $fh;
+    $aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto");
+    is_deeply ($aoh, [{ 1 => 1, 2 => 2, 3 => 3, 4 => undef }], "Column added");
+    @e = ();
+    eval {
+	local $SIG{__WARN__} = sub { push @e => @_ };
+	$aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto", strict => 1);
+	};
+    is_deeply ($aoh, [],                "Fail under strict");
+    is (scalar @e, 1,			"Got error");
+    like ($e[0], qr{ 2014 },		"Error 2014");
+    }
+
+foreach my $strict (0, 1) {
+    my $csv = Text::CSV_XS->new ({
+	binary      => 1,
+	comment_str => "#",
+	eol         => "\n",
+	escape_char => '"',
+	quote_char  => '"',
+	sep_char    => "|",
+	strict      => $strict,
+	});
+
+    my $status = $csv->parse ('a|b|"d"');
+    is (0 + $csv->error_diag,    0, "No fail under strict = $strict");
+    $status = $csv->parse ('a|b|c"d"e');	# Loose unescaped quote
+    is (0 + $csv->error_diag, 2034, "Previous error still actual");
+    }
+
+open my $fh, ">", $tfn or die "$tfn: $!\n";
+print $fh <<"EOC";
+1,foo
+2,bar,fail
+3,baz
+4
+5,eox
+EOC
+close $fh;
+
+open $fh, "<", $tfn or die "$tfn: $!\n";
+my @rpt;
+$csv = Text::CSV_XS->new ({ strict => 1, auto_diag => 1 });
+$csv->callbacks (error => sub {
+    my ($err, $msg, $pos, $recno, $fldno) = @_;
+    if ($err == 2014) {
+	push @rpt => [ $recno, $fldno, $pos ];
+	$csv->SetDiag (0);
+	}
+    });
+is_deeply ([ $csv->getline_all ($fh), @rpt ],
+    [[[ 1, "foo" ], [ 2, "bar", "fail" ], [ 3, "baz" ], [ 4 ], [ 5, "eox" ]],
+     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014 with \$csv");
+close $fh;
+
+open $fh, "<", $tfn or die "$tfn: $!\n";
+@rpt = ();
+$csv = Text::CSV_XS->new ({ strict => 1, auto_diag => 1, callbacks => {
+    error => sub {
+	my ($err, $msg, $pos, $recno, $fldno) = @_;
+	if ($err == 2014) {
+	    push @rpt => [ $recno, $fldno, $pos ];
+	    Text::CSV_XS->SetDiag (0);
+	    }
+	}}});
+is_deeply ([ $csv->getline_all ($fh), @rpt ],
+    [[[ 1, "foo" ], [ 2, "bar", "fail" ], [ 3, "baz" ], [ 4 ], [ 5, "eox" ]],
+     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014 with class");
+close $fh;
+
+# Under strcict, fail un not enough fields.
+# Under non-strict expect the value of the previous record
+foreach my $test (
+	[ "a,b,c\n" . "d,e,f\n". "g,h\n".   "i,j,k\n",
+	  "a,b,c\n" . "d,e,f\n". "g,h,f\n". "i,j,k\n", 2, 5 ],
+	[ "a,b,c\n" . "d,e,f\n". "g,h\n"             ,
+	  "a,b,c\n" . "d,e,f\n". "g,h,f\n"           , 2, 5 ],
+	[ "a,b,c\n" .            "g,h\n".   "i,j,k\n",
+	  "a,b,c\n" .            "g,h,c\n". "i,j,k\n", 1, 5 ],
+	[ "a,b\n"   . "d,e,f\n". "g,h\n".   "i,j,k\n",
+	  "a,b,*\n" . "d,e,f\n". "g,h,f\n". "i,j,k\n", 1, 5 ],
+	) {
+    my ($dta, $dta0, $err_line, $pos) = @$test;
+    open  $fh, ">", $tfn or die "$tfn: $!\n";
+    print $fh $dta;
+    close $fh;
+    my $expect = [ map {[ split m/,/ => $_ ]} grep m/\S/ => split "\n" => $dta0 ];
+    foreach my $strict (0, 1) {
+	open $fh, "<", $tfn or die "$tfn: $!\n";
+	my $csv = Text::CSV_XS->new ({ strict => $strict });
+	my ($r1, $r2, $r3) = ("-", "+", "*");
+	$csv->bind_columns (\($r1, $r2, $r3));
+	my @out;
+	eval {
+	    while ($csv->getline ($fh)) {
+		push @out => [ $r1, $r2, $r3 ];
+		}
+	    };
+	close $fh;
+	my @err = $csv->error_diag;
+	if ($strict) {
+	    is ($err[0], 2014, "ENF");
+	    splice @$expect, $err_line;
+	    }
+	else {
+	    is ($err[0], 2012, "EOF");
+	    }
+	is_deeply (\@out, $expect, "Bound + strict = $strict");
+	}
+    }
+

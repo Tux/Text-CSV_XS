@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 129;
+ use Test::More tests => 111;
 #use Test::More "no_plan";
 
 BEGIN {
@@ -161,87 +161,6 @@ open $fh, "<", $tfn or die "$tfn: $!\n";
 $csv->callbacks (after_parse => sub { $_[1][0] eq 3 and return \"skip" });
 is_deeply ($csv->getline_all ($fh), [[1,"foo"],[2,"bar"],[4,"zoo"]], "skip");
 close $fh;
-
-open $fh, ">", $tfn or die "$tfn: $!\n";
-print $fh <<"EOC";
-1,foo
-2,bar,fail
-3,baz
-4
-5,eox
-EOC
-close $fh;
-
-open $fh, "<", $tfn or die "$tfn: $!\n";
-my @rpt;
-$csv = Text::CSV_XS->new ({ strict => 1, auto_diag => 1 });
-$csv->callbacks (error => sub {
-    my ($err, $msg, $pos, $recno, $fldno) = @_;
-    if ($err == 2014) {
-	push @rpt => [ $recno, $fldno, $pos ];
-	$csv->SetDiag (0);
-	}
-    });
-is_deeply ([ $csv->getline_all ($fh), @rpt ],
-    [[[ 1, "foo" ], [ 2, "bar", "fail" ], [ 3, "baz" ], [ 4 ], [ 5, "eox" ]],
-     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014 with \$csv");
-close $fh;
-
-open $fh, "<", $tfn or die "$tfn: $!\n";
-@rpt = ();
-$csv = Text::CSV_XS->new ({ strict => 1, auto_diag => 1, callbacks => {
-    error => sub {
-	my ($err, $msg, $pos, $recno, $fldno) = @_;
-	if ($err == 2014) {
-	    push @rpt => [ $recno, $fldno, $pos ];
-	    Text::CSV_XS->SetDiag (0);
-	    }
-	}}});
-is_deeply ([ $csv->getline_all ($fh), @rpt ],
-    [[[ 1, "foo" ], [ 2, "bar", "fail" ], [ 3, "baz" ], [ 4 ], [ 5, "eox" ]],
-     [ 2, 3, 12 ], [ 4, 1, 3 ]], "Can catch strict 2014 with class");
-close $fh;
-
-# Under strcict, fail un not enough fields.
-# Under non-strict expect the value of the previous record
-foreach my $test (
-	[ "a,b,c\n" . "d,e,f\n". "g,h\n".   "i,j,k\n",
-	  "a,b,c\n" . "d,e,f\n". "g,h,f\n". "i,j,k\n", 2, 5 ],
-	[ "a,b,c\n" . "d,e,f\n". "g,h\n"             ,
-	  "a,b,c\n" . "d,e,f\n". "g,h,f\n"           , 2, 5 ],
-	[ "a,b,c\n" .            "g,h\n".   "i,j,k\n",
-	  "a,b,c\n" .            "g,h,c\n". "i,j,k\n", 1, 5 ],
-	[ "a,b\n"   . "d,e,f\n". "g,h\n".   "i,j,k\n",
-	  "a,b,*\n" . "d,e,f\n". "g,h,f\n". "i,j,k\n", 1, 5 ],
-	) {
-    my ($dta, $dta0, $err_line, $pos) = @$test;
-    open  $fh, ">", $tfn or die "$tfn: $!\n";
-    print $fh $dta;
-    close $fh;
-    my $expect = [ map {[ split m/,/ => $_ ]} grep m/\S/ => split "\n" => $dta0 ];
-    foreach my $strict (0, 1) {
-	open $fh, "<", $tfn or die "$tfn: $!\n";
-	my $csv = Text::CSV_XS->new ({ strict => $strict });
-	my ($r1, $r2, $r3) = ("-", "+", "*");
-	$csv->bind_columns (\($r1, $r2, $r3));
-	my @out;
-	eval {
-	    while ($csv->getline ($fh)) {
-		push @out => [ $r1, $r2, $r3 ];
-		}
-	    };
-	close $fh;
-	my @err = $csv->error_diag;
-	if ($strict) {
-	    is ($err[0], 2014, "ENF");
-	    splice @$expect, $err_line;
-	    }
-	else {
-	    is ($err[0], 2012, "EOF");
-	    }
-	is_deeply (\@out, $expect, "Bound + strict = $strict");
-	}
-    }
 
 __END__
 1,foo

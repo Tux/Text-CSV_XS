@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 347;
+ use Test::More tests => 314;
 #use Test::More "no_plan";
 
 my %err;
@@ -251,75 +251,6 @@ unlink $diag_file;
     is (0 + $csv->error_diag, 1008, "Can set sep to empty");
     eval { $csv->sep ("="); };
     is (0 + $csv->error_diag, 1001, "Cannot set sep to current sep");
-    }
-
-{   my $csv = Text::CSV_XS->new ({ strict => 1 });
-    ok ($csv->parse ("1,2,3"), "Set strict to 3 columns");
-    ok ($csv->parse ("a,b,c"), "3 columns should be correct");
-    is ($csv->parse ("3,4"), 0, "Not enough columns");
-    is (0 + $csv->error_diag, 2014, "Error set correctly");
-    }
-{   my $csv = Text::CSV_XS->new ({ strict => 1 });
-    ok ($csv->parse ("1,2,3"), "Set strict to 3 columns");
-    is ($csv->parse ("3,4,5,6"), 0, "Too many columns");
-    is (0 + $csv->error_diag, 2014, "Error set correctly");
-    }
-{   my $csv = Text::CSV_XS->new ({ strict => 1 });
-    open my $fh, ">", $tfn or die "$tfn: $!\n";
-    ok ($csv->say ($fh, [ 1, 2, 3 ]), "Write line 1");
-    ok ($csv->say ($fh, [ 1, 2, 3 ]), "Write line 2");
-    close $fh;
-    open    $fh, "<", $tfn or die "$tfn: $!\n";
-    ok ((my $r = $csv->getline ($fh)),	"Get line 1 under strict");
-    ok ((   $r = $csv->getline ($fh)),	"Get line 2 under strict");
-    is ($csv->getline ($fh), undef,	"EOF under strict");
-    is (0 + $csv->error_diag, 2012,	"Error is 2012 instead of 2014");
-    ok ($csv->eof,			"EOF is set");
-    close $fh;
-    }
-{   my $csv = Text::CSV_XS->new ({ strict => 1 });
-    open my $fh, ">", $tfn or die "$tfn: $!\n";
-    ok ($csv->say   ($fh, [ 1, 2, 3 ]), "Write line 1");
-    ok ($csv->print ($fh, [ 1, 2, 3 ]), "Write line 2 no newline");
-    close $fh;
-    open    $fh, "<", $tfn or die "$tfn: $!\n";
-    ok ((my $r = $csv->getline ($fh)),	"Get line 1 under strict");
-    ok ((   $r = $csv->getline ($fh)),	"Get line 2 under strict no newline");
-    is ($csv->getline ($fh), undef,	"EOF under strict");
-    is (0 + $csv->error_diag, 2012,	"Error is 2012 instead of 2014");
-    ok ($csv->eof,			"EOF is set");
-    close $fh;
-    }
-{   my $csv = Text::CSV_XS->new ();
-    open my $fh, ">", $tfn or die "$tfn: $!\n";
-    ok ($csv->say ($fh, [ 1 .. 3 ]),    "Write line 1 (headers)");
-    ok ($csv->say ($fh, [ 1 .. 4 ]),    "Write line 2 (data)");
-    close $fh;
-    my $aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto");
-    is_deeply ($aoh, [{ 1 => 1, 2 => 2, 3 => 3 }], "Column dropped");
-    my @e;
-    eval {
-	local $SIG{__WARN__} = sub { push @e => @_ };
-	$aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto", strict => 1);
-	};
-    is_deeply ($aoh, [],                "Fail under strict");
-    is (scalar @e, 1,			"Got error");
-    like ($e[0], qr{ 2014 },		"Error 2014");
-
-    open $fh, ">", $tfn or die "$tfn: $!\n";
-    ok ($csv->say ($fh, [ 1 .. 4 ]),    "Write line 1 (headers)");
-    ok ($csv->say ($fh, [ 1 .. 3 ]),    "Write line 2 (data)");
-    close $fh;
-    $aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto");
-    is_deeply ($aoh, [{ 1 => 1, 2 => 2, 3 => 3, 4 => undef }], "Column added");
-    @e = ();
-    eval {
-	local $SIG{__WARN__} = sub { push @e => @_ };
-	$aoh = Text::CSV_XS::csv (in => $tfn, headers => "auto", strict => 1);
-	};
-    is_deeply ($aoh, [],                "Fail under strict");
-    is (scalar @e, 1,			"Got error");
-    like ($e[0], qr{ 2014 },		"Error 2014");
     }
 
 {   my $csv = Text::CSV_XS->new;

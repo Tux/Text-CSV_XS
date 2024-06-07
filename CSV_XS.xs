@@ -1230,6 +1230,22 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
     return TRUE;
     } /* Combine */
 
+#define ErrorDiag(csv)	cx_ErrorDiag (aTHX_ csv)
+static void cx_ErrorDiag (pTHX_ csv_t *csv) {
+    SV **svp;
+
+    if ((svp = hv_fetchs (csv->self, "_ERROR_DIAG", FALSE)) && *svp) {
+	if (SvIOK (*svp)) (void)fprintf (stderr, "ERR: %d\n", SvIV (*svp));
+	if (SvPOK (*svp)) (void)fprintf (stderr, "ERR: %s\n", SvPV_nolen (*svp));
+	}
+    if ((svp = hv_fetchs (csv->self, "_ERROR_POS", FALSE)) && *svp) {
+	if (SvIOK (*svp)) (void)fprintf (stderr, "POS: %d\n", SvIV (*svp));
+	}
+    if ((svp = hv_fetchs (csv->self, "_ERROR_FLD", FALSE)) && *svp) {
+	if (SvIOK (*svp)) (void)fprintf (stderr, "FLD: %d\n", SvIV (*svp));
+	}
+    } /* ErrorDiag */
+
 #define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos)
 static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos) {
     (void)hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
@@ -2194,8 +2210,12 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 
 	if (nf && !csv.strict_n) csv.strict_n = (short)nf;
 	if (csv.strict_n > 0 && nf != csv.strict_n) {
-	    unless (csv.useIO & useIO_EOF)
-		ParseError (&csv, 2014, csv.used);
+	    unless (csv.useIO & useIO_EOF) {
+#if MAINT_DEBUG > 6
+		ErrorDiag (&csv);
+#endif
+		unless (last_error) ParseError (&csv, 2014, csv.used);
+		}
 	    if (last_error) /* an error callback can reset and accept */
 		result = FALSE;
 	    }
