@@ -543,6 +543,7 @@ sub _cpfd {
 sub gen_cpanfile {
     my $self = shift;
 
+    warn "Generating cpanfile ...\n";
     open my $fh, ">", "cpanfile";
 
     my $jsn = $self->{h};
