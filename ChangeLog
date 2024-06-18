@@ -1,6 +1,7 @@
 1.55	- 2024-06-18, H.Merijn Brand
     * More fixes for strict under bind_columns (issue 54)
     * Strict won't hide previous error (issue 56)
+    * Update to Devel::PPPort-3.72
 
 1.54	- 2024-04-18, H.Merijn Brand
     * Fix doc (Jean Forget, RT#150757)
