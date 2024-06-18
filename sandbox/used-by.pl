@@ -3,7 +3,7 @@
 use 5.026000;
 use warnings;
 
-our $VERSION = "2.02 - 20211221";
+our $VERSION = "2.03 - 20240617";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -85,6 +85,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "DBIx-Class-Schema-Slave",		# ::CSV - Tests br0ken
     "DBIx-Class-Snowflake",		# ::CSV - Bad tests. SQLite fail
     "DBIx-Class-StorageReadOnly",	# ::CSV - POD coverage
+    "DBIx-Indexing",			# Failures on overloading eq
     "DBIx-NoSQL",			# ::CSV - Syntax
     "DBIx-Patcher",			# ::CSV - Own tests fail
     "dbMan",				# Questions

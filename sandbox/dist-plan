@@ -1,6 +1,6 @@
 [ ] 0:00:01  perl Makefile.PL
 [ ] 0:00:39  make test
-[ ] 0:00:14  prove -j 9 -wbs
+[ ] 0:00:14  prove -j 17 -wbs
 [ ] 0:00:30  yath
 
 [ ] 0:00:02  make tgzdist
@@ -9,11 +9,11 @@
 [ ]          update ChangeLog
 [ ]          commit changes
 
-[ ] 1:10:00  env HARNESS_OPTIONS=j8 release-test
+[ ] 1:10:00  env HARNESS_OPTIONS=j16 release-test
 
 [ ] 0:00:01  make distclean
 [ ] 0:00:01  perl Makefile.PL
-[ ] 0:00:44  prove -j 9 -wbs
+[ ] 0:00:44  prove -j 17 -wbs
 [ ] 0:00:01  make install UNINST=1
 [ ] 0:20:03  perl sandbox/used-by.pl
 

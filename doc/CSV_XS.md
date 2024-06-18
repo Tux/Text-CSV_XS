@@ -1495,7 +1495,8 @@ Takes a list of scalar references to be used for output with  ["print"](#print) 
 to store in the fields fetched by ["getline"](#getline).  When you do not pass enough
 references to store the fetched fields in, ["getline"](#getline) will fail with error
 `3006`.  If you pass more than there are fields to return,  the content of
-the remaining references is left untouched.
+the remaining references is left untouched.  Under `strict` the two should
+match, otherwise ["getline"](#getline) will fail with error `2014`.
 
     $csv->bind_columns (\$code, \$name, \$price, \$description);
     while ($csv->getline ($fh)) {
@@ -1752,6 +1753,18 @@ the diagnostics message in string context.
 
 When called as a class method or a  direct function call,  the  diagnostics
 are that of the last ["new"](#new) call.
+
+### \_cache\_diag
+
+Note: This is an internal function only,  and output cannot be relied upon.
+Use at own risk.
+
+If debugging beyond what ["error\_diag"](#error_diag) is able to show, the internal cache
+can be shown with this function.
+
+    # Something failed ..
+    $csv->error_diag;
+    $csv->_cache_diag ();
 
 ## record\_number
 

@@ -1,4 +1,4 @@
-1.55	- 2024-06-07, H.Merijn Brand
+1.55	- 2024-06-18, H.Merijn Brand
     * More fixes for strict under bind_columns (issue 54)
     * Strict won't hide previous error (issue 56)
 

@@ -91,7 +91,11 @@
       <li><a href="#is_missing">is_missing </a></li>
       <li><a href="#status">status </a></li>
       <li><a href="#error_input">error_input </a></li>
-      <li><a href="#error_diag">error_diag </a></li>
+      <li><a href="#error_diag">error_diag </a>
+        <ul>
+          <li><a href="#cache_diag">_cache_diag</a></li>
+        </ul>
+      </li>
       <li><a href="#record_number">record_number </a></li>
       <li><a href="#SetDiag">SetDiag </a></li>
     </ul>
@@ -1430,7 +1434,7 @@ while (my $row = $csv-&gt;getline_hr ($fh)) {
 
 <h2 id="bind_columns">bind_columns </h2>
 
-<p>Takes a list of scalar references to be used for output with <a href="#print">&quot;print&quot;</a> or to store in the fields fetched by <a href="#getline">&quot;getline&quot;</a>. When you do not pass enough references to store the fetched fields in, <a href="#getline">&quot;getline&quot;</a> will fail with error <code>3006</code>. If you pass more than there are fields to return, the content of the remaining references is left untouched.</p>
+<p>Takes a list of scalar references to be used for output with <a href="#print">&quot;print&quot;</a> or to store in the fields fetched by <a href="#getline">&quot;getline&quot;</a>. When you do not pass enough references to store the fetched fields in, <a href="#getline">&quot;getline&quot;</a> will fail with error <code>3006</code>. If you pass more than there are fields to return, the content of the remaining references is left untouched. Under <code>strict</code> the two should match, otherwise <a href="#getline">&quot;getline&quot;</a> will fail with error <code>2014</code>.</p>
 
 <pre><code>$csv-&gt;bind_columns (\$code, \$name, \$price, \$description);
 while ($csv-&gt;getline ($fh)) {
@@ -1654,6 +1658,16 @@ $error_str                = &quot;&quot; . $csv-&gt;error_diag ();
 <p>If called in scalar context, it will return the diagnostics in a single scalar, a-la <code>$!</code>. It will contain the error code in numeric context, and the diagnostics message in string context.</p>
 
 <p>When called as a class method or a direct function call, the diagnostics are that of the last <a href="#new">&quot;new&quot;</a> call.</p>
+
+<h3 id="cache_diag">_cache_diag</h3>
+
+<p>Note: This is an internal function only, and output cannot be relied upon. Use at own risk.</p>
+
+<p>If debugging beyond what <a href="#error_diag">&quot;error_diag&quot;</a> is able to show, the internal cache can be shown with this function.</p>
+
+<pre><code># Something failed ..
+$csv-&gt;error_diag;
+$csv-&gt;_cache_diag ();</code></pre>
 
 <h2 id="record_number">record_number </h2>
 
