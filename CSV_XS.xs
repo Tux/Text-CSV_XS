@@ -2042,6 +2042,8 @@ EOLX:
 #if MAINT_DEBUG > 5
 			(void)fprintf (stderr, "# %04d COMMENT, SKIPPED\n", __LINE__);
 #endif
+			unless (csv->useIO)
+			    csv->has_ahead = 214;	/* abuse */
 			if (c == EOF)
 			    break;
 			goto restart;
@@ -2095,7 +2097,12 @@ EOLX:
 	}
 
     if (waitingForField) {
-	if (seenSomething || !csv->useIO) {
+	unless (csv->useIO) {
+	    if (csv->has_ahead == 214)
+		return TRUE;
+	    seenSomething++;
+	    }
+	if (seenSomething) {
 	    NewField;
 	    if (csv->blank_is_undef || csv->empty_is_undef)
 		SvSetUndef (sv);
@@ -2214,7 +2221,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 #if MAINT_DEBUG > 6
 		ErrorDiag (&csv);
 #endif
-		unless (last_error || (!csv.useIO && nf == 0))
+		unless (last_error || (!csv.useIO && csv.has_ahead))
 		    ParseError (&csv, 2014, csv.used);
 		}
 	    if (last_error) /* an error callback can reset and accept */

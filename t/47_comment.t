@@ -127,7 +127,7 @@ foreach my $io (1, 0) {
 	ok ($csv->parse ("a|b"), "Parse data line");
 	is_deeply ([ $csv->fields ], [ "a", "b" ], "Data in parse");
 	ok ($csv->parse ("# some comment"), "Parse comment");
-	is_deeply ([ $csv->fields ], [ "" ], "Comment in parse");
+	is_deeply ([ $csv->fields ], [ ], "Comment in parse");
 	}
     }
 
