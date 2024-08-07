@@ -12,7 +12,7 @@ BEGIN {
 	}
     else {
 	require Encode;
-	plan tests => 65;
+	plan tests => 71;
 	}
     require "./t/util.pl";
     }
@@ -109,4 +109,29 @@ is_deeply (csv (
     auto_diag        => 1,
     ), [[ 42, "foo" ], [ 53, "bar" ]], "Comment on first line, under strict");
 
+foreach my $io (1, 0) {
+    my $csv = Text::CSV_XS->new ({
+	strict       => 1,
+	comment_str  => "#",
+	sep_char     => "|",
+	auto_diag    => 2,
+	diag_verbose => 1,
+	});
+
+    # Data line is required to set field count for strict
+    if ($io) {
+	is_deeply ($csv->getline (*DATA), [ "a", "b" ], "Comment on last line IO data");
+	is_deeply ($csv->getline (*DATA), undef,        "Comment on last line IO comment");
+	}
+    else {
+	ok ($csv->parse ("a|b"), "Parse data line");
+	is_deeply ([ $csv->fields ], [ "a", "b" ], "Data in parse");
+	ok ($csv->parse ("# some comment"), "Parse comment");
+	is_deeply ([ $csv->fields ], [ "" ], "Comment in parse");
+	}
+    }
+
 1;
+__END__
+a|b
+# some comment

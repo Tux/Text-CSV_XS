@@ -2214,7 +2214,8 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 #if MAINT_DEBUG > 6
 		ErrorDiag (&csv);
 #endif
-		unless (last_error) ParseError (&csv, 2014, csv.used);
+		unless (last_error || (!csv.useIO && nf == 0))
+		    ParseError (&csv, 2014, csv.used);
 		}
 	    if (last_error) /* an error callback can reset and accept */
 		result = FALSE;
