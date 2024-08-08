@@ -812,6 +812,12 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->utf8 = 1;
     if (csv->quo_len > 1 && is_utf8_string ((U8 *)(csv->quo), csv->quo_len))
 	csv->utf8 = 1;
+
+    if (csv->strict
+	  && !csv->strict_n
+	  && (svp = hv_fetchs (self, "_COLUMN_NAMES", FALSE))
+	  && _is_arrayref (*svp))
+	csv->strict_n = av_len ((AV *)(SvRV (*svp)));
     } /* SetupCsv */
 
 #define Print(csv,dst)		cx_Print (aTHX_ csv, dst)

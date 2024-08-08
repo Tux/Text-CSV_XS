@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
- use Test::More tests => 56;
+ use Test::More tests => 69;
 #use Test::More "no_plan";
 
 my %err;
@@ -192,3 +192,22 @@ foreach my $test (
 	}
     }
 
+{   ok (my $csv = Text::CSV_XS->new ({ strict => 1 }), "Issue#58 data first");
+    ok ($csv->column_names (qw( A B C )), "Expect 3 colums");
+    is_deeply ($csv->getline_hr (*DATA), { A => 1, B => 2, C => 42 }, "Stream OK");
+    ok ($csv->parse ("1,2,42"), "Parse");
+    is_deeply ([ $csv->fields ], [ 1, 2, 42 ], "Parse OK");
+    is ($csv->parse ("2,42"), 0, "Parse not enough");
+    my @err = $csv->error_diag; # error-code, str, pos, rec, fld
+    is ($err[0], 2014, "Error 2014");
+    is ($err[4], 2,    "Just got 2");
+    }
+{   ok (my $csv = Text::CSV_XS->new ({ strict => 1 }), "Issue#58 no data first");
+    ok ($csv->column_names (qw( A B C )), "Expect 3 colums");
+    is ($csv->parse ("2,42"), 0, "Parse not enough");
+    my @err = $csv->error_diag; # error-code, str, pos, rec, fld
+    is ($err[0], 2014, "Error 2014");
+    is ($err[4], 2,    "Just got 2");
+    }
+__END__
+1,2,42
