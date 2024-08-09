@@ -1,4 +1,4 @@
-1.56	- 2024-08-08, H.Merijn Brand
+1.56	- 2024-08-09, H.Merijn Brand
     * Yet another strict/comment_str conflict (issue 57)
     * Strict affected by column_names
 
