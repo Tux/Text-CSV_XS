@@ -3198,4 +3198,4 @@ COPYRIGHT AND LICENSE
        This  library  is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.40.0                      2024-06-18                          STDIN(1)
+perl v5.40.0                      2024-08-09                          STDIN(1)
