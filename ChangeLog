@@ -1,3 +1,7 @@
+1.57	- 2024-10-18, H.Merijn Brand
+    * Keep runtime error from csv ()
+    * add csv (on_error)
+
 1.56	- 2024-08-09, H.Merijn Brand
     * Yet another strict/comment_str conflict (issue 57)
     * Strict affected by column_names

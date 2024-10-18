@@ -58,7 +58,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2024-08-09 "perl v5.40.0" "User Contributed Perl Documentation"
+.TH STDIN 1 2024-10-18 "perl v5.40.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2185,7 +2185,7 @@ This function is not exported by default and should be explicitly requested:
 \& use Text::CSV_XS qw( csv );
 .Ve
 .PP
-This is a high\-level function that aims at simple (user) interfaces.  This
+This is a high\-level function that aims at simple (user) interfaces.   This
 can be used to read/parse a \f(CW\*(C`CSV\*(C'\fR file or stream (the default behavior) or
 to produce a file or write to a stream (define the  \f(CW\*(C`out\*(C'\fR  attribute).  It
 returns an array\- or hash\-reference on parsing (or \f(CW\*(C`undef\*(C'\fR on fail) or the
@@ -2196,6 +2196,11 @@ can get to the error using the class call to "error_diag"
 \& my $aoa = csv (in => "test.csv") or
 \&     die Text::CSV_XS\->error_diag;
 .Ve
+.PP
+Note that failure here is the inability to start the parser,  like when the
+input does not exist or the arguments are unknown or conflicting.  Run\-time
+parsing errors will return a valid reference, which can be empty, but still
+contains all results up till the error. See "on_error".
 .PP
 This function takes the arguments as key\-value pairs. This can be passed as
 a list or as an anonymous hash:
@@ -3191,6 +3196,32 @@ this case \f(CW%_\fR is writable and will change the original row. So e.g. with
 \&      bar => 2,
 \&      }
 \&    ]
+.Ve
+.IP on_error 2
+.IX Xref "on_error"
+.IX Item "on_error"
+This callback acts exactly as the "error" hook.
+.Sp
+.Vb 2
+\&  my @err;
+\&  my $aoa = csv (in => $fh, on_error => sub { @err = @_ });
+.Ve
+.Sp
+is identical to
+.Sp
+.Vb 3
+\&  my $aoa = csv (in => $fh, callbacks => {
+\&      error => sub { @err = @_ },
+\&      });
+.Ve
+.Sp
+It can be used for ignoring errors as well as for just keeping the error in
+case of analisys after the \f(CW\*(C`csv ()\*(C'\fR function has returned.
+.Sp
+.Vb 3
+\& my @err;
+\& my $aoa = csv (in => "bad.csv, on_error => sub { @err = @_ });
+\& die Text::CSV_XS\->error_diag if @err or !$aoa;
 .Ve
 .SH INTERNALS
 .IX Header "INTERNALS"

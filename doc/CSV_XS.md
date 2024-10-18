@@ -1811,7 +1811,7 @@ This function is not exported by default and should be explicitly requested:
 
     use Text::CSV_XS qw( csv );
 
-This is a high-level function that aims at simple (user) interfaces.  This
+This is a high-level function that aims at simple (user) interfaces.   This
 can be used to read/parse a `CSV` file or stream (the default behavior) or
 to produce a file or write to a stream (define the  `out`  attribute).  It
 returns an array- or hash-reference on parsing (or `undef` on fail) or the
@@ -1820,6 +1820,11 @@ can get to the error using the class call to ["error\_diag"](#error_diag)
 
     my $aoa = csv (in => "test.csv") or
         die Text::CSV_XS->error_diag;
+
+Note that failure here is the inability to start the parser,  like when the
+input does not exist or the arguments are unknown or conflicting.  Run-time
+parsing errors will return a valid reference, which can be empty, but still
+contains all results up till the error. See ["on\_error"](#on_error).
 
 This function takes the arguments as key-value pairs. This can be passed as
 a list or as an anonymous hash:
@@ -2674,6 +2679,27 @@ but only feature the ["csv"](#csv) function.
             bar => 2,
             }
           ]
+
+- on\_error
+
+
+    This callback acts exactly as the ["error"](#error) hook.
+
+        my @err;
+        my $aoa = csv (in => $fh, on_error => sub { @err = @_ });
+
+    is identical to
+
+        my $aoa = csv (in => $fh, callbacks => {
+            error => sub { @err = @_ },
+            });
+
+    It can be used for ignoring errors as well as for just keeping the error in
+    case of analisys after the `csv ()` function has returned.
+
+        my @err;
+        my $aoa = csv (in => "bad.csv, on_error => sub { @err = @_ });
+        die Text::CSV_XS->error_diag if @err or !$aoa;
 
 # INTERNALS
 

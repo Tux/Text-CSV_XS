@@ -23,7 +23,7 @@ use XSLoader;
 use Carp;
 
 use vars qw( $VERSION @ISA @EXPORT_OK %EXPORT_TAGS );
-$VERSION = "1.56";
+$VERSION = "1.57";
 @ISA     = qw( Exporter );
 XSLoader::load ("Text::CSV_XS", $VERSION);
 
@@ -121,8 +121,8 @@ my %attr_alias = (
     'escape'			=> "escape_char",
     'comment'			=> "comment_str",
     );
-my $last_new_err = Text::CSV_XS->SetDiag (0);
-my $ebcdic       = ord ("A") == 0xC1;	# Faster than $Config{'ebcdic'}
+my $last_err = Text::CSV_XS->SetDiag (0);
+my $ebcdic   = ord ("A") == 0xC1;	# Faster than $Config{'ebcdic'}
 my @internal_kh;
 
 # NOT a method: is also used before bless
@@ -180,7 +180,7 @@ sub known_attributes {
     } # known_attributes
 
 sub new {
-    $last_new_err = Text::CSV_XS->SetDiag (1000,
+    $last_err = Text::CSV_XS->SetDiag (1000,
 	"usage: my \$csv = Text::CSV_XS->new ([{ option => value, ... }]);");
 
     my $proto = shift;
@@ -214,7 +214,7 @@ sub new {
 	    next;
 	    }
 #	croak?
-	$last_new_err = Text::CSV_XS->SetDiag (1000, "INI - Unknown attribute '$_'");
+	$last_err = Text::CSV_XS->SetDiag (1000, "INI - Unknown attribute '$_'");
 	$attr{'auto_diag'} and error_diag ();
 	return;
 	}
@@ -241,7 +241,7 @@ sub new {
 
     my $self = { %def_attr, %attr };
     if (my $ec = _check_sanity ($self)) {
-	$last_new_err = Text::CSV_XS->SetDiag ($ec);
+	$last_err = Text::CSV_XS->SetDiag ($ec);
 	$attr{'auto_diag'} and error_diag ();
 	return;
 	}
@@ -250,7 +250,7 @@ sub new {
 	$self->{'callbacks'} = undef;
 	}
 
-    $last_new_err = Text::CSV_XS->SetDiag (0);
+    $last_err = Text::CSV_XS->SetDiag (0);
     defined $\ && !exists $attr{'eol'} and $self->{'eol'} = $\;
     bless $self, $class;
     defined $self->{'types'}           and $self->types ($self->{'types'});
@@ -703,7 +703,7 @@ sub callbacks {
 
 sub error_diag {
     my $self = shift;
-    my @diag = (0 + $last_new_err, $last_new_err, 0, 0, 0);
+    my @diag = (0 + $last_err, $last_err, 0, 0, 0);
 
     # Docs state to NEVER use UNIVERSAL::isa, because it will *never* call an
     # overridden isa method in any class. Well, that is exacly what I want here
@@ -1281,6 +1281,8 @@ sub _csv_attr {
 	       delete $attr{'before_out'};
     my $cboi = delete $attr{'callbacks'}{'on_in'}	||
 	       delete $attr{'on_in'};
+    my $cboe = delete $attr{'callbacks'}{'on_error'}	||
+	       delete $attr{'on_error'};
 
     my $hd_s = delete $attr{'sep_set'}			||
 	       delete $attr{'seps'};
@@ -1314,8 +1316,9 @@ sub _csv_attr {
     defined $attr{'auto_diag'}   or $attr{'auto_diag'}   = 1;
     defined $attr{'escape_null'} or $attr{'escape_null'} = 0;
     my $csv = delete $attr{'csv'} || Text::CSV_XS->new (\%attr)
-	or croak ($last_new_err);
-    defined $form and $csv->formula ($form);
+	or croak ($last_err);
+    defined $form and $csv->formula   ($form);
+    defined $cboe and $csv->callbacks (error => $cboe);
 
     $kh && !ref $kh && $kh =~ m/^(?:1|yes|true|internal|auto)$/i and
 	$kh = \@internal_kh;
@@ -1574,6 +1577,7 @@ sub csv {
 	    %{$c->{'attr'}},
 	    );
 
+    $last_err ||= $csv->{_ERROR_DIAG};
     return $ref;
     } # csv
 
@@ -3468,7 +3472,7 @@ This function is not exported by default and should be explicitly requested:
 
  use Text::CSV_XS qw( csv );
 
-This is a high-level function that aims at simple (user) interfaces.  This
+This is a high-level function that aims at simple (user) interfaces.   This
 can be used to read/parse a C<CSV> file or stream (the default behavior) or
 to produce a file or write to a stream (define the  C<out>  attribute).  It
 returns an array- or hash-reference on parsing (or C<undef> on fail) or the
@@ -3477,6 +3481,11 @@ can get to the error using the class call to L</error_diag>
 
  my $aoa = csv (in => "test.csv") or
      die Text::CSV_XS->error_diag;
+
+Note that failure here is the inability to start the parser,  like when the
+input does not exist or the arguments are unknown or conflicting.  Run-time
+parsing errors will return a valid reference, which can be empty, but still
+contains all results up till the error. See L</on_error>.
 
 This function takes the arguments as key-value pairs. This can be passed as
 a list or as an anonymous hash:
@@ -4353,6 +4362,27 @@ C<$aoh> will be:
       bar => 2,
       }
     ]
+
+=item on_error
+X<on_error>
+
+This callback acts exactly as the L</error> hook.
+
+  my @err;
+  my $aoa = csv (in => $fh, on_error => sub { @err = @_ });
+
+is identical to
+
+  my $aoa = csv (in => $fh, callbacks => {
+      error => sub { @err = @_ },
+      });
+
+It can be used for ignoring errors as well as for just keeping the error in
+case of analisys after the C<csv ()> function has returned.
+
+ my @err;
+ my $aoa = csv (in => "bad.csv, on_error => sub { @err = @_ });
+ die Text::CSV_XS->error_diag if @err or !$aoa;
 
 =back
 

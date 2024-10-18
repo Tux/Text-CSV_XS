@@ -1720,6 +1720,8 @@ $csv-&gt;_cache_diag ();</code></pre>
 <pre><code>my $aoa = csv (in =&gt; &quot;test.csv&quot;) or
     die Text::CSV_XS-&gt;error_diag;</code></pre>
 
+<p>Note that failure here is the inability to start the parser, like when the input does not exist or the arguments are unknown or conflicting. Run-time parsing errors will return a valid reference, which can be empty, but still contains all results up till the error. See <a href="#on_error">&quot;on_error&quot;</a>.</p>
+
 <p>This function takes the arguments as key-value pairs. This can be passed as a list or as an anonymous hash:</p>
 
 <pre><code>my $aoa = csv (  in =&gt; &quot;test.csv&quot;, sep_char =&gt; &quot;;&quot;);
@@ -2501,6 +2503,27 @@ my $aoa = csv (
     bar =&gt; 2,
     }
   ]</code></pre>
+
+</dd>
+<dt id="on_error">on_error </dt>
+<dd>
+
+<p>This callback acts exactly as the <a href="#error">&quot;error&quot;</a> hook.</p>
+
+<pre><code>my @err;
+my $aoa = csv (in =&gt; $fh, on_error =&gt; sub { @err = @_ });</code></pre>
+
+<p>is identical to</p>
+
+<pre><code>my $aoa = csv (in =&gt; $fh, callbacks =&gt; {
+    error =&gt; sub { @err = @_ },
+    });</code></pre>
+
+<p>It can be used for ignoring errors as well as for just keeping the error in case of analisys after the <code>csv ()</code> function has returned.</p>
+
+<pre><code>my @err;
+my $aoa = csv (in =&gt; &quot;bad.csv, on_error =&gt; sub { @err = @_ });
+die Text::CSV_XS-&gt;error_diag if @err or !$aoa;</code></pre>
 
 </dd>
 </dl>
