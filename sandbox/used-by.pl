@@ -3,7 +3,7 @@
 use 5.026000;
 use warnings;
 
-our $VERSION = "2.03 - 20240617";
+our $VERSION = "2.04 - 20240809";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -57,7 +57,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "GSM-Gnokii",			# External device
     # DBD-CSV
     "ASNMTAP",
-    "Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
+    "Gtk2-Ex-DBITableFilter",		# Unmet prereqs
     # Text-CSV_XS
     "ACME-QuoteDB",			# ::CSV Possible precedence issues
     "App-Framework",			# Questions
@@ -66,9 +66,9 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "Business-OnlinePayment-AuthorizeNet",# Timeout
     "Business-Shipping-DataTools",	# Questions and unmet prereqs
     "Catalyst-TraitFor-Model-DBIC-Schema-QueryLog-AdoptPlack", # maint/Maker.pm
-    "CGI-Application-Framework",	# Unmet prerequisites
+    "CGI-Application-Framework",	# Unmet prereqs
     "chart",				# Questions (in Apache-Wyrd)
-    "CohortExplorer",			# Unmet prerequisites
+    "CohortExplorer",			# Unmet prereqs
     "Connector",			# No Makefile.PL (in Annelidous)
     "Data-Importer",			# test fail in DBIx::Class::Storage::DBI::insert
     "DBIx-Class-DigestColumns",		# unmet prereqs
@@ -95,16 +95,20 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "Fsdb",				# ::CSV -
     "Geo-Coder-Free",			# prereqs LEHMANN-ware
     "Geo-USCensus-Geocoding",		# '302 Found'
-    "Gtk2-Ex-DBITableFilter",		# Unmet prerequisites
+    "Gtk2-Ex-DBITableFilter",		# Unmet prereqs
     "Gtk2-Ex-Threads-DBI",		# Distribution is incomplete
+    "HTML-Data-Parser",			# Unmet prereqs
+    "HTML-HTML5-Microdata-ToRDFa",	# Unmet prereqs
+    "HTTP-LRDD",			# Unmet prereqs
+    "HTNL-Microformats",		# Unmet prereqs
     "hwd",				# Own tests fail
     "Iterator-BreakOn",			# ::CSV - Syntax, POD, badness
     "Mail-Karmasphere-Client",		# ::CSV - No karmaclient
     "Metabolomics::Fragment::Annotation", # Own tests fail
     "Module-CPANTS-ProcessCPAN",	# ::CSV - Questions
-    "Module-CPANTS-Site",		# ::CSV - Unmet prerequisites
+    "Module-CPANTS-Site",		# ::CSV - Unmet prereqs
     "Mojolicious::Plugin::ReplyTable",	# Own tests fail
-    "Mojolicious::Plugin::Tables",	# Unmet prerequisites
+    "Mojolicious::Plugin::Tables",	# Unmet prereqs
     "Net-IPFromZip",			# Missing zip file(s)
     "OWL-DirectSemantics",		# dot-in-INC problem
     "Parse-CSV-Colnames",		# ::CSV - Fails because of Parse::CSV
@@ -112,6 +116,10 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "PkgForge-Registry",		# Moose conflict
     "Plack-Middleware-DBIC-QueryLog",	# maint/Maker.pm
     "Plack-Middleware-Debug-DBIC-QueryLog",	# maint/Maker.pm
+    "RDF-Closure",			# Lots of setup errors
+    "RDF-Crypt",			# Unmet prereqs
+    "RDF-KML-Exporter",			# Unmet prereqs
+    "RDF-Query-Functions-Buzzword-DateTime",	# Unmet prereqs
     "RDF-RDB2RDF",			# ::CSV - Bad tests
     "RT-Extension-Assets-Import-CSV",	# Questions
     "RT-View-ConciseSpreadsheet",	# Questions
@@ -125,24 +133,27 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
 #   "Text-CSV-Track",			# Encoding, patch filed at RT
     "Text-ECSV",			# POD, spelling
     "Text-MeCab",			# Questions
-    "Text-TEI-Collate",			# Unmet prerequisites
-    "Text-Tradition",			# Unmet prerequisites
+    "Text-TEI-Collate",			# Unmet prereqs
+    "Text-Tradition",			# Unmet prereqs
     "Text-xSV-Slurp",			# 5.26 incompat, unmaintained
     "Tripletail",			# Makefile.PL broken
     "VANAMBURG-SEMPROG-SimpleGraph",	# Own tests fail
     "WebService-FuncNet",		# ::CSV - WSDL 404, POD
-    "Webservice-InterMine",		# Unmet prerequisites
+    "Webservice-InterMine",		# Unmet prereqs
     "WebService-ReutersConnect",	# XML errors
-    "WWW-Analytics-MultiTouch",		# Unmet prerequisites
+    "WWW-Analytics-MultiTouch",		# Unmet prereqs
+    "WWW-DataWiki",			# Unmet prereqs
     "XAS",				# ::CSV - No STOMP MQ
     "XAS-Model",			# ::CSV - No STOMP MQ
     "XAS-Spooler",			# ::CSV - No STOMP MQ
+    "XML-Atom-Microformats",		# Unmet prereqs
+    "XML-GRDDL",			# Unmet prereqs
     "XRD-Parser",			# dot-in-INC problem
     "xDash",				# Questions
 #   "xls2csv",
     "Xymon-DB-Schema",			# ::CSV - Bad prereqs
     "Xymon-Server-ExcelOutages",	# ::CSV - Questions
-    "YamlTime",				# Unmet prerequisites
+    "YamlTime",				# Unmet prereqs
     );
 $skip{s/-/::/gr} = 1 for keys %skip;
 my %add = (

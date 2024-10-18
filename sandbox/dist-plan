@@ -13,6 +13,7 @@
 
 [ ] 0:00:01  make distclean
 [ ] 0:00:01  perl Makefile.PL
+[ ] 0:00:39  make test
 [ ] 0:00:44  prove -j 17 -wbs
 [ ] 0:00:01  make install UNINST=1
 [ ] 0:20:03  perl sandbox/used-by.pl
