@@ -4378,7 +4378,7 @@ is identical to
       });
 
 It can be used for ignoring errors as well as for just keeping the error in
-case of analisys after the C<csv ()> function has returned.
+case of analysis after the C<csv ()> function has returned.
 
  my @err;
  my $aoa = csv (in => "bad.csv, on_error => sub { @err = @_ });

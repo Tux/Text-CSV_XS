@@ -1,4 +1,4 @@
-1.57	- 2024-10-18, H.Merijn Brand
+1.57	- 2024-11-12, H.Merijn Brand
     * Keep runtime error from csv ()
     * add csv (on_error)
 
