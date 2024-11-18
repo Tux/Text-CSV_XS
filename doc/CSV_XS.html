@@ -2519,7 +2519,7 @@ my $aoa = csv (in =&gt; $fh, on_error =&gt; sub { @err = @_ });</code></pre>
     error =&gt; sub { @err = @_ },
     });</code></pre>
 
-<p>It can be used for ignoring errors as well as for just keeping the error in case of analisys after the <code>csv ()</code> function has returned.</p>
+<p>It can be used for ignoring errors as well as for just keeping the error in case of analysis after the <code>csv ()</code> function has returned.</p>
 
 <pre><code>my @err;
 my $aoa = csv (in =&gt; &quot;bad.csv, on_error =&gt; sub { @err = @_ });
