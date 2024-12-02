@@ -1,3 +1,6 @@
+1.58	- 2024-12-02, H.Merijn Brand
+    * Add strict_eol
+
 1.57	- 2024-11-12, H.Merijn Brand
     * Keep runtime error from csv ()
     * add csv (on_error)

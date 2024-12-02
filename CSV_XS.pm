@@ -23,7 +23,7 @@ use XSLoader;
 use Carp;
 
 use vars qw( $VERSION @ISA @EXPORT_OK %EXPORT_TAGS );
-$VERSION = "1.57";
+$VERSION = "1.58";
 @ISA     = qw( Exporter );
 XSLoader::load ("Text::CSV_XS", $VERSION);
 
@@ -79,6 +79,7 @@ my %def_attr = (
     'auto_diag'			=> 0,
     'diag_verbose'		=> 0,
     'strict'			=> 0,
+    'strict_eol'		=> 0,
     'blank_is_undef'		=> 0,
     'empty_is_undef'		=> 0,
     'allow_whitespace'		=> 0,
@@ -289,7 +290,8 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     '_is_bound'			=> 26,	# 26 .. 29
     'formula'			=> 38,
     'strict'			=> 42,
-    'skip_empty_rows'		=> 43,
+    'strict_eol'		=> 43,
+    'skip_empty_rows'		=> 44,
     'undef_str'			=> 46,
     'comment_str'		=> 54,
     'types'			=> 62,
@@ -455,6 +457,12 @@ sub strict {
     @_ and $self->_set_attr_X ("strict", shift);
     $self->{'strict'};
     } # strict
+
+sub strict_eol {
+    my $self = shift;
+    @_ and $self->_set_attr_X ("strict_eol", shift);
+    $self->{'strict_eol'};
+    } # strict_eol
 
 sub _supported_skip_empty_rows {
     my ($self, $f) = @_;
@@ -1986,6 +1994,16 @@ of fields than the previous row will cause the parser to throw error 2014.
 
 Empty rows or rows that result in no fields (like comment lines) are exempt
 from these checks.
+
+=head3 strict_eol
+X<strict_eol>
+
+ my $csv = Text::CSV_XS->new ({ strict_eol => 1 });
+         $csv->strict_eol (0);
+ my $f = $csv->strict_eol;
+
+If this attribute is set to C<1>, any row that parses with a EOL other than
+the EOL from the first row cause the parser to throw error 2016.
 
 =head3 skip_empty_rows
 X<skip_empty_rows>
@@ -5042,6 +5060,12 @@ Inconsistent number of fields under strict parsing.
 X<2015>
 
 An empty row was not allowed.
+
+=item *
+2016 "EOL - Inconsistent EOL"
+X<2016>
+
+Inconsistent End-Of-Line detected under strict_eol parsing.
 
 =item *
 2021 "EIQ - NL char inside quotes, binary off"

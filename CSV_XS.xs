@@ -22,6 +22,7 @@
 #define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), SvCUR (s))
 
 #define MAINT_DEBUG	0
+#define MAINT_DEBUG_EOL	0
 
 #define BUFFER_SIZE	1024
 
@@ -155,7 +156,9 @@ static unsigned char ec, ebcdic2ascii[256] = {
 #define CACHE_ID__has_hooks		36
 #define CACHE_ID_formula		38
 #define CACHE_ID_strict			42
-#define CACHE_ID_skip_empty_rows	43
+#define CACHE_ID_strict_eol		43
+#define CACHE_ID_skip_empty_rows	44
+#define CACHE_ID_eol_type		45
 #define CACHE_ID_undef_str		46
 #define CACHE_ID_comment_str		54
 #define CACHE_ID_types			62
@@ -202,6 +205,8 @@ typedef struct {
     byte	strict;
     short	strict_n;
 
+    byte	strict_eol;
+    byte	eol_type;
     byte	skip_empty_rows;
 
     long	is_bound;
@@ -277,6 +282,7 @@ static const xs_error_t xs_errors[] =  {
     { 2013, "ESP - Specification error for fragments RFC7111"			},
     { 2014, "ENF - Inconsistent number of fields"				},
     { 2015, "ERW - Empty row"							},
+    { 2016, "EOL - Inconsistent EOL"						},
 
     /*  EIQ - Error Inside Quotes */
     { 2021, "EIQ - NL char inside quotes, binary off"				},
@@ -375,6 +381,24 @@ static byte _is_QUOTEX (unsigned int c, csv_t *csv, int line) {
       (ch) == CH_TAB \
       ) \
     )
+
+#define _pretty_strl(cp)	cx_pretty_str (aTHX_ cp, strlen (cp))
+#define _pretty_str(cp,xse)	cx_pretty_str (aTHX_ cp, xse)
+static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
+    SV *dsv = newSVpvs_flags ("", SVs_TEMP);
+    return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
+	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
+    } /* _pretty_str */
+#define _pretty_sv(cp)		cx_pretty_sv  (aTHX_ cp)
+static char *cx_pretty_sv (pTHX_ SV *sv) {
+    SV *dsv = newSVpvs_flags ("", SVs_TEMP);
+    if (SvOK (sv) && SvPOK (sv)) {
+	STRLEN l;
+	char *s = SvPV (sv, l);
+	return _pretty_str (s, l);
+	}
+    return ("");
+    } /* _pretty_sv */
 
 #define SvDiag(xse)		cx_SvDiag (aTHX_ xse)
 static SV *cx_SvDiag (pTHX_ int xse) {
@@ -485,6 +509,8 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	case CACHE_ID_formula:               csv->formula               = bv; break;
 	case CACHE_ID_strict:                csv->strict                = bv; break;
 	case CACHE_ID_verbatim:              csv->verbatim              = bv; break;
+	case CACHE_ID_strict_eol:            csv->strict_eol            = bv; break;
+	case CACHE_ID_eol_type:              csv->eol_type              = bv; break;
 	case CACHE_ID_skip_empty_rows:       csv->skip_empty_rows       = bv; break;
 	case CACHE_ID_auto_diag:             csv->auto_diag             = bv; break;
 	case CACHE_ID_diag_verbose:          csv->diag_verbose          = bv; break;
@@ -510,6 +536,16 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 	    (void)memcpy (csv->eol, cp, len);
 	    csv->eol_len   = len;
 	    csv->eol_is_cr = len == 1 && *cp == CH_CR ? 1 : 0;
+	    csv->eol_type  = len == 0                 ? 0000
+	                   : len == 1 && *cp == CH_NL ? 0001
+	                   : csv->eol_is_cr           ? 0010
+	                   : len == 2 && *cp == CH_CR
+	                            && cp[1] == CH_NL ? 0011
+	                   :                            0100;
+#if MAINT_DEBUG_EOL > 0
+	    (void)fprintf (stderr, "# %04d cache set eol: '%s'\t(len: %d, is_cr: %d)\n",
+		__LINE__, _pretty_str (cp, len), len, csv->eol_is_cr);
+#endif
 	    break;
 
 	case CACHE_ID_undef_str:
@@ -547,24 +583,6 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
     (void)memcpy (cache, csv, sizeof (csv_t));
     } /* cache_set */
 
-#define _pretty_strl(cp)	cx_pretty_str (aTHX_ cp, strlen (cp))
-#define _pretty_str(cp,xse)	cx_pretty_str (aTHX_ cp, xse)
-static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
-    SV *dsv = newSVpvs_flags ("", SVs_TEMP);
-    return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
-	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
-    } /* _pretty_str */
-#define _pretty_sv(cp)		cx_pretty_sv  (aTHX_ cp)
-static char *cx_pretty_sv (pTHX_ SV *sv) {
-    SV *dsv = newSVpvs_flags ("", SVs_TEMP);
-    if (SvOK (sv) && SvPOK (sv)) {
-	STRLEN l;
-	char *s = SvPV (sv, l);
-	return _pretty_str (s, l);
-	}
-    return ("");
-    } /* _pretty_sv */
-
 #define _cache_show_byte(trim,c) \
     warn ("  %-21s  %02x:%3d\n", trim, c, c)
 #define _cache_show_char(trim,c) \
@@ -595,6 +613,8 @@ static void _xs_csv_diag (pTHX_ csv_t *csv) {
     _cache_show_byte ("formula",		csv->formula);
     _cache_show_byte ("strict",			csv->strict);
     _cache_show_byte ("strict_n",		csv->strict_n);
+    _cache_show_byte ("strict_eol",		csv->strict_eol);
+    _cache_show_byte ("eol_type",		csv->eol_type);
     _cache_show_byte ("skip_empty_rows",	csv->skip_empty_rows);
     _cache_show_byte ("has_error_input",	csv->has_error_input);
     _cache_show_byte ("blank_is_undef",		csv->blank_is_undef);
@@ -650,12 +670,17 @@ static void cx_xs_cache_diag (pTHX_ HV *hv) {
 
 #define set_eol_is_cr(csv)	cx_set_eol_is_cr (aTHX_ csv)
 static void cx_set_eol_is_cr (pTHX_ csv_t *csv) {
-    csv->eol[0]    = CH_CR;
     csv->eol_is_cr = 1;
     csv->eol_len   = 1;
+    csv->eol[0]    = CH_CR;
+    csv->eol_type  = 010;
     (void)memcpy (csv->cache, csv, sizeof (csv_t));
 
     (void)hv_store (csv->self, "eol",  3, newSVpvn ((char *)csv->eol, 1), 0);
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d set eol is CR: '%s'\t(len: %d, is_cr: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr);
+#endif
     } /* set_eol_is_cr */
 
 #define SetupCsv(csv,self,pself)	cx_SetupCsv (aTHX_ csv, self, pself)
@@ -718,8 +743,10 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	    char *eol = SvPV (*svp, len);
 	    (void)memcpy (csv->eol, eol, len);
 	    csv->eol_len = len;
-	    if (len == 1 && *csv->eol == CH_CR)
+	    if (len == 1 && *csv->eol == CH_CR) {
 		csv->eol_is_cr = 1;
+		csv->eol_type  = 010;
+		}
 	    }
 
 	csv->undef_flg = 0;
@@ -757,6 +784,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	csv->decode_utf8		= bool_opt ("decode_utf8");
 	csv->always_quote		= bool_opt ("always_quote");
 	csv->strict			= bool_opt ("strict");
+	csv->strict_eol			= bool_opt ("strict_eol");
 	csv->quote_empty		= bool_opt ("quote_empty");
 	csv->quote_space		= bool_opt_def ("quote_space",  1);
 	csv->escape_null		= bool_opt_def ("escape_null",  1);
@@ -808,6 +836,10 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 		? 0
 		: 1
 	: 0;
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d setup eol: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos);
+#endif
     if (csv->sep_len > 1 && is_utf8_string ((U8 *)(csv->sep), csv->sep_len))
 	csv->utf8 = 1;
     if (csv->quo_len > 1 && is_utf8_string ((U8 *)(csv->quo), csv->quo_len))
@@ -1313,9 +1345,13 @@ static int cx_CsvGet (pTHX_ csv_t *csv, SV *src) {
 		    }
 		}
 	    if (match) {
-#if MAINT_DEBUG > 4
+#if MAINT_DEBUG > 4 || MAIN_DEBUG_EOL > 0
 		(void)fprintf (stderr, "# %04d EOLX match, size: %d\n", __LINE__, csv->size);
 #endif
+		if (csv->strict_eol && csv->eol_type && csv->eol_type != 0100)
+		    ParseError (csv, 2016, csv->used - 2);
+		csv->eol_type = 0100;
+
 		csv->size -= csv->eol_len;
 		unless (csv->verbatim)
 		    csv->eol_pos = csv->size;
@@ -1601,6 +1637,14 @@ restart:
 		    /* ,1,"foo, 3",,"bar"\n
 		     *                   ^
 		     */
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d parse eol NL/EOLX: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d, c: %d, c2: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos, c, c2);
+#endif
+		    if (csv->strict_eol && csv->eol_type & 0110)
+			ParseError (csv, 2016, csv->used - 2);
+		    csv->eol_type = 001;
+
 		    AV_PUSH;
 		    return TRUE;
 		    }
@@ -1650,6 +1694,10 @@ restart:
 			/* ,1,"foo, 3"\r
 			 *            ^
 			 */
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d parse eol CR: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d, c: %d, c2: %d, c3: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos, c, c2);
+#endif
 			AV_PUSH;
 			return TRUE;
 			}
@@ -1660,6 +1708,14 @@ restart:
 			/* ,1,"foo, 3"\r\n
 			 *              ^
 			 */
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d parse eol CRNL: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d, c: %d, c2: %d, c3: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos, c, c2, c3);
+#endif
+			if (csv->strict_eol && csv->eol_type && csv->eol_type != 011)
+			    ParseError (csv, 2016, csv->used - 2);
+			csv->eol_type = 011;
+
 			AV_PUSH;
 			return TRUE;
 			}
@@ -1669,6 +1725,10 @@ restart:
 			    /* ,1,"foo, 3"\r\r
 			     *              ^
 			     */
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d parse set CR: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d, c: %d, c2: %d, c3: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos, c, c2, c3);
+#endif
 			    set_eol_is_cr (csv);
 			    goto EOLX;
 			    }
@@ -1678,6 +1738,10 @@ restart:
 			     * baz,4
 			     * ^
 			     */
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d parse set CR/BIN: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d, c: %d, c2: %d, c3: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos, c, c2, c3);
+#endif
 			    set_eol_is_cr (csv);
 			    csv->used--;
 			    csv->has_ahead++;
@@ -1803,12 +1867,17 @@ restart:
 	    } /* ESC char */
 	else
 	if (c == CH_NL || is_EOL (c)) {
+	    byte eolt = c == CH_NL ? 0001 : 0100;
 EOLX:
-#if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = NL\t%s\n",
-		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl,
-		_pretty_strl (csv->bptr + csv->used));
+#if MAINT_DEBUG > 1 || MAINT_DEBUG_EOL > 0
+	    (void)fprintf (stderr, "# %04d EOLX: %d/%d/%03x pos %d = NL, eolx = %d, eol_pos = %d\t%s (eol = %s)\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, csv->eolx, csv->eol_pos,
+		_pretty_strl (csv->bptr + csv->used), _pretty_strl (csv->eol));
 #endif
+	    if (csv->strict_eol && csv->eol_type && csv->eol_type != eolt)
+		ParseError (csv, 2016, csv->used - 2);
+	    csv->eol_type = eolt;
+
 	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
 		SkipEmptyRow;
 		goto restart;
@@ -1878,9 +1947,10 @@ EOLX:
 	    } /* CH_NL */
 	else
 	if (c == CH_CR && !(csv->verbatim)) {
-#if MAINT_DEBUG > 1
-	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = CR\n",
-		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl);
+#if MAINT_DEBUG > 1 || MAINT_DEBUG_EOL > 0
+	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = CR, eolx = %d, eol_pos = %d\t%s (eol = %s)\n",
+		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, csv->eolx, csv->eol_pos,
+		_pretty_strl (csv->bptr + csv->used), _pretty_strl (csv->eol));
 #endif
 	    if (waitingForField) {
 		int	c2;
@@ -1914,6 +1984,10 @@ EOLX:
 		    /* ,1,"foo\n 3",,bar,\r\n
 		     *                     ^
 		     */
+		    if (csv->strict_eol && csv->eol_type && csv->eol_type != 011)
+			ParseError (csv, 2016, csv->used - 2);
+		    csv->eol_type = 011;
+
 		    c = c2;
 		    goto EOLX;
 		    }
@@ -1979,6 +2053,10 @@ EOLX:
 		    /* ,1,"foo\n 3",,bar\r\n
 		     *                    ^
 		     */
+		    if (csv->strict_eol && csv->eol_type && csv->eol_type != 011)
+			ParseError (csv, 2016, csv->used - 2);
+		    csv->eol_type = 011;
+
 		    goto EOLX;
 		    }
 
@@ -1992,7 +2070,11 @@ EOLX:
 			    /* ,1,"foo\n 3",,bar,\r\r
 			     *                     ^
 			     */
-			set_eol_is_cr (csv);
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d parse eol CR/IO: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d, c: %d, c2: %d)\n",
+	__LINE__, _pretty_str (csv->eol, csv->eol_len), csv->eol_len, csv->eol_is_cr, csv->eolx, csv->eol_pos, c, c2);
+#endif
+			unless (csv->strict_eol) set_eol_is_cr (csv);
 			csv->used--;
 			csv->has_ahead++;
 			if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
@@ -2022,7 +2104,7 @@ EOLX:
 		 !memcmp (csv->bptr + csv->used, csv->eol + 1, csv->eol_len - 1) &&
 		 (csv->used += csv->eol_len - 1)) {
 		c = CH_EOLX;
-#if MAINT_DEBUG > 5
+#if MAINT_DEBUG > 5 || MAINT_DEBUG_EOL > 0
 		(void)fprintf (stderr, "# %04d -> EOLX (0x%x)\n", __LINE__, c);
 #endif
 		goto EOLX;
@@ -2183,6 +2265,10 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     ENTER;
     if (csv.eolx || csv.eol_is_cr) {
 	/* local $/ = $eol */
+#if MAINT_DEBUG_EOL > 0
+    (void)fprintf (stderr, "# %04d Parse EOLX/RS: '%s'\t(len: %d, is_cr: %d, x: %d, pos: %d)\n",
+	__LINE__, _pretty_str (csv.eol, csv.eol_len), csv.eol_len, csv.eol_is_cr, csv.eolx, csv.eol_pos);
+#endif
 	SAVEGENERICSV (PL_rs);
 	PL_rs = newSVpvn ((char *)csv.eol, csv.eol_len);
 	}
