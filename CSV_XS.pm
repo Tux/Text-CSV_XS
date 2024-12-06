@@ -711,7 +711,7 @@ sub callbacks {
 
 sub error_diag {
     my $self = shift;
-    my @diag = (0 + $last_err, $last_err, 0, 0, 0);
+    my @diag = (0 + $last_err, $last_err, 0, 0, 0, 0);
 
     # Docs state to NEVER use UNIVERSAL::isa, because it will *never* call an
     # overridden isa method in any class. Well, that is exacly what I want here
@@ -722,6 +722,7 @@ sub error_diag {
 	$diag[2] = 1 + $self->{'_ERROR_POS'} if exists $self->{'_ERROR_POS'};
 	$diag[3] =     $self->{'_RECNO'};
 	$diag[4] =     $self->{'_ERROR_FLD'} if exists $self->{'_ERROR_FLD'};
+	$diag[5] =     $self->{'_ERROR_SRC'} if exists $self->{'_ERROR_SRC'} && $self->{'diag_verbose'};
 
 	$diag[0] && $self->{'callbacks'} && $self->{'callbacks'}{'error'} and
 	    return $self->{'callbacks'}{'error'}->(@diag);
@@ -732,6 +733,7 @@ sub error_diag {
 	if ($diag[0] && $diag[0] != 2012) {
 	    my $msg = "# CSV_XS ERROR: $diag[0] - $diag[1] \@ rec $diag[3] pos $diag[2]\n";
 	    $diag[4] and $msg =~ s/$/ field $diag[4]/;
+	    $diag[5] and $msg =~ s/$/ (XS#$diag[5])/;
 
 	    unless ($self && ref $self) {	# auto_diag
 		# called without args in void context
@@ -3404,7 +3406,7 @@ X<error_diag>
  $csv->error_diag ();
  $error_code               = 0  + $csv->error_diag ();
  $error_str                = "" . $csv->error_diag ();
- ($cde, $str, $pos, $rec, $fld) = $csv->error_diag ();
+ ($cde, $str, $pos, $rec, $fld, $xs) = $csv->error_diag ();
 
 If (and only if) an error occurred,  this function returns  the diagnostics
 of that error.
@@ -3420,7 +3422,9 @@ the byte at which the parsing failed in the current record. It might change
 to be the index of the current character in a later release. The records is
 the index of the record parsed by the csv instance. The field number is the
 index of the field the parser thinks it is currently  trying to  parse. See
-F<examples/csv-check> for how this can be used.
+F<examples/csv-check> for how this can be used. If C<$xs> is set, it is the
+line number in XS where the error was triggered (for debugging). C<XS> will
+show in void context only when L</diag_verbose> is set.
 
 If called in  scalar context,  it will return  the diagnostics  in a single
 scalar, a-la C<$!>.  It will contain the error code in numeric context, and

@@ -416,8 +416,9 @@ static SV *cx_SvDiag (pTHX_ int xse) {
 
 /* This function should be altered to deal with the optional extra argument
  * that holds the replacement message */
-#define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse)
-static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
+#define SetDiag(csv,xse)	cx_SetDiag (aTHX_ csv, xse, __LINE__)
+#define SetDiagL(csv,xse,line)	cx_SetDiag (aTHX_ csv, xse, line)
+static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse, int line) {
     dSP;
     SV *err   = SvDiag (xse);
     SV *pself = csv->pself;
@@ -430,6 +431,8 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse) {
 	(void)hv_store (csv->self, "_ERROR_INPUT", 12, &PL_sv_undef, 0);
 	csv->has_error_input = 0;
 	}
+    if (line)
+	(void)hv_store (csv->self, "_ERROR_SRC",   10, newSViv  (line), 0);
     if (xse == 2012) /* EOF */
 	(void)hv_store (csv->self, "_EOF",          4, &PL_sv_yes,   0);
     if (csv->auto_diag) {
@@ -1284,8 +1287,8 @@ static void cx_ErrorDiag (pTHX_ csv_t *csv) {
 	}
     } /* ErrorDiag */
 
-#define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos)
-static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos) {
+#define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos, __LINE__)
+static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos, int line) {
     (void)hv_store (csv->self, "_ERROR_POS", 10, newSViv (pos), 0);
     (void)hv_store (csv->self, "_ERROR_FLD", 10, newSViv (csv->fld_idx), 0);
     if (csv->tmp) {
@@ -1293,7 +1296,7 @@ static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos) {
 	if (hv_store (csv->self, "_ERROR_INPUT", 12, csv->tmp, 0))
 	    SvREFCNT_inc (csv->tmp);
 	}
-    (void)SetDiag (csv, xse);
+    (void)SetDiagL (csv, xse, line);
     } /* ParseError */
 
 #define CsvGet(csv,src)		cx_CsvGet (aTHX_ csv, src)
