@@ -265,36 +265,36 @@ my %_cache_id = ( # Only expose what is accessed from within PM
     'quote_char'		=>  0,
     'escape_char'		=>  1,
     'sep_char'			=>  2,
-    'sep'			=> 39,	# 39 .. 55
-    'binary'			=>  3,
-    'keep_meta_info'		=>  4,
-    'always_quote'		=>  5,
-    'allow_loose_quotes'	=>  6,
-    'allow_loose_escapes'	=>  7,
-    'allow_unquoted_escape'	=>  8,
-    'allow_whitespace'		=>  9,
-    'blank_is_undef'		=> 10,
-    'eol'			=> 11,
-    'quote'			=> 15,
-    'verbatim'			=> 22,
-    'empty_is_undef'		=> 23,
-    'auto_diag'			=> 24,
-    'diag_verbose'		=> 33,
-    'quote_space'		=> 25,
-    'quote_empty'		=> 37,
-    'quote_binary'		=> 32,
-    'escape_null'		=> 31,
-    'decode_utf8'		=> 35,
-    '_has_ahead'		=> 30,
-    '_has_hooks'		=> 36,
-    '_is_bound'			=> 26,	# 26 .. 29
-    'formula'			=> 38,
-    'strict'			=> 42,
-    'strict_eol'		=> 43,
-    'skip_empty_rows'		=> 44,
-    'undef_str'			=> 46,
-    'comment_str'		=> 54,
-    'types'			=> 62,
+    'always_quote'		=>  4,
+    'quote_empty'		=>  5,
+    'quote_space'		=>  6,
+    'quote_binary'		=>  7,
+    'allow_loose_quotes'	=>  8,
+    'allow_loose_escapes'	=>  9,
+    'allow_unquoted_escape'	=> 10,
+    'allow_whitespace'		=> 11,
+    'blank_is_undef'		=> 12,
+    'empty_is_undef'		=> 13,
+    'auto_diag'			=> 14,
+    'diag_verbose'		=> 15,
+    'escape_null'		=> 16,
+    'formula'			=> 18,
+    'decode_utf8'		=> 21,
+    'verbatim'			=> 23,
+    'strict_eol'		=> 24,
+    'strict'			=> 28,
+    'skip_empty_rows'		=> 29,
+    'binary'			=> 30,
+    'keep_meta_info'		=> 31,
+    '_has_hooks'		=> 32,
+    '_has_ahead'		=> 33,
+    '_is_bound'			=> 44,
+    'eol'			=> 100,
+    'sep'			=> 116,
+    'quote'			=> 132,
+    'undef_str'			=> 148,
+    'comment_str'		=> 156,
+    'types'			=> 92,
     );
 
 # A `character'
@@ -407,7 +407,7 @@ sub eol {
     my $self = shift;
     if (@_) {
 	my $eol = shift;
-	defined $eol or $eol = "";
+	defined $eol or $eol = "";	# Also reset strict_eol?
 	length ($eol) > 16 and croak ($self->SetDiag (1005));
 	$self->{'eol'} = $eol;
 	$self->_cache_set ($_cache_id{'eol'}, $eol);
@@ -2004,8 +2004,17 @@ X<strict_eol>
          $csv->strict_eol (0);
  my $f = $csv->strict_eol;
 
+If this attribute is set to C<0>, no EOL consistency checks are done.
+
 If this attribute is set to C<1>, any row that parses with a EOL other than
-the EOL from the first row cause the parser to throw error 2016.
+the EOL from the first row will cause a warning.  The error will be ignored
+and parsing continues. This warning is only thrown once.  Note that in data
+with various different line endings, C<\r\r> will still throw an error that
+cannot be ignored.
+
+If this attribute is set to C<2> or higher,  any row that parses with a EOL
+other than the EOL from the first row will cause error C<2016> to be thrown.
+The line being parsed to this error might not be stored in the result.
 
 =head3 skip_empty_rows
 X<skip_empty_rows>

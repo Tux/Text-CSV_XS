@@ -35,6 +35,7 @@ foreach my $ser (0, 1) {
 		    : "-- Empty row --";
 		$reset and $csv->eol (undef);
 		}
+	    $csv->_cache_diag;
 	    }
 	}
     }
