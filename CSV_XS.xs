@@ -1910,8 +1910,9 @@ restart:
 	    } /* ESC char */
 	else
 	if (c == CH_NL || is_EOL (c)) {
+	    unsigned short eolt;
 EOLX:
-	    unsigned short eolt = ((c == CH_NL || c == CH_CR) && c0 == CH_CR) ? EOL_TYPE_CRNL : EOL_TYPE (c);
+	    eolt = ((c == CH_NL || c == CH_CR) && c0 == CH_CR) ? EOL_TYPE_CRNL : EOL_TYPE (c);
 #if MAINT_DEBUG > 1 || MAINT_DEBUG_EOL > 0
 	    (void)fprintf (stderr, "# %04d EOLX: %d/%d/%03x pos %d = NL, eolx = %d, eol_pos = %d, tp: %02x/%02x\t%s (eol = %s, strict_eol = %d, c = 0x%04x, c0 = 0x%04x)\n",
 		__LINE__, waitingForField ? 1 : 0, sv ? 1 : 0, f, spl, csv->eolx, csv->eol_pos, csv->eol_type, eolt,
