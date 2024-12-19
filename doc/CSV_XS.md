@@ -369,6 +369,25 @@ of fields than the previous row will cause the parser to throw error 2014.
 Empty rows or rows that result in no fields (like comment lines) are exempt
 from these checks.
 
+### strict\_eol
+
+
+    my $csv = Text::CSV_XS->new ({ strict_eol => 1 });
+            $csv->strict_eol (0);
+    my $f = $csv->strict_eol;
+
+If this attribute is set to `0`, no EOL consistency checks are done.
+
+If this attribute is set to `1`, any row that parses with a EOL other than
+the EOL from the first row will cause a warning.  The error will be ignored
+and parsing continues. This warning is only thrown once.  Note that in data
+with various different line endings, `\r\r` will still throw an error that
+cannot be ignored.
+
+If this attribute is set to `2` or higher,  any row that parses with a EOL
+other than the EOL from the first row will cause error `2016` to be thrown.
+The line being parsed to this error might not be stored in the result.
+
 ### skip\_empty\_rows
 
 
@@ -1729,7 +1748,7 @@ error-input of ["getline"](#getline).
     $csv->error_diag ();
     $error_code               = 0  + $csv->error_diag ();
     $error_str                = "" . $csv->error_diag ();
-    ($cde, $str, $pos, $rec, $fld) = $csv->error_diag ();
+    ($cde, $str, $pos, $rec, $fld, $xs) = $csv->error_diag ();
 
 If (and only if) an error occurred,  this function returns  the diagnostics
 of that error.
@@ -1745,7 +1764,9 @@ the byte at which the parsing failed in the current record. It might change
 to be the index of the current character in a later release. The records is
 the index of the record parsed by the csv instance. The field number is the
 index of the field the parser thinks it is currently  trying to  parse. See
-`examples/csv-check` for how this can be used.
+`examples/csv-check` for how this can be used. If `$xs` is set, it is the
+line number in XS where the error was triggered (for debugging). `XS` will
+show in void context only when ["diag\_verbose"](#diag_verbose) is set.
 
 If called in  scalar context,  it will return  the diagnostics  in a single
 scalar, a-la `$!`.  It will contain the error code in numeric context, and
@@ -1840,6 +1861,7 @@ If not overridden, the default option used for CSV is
 
     auto_diag   => 1
     escape_null => 0
+    strict_eol  => 1
 
 The option that is always set and cannot be altered is
 
@@ -3298,6 +3320,11 @@ And below should be the complete list of error codes that can be returned:
 
 
     An empty row was not allowed.
+
+- 2016 "EOL - Inconsistent EOL"
+
+
+    Inconsistent End-Of-Line detected under strict\_eol parsing.
 
 - 2021 "EIQ - NL char inside quotes, binary off"
 

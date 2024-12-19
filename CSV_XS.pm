@@ -1203,7 +1203,8 @@ my $csv_usage = q{usage: my $aoa = csv (in => $file);};
 sub _csv_attr {
     my %attr = (@_ == 1 && ref $_[0] eq "HASH" ? %{$_[0]} : @_) or croak ();
 
-    $attr{'binary'} = 1;
+    $attr{'binary'}     = 1;
+    $attr{'strict_eol'} = 1;
 
     my $enc = delete $attr{'enc'} || delete $attr{'encoding'} || "";
     $enc eq "auto" and ($attr{'detect_bom'}, $enc) = (1, "");
@@ -3532,6 +3533,7 @@ If not overridden, the default option used for CSV is
 
  auto_diag   => 1
  escape_null => 0
+ strict_eol  => 1
 
 The option that is always set and cannot be altered is
 

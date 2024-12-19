@@ -342,8 +342,6 @@ foreach my $eol ("\n", "\r\n", "\r") {
 	}
     }
 
-$tfn = "issue-59.csv";
-
 my %ers = (
     # For backward compat :( - on 2024-12-05 XS and PP acted identical
     # some are not OK or at least do not DWIM in hindsight
@@ -649,6 +647,7 @@ foreach my $q ('', '"') {
 			push @r => [ @$row ];
 			$reset and $csv->eol (undef);
 			}
+		    close $fh;
 		    };
 		my @diag = $csv->error_diag;
 		my $warn = join " | " => map { substr $_, 16, 10 } @w;
@@ -661,8 +660,6 @@ foreach my $q ('', '"') {
 		}
 	    }
 	}
-
-    unlink $tfn;
     }
 
 1;

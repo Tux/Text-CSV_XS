@@ -35,6 +35,7 @@
           <li><a href="#escape_char">escape_char </a></li>
           <li><a href="#binary">binary </a></li>
           <li><a href="#strict">strict </a></li>
+          <li><a href="#strict_eol">strict_eol </a></li>
           <li><a href="#skip_empty_rows">skip_empty_rows </a></li>
           <li><a href="#formula_handling">formula_handling </a></li>
           <li><a href="#formula">formula </a></li>
@@ -467,6 +468,18 @@ my $f = $csv-&gt;strict;</code></pre>
 <p>If this attribute is set to <code>1</code>, any row that parses to a different number of fields than the previous row will cause the parser to throw error 2014.</p>
 
 <p>Empty rows or rows that result in no fields (like comment lines) are exempt from these checks.</p>
+
+<h3 id="strict_eol">strict_eol </h3>
+
+<pre><code>my $csv = Text::CSV_XS-&gt;new ({ strict_eol =&gt; 1 });
+        $csv-&gt;strict_eol (0);
+my $f = $csv-&gt;strict_eol;</code></pre>
+
+<p>If this attribute is set to <code>0</code>, no EOL consistency checks are done.</p>
+
+<p>If this attribute is set to <code>1</code>, any row that parses with a EOL other than the EOL from the first row will cause a warning. The error will be ignored and parsing continues. This warning is only thrown once. Note that in data with various different line endings, <code>\r\r</code> will still throw an error that cannot be ignored.</p>
+
+<p>If this attribute is set to <code>2</code> or higher, any row that parses with a EOL other than the EOL from the first row will cause error <code>2016</code> to be thrown. The line being parsed to this error might not be stored in the result.</p>
 
 <h3 id="skip_empty_rows">skip_empty_rows </h3>
 
@@ -1647,13 +1660,13 @@ while (my $hr = $csv-&gt;getline_hr ($fh)) {
 $csv-&gt;error_diag ();
 $error_code               = 0  + $csv-&gt;error_diag ();
 $error_str                = &quot;&quot; . $csv-&gt;error_diag ();
-($cde, $str, $pos, $rec, $fld) = $csv-&gt;error_diag ();</code></pre>
+($cde, $str, $pos, $rec, $fld, $xs) = $csv-&gt;error_diag ();</code></pre>
 
 <p>If (and only if) an error occurred, this function returns the diagnostics of that error.</p>
 
 <p>If called in void context, this will print the internal error code and the associated error message to STDERR.</p>
 
-<p>If called in list context, this will return the error code and the error message in that order. If the last error was from parsing, the rest of the values returned are a best guess at the location within the line that was being parsed. Their values are 1-based. The position currently is index of the byte at which the parsing failed in the current record. It might change to be the index of the current character in a later release. The records is the index of the record parsed by the csv instance. The field number is the index of the field the parser thinks it is currently trying to parse. See <i>examples/csv-check</i> for how this can be used.</p>
+<p>If called in list context, this will return the error code and the error message in that order. If the last error was from parsing, the rest of the values returned are a best guess at the location within the line that was being parsed. Their values are 1-based. The position currently is index of the byte at which the parsing failed in the current record. It might change to be the index of the current character in a later release. The records is the index of the record parsed by the csv instance. The field number is the index of the field the parser thinks it is currently trying to parse. See <i>examples/csv-check</i> for how this can be used. If <code>$xs</code> is set, it is the line number in XS where the error was triggered (for debugging). <code>XS</code> will show in void context only when <a href="#diag_verbose">&quot;diag_verbose&quot;</a> is set.</p>
 
 <p>If called in scalar context, it will return the diagnostics in a single scalar, a-la <code>$!</code>. It will contain the error code in numeric context, and the diagnostics message in string context.</p>
 
@@ -1732,7 +1745,8 @@ my $aoh = csv ({ in =&gt; $fh, headers =&gt; &quot;auto&quot; });</code></pre>
 <p>If not overridden, the default option used for CSV is</p>
 
 <pre><code>auto_diag   =&gt; 1
-escape_null =&gt; 0</code></pre>
+escape_null =&gt; 0
+strict_eol  =&gt; 1</code></pre>
 
 <p>The option that is always set and cannot be altered is</p>
 
@@ -3097,6 +3111,11 @@ $csv-&gt;is_quoted (3, 1);</code></pre>
 <li><p>2015 &quot;ERW - Empty row&quot; </p>
 
 <p>An empty row was not allowed.</p>
+
+</li>
+<li><p>2016 &quot;EOL - Inconsistent EOL&quot; </p>
+
+<p>Inconsistent End-Of-Line detected under strict_eol parsing.</p>
 
 </li>
 <li><p>2021 &quot;EIQ - NL char inside quotes, binary off&quot; </p>

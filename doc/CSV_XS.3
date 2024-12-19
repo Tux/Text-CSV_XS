@@ -58,7 +58,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2024-10-28 "perl v5.40.0" "User Contributed Perl Documentation"
+.TH STDIN 1 2024-12-19 "perl v5.40.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -477,6 +477,28 @@ of fields than the previous row will cause the parser to throw error 2014.
 .PP
 Empty rows or rows that result in no fields (like comment lines) are exempt
 from these checks.
+.PP
+\fIstrict_eol\fR
+.IX Xref "strict_eol"
+.IX Subsection "strict_eol"
+.PP
+.Vb 3
+\& my $csv = Text::CSV_XS\->new ({ strict_eol => 1 });
+\&         $csv\->strict_eol (0);
+\& my $f = $csv\->strict_eol;
+.Ve
+.PP
+If this attribute is set to \f(CW0\fR, no EOL consistency checks are done.
+.PP
+If this attribute is set to \f(CW1\fR, any row that parses with a EOL other than
+the EOL from the first row will cause a warning.  The error will be ignored
+and parsing continues. This warning is only thrown once.  Note that in data
+with various different line endings, \f(CW\*(C`\er\er\*(C'\fR will still throw an error that
+cannot be ignored.
+.PP
+If this attribute is set to \f(CW2\fR or higher,  any row that parses with a EOL
+other than the EOL from the first row will cause error \f(CW2016\fR to be thrown.
+The line being parsed to this error might not be stored in the result.
 .PP
 \fIskip_empty_rows\fR
 .IX Xref "skip_empty_rows"
@@ -2093,7 +2115,7 @@ error\-input of "getline".
 \& $csv\->error_diag ();
 \& $error_code               = 0  + $csv\->error_diag ();
 \& $error_str                = "" . $csv\->error_diag ();
-\& ($cde, $str, $pos, $rec, $fld) = $csv\->error_diag ();
+\& ($cde, $str, $pos, $rec, $fld, $xs) = $csv\->error_diag ();
 .Ve
 .PP
 If (and only if) an error occurred,  this function returns  the diagnostics
@@ -2110,7 +2132,9 @@ the byte at which the parsing failed in the current record. It might change
 to be the index of the current character in a later release. The records is
 the index of the record parsed by the csv instance. The field number is the
 index of the field the parser thinks it is currently  trying to  parse. See
-\&\fIexamples/csv\-check\fR for how this can be used.
+\&\fIexamples/csv\-check\fR for how this can be used. If \f(CW$xs\fR is set, it is the
+line number in XS where the error was triggered (for debugging). \f(CW\*(C`XS\*(C'\fR will
+show in void context only when "diag_verbose" is set.
 .PP
 If called in  scalar context,  it will return  the diagnostics  in a single
 scalar, a\-la \f(CW$!\fR.  It will contain the error code in numeric context, and
@@ -2216,9 +2240,10 @@ as enumerated and explained in "new".
 .PP
 If not overridden, the default option used for CSV is
 .PP
-.Vb 2
+.Vb 3
 \& auto_diag   => 1
 \& escape_null => 0
+\& strict_eol  => 1
 .Ve
 .PP
 The option that is always set and cannot be altered is
@@ -3856,6 +3881,11 @@ Inconsistent number of fields under strict parsing.
 .IX Xref "2015"
 .Sp
 An empty row was not allowed.
+.IP \(bu 2
+2016 "EOL \- Inconsistent EOL"
+.IX Xref "2016"
+.Sp
+Inconsistent End\-Of\-Line detected under strict_eol parsing.
 .IP \(bu 2
 2021 "EIQ \- NL char inside quotes, binary off"
 .IX Xref "2021"
