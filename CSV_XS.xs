@@ -1672,7 +1672,8 @@ restart:
 #endif
 		    if (csv->strict_eol && csv->eol_type && csv->eol_type != eolt)
 			ERROR_EOL;
-		    csv->eol_type = eolt;
+		    unless (csv->strict_eol)
+			csv->eol_type = eolt;
 
 		    AV_PUSH;
 		    return TRUE;
@@ -1761,10 +1762,13 @@ restart:
 			    if (csv->strict_eol && csv->eol_type) {
 				unless (csv->eol_type == EOL_TYPE_CR)
 				    ERROR_EOL;
-				csv->eol_is_cr = 1;
+				csv->used--;
+				csv->has_ahead++;
+				AV_PUSH;
+				return TRUE;
 				}
-			    else
-				set_eol_is_cr (csv);
+
+			    set_eol_is_cr (csv);
 			    if (f & CSV_FLAGS_QUO) f ^= CSV_FLAGS_QUO;
 			    c = c0 = CH_CR;
 			    goto EOLX;

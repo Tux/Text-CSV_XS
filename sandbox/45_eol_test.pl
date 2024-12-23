@@ -15,6 +15,7 @@ sub usage {
 use lib "lib";
 use lib "blib";
 use CSV;
+use Term::ANSIColor;
 use Getopt::Long qw(:config bundling);
 GetOptions (
     "help|?"		=> sub { usage (0); },
@@ -29,7 +30,7 @@ GetOptions (
 
 my $seol = 2;
 @ARGV && $ARGV[0] =~ m/:/ and
-    ($seol, $opt_s, $opt_r, $opt_q) = split m/:/ => $ARGV[0];
+    ($seol, $opt_s, $opt_r, $opt_q) = split m/:/ => $ARGV[0] =~ s/^://r;
 
 my $q    = $opt_q ? '"' : "";
 my $data = join "" =>
@@ -47,21 +48,35 @@ my $data = join "" =>
     "Dolphin,${q}click${q}\r\n";
 open my $fh, "<", \$data;
 
-my $csv = Text::CSV_XS->new ({
+my $attr = {
     auto_diag		=> 1,
     diag_verbose	=> 4,
-    strict_eol		=> $seol,
-    skip_empty_rows	=> $opt_s,
-    });
+    strict_eol		=> 0 + ($seol  || 0),
+    skip_empty_rows	=> 0 + ($opt_s || 0),
+    };
+my $csv = Text::CSV_XS->new ($attr);
+
+binmode STDOUT, ":encoding(utf-8)";
+
+sub tag { colored (shift, "bold") . ":" }
+my $M = color ("bold dark red on_white");
+my $B = color ("blue on_bright_white");
+my $R = color ("reset");
 
 my @csv;
 my @wrn;
-local $SIG{__WARN__}
-while (my $row = $csv->getline ($fh)) {
-    DDumper ($row);
-    push @csv => [ @$row ];
-    $opt_r and $csv->eol (undef);
+{   local $SIG{__WARN__} = sub { push @wrn => [ @_ ] };
+    while (my $row = $csv->getline ($fh)) {
+	$opt_v > 1 and DDumper ($row);
+	push @csv => [ @$row ];
+	$opt_r and $csv->eol (undef);
+	}
     }
-DDumper { got => \@csv };
-DDumper ($csv->error_diag);
 
+say   tag ("ATTR");
+printf "  %-15s => %1d\n", $_, $attr->{$_} for sort keys %$attr;
+print tag ("IN"), "\n", $data =~ s/\r/$B\x{240d}$R/gr =~ s/\n/$M\x{240a}$R\n/gr;
+say   join "\n" => tag ("ERR"), map { "  $_" } $csv->error_diag;
+print tag ("WARN"), "\n", map { $_->[0] } @wrn;
+say   tag ("GOT");
+say   join ", " => @$_ for @csv;

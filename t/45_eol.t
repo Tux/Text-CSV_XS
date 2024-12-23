@@ -512,10 +512,11 @@ my %ers = (
                   [ "Bee",      "buzz",    ],
                   [ "Camel",    "grunt",   ],
                   [ "Cobra",    "shh",     ],
-                 #[ "Crow",     "caw",     ], WRONG, might change
+                  [ "",                    ],
+		  [ "Crow",     "caw",     ],
                   [ "Deer",     "bellow",  ],
                   [ "Dolphin",  "click",   ],
-                  [ 2012, 15, 12,  2, "2016 - EOL" ]],
+                  [ 2012, 15, 14,  2, "2016 - EOL" ]],
     '1:0:1:"' => [[ "Aardvark", "snort",   ],
                   [ "",                    ],
                   [ "Alpaca",   "spit",    ],
@@ -525,7 +526,7 @@ my %ers = (
                   [ "Bee",      "buzz",    ],
                   [ "Camel",    "grunt",   ],
                   [ "Cobra",    "shh",     ],
-                 #[ "Crow",     "caw",     ], WRONG, might change
+		 #[ "Crow",     "caw",     ], WRONG: might change
                   [ "Deer",     "bellow",  ],
                   [ "Dolphin",  "click",   ],
                   [ 2012, 13, 12,  2, "2016 - EOL" ]],
@@ -537,10 +538,10 @@ my %ers = (
                   [ "Bee",      "buzz",    ],
                   [ "Camel",    "grunt",   ],
                   [ "Cobra",    "shh",     ],
-                 #[ "Crow",     "caw",     ], WRONG, might change
+                  [ "Crow",     "caw",     ],
                   [ "Deer",     "bellow",  ],
                   [ "Dolphin",  "click",   ],
-                  [ 2012, 15, 11,  2, "2016 - EOL" ]],
+                  [ 2012, 15, 12,  2, "2016 - EOL" ]],
     '1:1:1:"' => [[ "Aardvark", "snort",   ],
                   [ "Alpaca",   "spit",    ],
                   [ "Badger",   "growl",   ],

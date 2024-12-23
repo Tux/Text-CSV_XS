@@ -1,0 +1,32 @@
+# t/45_eol.t
+
+strict_eol i.c.w. $csv->eol (undef);
+
+Fix inconsistence between 1:0:1: and 1:0:1:"
+Fix inconsistence between 1:1:1: and 1:1:1:"
+
+# https://www.perlmonks.org/index.pl?node_id=11163264
+
+It's the inconsistency of csv (in => ..., out => ...);
+
+                       | in
+                       +---------------------------------------------------------------
+                       | Data Structure | Sub   | File Name            | File Handle
+----+------------------+----------------+-------+----------------------+---------------
+out | [Absent]         | Works          | Works | Works                | Works
+    | Undefined Scalar | Works          | Works | Run-time error       | Run-time error
+    | File Name        | Works          | Works | Instructs programmer | Run-time error
+    | File Handle      | Works          | Works | Run-time error       | Run-time error
+----+------------------+----------------+-------+----------------------+---------------
+
+The instruction to the programmer is doubly weird because it could simply do what it would do if the programmer used the suggested code.
+
+
+# https://www.perlmonks.org/index.pl?node_id=11163263
+
+  The function csv () is streaming!
+
+You can encode as a stream.
+You can decode as a stream.
+
+But you can't transform as a stream. The inner call (csv (in => "a.csv, ...)) loads the entire file into memory.

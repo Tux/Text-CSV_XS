@@ -1588,7 +1588,7 @@ sub csv {
 	    %{$c->{'attr'}},
 	    );
 
-    $last_err ||= $csv->{_ERROR_DIAG};
+    $last_err ||= $csv->{'_ERROR_DIAG'};
     return $ref;
     } # csv
 
