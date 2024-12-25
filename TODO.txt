@@ -21,6 +21,27 @@ out | [Absent]         | Works          | Works | Works                | Works
 
 The instruction to the programmer is doubly weird because it could simply do what it would do if the programmer used the suggested code.
 
+Current plan:
+
+ Support for (in, out) : (file, file), (fh, fh), (file, fh), and (fh, file) with
+ callback on the level of after_parse where after_parse then calls the inner CSV
+ with the eol_type of the first line of in and then sets the record to \"skip".
+ The CSV object is reused for in *and* out, so all settings are shared, including
+ the errors.
+
+ Document that when in this mode, on_in cannot be used.
+
+ Advantages of the previous documented use of csv with an explicit csv call for
+ out, is that the in-stream is completely parsed before the output is generated,
+ so it won't output if the input is invalid (at row 12345).
+
+ Trace why out => sub { ... } was not implemented and if this could be used for
+ above plan. (likely because of the same reason why (in => "file", out => "file")
+ was abandoned several times). Note that *all* attributes are shared. Now that we
+ have strict_eol, and internal stored eol_type, the need for "eol" for output has
+ gone. (we can alo use ->say, but reuse of eol_type is easier).
+
+ We also need a read-only $csv->eol_type to check what was detected.
 
 # https://www.perlmonks.org/index.pl?node_id=11163263
 
