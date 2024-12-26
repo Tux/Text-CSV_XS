@@ -460,6 +460,22 @@ static SV *cx_SetDiag (pTHX_ csv_t *csv, int xse, int line) {
     return (err);
     } /* SetDiag */
 
+#define xs_cache_get_eolt(hv)	cx_xs_cache_get_eolt (aTHX_ hv)
+static char *cx_xs_cache_get_eolt (pTHX_ HV *hv) {
+    SV    **svp;
+    csv_t  *csvs;
+
+    unless ((svp = hv_fetchs (hv, "_CACHE", FALSE)) && *svp)
+	return NULL;
+
+    csvs = (csv_t *)SvPV_nolen (*svp);
+    if (csvs->eol_type == EOL_TYPE_NL)		return "\n";
+    if (csvs->eol_type == EOL_TYPE_CR)		return "\r";
+    if (csvs->eol_type == EOL_TYPE_CRNL)	return "\r\n";
+    if (csvs->eol_type == EOL_TYPE_OTHER)	return csvs->eol;
+    return NULL;
+    } /* cx_xs_cache_get_eolt */
+
 #define xs_cache_set(hv,idx,val)	cx_xs_cache_set (aTHX_ hv, idx, val)
 static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
     SV    **svp;
@@ -2701,6 +2717,25 @@ getline_all (SV *self, SV *io, ...)
     ST (0) = xsParse_all (self, hv, io, offset, length);
     XSRETURN (1);
     /* XS getline_all */
+
+void
+_cache_get_eolt (SV *self)
+
+  PPCODE:
+    HV	 *hv;
+    SV   *sve;
+    char *eol;
+
+    CSV_XS_SELF;
+    sve = newSVpvs_flags ("", SVs_TEMP);
+    eol = xs_cache_get_eolt (hv);
+    if (eol)
+	sv_setpvn (sve, eol, strlen (eol));
+    else
+	sv_setpvn (sve, NULL, 0);
+    ST (0) = sve;
+    XSRETURN (1);
+    /* XS _cache_get */
 
 void
 _cache_set (SV *self, int idx, SV *val)

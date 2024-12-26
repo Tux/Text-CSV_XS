@@ -415,6 +415,11 @@ sub eol {
     $self->{'eol'};
     } # eol
 
+sub eol_type {
+    my $self = shift;
+    $self->_cache_get_eolt;
+    } # eol_type
+
 sub always_quote {
     my $self = shift;
     @_ and $self->_set_attr_X ("always_quote", shift);
@@ -1083,10 +1088,12 @@ sub getline_hr_all {
 sub say {
     my ($self, $io, @f) = @_;
     my $eol = $self->eol ();
-    $eol eq "" and $self->eol ($\ || $/);
     # say ($fh, undef) does not propage actual undef to print ()
     my $state = $self->print ($io, @f == 1 && !defined $f[0] ? undef : @f);
-    $self->eol ($eol);
+    unless (length $eol) {
+	$eol = $self->eol_type () || $\ || $/;
+	print $io $eol;
+	}
     return $state;
     } # say
 
@@ -1212,6 +1219,34 @@ sub _csv_attr {
     $enc =~ m/^[-\w.]+$/ and $enc = ":encoding($enc)";
     $enc .= $stack;
 
+    my $hdrs = delete $attr{'headers'};
+    my $frag = delete $attr{'fragment'};
+    my $key  = delete $attr{'key'};
+    my $val  = delete $attr{'value'};
+    my $kh   = delete $attr{'keep_headers'}		||
+	       delete $attr{'keep_column_names'}	||
+	       delete $attr{'kh'};
+
+    my $cbai = delete $attr{'callbacks'}{'after_in'}	||
+	       delete $attr{'after_in'}			||
+	       delete $attr{'callbacks'}{'after_parse'}	||
+	       delete $attr{'after_parse'}		||
+	       delete $attr{'stream'};
+    my $cbbo = delete $attr{'callbacks'}{'before_out'}	||
+	       delete $attr{'before_out'};
+    my $cboi = delete $attr{'callbacks'}{'on_in'}	||
+	       delete $attr{'on_in'};
+    my $cboe = delete $attr{'callbacks'}{'on_error'}	||
+	       delete $attr{'on_error'};
+
+    my $hd_s = delete $attr{'sep_set'}			||
+	       delete $attr{'seps'};
+    my $hd_b = delete $attr{'detect_bom'}		||
+	       delete $attr{'bom'};
+    my $hd_m = delete $attr{'munge'}			||
+	       delete $attr{'munge_column_names'};
+    my $hd_c = delete $attr{'set_column_names'};
+
     my $fh;
     my $sink = 0;
     my $cls  = 0;	# If I open a file, I have to close it
@@ -1221,9 +1256,30 @@ sub _csv_attr {
 
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
-    $in && $out && !ref $in && !ref $out and croak (join "\n" =>
-	qq{Cannot use a string for both in and out. Instead use:},
-	qq{ csv (in => csv (in => "$in"), out => "$out");\n});
+    my ($fho, $fho_cls);
+    if ($in && $out and (!ref $in  || ref $in  eq "GLOB")
+		    and (!ref $out || ref $out eq "GLOB")) {
+	$sink = 1;
+	if (ref $out) {
+	    $fho = $out;
+	    }
+	else {
+	    open $fho, ">", $out or croak "$out: $!\n";
+	    if (my $e = $attr{'encoding'}) {
+		binmode $fho, ":encoding($e)";
+		$hd_b and print $fho "\x{feff}";
+		}
+	    $fho_cls = 1;
+	    }
+	if ($cbai) {
+	    my $cb = $cbai;
+	    $cbai = sub { $cb->(@_); $_[0]->say ($fho, $_[1]); 0 };
+	    }
+	else {
+	    $cbai = sub {            $_[0]->say ($fho, $_[1]); 0 };
+	    }
+	$out = undef;
+	}
 
     if ($out) {
 	if (ref $out and ("ARRAY" eq ref $out or "HASH" eq ref $out)) {
@@ -1276,33 +1332,6 @@ sub _csv_attr {
 	}
     $fh || $sink or croak (qq{No valid source passed. "in" is required});
 
-    my $hdrs = delete $attr{'headers'};
-    my $frag = delete $attr{'fragment'};
-    my $key  = delete $attr{'key'};
-    my $val  = delete $attr{'value'};
-    my $kh   = delete $attr{'keep_headers'}		||
-	       delete $attr{'keep_column_names'}	||
-	       delete $attr{'kh'};
-
-    my $cbai = delete $attr{'callbacks'}{'after_in'}	||
-	       delete $attr{'after_in'}			||
-	       delete $attr{'callbacks'}{'after_parse'}	||
-	       delete $attr{'after_parse'};
-    my $cbbo = delete $attr{'callbacks'}{'before_out'}	||
-	       delete $attr{'before_out'};
-    my $cboi = delete $attr{'callbacks'}{'on_in'}	||
-	       delete $attr{'on_in'};
-    my $cboe = delete $attr{'callbacks'}{'on_error'}	||
-	       delete $attr{'on_error'};
-
-    my $hd_s = delete $attr{'sep_set'}			||
-	       delete $attr{'seps'};
-    my $hd_b = delete $attr{'detect_bom'}		||
-	       delete $attr{'bom'};
-    my $hd_m = delete $attr{'munge'}			||
-	       delete $attr{'munge_column_names'};
-    my $hd_c = delete $attr{'set_column_names'};
-
     for ([ 'quo'    => "quote"		],
 	 [ 'esc'    => "escape"		],
 	 [ 'escape' => "escape_char"	],
@@ -1343,6 +1372,8 @@ sub _csv_attr {
 	'sink' => $sink,
 	'out'  => $out,
 	'enc'  => $enc,
+	'fho'  => $fho,
+	'fhoc' => $fho_cls,
 	'hdrs' => $hdrs,
 	'key'  => $key,
 	'val'  => $val,
@@ -1415,7 +1446,8 @@ sub csv {
 		}
 	    }
 
-	$c->{'cls'} and close $fh;
+	$c->{'cls'}     and close $fh;
+	$c->{'fho_cls'} and close $c->{'fho'};
 	return 1;
 	}
 
@@ -1545,7 +1577,8 @@ sub csv {
     else {
 	Text::CSV_XS->auto_diag ();
 	}
-    $c->{'cls'} and close $fh;
+    $c->{'cls'}     and close $fh;
+    $c->{'fho_cls'} and close $c->{'fho'};
     if ($ref and $c->{'cbai'} || $c->{'cboi'}) {
 	# Default is ARRAYref, but with key =>, you'll get a hashref
 	foreach my $r (ref $ref eq "ARRAY" ? @{$ref} : values %{$ref}) {
@@ -1878,6 +1911,14 @@ Return). The L<C<eol>|/eol> attribute cannot exceed 7 (ASCII) characters.
 
 If both C<$/> and L<C<eol>|/eol> equal C<"\015">, parsing lines that end on
 only a Carriage Return without Line Feed, will be L</parse>d correct.
+
+=head3 eol_type
+X<eol_type>
+
+ my $eol = $csv->eol_type;
+
+This read-only method returns the internal state of  what is considered the
+valid EOL for parsing.
 
 =head3 sep_char
 X<sep_char>
@@ -4345,6 +4386,7 @@ One could also use modules like L<Types::Standard>:
 
 =item after_in
 X<after_in>
+X<stream>
 
 This callback is invoked for each record after all records have been parsed
 but before returning the reference to the caller.  The hook is invoked with
@@ -4354,6 +4396,9 @@ ARRAY as determined by the arguments.
 
 This callback can also be passed as  an attribute without the  C<callbacks>
 wrapper.
+
+An alias C<stream> is provided for when both C<in> and C<out> are provided
+as file name or file handle. See L</streaming>.
 
 =item before_out
 X<before_out>

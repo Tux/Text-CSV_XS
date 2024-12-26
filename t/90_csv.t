@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 129;
+ use Test::More tests => 127;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -310,12 +310,6 @@ $] < 5.008 and unlink glob "SCALAR(*)";
     $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
     is ($r, undef, "Cannot add arrays to hashes");
     like ($err, qr{type mismatch}i, "ARRAY != HASH");
-    $err = "";
-
-    $r = eval { csv (in => "in.csv", out => "out.csv"); };
-    $err =~ s{\s+at\s+\S+\s+line\s+\d+\.\r?\n?\Z}{};
-    is ($r, undef, "Cannot use strings for both");
-    like ($err, qr{^cannot}i, "Explicitely unsupported");
     $err = "";
     }
 
