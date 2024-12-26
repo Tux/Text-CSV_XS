@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+#use Test::More "no_plan";
+ use Test::More tests => 14;
+
+BEGIN {
+    use_ok "Text::CSV_XS", ("csv");
+    plan skip_all => "Cannot load Text::CSV_XS" if $@;
+    require "./t/util.pl";
+    }
+
+my $tfni = "_92test-i.csv"; END { -f $tfni and unlink $tfni }
+my $tfno = "_92test-o.csv"; END { -f $tfno and unlink $tfno }
+
+my $data =
+    "foo,bar,baz,quux\r\n".
+    "1,2,3,25\r\n".
+    "2,a b,,14\r\n";
+open  my $fhi, ">", $tfni or die "$tfni: $!";
+print $fhi $data;
+close $fhi;
+ok (my $aoa = csv (in => $tfni), "Read default data");;
+
+{   my ($I, $O, @W);
+    ok (my $co = Text::CSV_XS->new ({
+	eol       => "\n",
+	auto_diag => 1,
+	callbacks => {
+	  before_print => sub {
+	    warn ++$O, "\n";
+	    $_[1][3] =~ s/x$/y/ or $_[1][3] *= 4;
+	    },
+	  },
+	}), "Create external CSV object");
+    open my $fho, ">", $tfno or die "$tfno: $!\n";
+    {	local $SIG{__WARN__} = sub { push @W => @_ };
+	csv (
+	    in        => $tfni,
+	    out       => undef,
+	    callbacks => {
+	      after_parse  => sub {
+		warn ++$I, "\n";
+		$co->print ($fho, $_[1]);
+		},
+	      },
+	    );
+	}
+    close $tfno;
+    chomp @W;
+    is ("@W", "1 1 2 2 3 3", "Old-fashioned streaming");
+    }
+
+# Basic straight-forward streaming, no filters/modifiers
+unlink $tfno if -e $tfno;
+csv (in => $tfni, out => $tfno, quote_space => 0);
+ok (-s $tfno, "FILE -> FILE");
+is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+
+unlink $tfno if -e $tfno;
+open my $fho, ">", $tfno;
+csv (in => $tfni, out => $fho,  quote_space => 0);
+close   $fho;
+ok (-s $tfno, "FILE -> FH");
+is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+
+unlink $tfno if -e $tfno;
+open    $fhi, "<", $tfni;
+csv (in => $fhi,  out => $tfno, quote_space => 0);
+close   $fhi;
+ok (-s $tfno, "FH   -> FILE");
+is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+
+unlink $tfno if -e $tfno;
+open    $fhi, "<", $tfni;
+open    $fho, ">", $tfno;
+csv (in => $fhi,  out => $fho,  quote_space => 0);
+close   $fho;
+close   $fhi;
+ok (-s $tfno, "FH   -> FH");
+is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+
+my @new = @$aoa;
+$_->[1] .= "X" for @new;
+
+unlink $tfno if -e $tfno;
+csv (
+    in          => $tfni,
+    out         => $tfno,
+    quote_space => 0,
+    filter      => sub { $_[1][1] .= "X" },
+    );
+ok (-s $tfno, "With filter");
+is_deeply (csv (in => $tfno), \@new, "Data is equal");

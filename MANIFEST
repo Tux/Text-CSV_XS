@@ -40,6 +40,7 @@ t/81_subclass.t		Subclassed
 t/85_util.t		Test for utility methods
 t/90_csv.t		Function csv () checks
 t/91_csv_cb.t		Callbacks with csv function
+t/92_stream.t		Streaming functionality
 t/util.pl		Extra test utilities
 examples/csv2xls	Script to onvert CSV files to M$Excel       XLS
 examples/csv2xlsx	Script to onvert CSV files to M$Excel 2007+ XLSX
