@@ -56,9 +56,18 @@ csv (
 close $fno;
 
 unlink $fno;
-
 csv (in => $fni, out => $fno, quote_space => 0);
 system "cat -ve $fni";
 system "cat -ve $fno";
+
+unlink $fno;
+open my $fho, ">", $fno;
+csv (in => $fni, out => $fho, quote_space => 0);
+close $fho;
+system "cat -ve $fni";
+system "cat -ve $fno";
+
+csv (in => $fni, out => \*STDOUT, quote_space => 0, filter      => sub { $_[1][1] =~ s/ /-/; 1; });
+csv (in => $fni, out => \*STDOUT, quote_space => 0, after_parse => sub { $_[1][1] =~ s/ /-/; 1; });
 
 unlink $fni, $fno;

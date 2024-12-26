@@ -1230,8 +1230,7 @@ sub _csv_attr {
     my $cbai = delete $attr{'callbacks'}{'after_in'}	||
 	       delete $attr{'after_in'}			||
 	       delete $attr{'callbacks'}{'after_parse'}	||
-	       delete $attr{'after_parse'}		||
-	       delete $attr{'stream'};
+	       delete $attr{'after_parse'};
     my $cbbo = delete $attr{'callbacks'}{'before_out'}	||
 	       delete $attr{'before_out'};
     my $cboi = delete $attr{'callbacks'}{'on_in'}	||
@@ -4386,7 +4385,6 @@ One could also use modules like L<Types::Standard>:
 
 =item after_in
 X<after_in>
-X<stream>
 
 This callback is invoked for each record after all records have been parsed
 but before returning the reference to the caller.  The hook is invoked with
@@ -4396,9 +4394,6 @@ ARRAY as determined by the arguments.
 
 This callback can also be passed as  an attribute without the  C<callbacks>
 wrapper.
-
-An alias C<stream> is provided for when both C<in> and C<out> are provided
-as file name or file handle. See L</streaming>.
 
 =item before_out
 X<before_out>
