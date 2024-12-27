@@ -28,6 +28,7 @@
       <li><a href="#new">new </a>
         <ul>
           <li><a href="#eol">eol </a></li>
+          <li><a href="#eol_type">eol_type </a></li>
           <li><a href="#sep_char">sep_char </a></li>
           <li><a href="#sep">sep </a></li>
           <li><a href="#quote_char">quote_char </a></li>
@@ -107,7 +108,11 @@
       <li><a href="#csv1">csv </a>
         <ul>
           <li><a href="#in">in </a></li>
-          <li><a href="#out">out </a></li>
+          <li><a href="#out">out </a>
+            <ul>
+              <li><a href="#Streaming">Streaming </a></li>
+            </ul>
+          </li>
           <li><a href="#encoding">encoding </a></li>
           <li><a href="#detect_bom1">detect_bom </a></li>
           <li><a href="#headers">headers </a></li>
@@ -148,7 +153,12 @@
           <li><a href="#Generating-CSV-into-memory">Generating CSV into memory</a></li>
         </ul>
       </li>
-      <li><a href="#Rewriting-CSV">Rewriting CSV</a></li>
+      <li><a href="#Rewriting-CSV">Rewriting CSV</a>
+        <ul>
+          <li><a href="#Changing-separator">Changing separator</a></li>
+          <li><a href="#Unifying-EOL">Unifying EOL</a></li>
+        </ul>
+      </li>
       <li><a href="#Dumping-database-tables-to-CSV">Dumping database tables to CSV</a></li>
       <li><a href="#Converting-CSV-to-JSON">Converting CSV to JSON</a></li>
       <li><a href="#The-examples-folder">The examples folder</a></li>
@@ -382,6 +392,12 @@ my $eol = $csv-&gt;eol;</code></pre>
 <p>Common values for <code>eol</code> are <code>&quot;\012&quot;</code> (<code>\n</code> or Line Feed), <code>&quot;\015\012&quot;</code> (<code>\r\n</code> or Carriage Return, Line Feed), and <code>&quot;\015&quot;</code> (<code>\r</code> or Carriage Return). The <a href="#eol"><code>eol</code></a> attribute cannot exceed 7 (ASCII) characters.</p>
 
 <p>If both <code>$/</code> and <a href="#eol"><code>eol</code></a> equal <code>&quot;\015&quot;</code>, parsing lines that end on only a Carriage Return without Line Feed, will be <a href="#parse">&quot;parse&quot;</a>d correct.</p>
+
+<h3 id="eol_type">eol_type </h3>
+
+<pre><code>my $eol = $csv-&gt;eol_type;</code></pre>
+
+<p>This read-only method returns the internal state of what is considered the valid EOL for parsing.</p>
 
 <h3 id="sep_char">sep_char </h3>
 
@@ -1797,18 +1813,23 @@ my $err = csv (in =&gt; $csv, out =&gt; &quot;file.csv&quot;);</code></pre>
 
 <h3 id="out">out </h3>
 
-<pre><code>csv (in =&gt; $aoa, out =&gt; &quot;file.csv&quot;);
-csv (in =&gt; $aoa, out =&gt; $fh);
-csv (in =&gt; $aoa, out =&gt;   STDOUT);
-csv (in =&gt; $aoa, out =&gt;  *STDOUT);
-csv (in =&gt; $aoa, out =&gt; \*STDOUT);
-csv (in =&gt; $aoa, out =&gt; \my $data);
-csv (in =&gt; $aoa, out =&gt;  undef);
-csv (in =&gt; $aoa, out =&gt; \&quot;skip&quot;);
+<pre><code>csv (in =&gt; $aoa,  out =&gt; &quot;file.csv&quot;);
+csv (in =&gt; $aoa,  out =&gt; $fh);
+csv (in =&gt; $aoa,  out =&gt;   STDOUT);
+csv (in =&gt; $aoa,  out =&gt;  *STDOUT);
+csv (in =&gt; $aoa,  out =&gt; \*STDOUT);
+csv (in =&gt; $aoa,  out =&gt; \my $data);
+csv (in =&gt; $aoa,  out =&gt;  undef);
+csv (in =&gt; $aoa,  out =&gt; \&quot;skip&quot;);
 
-csv (in =&gt; $fh,  out =&gt; \@aoa);
-csv (in =&gt; $fh,  out =&gt; \@aoh, bom =&gt; 1);
-csv (in =&gt; $fh,  out =&gt; \%hsh, key =&gt; &quot;key&quot;);</code></pre>
+csv (in =&gt; $fh,   out =&gt; \@aoa);
+csv (in =&gt; $fh,   out =&gt; \@aoh, bom =&gt; 1);
+csv (in =&gt; $fh,   out =&gt; \%hsh, key =&gt; &quot;key&quot;);
+
+csv (in =&gt; $file, out =&gt; $file);
+csv (in =&gt; $file, out =&gt; $fh);
+csv (in =&gt; $fh,   out =&gt; $file);
+csv (in =&gt; $fh,   out =&gt; $fh);</code></pre>
 
 <p>In output mode, the default CSV options when producing CSV are</p>
 
@@ -1843,6 +1864,20 @@ csv (in =&gt; $_, out =&gt; \@list)              for sort glob &quot;foo-[0-9]*.
 
 my @list; # List of hashes
 csv (in =&gt; $_, out =&gt; \@list, bom =&gt; 1)    for sort glob &quot;foo-[0-9]*.csv&quot;;</code></pre>
+
+<h4 id="Streaming">Streaming </h4>
+
+<p>If <b>both</b> <code>in</code> and <code>out</code> are files, file handles or globs, streaming is enforced by injecting an <code>after_parse</code> callback that immediately uses the <a href="#say"><code>say ()</code></a> method of the same instance to output the result and then rejects the record.</p>
+
+<p>If a <code>after_parse</code> was already passed as attribute, that will be included in the injected call. If <code>on_in</code> was passed and <code>after_parse</code> was not, it will be used instead. If both were passed, <code>on_in</code> is ignored.</p>
+
+<p>The EOL of the first record of the <code>in</code> source is consistently used as EOL for all records in the <code>out</code> destination.</p>
+
+<p>The <code>filter</code> attribute is not available.</p>
+
+<p>All other attributes are shared for <code>in</code> and <code>out</code>, so you cannot define different encodings for <code>in</code> and <code>out</code>. You need to pass a <code>$fh</code>, where <code>binmode</code> was used to apply the encoding layers.</p>
+
+<p>Note that this is work in progress and things might change.</p>
 
 <h3 id="encoding">encoding </h3>
 
@@ -2677,6 +2712,8 @@ csv (in =&gt; \@foo, out =&gt; \my $data);</code></pre>
 
 <h2 id="Rewriting-CSV">Rewriting CSV</h2>
 
+<h3 id="Changing-separator">Changing separator</h3>
+
 <p>Rewrite <code>CSV</code> files with <code>;</code> as separator character to well-formed <code>CSV</code>:</p>
 
 <pre><code>use Text::CSV_XS qw( csv );
@@ -2686,6 +2723,13 @@ csv (in =&gt; csv (in =&gt; &quot;bad.csv&quot;, sep_char =&gt; &quot;;&quot;), 
 
 <pre><code>$ perl -C3 -MText::CSV_XS=csv -we\
    &#39;csv(in=&gt;&quot;utf16tab.csv&quot;,encoding=&gt;&quot;utf16&quot;,sep=&gt;&quot;\t&quot;)&#39; &gt;utf8.csv</code></pre>
+
+<h3 id="Unifying-EOL">Unifying EOL</h3>
+
+<p>Rewrite a CSV file with mixed EOL and/or inconsistent quotation into a new CSV file with consistent EOL and quotation. Attributes apply.</p>
+
+<pre><code>use Text::CSV_XS qw( csv );
+csv (in =&gt; &quot;file.csv&quot;, out =&gt; &quot;newfile.csv&quot;, quote_space =&gt; 1);</code></pre>
 
 <h2 id="Dumping-database-tables-to-CSV">Dumping database tables to CSV</h2>
 

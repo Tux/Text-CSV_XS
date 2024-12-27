@@ -250,6 +250,14 @@ Return). The [`eol`](#eol) attribute cannot exceed 7 (ASCII) characters.
 If both `$/` and [`eol`](#eol) equal `"\015"`, parsing lines that end on
 only a Carriage Return without Line Feed, will be ["parse"](#parse)d correct.
 
+### eol\_type
+
+
+    my $eol = $csv->eol_type;
+
+This read-only method returns the internal state of  what is considered the
+valid EOL for parsing.
+
 ### sep\_char
 
 
@@ -1923,18 +1931,23 @@ where, in the absence of the `out` attribute, this is a shortcut to
 ### out
 
 
-    csv (in => $aoa, out => "file.csv");
-    csv (in => $aoa, out => $fh);
-    csv (in => $aoa, out =>   STDOUT);
-    csv (in => $aoa, out =>  *STDOUT);
-    csv (in => $aoa, out => \*STDOUT);
-    csv (in => $aoa, out => \my $data);
-    csv (in => $aoa, out =>  undef);
-    csv (in => $aoa, out => \"skip");
+    csv (in => $aoa,  out => "file.csv");
+    csv (in => $aoa,  out => $fh);
+    csv (in => $aoa,  out =>   STDOUT);
+    csv (in => $aoa,  out =>  *STDOUT);
+    csv (in => $aoa,  out => \*STDOUT);
+    csv (in => $aoa,  out => \my $data);
+    csv (in => $aoa,  out =>  undef);
+    csv (in => $aoa,  out => \"skip");
 
-    csv (in => $fh,  out => \@aoa);
-    csv (in => $fh,  out => \@aoh, bom => 1);
-    csv (in => $fh,  out => \%hsh, key => "key");
+    csv (in => $fh,   out => \@aoa);
+    csv (in => $fh,   out => \@aoh, bom => 1);
+    csv (in => $fh,   out => \%hsh, key => "key");
+
+    csv (in => $file, out => $file);
+    csv (in => $file, out => $fh);
+    csv (in => $fh,   out => $file);
+    csv (in => $fh,   out => $fh);
 
 In output mode, the default CSV options when producing CSV are
 
@@ -1983,6 +1996,29 @@ collect that into a single data structure:
 
     my @list; # List of hashes
     csv (in => $_, out => \@list, bom => 1)    for sort glob "foo-[0-9]*.csv";
+
+#### Streaming
+
+
+If **both** `in` and `out` are files, file handles or globs,  streaming is
+enforced by injecting an `after_parse` callback  that immediately uses the
+[`say ()`](#say) method of the same instance to output the result and then
+rejects the record.
+
+If a `after_parse` was already passed as attribute,  that will be included
+in the injected call. If `on_in` was passed and `after_parse` was not, it
+will be used instead. If both were passed, `on_in` is ignored.
+
+The EOL of the first record of the `in` source is consistently used as EOL
+for all records in the `out` destination.
+
+The `filter` attribute is not available.
+
+All other attributes are shared for `in` and `out`,  so you cannot define
+different encodings for `in` and `out`.  You need to pass a `$fh`, where
+`binmode` was used to apply the encoding layers.
+
+Note that this is work in progress and things might change.
 
 ### encoding
 
@@ -2853,6 +2889,8 @@ Format a data-set (`@foo`) into a scalar value in memory (`$data`):
 
 ## Rewriting CSV
 
+### Changing separator
+
 Rewrite `CSV` files with `;` as separator character to well-formed `CSV`:
 
     use Text::CSV_XS qw( csv );
@@ -2863,6 +2901,14 @@ file with BOM and TAB-separation to valid UTF-8 CSV could be:
 
     $ perl -C3 -MText::CSV_XS=csv -we\
        'csv(in=>"utf16tab.csv",encoding=>"utf16",sep=>"\t")' >utf8.csv
+
+### Unifying EOL
+
+Rewrite a CSV file with mixed EOL  and/or inconsistent quotation into a new
+CSV file with consistent EOL and quotation. Attributes apply.
+
+    use Text::CSV_XS qw( csv );
+    csv (in => "file.csv", out => "newfile.csv", quote_space => 1);
 
 ## Dumping database tables to CSV
 

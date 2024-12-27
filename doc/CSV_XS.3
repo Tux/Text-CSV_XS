@@ -58,7 +58,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 2024-12-19 "perl v5.40.0" "User Contributed Perl Documentation"
+.TH STDIN 1 2024-12-27 "perl v5.40.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -335,6 +335,17 @@ Return). The \f(CW\*(C`eol\*(C'\fR attribute cannot exceed 7 (ASCII) characters.
 .PP
 If both \f(CW$/\fR and \f(CW\*(C`eol\*(C'\fR equal \f(CW"\e015"\fR, parsing lines that end on
 only a Carriage Return without Line Feed, will be "parse"d correct.
+.PP
+\fIeol_type\fR
+.IX Xref "eol_type"
+.IX Subsection "eol_type"
+.PP
+.Vb 1
+\& my $eol = $csv\->eol_type;
+.Ve
+.PP
+This read\-only method returns the internal state of  what is considered the
+valid EOL for parsing.
 .PP
 \fIsep_char\fR
 .IX Xref "sep_char"
@@ -2323,18 +2334,23 @@ where, in the absence of the \f(CW\*(C`out\*(C'\fR attribute, this is a shortcut
 .IX Subsection "out"
 .PP
 .Vb 8
-\& csv (in => $aoa, out => "file.csv");
-\& csv (in => $aoa, out => $fh);
-\& csv (in => $aoa, out =>   STDOUT);
-\& csv (in => $aoa, out =>  *STDOUT);
-\& csv (in => $aoa, out => \e*STDOUT);
-\& csv (in => $aoa, out => \emy $data);
-\& csv (in => $aoa, out =>  undef);
-\& csv (in => $aoa, out => \e"skip");
+\& csv (in => $aoa,  out => "file.csv");
+\& csv (in => $aoa,  out => $fh);
+\& csv (in => $aoa,  out =>   STDOUT);
+\& csv (in => $aoa,  out =>  *STDOUT);
+\& csv (in => $aoa,  out => \e*STDOUT);
+\& csv (in => $aoa,  out => \emy $data);
+\& csv (in => $aoa,  out =>  undef);
+\& csv (in => $aoa,  out => \e"skip");
 \&
-\& csv (in => $fh,  out => \e@aoa);
-\& csv (in => $fh,  out => \e@aoh, bom => 1);
-\& csv (in => $fh,  out => \e%hsh, key => "key");
+\& csv (in => $fh,   out => \e@aoa);
+\& csv (in => $fh,   out => \e@aoh, bom => 1);
+\& csv (in => $fh,   out => \e%hsh, key => "key");
+\&
+\& csv (in => $file, out => $file);
+\& csv (in => $file, out => $fh);
+\& csv (in => $fh,   out => $file);
+\& csv (in => $fh,   out => $fh);
 .Ve
 .PP
 In output mode, the default CSV options when producing CSV are
@@ -2392,6 +2408,30 @@ collect that into a single data structure:
 \& my @list; # List of hashes
 \& csv (in => $_, out => \e@list, bom => 1)    for sort glob "foo\-[0\-9]*.csv";
 .Ve
+.PP
+Streaming
+.IX Xref "streaming"
+.IX Subsection "Streaming"
+.PP
+If \fBboth\fR \f(CW\*(C`in\*(C'\fR and \f(CW\*(C`out\*(C'\fR are files, file handles or globs,  streaming is
+enforced by injecting an \f(CW\*(C`after_parse\*(C'\fR callback  that immediately uses the
+\&\f(CW\*(C`say ()\*(C'\fR method of the same instance to output the result and then
+rejects the record.
+.PP
+If a \f(CW\*(C`after_parse\*(C'\fR was already passed as attribute,  that will be included
+in the injected call. If \f(CW\*(C`on_in\*(C'\fR was passed and \f(CW\*(C`after_parse\*(C'\fR was not, it
+will be used instead. If both were passed, \f(CW\*(C`on_in\*(C'\fR is ignored.
+.PP
+The EOL of the first record of the \f(CW\*(C`in\*(C'\fR source is consistently used as EOL
+for all records in the \f(CW\*(C`out\*(C'\fR destination.
+.PP
+The \f(CW\*(C`filter\*(C'\fR attribute is not available.
+.PP
+All other attributes are shared for \f(CW\*(C`in\*(C'\fR and \f(CW\*(C`out\*(C'\fR,  so you cannot define
+different encodings for \f(CW\*(C`in\*(C'\fR and \f(CW\*(C`out\*(C'\fR.  You need to pass a \f(CW$fh\fR, where
+\&\f(CW\*(C`binmode\*(C'\fR was used to apply the encoding layers.
+.PP
+Note that this is work in progress and things might change.
 .PP
 \fIencoding\fR
 .IX Xref "encoding"
@@ -3401,6 +3441,9 @@ Format a data\-set (\f(CW@foo\fR) into a scalar value in memory (\f(CW$data\fR):
 .Ve
 .SS "Rewriting CSV"
 .IX Subsection "Rewriting CSV"
+\fIChanging separator\fR
+.IX Subsection "Changing separator"
+.PP
 Rewrite \f(CW\*(C`CSV\*(C'\fR files with \f(CW\*(C`;\*(C'\fR as separator character to well\-formed \f(CW\*(C`CSV\*(C'\fR:
 .PP
 .Vb 2
@@ -3414,6 +3457,17 @@ file with BOM and TAB\-separation to valid UTF\-8 CSV could be:
 .Vb 2
 \& $ perl \-C3 \-MText::CSV_XS=csv \-we\e
 \&    \*(Aqcsv(in=>"utf16tab.csv",encoding=>"utf16",sep=>"\et")\*(Aq >utf8.csv
+.Ve
+.PP
+\fIUnifying EOL\fR
+.IX Subsection "Unifying EOL"
+.PP
+Rewrite a CSV file with mixed EOL  and/or inconsistent quotation into a new
+CSV file with consistent EOL and quotation. Attributes apply.
+.PP
+.Vb 2
+\& use Text::CSV_XS qw( csv );
+\& csv (in => "file.csv", out => "newfile.csv", quote_space => 1);
 .Ve
 .SS "Dumping database tables to CSV"
 .IX Subsection "Dumping database tables to CSV"
