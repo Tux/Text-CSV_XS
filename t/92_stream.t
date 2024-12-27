@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 17;
+ use Test::More tests => 21;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -12,9 +12,9 @@ BEGIN {
     require "./t/util.pl";
     }
 
-my $tfni = "_92test-i.csv"; END { -f $tfni and unlink $tfni }
-my $tfno = "_92test-o.csv"; END { -f $tfno and unlink $tfno }
-my $tfnn = "_92test-n.csv"; END { -f $tfnn and unlink $tfnn }
+my $tfni = "_92test-i.csv"; END { -f $tfni and unlink $tfni } # CRNL
+my $tfnn = "_92test-n.csv"; END { -f $tfnn and unlink $tfnn } # CRNL + NL
+my $tfno = "_92test-o.csv"; END { -f $tfno and unlink $tfno } # out
 
 my $data =
     "foo,bar,baz,quux\r\n".
@@ -91,22 +91,35 @@ is_deeply (csv (in => $tfno), $aoa, "Data is equal");
 
 unlink $tfno if -e $tfno;
 my @W;
-{   local $SIG{__WARN__} = sub { push @W => @_ };
+eval {
+    local $SIG{__WARN__} = sub { push @W => @_ };
     csv (in => $tfnn, out => $tfno, quote_space => 0);
     };
+like ($W[0], qr{\b2016 - EOL\b}, "Inconsistent use of EOL");
 ok (-s $tfno, "FH -> FILE (NL => CRNL)");
 is_deeply (csv (in => $tfno), $aoa, "Data is equal");
 is (do { local (@ARGV, $/) = ($tfno); <> }, $data, "Consistent CRNL");
-
-my @new = @$aoa;
-$_->[1] .= "X" for @new;
 
 unlink $tfno if -e $tfno;
 csv (
     in          => $tfni,
     out         => $tfno,
     quote_space => 0,
-    filter      => sub { $_[1][1] .= "X" },
+    after_parse => sub { $_[1][1] .= "X" },
     );
-ok (-s $tfno, "With filter");
+ok (-s $tfno, "With after_parse");
+my @new = map { my @x = @$_; $x[1] .= "X"; \@x } @$aoa;
 is_deeply (csv (in => $tfno), \@new, "Data is equal");
+
+# Prove streaming behavior
+my $io = "";
+unlink $tfno if -e $tfno;
+csv (
+    in        => $tfni,
+    out       => $tfno,
+    on_in     => sub { $io .= "I" },
+    callbacks => { before_print => sub { $io .= "O" }},
+    );
+ok (-s $tfno, "FILE -> FILE");
+is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+like ($io, qr{^(?:IO)+\z}, "IOIOIO...");

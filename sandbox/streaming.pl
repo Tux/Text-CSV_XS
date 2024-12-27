@@ -3,7 +3,7 @@
 use 5.014002;
 use warnings;
 
-our $VERSION = "0.01 - 20241224";
+our $VERSION = "0.02 - 20241227";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -61,13 +61,13 @@ system "cat -ve $fni";
 system "cat -ve $fno";
 
 unlink $fno;
-open my $fho, ">", $fno;
+open $fho, ">", $fno;
 csv (in => $fni, out => $fho, quote_space => 0);
 close $fho;
 system "cat -ve $fni";
 system "cat -ve $fno";
 
-csv (in => $fni, out => \*STDOUT, quote_space => 0, filter      => sub { $_[1][1] =~ s/ /-/; 1; });
-csv (in => $fni, out => \*STDOUT, quote_space => 0, after_parse => sub { $_[1][1] =~ s/ /-/; 1; });
+csv (in => $fni, out => \*STDOUT, quote_space => 0, after_parse => sub { $_[1][1] =~ s/ /-/; });
+csv (in => $fni, out =>  *STDOUT, quote_space => 0, after_parse => sub { warn "I\n"; $_[1][1] =~ s/ /#/; }, callbacks => { before_print => sub { warn "O\n" }});
 
 unlink $fni, $fno;

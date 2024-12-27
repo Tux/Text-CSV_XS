@@ -103,13 +103,6 @@ static unsigned char ec, ebcdic2ascii[256] = {
 #define CH_QUOTEX	8889
 #define CH_QUOTE	*csv->quo
 
-#define EOL_TYPE_UNDEF		0
-#define EOL_TYPE_NL		1
-#define EOL_TYPE_CR		2
-#define EOL_TYPE_CRNL		3
-#define EOL_TYPE_OTHER		4
-#define EOL_TYPE(c) ((((char)c) == CH_NL) ? EOL_TYPE_NL : (((char)c) == CH_CR) ? EOL_TYPE_CR : EOL_TYPE_OTHER)
-
 #define useIO_EOF	0x10
 
 #define unless(expr)	if (!(expr))
@@ -169,6 +162,19 @@ static unsigned char ec, ebcdic2ascii[256] = {
 #define CACHE_ID_quo			132
 #define CACHE_ID_undef_str		148
 #define CACHE_ID_comment_str		156
+
+#define EOL_TYPE_UNDEF		0
+#define EOL_TYPE_NL		1
+#define EOL_TYPE_CR		2
+#define EOL_TYPE_CRNL		3
+#define EOL_TYPE_OTHER		4
+#define EOL_TYPE(c) ((((char)c) == CH_NL) ? EOL_TYPE_NL : (((char)c) == CH_CR) ? EOL_TYPE_CR : EOL_TYPE_OTHER)
+#define SET_EOL_TYPE(c,t) {		\
+    unless (c->eol_type) {		\
+	c->eol_type = t;		\
+	c->cache[CACHE_ID_eol_type] = t;\
+	}				\
+    }
 
 #define	byte	unsigned char
 #define ulng	unsigned long
@@ -1688,8 +1694,7 @@ restart:
 #endif
 		    if (csv->strict_eol && csv->eol_type && csv->eol_type != eolt)
 			ERROR_EOL;
-		    unless (csv->strict_eol)
-			csv->eol_type = eolt;
+		    SET_EOL_TYPE (csv, eolt);
 
 		    AV_PUSH;
 		    return TRUE;
@@ -1760,7 +1765,7 @@ restart:
 #endif
 			if (csv->strict_eol && csv->eol_type && csv->eol_type != EOL_TYPE_CRNL)
 			    ERROR_EOL;
-			csv->eol_type = EOL_TYPE_CRNL;
+			SET_EOL_TYPE (csv, EOL_TYPE_CRNL);
 
 			AV_PUSH;
 			return TRUE;
@@ -1941,7 +1946,7 @@ EOLX:
 	    c0 = 0;
 	    if (csv->strict_eol && csv->eol_type && csv->eol_type != eolt)
 		ERROR_EOL;
-	    csv->eol_type = eolt;
+	    SET_EOL_TYPE (csv, eolt);
 
 	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
 		SkipEmptyRow;
@@ -2052,7 +2057,7 @@ EOLX:
 		     */
 		    if (csv->strict_eol && csv->eol_type && csv->eol_type != EOL_TYPE_CRNL)
 			ERROR_EOL;
-		    csv->eol_type = EOL_TYPE_CRNL;
+		    SET_EOL_TYPE (csv, EOL_TYPE_CRNL);
 
 #if MAINT_DEBUG > 1 || MAINT_DEBUG_EOL > 0
 	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = CRNL, eolx = %d, eol_pos = %d, tp: %02x (cr: %d, c0: %d)\t%s (eol = %s)\n",
@@ -2137,7 +2142,7 @@ EOLX:
 		     */
 		    if (csv->strict_eol && csv->eol_type && csv->eol_type != EOL_TYPE_CRNL)
 			ERROR_EOL;
-		    csv->eol_type = EOL_TYPE_CRNL;
+		    SET_EOL_TYPE (csv, EOL_TYPE_CRNL);
 
 #if MAINT_DEBUG > 1 || MAINT_DEBUG_EOL > 0
 	    (void)fprintf (stderr, "# %04d %d/%d/%03x pos %d = CRNL, eolx = %d, eol_pos = %d, tp: %02x (cr: %d, c0: %d)\t%s (eol = %s)\n",
@@ -2735,7 +2740,7 @@ _cache_get_eolt (SV *self)
 	sv_setpvn (sve, NULL, 0);
     ST (0) = sve;
     XSRETURN (1);
-    /* XS _cache_get */
+    /* XS _cache_get_eolt */
 
 void
 _cache_set (SV *self, int idx, SV *val)

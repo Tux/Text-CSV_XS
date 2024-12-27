@@ -1256,10 +1256,9 @@ sub _csv_attr {
     ref $in eq "CODE" || ref $in eq "ARRAY" and $out ||= \*STDOUT;
 
     my ($fho, $fho_cls);
-    if ($in && $out and (!ref $in  || ref $in  eq "GLOB")
-		    and (!ref $out || ref $out eq "GLOB")) {
-	$sink = 1;
-	if (ref $out) {
+    if ($in && $out and (!ref $in  || ref $in  eq "GLOB" || ref \$in  eq "GLOB")
+		    and (!ref $out || ref $out eq "GLOB" || ref \$out eq "GLOB")) {
+	if (ref $out or "GLOB" eq ref \$out) {
 	    $fho = $out;
 	    }
 	else {
@@ -1270,6 +1269,10 @@ sub _csv_attr {
 		}
 	    $fho_cls = 1;
 	    }
+	if ($cboi && !$cbai) {
+	    $cbai = $cboi;
+	    $cboi = undef;
+	    }
 	if ($cbai) {
 	    my $cb = $cbai;
 	    $cbai = sub { $cb->(@_); $_[0]->say ($fho, $_[1]); 0 };
@@ -1277,7 +1280,14 @@ sub _csv_attr {
 	else {
 	    $cbai = sub {            $_[0]->say ($fho, $_[1]); 0 };
 	    }
-	$out = undef;
+
+	# Put all callbacks back in place for streaming behavior
+	$attr{'callbacks'}{'after_parse'} = $cbai; $cbai = undef;
+	$attr{'callbacks'}{'before_out'}  = $cbbo; $cbbo = undef;
+	$attr{'callbacks'}{'on_in'}       = $cboi; $cboi = undef;
+	$attr{'callbacks'}{'on_error'}    = $cboe; $cboe = undef;
+	$out  = undef;
+	$sink = 1;
 	}
 
     if ($out) {
@@ -3635,18 +3645,23 @@ where, in the absence of the C<out> attribute, this is a shortcut to
 =head3 out
 X<out>
 
- csv (in => $aoa, out => "file.csv");
- csv (in => $aoa, out => $fh);
- csv (in => $aoa, out =>   STDOUT);
- csv (in => $aoa, out =>  *STDOUT);
- csv (in => $aoa, out => \*STDOUT);
- csv (in => $aoa, out => \my $data);
- csv (in => $aoa, out =>  undef);
- csv (in => $aoa, out => \"skip");
+ csv (in => $aoa,  out => "file.csv");
+ csv (in => $aoa,  out => $fh);
+ csv (in => $aoa,  out =>   STDOUT);
+ csv (in => $aoa,  out =>  *STDOUT);
+ csv (in => $aoa,  out => \*STDOUT);
+ csv (in => $aoa,  out => \my $data);
+ csv (in => $aoa,  out =>  undef);
+ csv (in => $aoa,  out => \"skip");
 
- csv (in => $fh,  out => \@aoa);
- csv (in => $fh,  out => \@aoh, bom => 1);
- csv (in => $fh,  out => \%hsh, key => "key");
+ csv (in => $fh,   out => \@aoa);
+ csv (in => $fh,   out => \@aoh, bom => 1);
+ csv (in => $fh,   out => \%hsh, key => "key");
+
+ csv (in => $file, out => $file);
+ csv (in => $file, out => $fh);
+ csv (in => $fh,   out => $file);
+ csv (in => $fh,   out => $fh);
 
 In output mode, the default CSV options when producing CSV are
 
@@ -3695,6 +3710,29 @@ collect that into a single data structure:
 
  my @list; # List of hashes
  csv (in => $_, out => \@list, bom => 1)    for sort glob "foo-[0-9]*.csv";
+
+=head4 Streaming
+X<streaming>
+
+If B<both> C<in> and C<out> are files, file handles or globs,  streaming is
+enforced by injecting an C<after_parse> callback  that immediately uses the
+L<C<say ()>|/say> method of the same instance to output the result and then
+rejects the record.
+
+If a C<after_parse> was already passed as attribute,  that will be included
+in the injected call. If C<on_in> was passed and C<after_parse> was not, it
+will be used instead. If both were passed, C<on_in> is ignored.
+
+The EOL of the first record of the C<in> source is consistently used as EOL
+for all records in the C<out> destination.
+
+The C<filter> attribute is not available.
+
+All other attributes are shared for C<in> and C<out>,  so you cannot define
+different encodings for C<in> and C<out>.  You need to pass a C<$fh>, where
+C<binmode> was used to apply the encoding layers.
+
+Note that this is work in progress and things might change.
 
 =head3 encoding
 X<encoding>

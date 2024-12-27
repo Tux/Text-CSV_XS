@@ -1,6 +1,7 @@
-1.58	- 2024-12-19, H.Merijn Brand
+1.58	- 2024-12-27, H.Merijn Brand
     * Add strict_eol (warnings default in csv ())
     * Add XS line number in errors
+    * Add streaming support
 
 1.57	- 2024-11-12, H.Merijn Brand
     * Keep runtime error from csv ()
