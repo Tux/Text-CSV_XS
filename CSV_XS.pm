@@ -1301,7 +1301,7 @@ sub _csv_attr {
 		binmode $fh, $enc;
 		my $fn = fileno $fh; # This is a workaround for a bug in PerlIO::via::gzip
 		}
-	    unless (defined $attr{'eol'}) {
+	    unless (defined $attr{'eol'} || defined $fho) {
 		my @layers = eval { PerlIO::get_layers ($fh) };
 		$attr{'eol'} = (grep m/crlf/ => @layers) ? "\n" : "\r\n";
 		}
@@ -4594,6 +4594,8 @@ Format a data-set (C<@foo>) into a scalar value in memory (C<$data>):
 
 =head2 Rewriting CSV
 
+=head3 Changing separator
+
 Rewrite C<CSV> files with C<;> as separator character to well-formed C<CSV>:
 
  use Text::CSV_XS qw( csv );
@@ -4604,6 +4606,14 @@ file with BOM and TAB-separation to valid UTF-8 CSV could be:
 
  $ perl -C3 -MText::CSV_XS=csv -we\
     'csv(in=>"utf16tab.csv",encoding=>"utf16",sep=>"\t")' >utf8.csv
+
+=head3 Unifying EOL
+
+Rewrite a CSV file with mixed EOL  and/or inconsistent quotation into a new
+CSV file with consistent EOL and quotation. Attributes apply.
+
+ use Text::CSV_XS qw( csv );
+ csv (in => "file.csv", out => "newfile.csv", quote_space => 1);
 
 =head2 Dumping database tables to CSV
 

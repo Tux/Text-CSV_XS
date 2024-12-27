@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 14;
+ use Test::More tests => 17;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -14,6 +14,7 @@ BEGIN {
 
 my $tfni = "_92test-i.csv"; END { -f $tfni and unlink $tfni }
 my $tfno = "_92test-o.csv"; END { -f $tfno and unlink $tfno }
+my $tfnn = "_92test-n.csv"; END { -f $tfnn and unlink $tfnn }
 
 my $data =
     "foo,bar,baz,quux\r\n".
@@ -22,6 +23,12 @@ my $data =
 open  my $fhi, ">", $tfni or die "$tfni: $!";
 print $fhi $data;
 close $fhi;
+open  my $fhn, ">", $tfnn or die "$tfnn: $!";
+{   my $d = $data;
+    $d =~ s/5\r\n/5\n/;
+    print $fhn $d;
+    }
+close $fhn;
 ok (my $aoa = csv (in => $tfni), "Read default data");;
 
 {   my ($I, $O, @W);
@@ -81,6 +88,15 @@ close   $fho;
 close   $fhi;
 ok (-s $tfno, "FH   -> FH");
 is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+
+unlink $tfno if -e $tfno;
+my @W;
+{   local $SIG{__WARN__} = sub { push @W => @_ };
+    csv (in => $tfnn, out => $tfno, quote_space => 0);
+    };
+ok (-s $tfno, "FH -> FILE (NL => CRNL)");
+is_deeply (csv (in => $tfno), $aoa, "Data is equal");
+is (do { local (@ARGV, $/) = ($tfno); <> }, $data, "Consistent CRNL");
 
 my @new = @$aoa;
 $_->[1] .= "X" for @new;
