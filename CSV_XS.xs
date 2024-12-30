@@ -264,7 +264,7 @@ typedef struct {
 
 typedef struct {
     int   xs_errno;
-    char *xs_errstr;
+    const char *xs_errstr;
     } xs_error_t;
 static const xs_error_t xs_errors[] =  {
 
@@ -405,16 +405,17 @@ static char *cx_pretty_str (pTHX_ byte *s, STRLEN l) {
     return (pv_pretty (dsv, (char *)s, l, 0, NULL, NULL,
 	    (PERL_PV_PRETTY_DUMP | PERL_PV_ESCAPE_UNI_DETECT)));
     } /* _pretty_str */
+#if MAINT_DEBUG > 4
 #define _pretty_sv(cp)		cx_pretty_sv  (aTHX_ cp)
 static char *cx_pretty_sv (pTHX_ SV *sv) {
-    SV *dsv = newSVpvs_flags ("", SVs_TEMP);
     if (SvOK (sv) && SvPOK (sv)) {
 	STRLEN l;
 	char *s = SvPV (sv, l);
-	return _pretty_str (s, l);
+	return _pretty_str ((byte *)s, l);
 	}
     return ("");
     } /* _pretty_sv */
+#endif
 
 #define SvDiag(xse)		cx_SvDiag (aTHX_ xse)
 static SV *cx_SvDiag (pTHX_ int xse) {
@@ -478,7 +479,7 @@ static char *cx_xs_cache_get_eolt (pTHX_ HV *hv) {
     if (csvs->eol_type == EOL_TYPE_NL)		return "\n";
     if (csvs->eol_type == EOL_TYPE_CR)		return "\r";
     if (csvs->eol_type == EOL_TYPE_CRNL)	return "\r\n";
-    if (csvs->eol_type == EOL_TYPE_OTHER)	return csvs->eol;
+    if (csvs->eol_type == EOL_TYPE_OTHER)	return (char *)(csvs->eol);
     return NULL;
     } /* cx_xs_cache_get_eolt */
 
@@ -1310,6 +1311,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
     return TRUE;
     } /* Combine */
 
+#if MAINT_DEBUG > 6
 #define ErrorDiag(csv)	cx_ErrorDiag (aTHX_ csv)
 static void cx_ErrorDiag (pTHX_ csv_t *csv) {
     SV **svp;
@@ -1328,6 +1330,7 @@ static void cx_ErrorDiag (pTHX_ csv_t *csv) {
 	if (SvIOK (*svp)) (void)fprintf (stderr, "SRC: XS#%d\n", SvIV (*svp));
 	}
     } /* ErrorDiag */
+#endif
 
 #define ParseError(csv,xse,pos)	cx_ParseError (aTHX_ csv, xse, pos, __LINE__)
 static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos, int line) {
@@ -2315,7 +2318,7 @@ EOLX:
     return TRUE;
     } /* Parse */
 
-static int hook (pTHX_ HV *hv, char *cb_name, AV *av) {
+static int hook (pTHX_ HV *hv, const char *cb_name, AV *av) {
     SV **svp;
     HV *cb;
     int res;
@@ -2405,7 +2408,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 #endif
 
 	if (nf && !csv.strict_n) csv.strict_n = (short)nf;
-	if (csv.strict_n > 0 && nf != csv.strict_n) {
+	if (csv.strict_n > 0 && nf != (STRLEN)csv.strict_n) {
 	    unless (csv.useIO & useIO_EOF) {
 #if MAINT_DEBUG > 6
 		ErrorDiag (&csv);
