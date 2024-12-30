@@ -3,7 +3,7 @@
 use 5.026000;
 use warnings;
 
-our $VERSION = "2.04 - 20240809";
+our $VERSION = "2.05 - 20241230";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -71,6 +71,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "CohortExplorer",			# Unmet prereqs
     "Connector",			# No Makefile.PL (in Annelidous)
     "Data-Importer",			# test fail in DBIx::Class::Storage::DBI::insert
+    "DBICx-Indexing",			# Failures on overloading eq
     "DBIx-Class-DigestColumns",		# unmet prereqs
     "DBIx-Class-FilterColumn-ByType",	# ::CSV - unmet prereqs
     # DBIx-Class-EncodedColumn",	# Busted configuration
@@ -136,6 +137,7 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "Text-TEI-Collate",			# Unmet prereqs
     "Text-Tradition",			# Unmet prereqs
     "Text-xSV-Slurp",			# 5.26 incompat, unmaintained
+    "Trash-Park",			# bad tempdir in test
     "Tripletail",			# Makefile.PL broken
     "VANAMBURG-SEMPROG-SimpleGraph",	# Own tests fail
     "WebService-FuncNet",		# ::CSV - WSDL 404, POD
