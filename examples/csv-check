@@ -11,7 +11,7 @@ use warnings;
 use Data::Peek;
 use Encode qw( decode encode );
 
-our $VERSION = "2.05";	# 2020-05-21
+our $VERSION = "2.06";	# 2025-01-03
 my $cmd = $0; $cmd =~ s{.*/}{};
 
 sub usage {
@@ -94,6 +94,7 @@ my %csvarg = (
     quote_char     => $quo eq "undef" ? undef : $quo,
     escape_char    => $esc eq "undef" ? undef : $esc,
     eol            => $eol,
+    strict_eol     => 1,
     binary         => $bin,
     keep_meta_info => 1,
     auto_diag      => 1,
