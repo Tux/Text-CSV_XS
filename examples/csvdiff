@@ -4,7 +4,7 @@ use 5.012000;
 use warnings;
 
 # csvdiff: Show differences between CSV files
-#	   (m)'23 [05 Aug 2023] Copyright H.M.Brand 2009-2024
+#	   (m)'23 [05 Aug 2023] Copyright H.M.Brand 2009-2025
 
 our $VERSION = "1.03 - 20230805";
 

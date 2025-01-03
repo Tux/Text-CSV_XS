@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv2xls: Convert csv to xls
-#	   (m)'23 [14 Nov 2023] Copyright H.M.Brand 2007-2024
+#	   (m)'23 [14 Nov 2023] Copyright H.M.Brand 2007-2025
 
 use 5.012000;
 use warnings;

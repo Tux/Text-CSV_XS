@@ -1,7 +1,7 @@
 #!/pro/bin/perl
 
 # csv2xlsx: Convert csv to xlsx
-#	   (m)'23 Copyright H.M.Brand 2007-2024
+#	   (m)'23 Copyright H.M.Brand 2007-2025
 
 use 5.014000;
 use warnings;

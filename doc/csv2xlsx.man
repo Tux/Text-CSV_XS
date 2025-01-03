@@ -45,10 +45,10 @@ OPTIONS
        -o FILE.xlsx
        -x FILE.xlsx
        --out=FILE.xlsx
-         Specify  the  output filename. Default it the same name as the input-
-         file where the trailing ".csv" will be replaced with ".xlsx".
+         Specify the output filename. Default it the same name as the
+         input-file where the trailing ".csv" will be replaced with ".xlsx".
 
-         If a filename can not be automatically generated, it will default  to
+         If a filename can not be automatically generated, it will default to
          "csv2xlsx.xlsx".
 
        -d format
@@ -59,10 +59,10 @@ OPTIONS
        --date-col=range
          Only convert dates in columns "range". Default is everywhere.
 
-         Ranges  are numeric, where the first column has index 1. A range is a
-         definition of sections joined by ","s. A section is either  a  single
-         column  or  a  start/finish-pair joined with a dash. A missing finish
-         index on the last segment is an open  range  (till  the  end  of  the
+         Ranges are numeric, where the first column has index 1. A range is a
+         definition of sections joined by ","s. A section is either a single
+         column or a start/finish-pair joined with a dash. A missing finish
+         index on the last segment is an open range (till the end of the
          line).
 
          If the range is 0, date conversion is disabled.
@@ -78,7 +78,7 @@ OPTIONS
           -C '$:### ### ##0.00'
 
        --font=Calibri
-         You  can  set the default font. The XLSX writer used sets the default
+         You can set the default font. The XLSX writer used sets the default
          font face to "Calibri".
 
           --font=Arial
@@ -98,7 +98,7 @@ OPTIONS
 
        -f
        --force
-         Force usage of the output file if it already  exists  (unlink  before
+         Force usage of the output file if it already exists (unlink before
          use).
 
        -F
@@ -136,14 +136,14 @@ OPTIONS
 
        --de
        --fix-utf8
-         Attempt  to  fix double-encoded UTF-8. e.g. "\x{00c3}\x{00ab}" should
+         Attempt to fix double-encoded UTF-8. e.g. "\x{00c3}\x{00ab}" should
          have been "\x0100}". YMMV.
 
        -m
        --merge
          Merge multiple CSV's into a single Excel (separate sheets).
 
-         With this option, the option "-o" is required. All  arguments  should
+         With this option, the option "-o" is required. All arguments should
          be existing files. Piping is not supported.
 
        --skip-empty
@@ -156,12 +156,12 @@ OPTIONS
 
        -S CxP
        --split=CxP
-         When  dealing with big CSV datasets, this option enables you to split
-         the data over several sheets. When all the "-S" options  match  in  a
-         single  row, that row will be the first row of a new sheet. (see also
+         When dealing with big CSV datasets, this option enables you to split
+         the data over several sheets. When all the "-S" options match in a
+         single row, that row will be the first row of a new sheet. (see also
          "--sl=C")
 
-         C The column that should be examined. "A" = 1.  If  lower  case,  the
+         C The column that should be examined. "A" = 1. If lower case, the
            value of that column is matched case insensitive when appropriate.
 
             -S 7=ab      Column G is literal "ab"
@@ -192,8 +192,8 @@ OPTIONS
               -S G/.       Column G is defined and not empty
 
            < >
-             Compare.  If  the  value in the column is defined compare. If the
-             values only holds digits, do a numeric compare,  otherwise  do  a
+             Compare. If the value in the column is defined compare. If the
+             values only holds digits, do a numeric compare, otherwise do a
              string compare.
 
               -S G<42      Column G is defined and less than 42 (numeric)
@@ -202,12 +202,12 @@ OPTIONS
               -S G>42      Column G is defined and greater than 42 (numeric)
               -S G>ab      Column G is defined and greater than 42 (string)
 
-         P pattern  or  literal  string. Quotation might be required differing
+         P pattern or literal string. Quotation might be required differing
            per OS and shell-environment.
 
        --sl=C
          When splitting with "-S" / "--split", if all criteria match and a new
-         sheet is to be created, use the value in column "C" of  the  matching
+         sheet is to be created, use the value in column "C" of the matching
          row as the new sheet label.
 
        -v [V]
@@ -223,7 +223,7 @@ AUTHOR
 COPYRIGHT AND LICENSE
         Copyright (C) 2016-2023 H.Merijn Brand.  All rights reserved.
 
-       This  library  is free software;  you can redistribute and/or modify it
+       This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.38.2                      2024-04-11                          STDIN(1)
+perl v5.40.0                      2025-01-03                          STDIN(1)
