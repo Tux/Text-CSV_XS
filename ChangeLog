@@ -1,4 +1,4 @@
-1.59	- 2025-01-03, H.Merijn Brand
+1.59	- 2025-01-05, H.Merijn Brand
     * Fixed EOL test for Windows with crnl layer
     * It is 2025
 
