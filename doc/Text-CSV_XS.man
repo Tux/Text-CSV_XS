@@ -1,4 +1,4 @@
-STDIN(1)              User Contributed Perl Documentation             STDIN(1)
+CSV_XS(3)             User Contributed Perl Documentation            CSV_XS(3)
 
 NAME
        Text::CSV_XS - comma-separated values manipulation routines
@@ -179,25 +179,25 @@ SPECIFICATION
        format does not require a specific character encoding, byte order, or
        line terminator format.
 
-       • Each record is a single line ended by a line feed  (ASCII/"LF"=0x0A)
+       * Each record is a single line ended by a line feed  (ASCII/"LF"=0x0A)
          or a carriage return and line feed pair (ASCII/"CRLF"="0x0D 0x0A"),
          however, line-breaks may be embedded.
 
-       • Fields are separated by commas.
+       * Fields are separated by commas.
 
-       • Allowable characters within a "CSV" field include 0x09 ("TAB") and
+       * Allowable characters within a "CSV" field include 0x09 ("TAB") and
          the inclusive range of 0x20 (space) through 0x7E (tilde).  In binary
          mode all characters are accepted, at least in quoted fields.
 
-       • A field within  "CSV"  must be surrounded by  double-quotes to
+       * A field within  "CSV"  must be surrounded by  double-quotes to
          contain  a separator character (comma).
 
        Though this is the most clear and restrictive definition,  Text::CSV_XS
        is way more liberal than this, and allows extension:
 
-       • Line termination by a single carriage return is accepted by default
+       * Line termination by a single carriage return is accepted by default
 
-       • The separation-, quote-, and escape character(s) can be any ASCII
+       * The separation-, quote-, and escape character(s) can be any ASCII
          character in the range from  0x20 (space) to  0x7E (tilde).
          Characters outside this range may or may not work as expected.
          Multibyte characters, like UTF "U+060C" (ARABIC COMMA),   "U+FF0C"
@@ -211,13 +211,13 @@ SPECIFICATION
          utf8-decoded, to increase the likelihood of success. This way
          "U+00FE" will be allowed as a quote character.
 
-       • A field in  "CSV"  must be surrounded by double-quotes to make an
+       * A field in  "CSV"  must be surrounded by double-quotes to make an
          embedded double-quote, represented by a pair of consecutive
          double-quotes, valid. In binary mode you may additionally use the
          sequence  ""0" for representation of a NULL byte. Using 0x00 in
          binary mode is just as valid.
 
-       • Several violations of the above specification may be lifted by
+       * Several violations of the above specification may be lifted by
          passing some options as attributes to the object constructor.
 
 METHODS
@@ -2995,7 +2995,7 @@ TODO
    Release plan
        No guarantees, but this is what I had in mind some time ago:
 
-       • DIAGNOSTICS section in pod to *describe* the errors (see below)
+       * DIAGNOSTICS section in pod to *describe* the errors (see below)
 
 EBCDIC
        Everything should now work on native EBCDIC systems.   As the test does
@@ -3033,228 +3033,228 @@ DIAGNOSTICS
        For most of these errors, the first three capitals describe the error
        category:
 
-       • INI
+       * INI
 
          Initialization error or option conflict.
 
-       • ECR
+       * ECR
 
          Carriage-Return related parse error.
 
-       • EOF
+       * EOF
 
          End-Of-File related parse error.
 
-       • EIQ
+       * EIQ
 
          Parse error inside quotation.
 
-       • EIF
+       * EIF
 
          Parse error inside field.
 
-       • ECB
+       * ECB
 
          Combine error.
 
-       • EHR
+       * EHR
 
          HashRef parse related error.
 
        And below should be the complete list of error codes that can be
        returned:
 
-       • 1001 "INI - sep_char is equal to quote_char or escape_char"
+       * 1001 "INI - sep_char is equal to quote_char or escape_char"
 
          The  separation character  cannot be equal to  the quotation
          character or to the escape character,  as this would invalidate all
          parsing rules.
 
-       • 1002 "INI - allow_whitespace with escape_char or quote_char SP or
+       * 1002 "INI - allow_whitespace with escape_char or quote_char SP or
          TAB"
 
          Using the  "allow_whitespace"  attribute  when either "quote_char" or
          "escape_char"  is equal to "SPACE" or "TAB" is too ambiguous to
          allow.
 
-       • 1003 "INI - \r or \n in main attr not allowed"
+       * 1003 "INI - \r or \n in main attr not allowed"
 
          Using default "eol" characters in either "sep_char", "quote_char",
          or  "escape_char"  is  not allowed.
 
-       • 1004 "INI - callbacks should be undef or a hashref"
+       * 1004 "INI - callbacks should be undef or a hashref"
 
          The "callbacks"  attribute only allows one to be "undef" or a hash
          reference.
 
-       • 1005 "INI - EOL too long"
+       * 1005 "INI - EOL too long"
 
          The value passed for EOL is exceeding its maximum length (16).
 
-       • 1006 "INI - SEP too long"
+       * 1006 "INI - SEP too long"
 
          The value passed for SEP is exceeding its maximum length (16).
 
-       • 1007 "INI - QUOTE too long"
+       * 1007 "INI - QUOTE too long"
 
          The value passed for QUOTE is exceeding its maximum length (16).
 
-       • 1008 "INI - SEP undefined"
+       * 1008 "INI - SEP undefined"
 
          The value passed for SEP should be defined and not empty.
 
-       • 1010 "INI - the header is empty"
+       * 1010 "INI - the header is empty"
 
          The header line parsed in the "header" is empty.
 
-       • 1011 "INI - the header contains more than one valid separator"
+       * 1011 "INI - the header contains more than one valid separator"
 
          The header line parsed in the  "header"  contains more than one
          (unique) separator character out of the allowed set of separators.
 
-       • 1012 "INI - the header contains an empty field"
+       * 1012 "INI - the header contains an empty field"
 
          The header line parsed in the "header" contains an empty field.
 
-       • 1013 "INI - the header contains nun-unique fields"
+       * 1013 "INI - the header contains nun-unique fields"
 
          The header line parsed in the  "header"  contains at least  two
          identical fields.
 
-       • 1014 "INI - header called on undefined stream"
+       * 1014 "INI - header called on undefined stream"
 
          The header line cannot be parsed from an undefined source.
 
-       • 1500 "PRM - Invalid/unsupported argument(s)"
+       * 1500 "PRM - Invalid/unsupported argument(s)"
 
          Function or method called with invalid argument(s) or parameter(s).
 
-       • 1501 "PRM - The key attribute is passed as an unsupported type"
+       * 1501 "PRM - The key attribute is passed as an unsupported type"
 
          The "key" attribute is of an unsupported type.
 
-       • 1502 "PRM - The value attribute is passed without the key attribute"
+       * 1502 "PRM - The value attribute is passed without the key attribute"
 
          The "value" attribute is only allowed when a valid key is given.
 
-       • 1503 "PRM - The value attribute is passed as an unsupported type"
+       * 1503 "PRM - The value attribute is passed as an unsupported type"
 
          The "value" attribute is of an unsupported type.
 
-       • 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
+       * 2010 "ECR - QUO char inside quotes followed by CR not part of EOL"
 
          When  "eol"  has  been  set  to  anything  but the  default,  like
          "\r\t\n",  and  the  "\r"  is  following  the   second   (closing)
          "quote_char", where the characters following the "\r" do not make up
          the "eol" sequence, this is an error.
 
-       • 2011 "ECR - Characters after end of quoted field"
+       * 2011 "ECR - Characters after end of quoted field"
 
          Sequences like "1,foo,"bar"baz,22,1" are not allowed. "bar" is a
          quoted field and after the closing double-quote, there should be
          either a new-line sequence or a separation character.
 
-       • 2012 "EOF - End of data in parsing input stream"
+       * 2012 "EOF - End of data in parsing input stream"
 
          Self-explaining. End-of-file while inside parsing a stream. Can
          happen only when reading from streams with "getline",  as using
          "parse" is done on strings that are not required to have a trailing
          "eol".
 
-       • 2013 "INI - Specification error for fragments RFC7111"
+       * 2013 "INI - Specification error for fragments RFC7111"
 
          Invalid specification for URI "fragment" specification.
 
-       • 2014 "ENF - Inconsistent number of fields"
+       * 2014 "ENF - Inconsistent number of fields"
 
          Inconsistent number of fields under strict parsing.
 
-       • 2015 "ERW - Empty row"
+       * 2015 "ERW - Empty row"
 
          An empty row was not allowed.
 
-       • 2016 "EOL - Inconsistent EOL"
+       * 2016 "EOL - Inconsistent EOL"
 
          Inconsistent End-Of-Line detected under strict_eol parsing.
 
-       • 2021 "EIQ - NL char inside quotes, binary off"
+       * 2021 "EIQ - NL char inside quotes, binary off"
 
          Sequences like "1,"foo\nbar",22,1" are allowed only when the binary
          option has been selected with the constructor.
 
-       • 2022 "EIQ - CR char inside quotes, binary off"
+       * 2022 "EIQ - CR char inside quotes, binary off"
 
          Sequences like "1,"foo\rbar",22,1" are allowed only when the binary
          option has been selected with the constructor.
 
-       • 2023 "EIQ - QUO character not allowed"
+       * 2023 "EIQ - QUO character not allowed"
 
          Sequences like ""foo "bar" baz",qu" and "2023,",2008-04-05,"Foo,
          Bar",\n" will cause this error.
 
-       • 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
+       * 2024 "EIQ - EOF cannot be escaped, not even inside quotes"
 
          The escape character is not allowed as last character in an input
          stream.
 
-       • 2025 "EIQ - Loose unescaped escape"
+       * 2025 "EIQ - Loose unescaped escape"
 
          An escape character should escape only characters that need escaping.
 
          Allowing  the escape  for other characters  is possible  with the
          attribute "allow_loose_escapes".
 
-       • 2026 "EIQ - Binary character inside quoted field, binary off"
+       * 2026 "EIQ - Binary character inside quoted field, binary off"
 
          Binary characters are not allowed by default.    Exceptions are
          fields that contain valid UTF-8,  that will automatically be upgraded
          if the content is valid UTF-8. Set "binary" to 1 to accept binary
          data.
 
-       • 2027 "EIQ - Quoted field not terminated"
+       * 2027 "EIQ - Quoted field not terminated"
 
          When parsing a field that started with a quotation character,  the
          field is expected to be closed with a quotation character.   When the
          parsed line is exhausted before the quote is found, that field is not
          terminated.
 
-       • 2030 "EIF - NL char inside unquoted verbatim, binary off"
+       * 2030 "EIF - NL char inside unquoted verbatim, binary off"
 
-       • 2031 "EIF - CR char is first char of field, not part of EOL"
+       * 2031 "EIF - CR char is first char of field, not part of EOL"
 
-       • 2032 "EIF - CR char inside unquoted, not part of EOL"
+       * 2032 "EIF - CR char inside unquoted, not part of EOL"
 
-       • 2034 "EIF - Loose unescaped quote"
+       * 2034 "EIF - Loose unescaped quote"
 
-       • 2035 "EIF - Escaped EOF in unquoted field"
+       * 2035 "EIF - Escaped EOF in unquoted field"
 
-       • 2036 "EIF - ESC error"
+       * 2036 "EIF - ESC error"
 
-       • 2037 "EIF - Binary character in unquoted field, binary off"
+       * 2037 "EIF - Binary character in unquoted field, binary off"
 
-       • 2110 "ECB - Binary character in Combine, binary off"
+       * 2110 "ECB - Binary character in Combine, binary off"
 
-       • 2200 "EIO - print to IO failed. See errno"
+       * 2200 "EIO - print to IO failed. See errno"
 
-       • 3001 "EHR - Unsupported syntax for column_names ()"
+       * 3001 "EHR - Unsupported syntax for column_names ()"
 
-       • 3002 "EHR - getline_hr () called before column_names ()"
+       * 3002 "EHR - getline_hr () called before column_names ()"
 
-       • 3003 "EHR - bind_columns () and column_names () fields count
+       * 3003 "EHR - bind_columns () and column_names () fields count
          mismatch"
 
-       • 3004 "EHR - bind_columns () only accepts refs to scalars"
+       * 3004 "EHR - bind_columns () only accepts refs to scalars"
 
-       • 3006 "EHR - bind_columns () did not pass enough refs for parsed
+       * 3006 "EHR - bind_columns () did not pass enough refs for parsed
          fields"
 
-       • 3007 "EHR - bind_columns needs refs to writable scalars"
+       * 3007 "EHR - bind_columns needs refs to writable scalars"
 
-       • 3008 "EHR - unexpected error in bound fields"
+       * 3008 "EHR - unexpected error in bound fields"
 
-       • 3009 "EHR - print_hr () called before column_names ()"
+       * 3009 "EHR - print_hr () called before column_names ()"
 
-       • 3010 "EHR - print_hr () called with invalid arguments"
+       * 3010 "EHR - print_hr () called with invalid arguments"
 
 SEE ALSO
        IO::File,  IO::Handle,  IO::Wrap,  Text::CSV,  Text::CSV_PP,
@@ -3294,4 +3294,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.40.0                      2025-01-03                          STDIN(1)
+perl v5.40.0                      2025-01-05                         CSV_XS(3)

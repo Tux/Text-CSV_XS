@@ -17,7 +17,7 @@ Text
 *.gcda
 *.gcno
 .perlcriticrc
-Text-CSV_XS*
+Text-CSV_XS-*
 xx*
 valgrind.log
 pod2htm*

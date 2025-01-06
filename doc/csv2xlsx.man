@@ -1,4 +1,4 @@
-STDIN(1)              User Contributed Perl Documentation             STDIN(1)
+examples::csv2xlsx(3) User Contributed Perl Documentationexamples::csv2xlsx(3)
 
 NAME
        csv2xlsx - Convert CSV to Excel 2007+
@@ -226,4 +226,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.40.0                      2025-01-03                          STDIN(1)
+perl v5.40.0                      2025-01-03             examples::csv2xlsx(3)

@@ -106,9 +106,10 @@ sub postamble {
 		    $(TEST_FILES) 3>valgrind.log
 		    );
 
-    my $min_vsn = ($] >= 5.010 && -d "xt" && -d "tmp" && ($ENV{AUTOMATED_TESTING} || 0) != 1)
+    my $min_vsn = ($] >= 5.010 && -d "xt" && -d "sandbox" && ($ENV{AUTOMATED_TESTING} || 0) != 1)
 	? join "\n" =>
 	    'test ::',
+	    '	perl doc/make-doc.pl examples/csv*',
 	    '	-@env TEST_FILES="xt/*.t" make -e test_dynamic',
 	    ''
 	: "";
@@ -163,21 +164,7 @@ sub postamble {
 	'doc docs:		doc/CSV_XS.md doc/CSV_XS.html doc/CSV_XS.man \\',
 	'			doc/csv2xlsx.md doc/csv2xlsx.html doc/csv2xlsx.man',
 	'doc/CSV_XS.md:		CSV_XS.pm',
-	'	pod2markdown  < $? > $@',
-	'doc/CSV_XS.html:	CSV_XS.pm',
-	'	pod2html      < $? 2>&1 | grep -v "^Cannot find" > $@',
-	'doc/CSV_XS.3:		CSV_XS.pm',
-	'	pod2man       < $? > $@',
-	'doc/CSV_XS.man:	doc/CSV_XS.3',
-	'	nroff2man     < $? > $@',
-	'doc/csv2xlsx.md:	examples/csv2xlsx',
-	'	pod2markdown  < $? > $@',
-	'doc/csv2xlsx.html:	examples/csv2xlsx',
-	'	pod2html      < $? 2>&1 | grep -v "^Cannot find" > $@',
-	'doc/csv2xlsx.3:	examples/csv2xlsx',
-	'	pod2man       < $? > $@',
-	'doc/csv2xlsx.man:	doc/csv2xlsx.3',
-	'	nroff2man     < $? > $@',
+	'	perl doc/make-doc.pl examples/csv*',
 	'',
 	$min_vsn;
     } # postamble
