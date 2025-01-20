@@ -1947,9 +1947,11 @@ EOLX:
 		_pretty_strl (csv->bptr + csv->used), _pretty_strl (csv->eol), csv->strict_eol, c, c0);
 #endif
 	    c0 = 0;
-	    if (csv->strict_eol && csv->eol_type && csv->eol_type != eolt)
-		ERROR_EOL;
-	    SET_EOL_TYPE (csv, eolt);
+	    unless (f & CSV_FLAGS_QUO) {
+		if (csv->strict_eol && csv->eol_type && csv->eol_type != eolt)
+		    ERROR_EOL;
+		SET_EOL_TYPE (csv, eolt);
+		}
 
 	    if (fnum == 1 && f == 0 && SvCUR (sv) == 0 && csv->skip_empty_rows) {
 		SkipEmptyRow;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1176;
+use Test::More tests => 1182;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -637,7 +637,8 @@ foreach my $q ('', '"') {
 		my $csv = Text::CSV_XS->new ({
 		    strict_eol      => $se,
 		    skip_empty_rows => $ser,
-		    auto_diag => 1, diag_verbose => 1,
+		    auto_diag       => 1,
+		    diag_verbose    => 1,
 		    # Do NOT set binary!
 		    });
 
@@ -660,6 +661,39 @@ foreach my $q ('', '"') {
 		    }
 		}
 	    }
+	}
+    }
+
+# strict_eol should NOT warn/die/complain on deviating EOL inside quoted fields
+{   open my $fh, ">", $tfn or die "$tfn: $!\n";
+    print   $fh qq{Abrax,Booz,Wrox\r\n};
+    print   $fh qq{Foo,"x\ry",Ornf\r\n};
+    print   $fh qq{Cruy,"a\nb",Hye\r\n};
+    print   $fh qq{Daj,"f\r\nb",Uf\r\n};
+    close   $fh;
+
+    foreach my $se (0, 1, 2) {
+	my $tag = join ":" => "SE $se";
+	open $fh, "<", $tfn or die "$tfn: $!\n";
+	my $csv = Text::CSV_XS->new ({
+	    strict_eol   => $se,
+	    auto_diag    => 1,
+	    diag_verbose => 1,
+	    binary       => 1,
+	    });
+
+	my (@r, @w);
+	eval {
+	    local $SIG{__WARN__} = sub { push @w => @_ };
+	    while (my $row = $csv->getline ($fh)) {
+		push @r => [ @$row ];
+		}
+	    close $fh;
+	    };
+	my @diag = $csv->error_diag;
+	my $warn = join " | " => map { substr $_, 16, 10 } @w;
+	is (scalar @r, 4, "$tag: Got 4 rows");
+	is (scalar @w, 0, "$tag: Got no warnings");
 	}
     }
 
