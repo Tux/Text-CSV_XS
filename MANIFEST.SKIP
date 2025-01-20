@@ -31,3 +31,4 @@ valgrind\.log
 pod2htmd\.tmp
 \.aspell\.local\.pws
 \.perlcriticrc
+\.pod$

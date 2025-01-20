@@ -161,10 +161,9 @@ sub postamble {
 	'test_used:	test',
 	'	prove -vwb sandbox/used-by.pl',
 	'',
-	'doc docs:		doc/CSV_XS.md doc/CSV_XS.html doc/CSV_XS.man \\',
-	'			doc/csv2xlsx.md doc/csv2xlsx.html doc/csv2xlsx.man',
-	'doc/CSV_XS.md:		CSV_XS.pm',
-	'	perl doc/make-doc.pl examples/csv*',
+	'doc docs:		doc/Text-CSV_XS.md',
+	'doc/Text-CSV_XS.md:	CSV_XS.pm',
+	'	perl doc/make-doc.pl examples/csv* --pod',
 	'',
 	$min_vsn;
     } # postamble

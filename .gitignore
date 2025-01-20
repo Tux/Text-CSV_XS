@@ -22,6 +22,7 @@ xx*
 valgrind.log
 pod2htm*
 nytprof*
+doc/*.pod
 tmp/*
 sandbox/cover_db*
 sandbox/dist-other
