@@ -2403,7 +2403,7 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
     (void)hv_store (hv, "_EOF",   4, &PL_sv_no,             0);
 
     if (csv.strict) {
-	STRLEN nf = csv.is_bound ? csv.fld_idx : av_len (av);
+	STRLEN nf = csv.is_bound ? csv.fld_idx ? csv.fld_idx - 1 : 0 : av_len (av);
 #if MAINT_DEBUG > 6
 	(void)fprintf (stderr, "# %04d Strict nf = %2d, n = %2d, idx = %2d, recno = %2d, res = %d\n",
 	    __LINE__, nf, csv.strict_n, csv.fld_idx, csv.recno, result);

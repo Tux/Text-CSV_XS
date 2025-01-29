@@ -1,6 +1,7 @@
-1.60	- 2025-01-20, H.Merijn Brand
+1.60	- 2025-01-29, H.Merijn Brand
     * Add SECURITY.md
     * CR/NL/CRNL inside quoted fields not affected by strict_eol
+    * Fix incorrect error 2014 (issue 62)
 
 1.59	- 2025-01-05, H.Merijn Brand
     * Fixed EOL test for Windows with crnl layer
