@@ -215,7 +215,7 @@ foreach my $test (
     open my $fh, ">", $tf;
     print   $fh "A,B\n1,2\n";
     close   $fh;
-    open my $fh, "<", $tf;
+    open    $fh, "<", $tf;
     ok (my @col = @{$csv->getline ($fh)}, "Get header");
     my $val = {};
     ok ($csv->bind_columns (\@{$val}{@col}), "Bind columns");
