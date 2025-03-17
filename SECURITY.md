@@ -3,7 +3,7 @@
 Report issues via email at: H.Merijn Brand <hmbrand@cpan.org>.
 
 
-This is the Security Policy for the Perl Text::CSV_XS distribution.
+This is the Security Policy for Text::CSV_XS.
 
 The latest version of the Security Policy can be found in the
 [git repository for Text::CSV_XS](https://github.com/Tux/Text-CSV_XS).
