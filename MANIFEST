@@ -4,6 +4,7 @@ MANIFEST		This file
 cpanfile		Dependency list for cpan/cpanm
 CONTRIBUTING.md		Guide in how to contribute
 SECURITY.md		Guide for reporting security issues
+LOVE_LETTER.md		A love letter to CSV from the xan folk
 CSV_XS.pm		Perl part of the module
 CSV_XS.xs		C part of the module
 Makefile.PL		Makefile generator

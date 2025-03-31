@@ -3261,8 +3261,13 @@ SEE ALSO
        Text::CSV::Encoded,     Text::CSV::Separator,    Text::CSV::Slurp,
        Spreadsheet::CSV and Spreadsheet::Read, and of course perl.
 
-       If you are using Raku,  have a look at "Text::CSV" in the Raku
+       If you are using Raku,  have a look at "Text::CSV" in the  Raku
        ecosystem, offering the same features.
+
+       A beautiful Love Letter
+       <https://github.com/medialab/xan/blob/master/docs/LOVE_LETTER.md> to
+       "CSV" by the developers of xan
+       <https://github.com/medialab/xan#readme>.
 
        non-perl
 
@@ -3294,4 +3299,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.40.1                      2025-01-31                         CSV_XS(3)
+perl v5.40.1                      2025-03-31                         CSV_XS(3)

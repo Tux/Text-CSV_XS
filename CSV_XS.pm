@@ -5302,8 +5302,11 @@ L<IO::File>,  L<IO::Handle>,  L<IO::Wrap>,  L<Text::CSV>,  L<Text::CSV_PP>,
 L<Text::CSV::Encoded>,     L<Text::CSV::Separator>,    L<Text::CSV::Slurp>,
 L<Spreadsheet::CSV> and L<Spreadsheet::Read>, and of course L<perl>.
 
-If you are using Raku,  have a look at C<Text::CSV> in the Raku ecosystem,
+If you are using Raku,  have a look at C<Text::CSV> in the  Raku ecosystem,
 offering the same features.
+
+A beautiful L<Love Letter|https://github.com/medialab/xan/blob/master/docs/LOVE_LETTER.md>
+to C<CSV> by the developers of L<xan|https://github.com/medialab/xan#readme>.
 
 =head3 non-perl
 

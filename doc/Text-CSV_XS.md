@@ -3459,8 +3459,11 @@ And below should be the complete list of error codes that can be returned:
 [Text::CSV::Encoded](https://metacpan.org/pod/Text%3A%3ACSV%3A%3AEncoded),     [Text::CSV::Separator](https://metacpan.org/pod/Text%3A%3ACSV%3A%3ASeparator),    [Text::CSV::Slurp](https://metacpan.org/pod/Text%3A%3ACSV%3A%3ASlurp),
 [Spreadsheet::CSV](https://metacpan.org/pod/Spreadsheet%3A%3ACSV) and [Spreadsheet::Read](https://metacpan.org/pod/Spreadsheet%3A%3ARead), and of course [perl](https://metacpan.org/pod/perl).
 
-If you are using Raku,  have a look at `Text::CSV` in the Raku ecosystem,
+If you are using Raku,  have a look at `Text::CSV` in the  Raku ecosystem,
 offering the same features.
+
+A beautiful [Love Letter](https://github.com/medialab/xan/blob/master/docs/LOVE_LETTER.md)
+to `CSV` by the developers of [xan](https://github.com/medialab/xan#readme).
 
 ### non-perl
 
