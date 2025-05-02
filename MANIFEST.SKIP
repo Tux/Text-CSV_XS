@@ -32,3 +32,4 @@ pod2htmd\.tmp
 \.aspell\.local\.pws
 \.perlcriticrc
 \.pod$
+^\.test_info\.
