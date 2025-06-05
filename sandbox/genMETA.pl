@@ -87,7 +87,7 @@ resources:
     license:             http://dev.perl.org/licenses/
     repository:          https://github.com/Tux/Text-CSV_XS
     homepage:            https://metacpan.org/pod/Text::CSV_XS
-    bugtracker:          http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-CSV_XS
+    bugtracker:          https://github.com/Tux/Text-CSV_XS/issues
     IRC:                 irc://irc.perl.org/#csv
 meta-spec:
     version:             1.4

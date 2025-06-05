@@ -1,5 +1,6 @@
-1.61	- 2025-03-31, H.Merijn Brand
+1.61	- 2025-06-05, H.Merijn Brand
     * Add love letter to CSV from xan project with reference
+    * Bugtracker to github (long overdue) (issue 63)
 
 1.60	- 2025-01-29, H.Merijn Brand
     * Add SECURITY.md
