@@ -2053,14 +2053,13 @@ Encodings can be stacked, as supported by `binmode`:
 
 
 If  `detect_bom`  is given, the method  ["header"](#header)  will be invoked on the
-opened stream to check if there is a BOM and set the encoding accordingly.
+opened stream to check if there is a  BOM and set the encoding accordingly.
+Note that the attribute [`headers`](#headers)  can be used to overrule the
+default behavior of how that method automatically sets the attribute.
 
 `detect_bom` can be abbreviated to `bom`.
 
 This is the same as setting [`encoding`](#encoding) to `"auto"`.
-
-Note that as the method  ["header"](#header) is invoked,  its default is to also set
-the headers.
 
 ### headers
 

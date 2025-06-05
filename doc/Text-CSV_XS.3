@@ -58,7 +58,7 @@
 .\" ========================================================================
 .\"
 .IX Title "CSV_XS 3"
-.TH CSV_XS 3 2025-03-31 "perl v5.40.2" "User Contributed Perl Documentation"
+.TH CSV_XS 3 2025-06-05 "perl v5.40.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2470,14 +2470,13 @@ Encodings can be stacked, as supported by \f(CW\*(C`binmode\*(C'\fR:
 .IX Subsection "detect_bom"
 .PP
 If  \f(CW\*(C`detect_bom\*(C'\fR  is given, the method  "header"  will be invoked on the
-opened stream to check if there is a BOM and set the encoding accordingly.
+opened stream to check if there is a  BOM and set the encoding accordingly.
+Note that the attribute \f(CW\*(C`headers\*(C'\fR  can be used to overrule the
+default behavior of how that method automatically sets the attribute.
 .PP
 \&\f(CW\*(C`detect_bom\*(C'\fR can be abbreviated to \f(CW\*(C`bom\*(C'\fR.
 .PP
 This is the same as setting \f(CW\*(C`encoding\*(C'\fR to \f(CW"auto"\fR.
-.PP
-Note that as the method  "header" is invoked,  its default is to also set
-the headers.
 .PP
 \fIheaders\fR
 .IX Xref "headers"

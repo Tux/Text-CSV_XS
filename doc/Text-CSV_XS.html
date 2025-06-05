@@ -1903,13 +1903,11 @@ $aoa = csv (in =&gt; &quot;test.csv:gzip.gz&quot;, encoding =&gt; &quot;:gzip&qu
 
 <h3 id="detect_bom1">detect_bom </h3>
 
-<p>If <code>detect_bom</code> is given, the method <a href="#header">&quot;header&quot;</a> will be invoked on the opened stream to check if there is a BOM and set the encoding accordingly.</p>
+<p>If <code>detect_bom</code> is given, the method <a href="#header">&quot;header&quot;</a> will be invoked on the opened stream to check if there is a BOM and set the encoding accordingly. Note that the attribute <a href="#headers"><code>headers</code></a> can be used to overrule the default behavior of how that method automatically sets the attribute.</p>
 
 <p><code>detect_bom</code> can be abbreviated to <code>bom</code>.</p>
 
 <p>This is the same as setting <a href="#encoding"><code>encoding</code></a> to <code>&quot;auto&quot;</code>.</p>
-
-<p>Note that as the method <a href="#header">&quot;header&quot;</a> is invoked, its default is to also set the headers.</p>
 
 <h3 id="headers">headers </h3>
 

@@ -3767,14 +3767,13 @@ Encodings can be stacked, as supported by C<binmode>:
 X<detect_bom>
 
 If  C<detect_bom>  is given, the method  L</header>  will be invoked on the
-opened stream to check if there is a BOM and set the encoding accordingly.
+opened stream to check if there is a  BOM and set the encoding accordingly.
+Note that the attribute L<C<headers>|/headers>  can be used to overrule the
+default behavior of how that method automatically sets the attribute.
 
 C<detect_bom> can be abbreviated to C<bom>.
 
 This is the same as setting L<C<encoding>|/encoding> to C<"auto">.
-
-Note that as the method  L</header> is invoked,  its default is to also set
-the headers.
 
 =head3 headers
 X<headers>
