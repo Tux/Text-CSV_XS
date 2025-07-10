@@ -3115,7 +3115,7 @@ DIAGNOSTICS
 
          The header line parsed in the "header" contains an empty field.
 
-       * 1013 "INI - the header contains nun-unique fields"
+       * 1013 "INI - the header contains non-unique fields"
 
          The header line parsed in the  "header"  contains at least  two
          identical fields.
@@ -3298,4 +3298,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.40.2                      2025-06-05                         CSV_XS(3)
+perl v5.42.0                      2025-07-10                         CSV_XS(3)

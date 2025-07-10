@@ -282,7 +282,7 @@ static const xs_error_t xs_errors[] =  {
     { 1010, "INI - the header is empty"						},
     { 1011, "INI - the header contains more than one valid separator"		},
     { 1012, "INI - the header contains an empty field"				},
-    { 1013, "INI - the header contains nun-unique fields"			},
+    { 1013, "INI - the header contains non-unique fields"			},
     { 1014, "INI - header called on undefined stream"				},
 
     /* Syntax errors */

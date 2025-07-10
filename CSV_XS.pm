@@ -5084,7 +5084,7 @@ X<1012>
 The header line parsed in the L</header> contains an empty field.
 
 =item *
-1013 "INI - the header contains nun-unique fields"
+1013 "INI - the header contains non-unique fields"
 X<1013>
 
 The header line parsed in the  L</header>  contains at least  two identical

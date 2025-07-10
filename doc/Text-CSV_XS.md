@@ -3298,7 +3298,7 @@ And below should be the complete list of error codes that can be returned:
 
     The header line parsed in the ["header"](#header) contains an empty field.
 
-- 1013 "INI - the header contains nun-unique fields"
+- 1013 "INI - the header contains non-unique fields"
 
 
     The header line parsed in the  ["header"](#header)  contains at least  two identical
