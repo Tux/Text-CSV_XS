@@ -1,6 +1,7 @@
 1.61	- 2025-07-26, H.Merijn Brand
     * Add love letter to CSV from xan project with reference
     * Bugtracker to github (long overdue) (issue 63)
+    * Update to Devel::PPPort-3.73
 
 1.60	- 2025-01-29, H.Merijn Brand
     * Add SECURITY.md
