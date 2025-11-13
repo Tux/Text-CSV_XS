@@ -4,9 +4,9 @@ use 5.012000;
 use warnings;
 
 # csvdiff: Show differences between CSV files
-#	   (m)'23 [05 Aug 2023] Copyright H.M.Brand 2009-2025
+#	   (m)'25 [13 Nov 2025] Copyright H.M.Brand 2009-2025
 
-our $VERSION = "1.03 - 20230805";
+our $VERSION = "1.04 - 20251113";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -43,6 +43,7 @@ GetOptions (
 if ($opt_o) {
     open STDOUT, ">", $opt_o or die "$opt_o: $!\n";
     }
+$| = 1;
 
 use HTML::Entities;
 use Term::ANSIColor qw(:constants);
@@ -143,7 +144,7 @@ if ("@h0" eq "@h1") {
     }
 
 my $x = 0;
-while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
+ROW: while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
     my @r0 = @{$f[0][$i[0]]};
     my @r1 = @{$f[1][$i[1]]};
 
@@ -162,8 +163,12 @@ while ($i[0] <= $n[0] || $i[1] <= $n[1]) {
     $opt_b and s/[\r\n\s]+/ /g for @v0, @v1;
     $opt_w and s/[\r\n\s]+//g  for @v0, @v1;
 
-    {	local $" = "\xFF";
-	"@v0" eq "@v1" and $i[0]++, $i[1]++, next;
+    {	local $" = "\x{ff}";
+	if ("@v0" eq "@v1") {
+	    $i[0]++;
+	    $i[1]++;
+	    next ROW;
+	    }
 	}
 
     foreach my $c (1 .. $#h0) {
