@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 82;
+ use Test::More tests => 83;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -66,7 +66,10 @@ is_deeply (csv (in => $tfn, filter => { 2 => sub { /a/ },
     ], "AOA with filter on col 1 and 2");
 is_deeply (csv (in => $tfn, filter => { foo => sub { $_ > 1 }}), [
     { foo => 2, bar => "a b", baz => "" },
-    ], "AOH with filter on column name");
+    ], "AOH with filter on column name last line matches");
+is_deeply (csv (in => $tfn, filter => { foo => sub { $_ < 2 }}), [
+    { foo => 1, bar => 2, baz => 3 },
+    ], "AOH with filter on column name last line does not match");
 
 SKIP: {
     $] < 5.008001 and skip "No HOH/xx support in $]", 3;
