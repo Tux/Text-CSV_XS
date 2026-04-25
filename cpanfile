@@ -6,7 +6,7 @@ recommends "Encode"                   => "3.21";
 on "configure" => sub {
     requires   "ExtUtils::MakeMaker";
 
-    recommends "ExtUtils::MakeMaker"      => "7.76";
+    recommends "ExtUtils::MakeMaker"      => "7.78";
     };
 
 on "build" => sub {

@@ -122,6 +122,12 @@ static unsigned char ec, ebcdic2ascii[256] = {
 	croak ("self is not a hash ref");		\
     hv = (HV *)SvRV (self)
 
+#define undef &PL_sv_undef
+#define PUT_RETURN(x)	\
+    SPAGAIN;		\
+    ST (0) = x;		\
+    XSRETURN (1)
+
 /* Keep in sync with .pm! */
 #define CACHE_ID_quote_char		0
 #define CACHE_ID_escape_char		1
@@ -2603,7 +2609,7 @@ BOOT:
     Perl_load_module (aTHX_ PERL_LOADMOD_NOIMPORT, newSVpvs ("IO::Handle"), NULL, NULL, NULL);
 
 void
-SetDiag (SV *self, int xse, ...)
+SetDiag (SV *self, int xse, SV *line = undef)
 
   PPCODE:
     HV		*hv;
@@ -2619,8 +2625,8 @@ SetDiag (SV *self, int xse, ...)
 	ST (0) = sv_2mortal (SvDiag (xse));
 	}
 
-    if (xse && items > 2 && SvPOK (ST (2))) {
-	sv_setpvn (ST (0),  SvPVX (ST (2)), SvCUR (ST (2)));
+    if (xse && SvPOK (line)) {
+	sv_setpvn (ST (0),  SvPVX (line), SvCUR (line));
 	SvIOK_on  (ST (0));
 	}
 
@@ -2670,8 +2676,8 @@ Parse (SV *self, SV *src, SV *fields, SV *fflags)
     av  = (AV *)SvRV (fields);
     avf = (AV *)SvRV (fflags);
 
-    ST (0) = xsParse (self, hv, av, avf, src, 0) ? &PL_sv_yes : &PL_sv_no;
-    XSRETURN (1);
+    int x = xsParse (self, hv, av, avf, src, 0);
+    PUT_RETURN (x ? &PL_sv_yes : &PL_sv_no);
     /* XS Parse */
 
 void
@@ -2691,8 +2697,8 @@ print (SV *self, SV *io, SV *fields)
 	av = (AV *)SvRV (fields);
 	}
 
-    ST (0) = xsCombine (self, hv, av, io, 1) ? &PL_sv_yes : &PL_sv_no;
-    XSRETURN (1);
+    int x = xsCombine (self, hv, av, io, 1);
+    PUT_RETURN (x ? &PL_sv_yes : &PL_sv_no);
     /* XS print */
 
 void
@@ -2706,26 +2712,20 @@ getline (SV *self, SV *io)
     CSV_XS_SELF;
     av  = newAV ();
     avf = newAV ();
-    ST (0) = xsParse (self, hv, av, avf, io, 1)
-	? sv_2mortal (newRV_noinc ((SV *)av))
-	: &PL_sv_undef;
-    XSRETURN (1);
+    int x = xsParse (self, hv, av, avf, io, 1);
+    PUT_RETURN (x ? sv_2mortal (newRV_noinc ((SV *)av)) : undef);
     /* XS getline */
 
 void
-getline_all (SV *self, SV *io, ...)
+getline_all (SV *self, SV *io, SV *offset = undef, SV *length = undef)
 
   PPCODE:
     HV	*hv;
-    SV  *offset, *length;
 
     CSV_XS_SELF;
 
-    offset = items > 2 ? ST (2) : &PL_sv_undef;
-    length = items > 3 ? ST (3) : &PL_sv_undef;
-
-    ST (0) = xsParse_all (self, hv, io, offset, length);
-    XSRETURN (1);
+    SV *x  = xsParse_all (self, hv, io, offset, length);
+    PUT_RETURN (x);
     /* XS getline_all */
 
 void

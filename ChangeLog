@@ -1,5 +1,6 @@
 1.62	- 2026-04-25, H.Merijn Brand
     * It is 2026
+    * Fix possible stack corruption (thanks leont) (issue 67)
 
 1.61	- 2025-07-26, H.Merijn Brand
     * Add love letter to CSV from xan project with reference
