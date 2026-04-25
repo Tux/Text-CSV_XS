@@ -1100,7 +1100,7 @@ sub say {
 sub print_hr {
     my ($self, $io, $hr) = @_;
     $self->{'_COLUMN_NAMES'} or croak ($self->SetDiag (3009));
-    ref $hr eq "HASH"      or croak ($self->SetDiag (3010));
+    ref $hr eq "HASH"        or croak ($self->SetDiag (3010));
     $self->print ($io, [ map { $hr->{$_} } $self->column_names () ]);
     } # print_hr
 
