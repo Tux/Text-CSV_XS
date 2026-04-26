@@ -5,7 +5,7 @@ use warnings;
 use Config;
 
 #use Test::More "no_plan";
- use Test::More tests => 127;
+ use Test::More tests => 128;
 
 BEGIN {
     use_ok "Text::CSV_XS", ("csv");
@@ -338,6 +338,12 @@ eval {
     my $expect = [["a"],[1],["a"],[1],["a"],[1],["a"],[1],["a"],[1]];
     is_deeply ($csv->csv (in => $tfn),        $expect, "csv from object");
     is_deeply (csv (in => $tfn, csv => $csv), $expect, "csv from attribute");
+    }
+
+{   my @e;
+    local $SIG{__DIE__} = sub { push @e => @_ };
+    eval { csv ("in"); };
+    like ($@, qr{^PRM - The value attribute is passed without the key attribute}, "Key without value");
     }
 
 {   local *STDOUT;
