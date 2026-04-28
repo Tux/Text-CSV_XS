@@ -2671,13 +2671,14 @@ Parse (SV *self, SV *src, SV *fields, SV *fflags)
     HV	*hv;
     AV	*av;
     AV	*avf;
+    int  r;
 
     CSV_XS_SELF;
     av  = (AV *)SvRV (fields);
     avf = (AV *)SvRV (fflags);
 
-    int x = xsParse (self, hv, av, avf, src, 0);
-    PUT_RETURN (x ? &PL_sv_yes : &PL_sv_no);
+    r = xsParse (self, hv, av, avf, src, 0);
+    PUT_RETURN (r ? &PL_sv_yes : &PL_sv_no);
     /* XS Parse */
 
 void
@@ -2686,6 +2687,7 @@ print (SV *self, SV *io, SV *fields)
   PPCODE:
     HV	 *hv;
     AV	 *av;
+    int   r;
 
     CSV_XS_SELF;
     if (fields == &PL_sv_undef)
@@ -2697,8 +2699,8 @@ print (SV *self, SV *io, SV *fields)
 	av = (AV *)SvRV (fields);
 	}
 
-    int x = xsCombine (self, hv, av, io, 1);
-    PUT_RETURN (x ? &PL_sv_yes : &PL_sv_no);
+    r = xsCombine (self, hv, av, io, 1);
+    PUT_RETURN (r ? &PL_sv_yes : &PL_sv_no);
     /* XS print */
 
 void
@@ -2708,12 +2710,13 @@ getline (SV *self, SV *io)
     HV	*hv;
     AV	*av;
     AV	*avf;
+    int  r;
 
     CSV_XS_SELF;
     av  = newAV ();
     avf = newAV ();
-    int x = xsParse (self, hv, av, avf, io, 1);
-    PUT_RETURN (x ? sv_2mortal (newRV_noinc ((SV *)av)) : undef);
+    r   = xsParse (self, hv, av, avf, io, 1);
+    PUT_RETURN (r ? sv_2mortal (newRV_noinc ((SV *)av)) : undef);
     /* XS getline */
 
 void
@@ -2721,11 +2724,12 @@ getline_all (SV *self, SV *io, SV *offset = undef, SV *length = undef)
 
   PPCODE:
     HV	*hv;
+    SV  *rv;
 
     CSV_XS_SELF;
 
-    SV *x  = xsParse_all (self, hv, io, offset, length);
-    PUT_RETURN (x);
+    rv = xsParse_all (self, hv, io, offset, length);
+    PUT_RETURN (rv);
     /* XS getline_all */
 
 void
