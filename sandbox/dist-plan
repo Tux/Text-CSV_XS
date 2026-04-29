@@ -3,6 +3,8 @@
 [ ] 0:00:14  prove -j 17 -wbs
 [ ] 0:00:30  yath
 
+[ ] ?        make cover
+
 [ ] 0:00:02  make tgzdist
 [ ] 0:00:01  make docs
 

@@ -124,7 +124,7 @@ sub postamble {
 	'cover $make_sep test_cover:',
 	'	ccache -C',
 	'	-@rm -f *.gc??',
-	'	env AUTOMATED_TESTING=1 cover -test',
+	'	env AUTOMATED_TESTING=1 cover -test -jobs 17',
 	"	cover -report html $no_inc",
 	'',
 	'leakrun:',

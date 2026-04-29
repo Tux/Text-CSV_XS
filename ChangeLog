@@ -1,4 +1,4 @@
-1.62	- 2026-04-26, H.Merijn Brand
+1.62	- 2026-04-29, H.Merijn Brand
     * It is 2026
     * Fix possible stack corruption (thanks leont) (issue 65)
       Fixes CVE-2026-7111
