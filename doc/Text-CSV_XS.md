@@ -1312,8 +1312,6 @@ field.
 
 ## header
 
-This method does NOT work in perl-5.6.x
-
 Parse the CSV header and set [`sep`](#sep), column\_names and encoding.
 
     my @hdr = $csv->header ($fh);
@@ -2024,9 +2022,8 @@ Note that this is work in progress and things might change.
 
 
 If passed,  it should be an encoding accepted by the  `:encoding()` option
-to `open`. There is no default value. This attribute does not work in perl
-5.6.x.  `encoding` can be abbreviated to `enc` for ease of use in command
-line invocations.
+to `open`.  There is no default value.   `encoding` can be abbreviated to
+`enc` for ease of use in command line invocations.
 
 If `encoding` is set to the literal value `"auto"`, the method ["header"](#header)
 will be invoked on the opened stream to check if there is a BOM and set the

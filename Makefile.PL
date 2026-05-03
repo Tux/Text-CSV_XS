@@ -2,7 +2,7 @@
 
 # Copyright PROCURA B.V. (c) 2006-2026 H.Merijn Brand
 
-require 5.006001; # <- also see postamble at the bottom for META.yml
+require 5.008001; # <- also see postamble at the bottom for META.yml
 use strict;
 use charnames ":full";
 
@@ -145,7 +145,7 @@ sub postamble {
 	'	pod-spell-check --aspell --ispell',
 	'',
 	'ppport:	ppport.h',
-	'	perl ppport.h --compat-version=5.6.1 CSV_XS.xs',
+	'	perl ppport.h --compat-version=5.8.1 CSV_XS.xs',
 	'',
 	'checkmeta:	spellcheck ppport.h',
 	'	perl sandbox/genPPPort_h.pl',

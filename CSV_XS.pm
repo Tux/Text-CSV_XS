@@ -13,7 +13,7 @@ package Text::CSV_XS;
 # 0.10 - 0.23 Jochen Wiedmann <joe@ispsoft.de>
 # Based on (the original) Text::CSV by Alan Citterman <alan@mfgrtl.com>
 
-require 5.006001;
+require 5.008001;
 
 use strict;
 use warnings;
@@ -1002,7 +1002,7 @@ sub header {
 	$ahead = $3;
 	}
 
-    my $hr = \$hdr; # Will cause croak on perl-5.6.x
+    my $hr = \$hdr;
     open my $h, "<", $hr or croak ($self->SetDiag (1010));
 
     my $row = $self->getline ($h) or croak ();
@@ -3004,8 +3004,6 @@ L</column_names> croaks on invalid arguments.
 
 =head2 header
 
-This method does NOT work in perl-5.6.x
-
 Parse the CSV header and set L<C<sep>|/sep>, column_names and encoding.
 
  my @hdr = $csv->header ($fh);
@@ -3747,9 +3745,8 @@ Note that this is work in progress and things might change.
 X<encoding>
 
 If passed,  it should be an encoding accepted by the  C<:encoding()> option
-to C<open>. There is no default value. This attribute does not work in perl
-5.6.x.  C<encoding> can be abbreviated to C<enc> for ease of use in command
-line invocations.
+to C<open>.  There is no default value.   C<encoding> can be abbreviated to
+C<enc> for ease of use in command line invocations.
 
 If C<encoding> is set to the literal value C<"auto">, the method L</header>
 will be invoked on the opened stream to check if there is a BOM and set the

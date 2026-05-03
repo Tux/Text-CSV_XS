@@ -6,12 +6,7 @@ use warnings;
 use Test::More;
 
 BEGIN {
-    if ($] < 5.008001) {
-        plan skip_all => "This test unit requires perl-5.8.1 or higher";
-	}
-    else {
-	plan tests => 58;
-	}
+    plan tests => 58;
 
     use_ok "Text::CSV_XS", ("csv");
     plan skip_all => "Cannot load Text::CSV_XS" if $@;

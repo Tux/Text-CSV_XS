@@ -39,8 +39,8 @@ if ($check) {
 	$ex{$_->[0]} = $_->[1];
 	}
     for (grep { !$ex{$_} } glob "examples/*") {
-	$ex{$_} = "5.006";
-	$ex{"5.006"}{$_}++;
+	$ex{$_} = "5.008";
+	$ex{"5.008"}{$_}++;
 	}
 
     $meta->check_minimum (s/\.0+/./r, [ sort keys %{$ex{$_}} ]) for
@@ -69,7 +69,7 @@ provides:
         file:            CSV_XS.pm
         version:         VERSION
 requires:
-    perl:                5.006001
+    perl:                5.008001
     XSLoader:            0
     IO::Handle:          0
 recommends:
