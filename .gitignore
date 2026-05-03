@@ -31,4 +31,5 @@ sandbox/parse-*.png
 sandbox/print-*.png
 sandbox/rfc7111.odt
 sandbox/test.*
+sandbox/memory-audit*
 used-by-t/*

@@ -21,10 +21,10 @@
 #include "ppport.h"
 #define is_utf8_sv(s) is_utf8_string ((U8 *)SvPV_nolen (s), SvCUR (s))
 
-#define MAINT_DEBUG	0
-#define MAINT_DEBUG_EOL	0
+#define MAINT_DEBUG		0
+#define MAINT_DEBUG_EOL		0
 
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE		1024
 
 #define CSV_XS_TYPE_WARN	1
 #define CSV_XS_TYPE_PV		0
@@ -32,7 +32,7 @@
 #define CSV_XS_TYPE_NV		2
 
 /* maximum length for EOL, SEP, and QUOTE - keep in sync with .pm */
-#define MAX_ATTR_LEN	16
+#define MAX_ATTR_LEN		16
 
 #define CSV_FLAGS_QUO		0x0001
 #define CSV_FLAGS_BIN		0x0002
@@ -565,16 +565,19 @@ static void cx_xs_cache_set (pTHX_ HV *hv, int idx, SV *val) {
 
 	/* string */
 	case CACHE_ID_sep:
+	    if (len > MAX_ATTR_LEN) croak ("INI - SEP too long");   /* 1006 */
 	    (void)memcpy (csv->sep, cp, len);
 	    csv->sep_len = len == 1 ? 0 : len;
 	    break;
 
 	case CACHE_ID_quo:
+	    if (len > MAX_ATTR_LEN) croak ("INI - QUOTE too long"); /* 1007 */
 	    (void)memcpy (csv->quo, cp, len);
 	    csv->quo_len = len == 1 ? 0 : len;
 	    break;
 
 	case CACHE_ID_eol:
+	    if (len > MAX_ATTR_LEN) croak ("INI - EOL too long");   /* 1005 */
 	    (void)memcpy (csv->eol, cp, len);
 	    csv->eol_len   =  len;
 	    csv->eol_type  =  len == 0                 ? EOL_TYPE_UNDEF
@@ -751,6 +754,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	    CH_SEP = *SvPV (*svp, len);
 	if ((svp = hv_fetchs (self, "sep",            FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = SvPV (*svp, len);
+	    if (len > MAX_ATTR_LEN) croak ("INI - SEP too long");   /* 1006 */
 	    (void)memcpy (csv->sep, ptr, len);
 	    if (len > 1)
 		csv->sep_len = len;
@@ -767,6 +771,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 	    }
 	if ((svp = hv_fetchs (self, "quote",          FALSE)) && *svp && SvOK (*svp)) {
 	    ptr = SvPV (*svp, len);
+	    if (len > MAX_ATTR_LEN) croak ("INI - QUOTE too long"); /* 1007 */
 	    (void)memcpy (csv->quo, ptr, len);
 	    if (len > 1)
 		csv->quo_len = len;
@@ -784,6 +789,7 @@ static void cx_SetupCsv (pTHX_ csv_t *csv, HV *self, SV *pself) {
 
 	if ((svp = hv_fetchs (self, "eol",            FALSE)) && *svp && SvOK (*svp)) {
 	    char *eol = SvPV (*svp, len);
+	    if (len > MAX_ATTR_LEN) croak ("INI - EOL too long");   /* 1005 */
 	    (void)memcpy (csv->eol, eol, len);
 	    csv->eol_len = len;
 	    if (len == 1 && *eol == CH_CR) {
