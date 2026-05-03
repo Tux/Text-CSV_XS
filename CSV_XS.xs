@@ -1577,7 +1577,7 @@ static char *_sep_string (csv_t *csv) {
     if (csv->sep_len) {
 	int x;
 	for (x = 0; x < csv->sep_len; x++)
-	    (void)sprintf (_sep + x * x, "%02x ", csv->sep[x]);
+	    (void)sprintf (_sep + x * 3, "%02x ", csv->sep[x]);
 	}
     else
 	(void)sprintf (_sep, "'%c' (0x%02x)", CH_SEP, CH_SEP);

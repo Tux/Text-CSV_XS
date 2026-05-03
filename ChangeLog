@@ -1,5 +1,6 @@
 1.63	- 2026-05-03, H.Merijn Brand
     * Check attribute lengths (memory protection)
+    * Minor code consistencies (not user-visible)
 
 1.62	- 2026-04-29, H.Merijn Brand
     * It is 2026
