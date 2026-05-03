@@ -3,7 +3,7 @@
 use 5.026000;
 use warnings;
 
-our $VERSION = "2.05 - 20241230";
+our $VERSION = "2.06 - 20260503";
 
 sub usage {
     my $err = shift and select STDERR;
@@ -99,6 +99,8 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "Gtk2-Ex-DBITableFilter",		# Unmet prereqs
     "Gtk2-Ex-Threads-DBI",		# Distribution is incomplete
     "HTML-Data-Parser",			# Unmet prereqs
+    "HTML-Microformats",		# use lib "." + unmet prereqs
+    "HTML-HTML5-Microdata-Parser",	# use lib "." + unmet prereqs
     "HTML-HTML5-Microdata-ToRDFa",	# Unmet prereqs
     "HTTP-LRDD",			# Unmet prereqs
     "HTNL-Microformats",		# Unmet prereqs
@@ -120,8 +122,13 @@ my %skip = $opt_a ? () : map { $_ => 1 } (
     "RDF-Closure",			# Lots of setup errors
     "RDF-Crypt",			# Unmet prereqs
     "RDF-KML-Exporter",			# Unmet prereqs
-    "RDF-Query-Functions-Buzzword-DateTime",	# Unmet prereqs
+    "RDF-Query-Functions-Buzzword-DateTime",	# dot-in-INC + unmet prereqs
+    "RDF-Query-Functions-Buzzword-GB",		# dot-in-INC + unmet prereqs
+    "RDF-Query-Functions-Buzzword-Util",	# dot-in-INC + unmet prereqs
+    "RDF-RDFa-Linter",				# dot-in-INC + unmet prereqs
+    "RDF-RDFa-Parser",				# dot-in-INC + unmet prereqs
     "RDF-RDB2RDF",			# ::CSV - Bad tests
+    "RDF-Trine",			# Some incorrect dependency. Doesn't exist anymore
     "RT-Extension-Assets-Import-CSV",	# Questions
     "RT-View-ConciseSpreadsheet",	# Questions
     "Serge",				# Questions in Build.PL ?
