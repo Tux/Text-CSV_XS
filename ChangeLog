@@ -2,6 +2,8 @@
     * Check attribute lengths (memory protection)
     * Minor code consistencies (not user-visible)
     * Dropped support for 5.6.x and 5.8.0. Minimum perl is now 5.8.1
+    * Fix special str setting consistency for types, undef_str and
+      comment_str
 
 1.62	- 2026-04-29, H.Merijn Brand
     * It is 2026
