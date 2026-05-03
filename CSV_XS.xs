@@ -1352,6 +1352,8 @@ static void cx_ParseError (pTHX_ csv_t *csv, int xse, STRLEN pos, int line) {
 	csv->has_error_input = 1;
 	if (hv_store (csv->self, "_ERROR_INPUT", 12, csv->tmp, 0))
 	    SvREFCNT_inc (csv->tmp);
+	else
+	    SvREFCNT_dec (csv->tmp);
 	}
     (void)SetDiagL (csv, xse, line);
     } /* ParseError */
