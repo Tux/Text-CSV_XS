@@ -2017,8 +2017,8 @@ EOLX:
 			(csv->bptr[1] == 'e' || csv->bptr[1] == 'E') &&
 			(csv->bptr[2] == 'p' || csv->bptr[2] == 'P') &&
 			 csv->bptr[3] == '=') {
-		    char *sep = csv->bptr + 4;
-		    int   lnu = csv->used - 5;
+		    char   *sep = csv->bptr + 4;
+		    STRLEN  lnu = csv->used > 5 ? csv->used - 5 : 0;
 		    if (lnu <= MAX_ATTR_LEN) {
 			sep[lnu] = (char)0;
 			(void)memcpy (csv->sep, sep, lnu);
