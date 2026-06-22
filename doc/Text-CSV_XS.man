@@ -3295,4 +3295,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.42.2                      2026-05-03                         CSV_XS(3)
+perl v5.42.2                      2026-06-22                         CSV_XS(3)
