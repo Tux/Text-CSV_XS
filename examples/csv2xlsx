@@ -357,7 +357,7 @@ foreach my $csvf (@args) {
 
 	unless ($wks) {
 	    # characters []:*/\ are not allowed in sheet names
-	    my sn = $sheetname =~ tr{[]:*?/\\}{_}r =~ s{__+}{_}gr;
+	    my $sn = $sheetname =~ tr{[]:*?/\\}{_}r =~ s{__+}{_}gr;
 	    $wks = $wbk->add_worksheet ($sn);
 	    $utf && !$wks->can ("write_unicode") and $utf = 0;
 	    ($h, $w, @w) = (0, 1);

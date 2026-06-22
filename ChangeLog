@@ -1,3 +1,6 @@
+1.64	- 2026-06-22, H.Merijn Brand
+    * Fix syntax error in csv2xlsx
+
 1.63	- 2026-06-22, H.Merijn Brand
     * Check attribute lengths (memory protection)
     * Minor code consistencies (not user-visible)
