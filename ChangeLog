@@ -1,3 +1,6 @@
+1.65	- 2026-09-02, H.Merijn Brand
+    * CPAN.org does not forward email anymore
+
 1.64	- 2026-06-22, H.Merijn Brand
     * Fix syntax error in csv2xlsx
 
