@@ -1352,8 +1352,20 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 	while (len--)
 	    CSV_PUT (csv, dst, *ptr++);
 	}
-    if (csv->used)
-	return Print (csv, dst);
+    if (csv->used) {
+	unless (Print (csv, dst))
+	    return FALSE;
+	if (csv->used) {
+	    /* Print () held back trailing bytes that are not valid UTF-8
+	     * to complete them on the next flush. This was the last flush
+	     * of the record, so write them now, as they are */
+	    int r, utf8 = csv->utf8;
+	    csv->utf8 = 0;
+	    r = Print (csv, dst);
+	    csv->utf8 = utf8;
+	    return r;
+	    }
+	}
     return TRUE;
     } /* Combine */
 

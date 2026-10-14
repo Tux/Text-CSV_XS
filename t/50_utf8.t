@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Config;
 use Test::More;
 use charnames ":full";
 
@@ -11,7 +12,7 @@ BEGIN {
 	plan skip_all => "UTF8 tests useless in this ancient perl version";
 	}
     else {
-	plan tests => 93;
+	plan tests => 99;
 	}
     }
 
@@ -115,8 +116,7 @@ print $fh "euro\n\x{20ac}\neuro\n";
 close $fh;
 open  $fh, "<:encoding(utf-8)", $tfn or die "$tfn: $!\n";
 
-SKIP: {
-    my $out = "";
+{   my $out = "";
     my $isutf8 = sub { utf8::is_utf8 ($out); };
     ok ($csv->auto_diag (1),			"auto diag");
     ok ($csv->binary (1),   			"set binary");
@@ -135,3 +135,48 @@ SKIP: {
     ok (!$isutf8->(1),				"not utf8");
     close $fh;
     }
+
+if (exists  $Config{useperlio} &&
+    defined $Config{useperlio} &&
+	    $Config{useperlio} eq "define") {
+    # A decoded field followed by bytes that are not valid UTF-8 must not
+    # lose the end of the record when written with print ()
+    my $u = "\x{e9}";
+    utf8::upgrade ($u);
+
+    sub emit {
+	my $csv = Text::CSV_XS->new ({ binary => 1, eol => "\n" });
+	my $out = "";
+	open my $fh, ">", \$out or die "$!";
+	$csv->print ($fh, $_) for @_;
+	close $fh;
+	$out;
+	} # emit
+
+    sub rows {
+	my $s = shift;
+	open my $fh, "<", \$s or die "$!";
+	my $csv = Text::CSV_XS->new ({ binary => 1 });
+	my @r;
+	while (my $r = $csv->getline ($fh)) { push @r, $r }
+	scalar @r;
+	} # rows
+
+    my $out = emit ([ $u, "\xe9" ], [ "next", "row" ]);
+    like ($out, qr{\xe9\n}, "Trailing byte and EOL written");
+    is (rows ($out), 2, "Two records, not fused");
+
+    $out = emit ([ $u, qq{x\xe9"} ], [ "next", "row" ]);#"
+    like ($out, qr{"\n}, "Closing quote and EOL written");
+    is (rows ($out), 2, "Quote closed, next record intact");
+
+    my $v = "\x{e8}";
+    utf8::upgrade ($v);
+    is (rows (emit ([ $u, $v ], [ "next", "row" ])), 2, "Both decoded");
+    is (rows (emit ([ "\xc3\xa9", "\xe9" ], [ "next", "row" ])), 2, "Both bytes");
+    }
+else {
+    ok (1, "No PerlIO avail for this test") for 1..6;
+    }
+
+1;
