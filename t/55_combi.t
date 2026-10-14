@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 25119;
+use Test::More tests => 25127;
 
 BEGIN {
     require_ok "Text::CSV_XS";
@@ -141,7 +141,7 @@ foreach my $fail (sort keys %fail) {
 
 {   ok (my $csv = Text::CSV_XS->new ({ binary => 1 }), "New CSV default");
     ok ($csv->combine ("=\x00="), "combine =\\x00=");
-    is ($csv->string, qq{"="0="}, "string");
+    is ($csv->string, qq{"="0="}, "string");#"
     }
 {   ok (my $csv = Text::CSV_XS->new ({ binary => 1, escape_null => 0 }), "New CSV no escape_null");
     ok ($csv->combine ("=\x00="), "combine =\\x00=");
@@ -155,4 +155,28 @@ foreach my $fail (sort keys %fail) {
     ok ($csv->combine ("=\x00="), "combine =\\x00=");
     is ($csv->string, qq{"=\0="}, "string");
     }
+
+{   # A string that was used as a number keeps its bytes: quote on content
+    my $csv = Text::CSV_XS->new ({ binary => 1 });
+
+    my $v = "12\n";
+    my $p = $v > 0;
+    ok ($csv->combine ("a", $v, "b"), "combine numeric-looking string with NL");
+    is ($csv->string, qq{a,"12\n",b}, "NL field quoted after numeric use");
+
+    my $n = "1.5\r\n";
+    my $x = $n + 0;
+    ok ($csv->combine ("a", $n, "b"), "combine NV-flagged string with CRLF");
+    is ($csv->string, qq{a,"1.5\r\n",b}, "CRLF field quoted after numeric use");
+
+    my $s = " 12";
+    my $e = $s == 12;
+    ok ($csv->combine ("a", $s, "b"), "combine numeric-looking string with space");
+    is ($csv->string, qq{a," 12",b}, "quote_space honoured after numeric use");
+
+    # Real numbers are still written bare
+    ok ($csv->combine (1, 2.5, -3), "combine numbers");
+    is ($csv->string, "1,2.5,-3", "Numbers unquoted");
+    }
+
 1;

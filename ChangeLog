@@ -2,6 +2,7 @@
     * CPAN.org does not forward email anymore
     * parse (): report a trailing lone CR, do not store EOF as 0xFF
     * Under allow_whitespace, do not strip beyond field start
+    * combine (): decide quoting from the bytes, not the numeric flags
 
 1.64	- 2026-06-22, H.Merijn Brand
     * Fix syntax error in csv2xlsx

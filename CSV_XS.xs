@@ -1245,8 +1245,7 @@ static int cx_Combine (pTHX_ csv_t *csv, SV *dst, AV *fields) {
 		 * (always_quote), if binary or blank characters are found
 		 * and if the string contains quote or escape characters.
 		 */
-		if (!quoteMe &&
-		   ( quoteMe = (!SvIOK (sv) && !SvNOK (sv) && CH_QUOTE))) {
+		if (!quoteMe && (quoteMe = CH_QUOTE)) {
 		    char	*ptr2;
 		    STRLEN	 l;
 
