@@ -13,7 +13,7 @@ BEGIN {
 	plan skip_all => "No reliable perlIO available";
 	}
     else {
-	plan tests => 562;
+	plan tests => 568;
 	}
     }
 
@@ -255,6 +255,38 @@ $/ = $def_rs;
     ok ($csv->say ($fh, undef), "say");
     close $fh;
     is ($foo, "x\n", "say, with newline");
+    }
+
+{   # CR-only input arrives from getline () as one chunk; each record must
+    # not copy the whole rest of that chunk again
+    my $data = join "" => map { "$_,x\r" } 1 .. 5;
+    open my $fh, "<", \$data or die "$!";
+    my $csv = Text::CSV_XS->new ({ binary => 1 });
+    my (@rows, %ahead);
+    while (my $row = $csv->getline ($fh)) {
+	push @rows, $row->[0];
+	$ahead{0 + \$csv->{_AHEAD}}++ if defined $csv->{_AHEAD} and @rows > 1;
+	}
+    is_deeply (\@rows, [ 1 .. 5 ], "All CR-only records parsed");
+    is (scalar keys %ahead, 1, "The unparsed remainder is kept, not re-copied");
+
+    # header () hands its remainder over the same way
+    $data = "a,b\r" . join "" => map { "$_,x\r" } 1 .. 5;
+    open $fh, "<", \$data or die "$!";
+    $csv = Text::CSV_XS->new ({ binary => 1 });
+    is_deeply ([ $csv->header ($fh) ], [qw( a b )], "Header from CR-only input");
+    @rows = ();
+    while (my $row = $csv->getline ($fh)) { push @rows, $row->[0] }
+    is_deeply (\@rows, [ 1 .. 5 ], "All records after the header");
+
+    # Same data with LF still behaves
+    $data = join "" => map { "$_,x\n" } 1 .. 5;
+    open $fh, "<", \$data or die "$!";
+    $csv = Text::CSV_XS->new ({ binary => 1 });
+    @rows = ();
+    while (my $row = $csv->getline ($fh)) { push @rows, $row->[0] }
+    is_deeply (\@rows, [ 1 .. 5 ], "LF records");
+    ok ($csv->eof, "At EOF");
     }
 
 1;

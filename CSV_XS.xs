@@ -2490,8 +2490,17 @@ static int cx_c_xsParse (pTHX_ csv_t csv, HV *hv, AV *av, AV *avf, SV *src, bool
 
     if (csv.useIO) {
 	if (csv.tmp && csv.used < csv.size && csv.has_ahead) {
-	    SV *sv = newSVpvn (csv.bptr + csv.used, csv.size - csv.used);
-	    (void)hv_store  (hv, "_AHEAD", 6, sv, 0);
+	    SV **svp;
+	    if (ahead && SvREFCNT (csv.tmp) == 1
+		      && (svp = hv_fetchs (hv, "_AHEAD", FALSE)) && *svp == csv.tmp)
+		/* The remainder already lives in _AHEAD: drop the parsed
+		 * part in place instead of copying the whole tail again,
+		 * which made CR-only input quadratic */
+		sv_chop (csv.tmp, csv.bptr + csv.used);
+	    else {
+		SV *sv = newSVpvn (csv.bptr + csv.used, csv.size - csv.used);
+		(void)hv_store  (hv, "_AHEAD", 6, sv, 0);
+		}
 	    }
 	else {
 	    csv.has_ahead = 0;
