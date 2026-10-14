@@ -1219,6 +1219,10 @@ number of columns making the use of hashes unpredictable.
     $csv->column_names ("Name", "Age");
     my $AoH = $csv->fragment ($fh, "col=3;8");
 
+When passing indices beyond the content of the rows,  only the cells parsed
+will be passed: `col=1-9` will not return 9 entries if a row only has four
+fields.
+
 If the ["after\_parse"](#after_parse) callback is active,  it is also called on every line
 parsed and skipped before the fragment.
 

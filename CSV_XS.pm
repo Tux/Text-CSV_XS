@@ -1154,7 +1154,10 @@ sub fragment {
 		my ($tlr, $tlc, $brr, $brc) = @{$s};
 		$r <  $tlr || ($brr ne "*" && $r > $brr) and next;
 		!defined $lc || $tlc < $lc and $lc = $tlc;
-		my $rr = $brc eq "*" ? $#{$row} : $brc;
+		# Do not pad past the data: an explicit column beyond the
+		# row would otherwise allocate one slot per selector integer
+		my $lr = $#{$row} > $tlc ? $#{$row} : $tlc;
+		my $rr = $brc eq "*" ? $#{$row} : $brc > $lr ? $lr : $brc;
 		$row{$_} = $row->[$_] for $tlc .. $rr;
 		}
 	    push @c, [ @row{sort { $a <=> $b } keys %row } ];
@@ -1168,7 +1171,11 @@ sub fragment {
 	}
 
     # row or col
+    # Keep the ranges as pairs and test membership per row or column:
+    # materialising every index in an array cost memory proportional
+    # to the integers in the selector, not to the data
     my @r;
+    my $max = 0;
     my $eod = 0;
     for (split m/\s*;\s*/ => $range) {
 	my ($from, $to) = m/^\s* ([0-9]+) (?: \s* - \s* ([0-9]+ | \* ))? \s* $/x
@@ -1177,16 +1184,21 @@ sub fragment {
 	$to eq "*" and ($to, $eod) = ($from, 1);
 	# $to cannot be <= 0 due to regex and ||=
 	$from <= 0 || $to < $from and croak ($self->SetDiag (2013));
-	$r[$_] = 1 for $from .. $to;
+	push @r => [ $from, $to ];
+	$to > $max and $max = $to;
 	}
+    my $in = sub {
+	my $i = shift;
+	$i > $max and return $eod;
+	$i >= $_->[0] && $i <= $_->[1] and return 1 for @r;
+	return 0;
+	};
 
     my $r = 0;
-    $type eq "col" and shift @r;
-    $_ ||= 0 for @r;
     while (my $row = $self->getline ($io)) {
 	$r++;
 	if ($type eq "row") {
-	    if (($r > $#r && $eod) || $r[$r]) {
+	    if ($in->($r)) {
 		push @c, $row;
 		if (@h) {
 		    my %h; @h{@h} = @{$c[-1]};
@@ -1195,7 +1207,7 @@ sub fragment {
 		}
 	    next;
 	    }
-	push @c, [ map { ($_ > $#r && $eod) || $r[$_] ? $row->[$_] : () } 0..$#{$row} ];
+	push @c, [ map { $in->($_ + 1) ? $row->[$_] : () } 0..$#{$row} ];
 	if (@h) {
 	    my %h; @h{@h} = @{$c[-1]};
 	    $c[-1] = \%h;
@@ -2906,6 +2918,10 @@ number of columns making the use of hashes unpredictable.
 
  $csv->column_names ("Name", "Age");
  my $AoH = $csv->fragment ($fh, "col=3;8");
+
+When passing indices beyond the content of the rows,  only the cells parsed
+will be passed: C<col=1-9> will not return 9 entries if a row only has four
+fields.
 
 If the L</after_parse> callback is active,  it is also called on every line
 parsed and skipped before the fragment.

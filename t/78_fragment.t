@@ -14,7 +14,7 @@ BEGIN {
         plan skip_all => "No reliable perlIO available";
         }
     else {
-        plan tests => 38;
+        plan tests => 48;
         }
     }
 
@@ -107,6 +107,39 @@ foreach my $spec ("col=1;3=2", "col=1,3-2", "col=-3", "col=0", "col=2--5",
     my $ref = eval { $csv->fragment ($io, "col=2;3=2"); };
     is ($ref, undef, "Bad fragment spec");
     is (0 + $csv->error_diag, 2013, "Error in spec");
+    }
+
+{   my $data = "11,12,13\n21,22,23\n31,32,33\n";
+
+    sub frag {
+	my $spec = shift;
+	open my $io, "<", \$data or die "$!";
+	Text::CSV_XS->new ()->fragment ($io, $spec);
+	} # frag
+
+    # Selector integers beyond the data select nothing extra
+    is_deeply (frag ("row=2-9"),      [[21,22,23],[31,32,33]],   "row range past the data");
+    is_deeply (frag ("col=3-9"),      [[13],[23],[33]],          "col range past the data");
+    is_deeply (frag ("cell=1,2-2,9"), [[12,13],[22,23]],         "cell range past the data");
+    is_deeply (frag ("cell=1,5"),     [[undef]],                 "single cell past the data");
+
+    # Existing semantics of open-ended and mixed ranges are unchanged
+    is_deeply (frag ("row=2-*"),      [[21,22,23],[31,32,33]],   "row=2-*");
+    is_deeply (frag ("row=3-*;1"),    [[11,12,13],[31,32,33]],   "row=3-*;1");
+    is_deeply (frag ("col=1;3-*"),    [[11,13],[21,23],[31,33]], "col=1;3-*");
+    is_deeply (frag ("col=2-2"),      [[12],[22],[32]],          "col=2-2");
+
+    # The memory used depends on the data, not on the selector
+    SKIP: {
+	$^O eq "MSWin32" || !-x "/bin/sh" and skip "needs a POSIX shell for ulimit", 2;
+	my @inc = map { "-I$_" } @INC;
+	for my $spec ("row=1-400000000", "cell=1,1-1,400000000") {
+	    my $prog = q{open my $io, "<", \"1,2\n3,4\n" or die; }
+		     . q{Text::CSV_XS->new->fragment ($io, $ARGV[0]); print "ok\n"};
+	    my $out = qx{/bin/sh -c 'ulimit -v 524288 2>/dev/null; exec "\$0" "\$@"' $^X @inc -MText::CSV_XS -e '$prog' '$spec' 2>&1};
+	    like ($out, qr{^ok$}m, "$spec on a tiny CSV within 512 MiB");
+	    }
+	}
     }
 
 #$csv->eol ("\n");

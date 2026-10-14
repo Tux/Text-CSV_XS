@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "CSV_XS 3"
-.TH CSV_XS 3 2026-06-22 "perl v5.44.0" "User Contributed Perl Documentation"
+.TH CSV_XS 3 2026-10-14 "perl v5.44.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification. Always turn off hyphenation. String
 .\" and register settings are required by groff 1.23.0 and later. Changing
 .\" tag separation back to 1n is required by groff 1.24.0 and later.
@@ -1506,6 +1506,10 @@ number of columns making the use of hashes unpredictable.
 \& $csv\->column_names ("Name", "Age");
 \& my $AoH = $csv\->fragment ($fh, "col=3;8");
 .Ve
+.PP
+When passing indices beyond the content of the rows,  only the cells parsed
+will be passed: \f(CR\*(C`col=1\-9\*(C'\fR will not return 9 entries if a row only has four
+fields.
 .PP
 If the "after_parse" callback is active,  it is also called on every line
 parsed and skipped before the fragment.

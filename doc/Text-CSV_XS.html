@@ -1170,6 +1170,8 @@ $arrayref = $csv-&gt;getline_hr_all ($fh, $offset, $length);</code></pre>
 <pre><code>$csv-&gt;column_names (&quot;Name&quot;, &quot;Age&quot;);
 my $AoH = $csv-&gt;fragment ($fh, &quot;col=3;8&quot;);</code></pre>
 
+<p>When passing indices beyond the content of the rows, only the cells parsed will be passed: <code>col=1-9</code> will not return 9 entries if a row only has four fields.</p>
+
 <p>If the <a href="#after_parse">&quot;after_parse&quot;</a> callback is active, it is also called on every line parsed and skipped before the fragment.</p>
 
 <dl>

@@ -1171,6 +1171,10 @@ METHODS
         $csv->column_names ("Name", "Age");
         my $AoH = $csv->fragment ($fh, "col=3;8");
 
+       When passing indices beyond the content of the rows,  only the cells
+       parsed will be passed: "col=1-9" will not return 9 entries if a row
+       only has four fields.
+
        If the "after_parse" callback is active,  it is also called on every
        line parsed and skipped before the fragment.
 
@@ -3295,4 +3299,4 @@ COPYRIGHT AND LICENSE
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.
 
-perl v5.44.0                      2026-06-22                         CSV_XS(3)
+perl v5.44.0                      2026-10-14                         CSV_XS(3)
