@@ -2629,11 +2629,15 @@ static SV *cx_xsParse_all (pTHX_ SV *self, HV *hv, SV *io, SV *off, SV *len) {
 	    }
 	av_push (avr, newRV_noinc ((SV *)row));
 
-	if (n >= length && skip >= 0)
+	if (n >= length && skip >= 0) {
+	    row = NULL;
 	    break; /* We have enough */
+	    }
 
 	row = newAV ();
 	}
+    if (row)
+	SvREFCNT_dec ((SV *)row);
     while (n > length) {
 	SvREFCNT_dec (av_pop (avr));
 	n--;
@@ -2759,7 +2763,7 @@ print (SV *self, SV *io, SV *fields)
 
     CSV_XS_SELF;
     if (fields == &PL_sv_undef)
-	av = newAV ();
+	av = (AV *)sv_2mortal ((SV *)newAV ());
     else {
 	unless (_is_arrayref (fields))
 	    croak ("Expected fields to be an array ref");
@@ -2784,6 +2788,8 @@ getline (SV *self, SV *io)
     av  = newAV ();
     avf = newAV ();
     r   = xsParse (self, hv, av, avf, io, 1);
+    unless (r)
+	SvREFCNT_dec ((SV *)av);
     PUT_RETURN (r ? sv_2mortal (newRV_noinc ((SV *)av)) : undef);
     /* XS getline */
 

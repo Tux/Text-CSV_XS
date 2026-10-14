@@ -5,6 +5,7 @@
     * combine (): decide quoting from the bytes, not the numeric flags
     * Flush saved bytes in Combine ()
     * Re-use AHEAD with \r instead of copying
+    * getline (): free the result array when the parse fails
 
 1.64	- 2026-06-22, H.Merijn Brand
     * Fix syntax error in csv2xlsx
