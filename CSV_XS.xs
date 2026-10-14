@@ -1112,9 +1112,9 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	csv->fld_idx = 0;						\
 	c = CSV_GET;							\
 	if (c == EOF || ser == 2) {					\
-	    sv_free (sv);						\
+	    unless (csv->is_bound) sv_free (sv);			\
 	    sv = NULL;							\
-	    seenSomething = FALSE;						\
+	    seenSomething = FALSE;					\
 	    if (ser == 2) return FALSE;					\
 	    break;							\
 	    }								\
@@ -1137,7 +1137,7 @@ static char *cx_formula (pTHX_ csv_t *csv, SV *sv, STRLEN *len, int f) {
 	SPAGAIN;							\
 	unless (result) {						\
 	    /* A false return will stop the parsing */			\
-	    sv_free (sv);						\
+	    unless (csv->is_bound) sv_free (sv);			\
 	    sv = NULL;							\
 	    waitingForField = 0;					\
 	    return FALSE;						\

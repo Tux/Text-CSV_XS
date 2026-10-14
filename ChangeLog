@@ -6,6 +6,7 @@
     * Flush saved bytes in Combine ()
     * Re-use AHEAD with \r instead of copying
     * getline (): free the result array when the parse fails
+    * Do not free the bound column scalar in skip_empty_rows
 
 1.64	- 2026-06-22, H.Merijn Brand
     * Fix syntax error in csv2xlsx

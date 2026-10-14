@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
+use Config;
 use Test::More;
 
 BEGIN {
-    plan tests => 58;
+    plan tests => 66;
 
     use_ok "Text::CSV_XS", ("csv");
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
@@ -142,3 +143,31 @@ while (my $row = $csv->getline_hr ($fh)) {
     isnt ($row->{a}, undef, "Column 'a' is defined");
     }
 close $fh;
+
+if (exists  $Config{useperlio} &&
+	    defined $Config{useperlio} &&
+	    $Config{useperlio} eq "define") {
+    # Skipping an empty row must not release the caller's bound scalar
+    foreach my $t (
+	    [ 2, "1,2\n\n3,4\n", 2 ],	# eof: stops at the empty row
+	    [ 1, "1,2\n\n",      1 ],	# skip: trailing empty line
+	    [ 1, "1,2\n\n3,4\n", 2 ],	# skip: empty row mid-stream
+	    [ 0, "1,2\n3,4\n",   2 ],	# no empty row at all
+	    ) {
+	my ($ser, $data, $rows) = @$t;
+	open my $fh, "<", \$data or die "$!";
+	my $csv = Text::CSV_XS->new ({ binary => 1, skip_empty_rows => $ser });
+	my ($x, $y);
+	$csv->bind_columns (\$x, \$y);
+	my $before = Internals::SvREFCNT ($x);
+	my $n = 0;
+	$n++ while $csv->getline ($fh);
+	is ($n, $rows, "skip_empty_rows $ser: rows");
+	is (Internals::SvREFCNT ($x), $before, "skip_empty_rows $ser: bound scalar keeps its reference");
+	}
+    }
+else {
+    ok (1, "No PerlIO available for this test") for 1..8;
+    }
+
+1;
