@@ -39,4 +39,4 @@ my @experimental = qw(
      uses_test_nowarnings
      );
 
-done_testing ();
+done_testing;

@@ -1,6 +1,6 @@
 #!/pro/bin/perl
 
-use strict;
+use 5.026001;
 use warnings;
 
 use Getopt::Long qw(:config bundling nopermute);
