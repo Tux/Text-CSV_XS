@@ -1586,7 +1586,7 @@ static void cx_strip_trail_whitespace (pTHX_ SV *sv) {
     STRLEN len;
     char   *s = SvPV (sv, len);
     unless (s && len) return;
-    while (s[len - 1] == CH_SPACE || s[len - 1] == CH_TAB)
+    while (len && (s[len - 1] == CH_SPACE || s[len - 1] == CH_TAB))
 	s[--len] = (char)0;
     SvCUR_set (sv, len);
     } /* strip_trail_whitespace */

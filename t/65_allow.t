@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 #use Test::More "no_plan";
- use Test::More tests => 1119;
+ use Test::More tests => 1126;
 
 BEGIN {
     use_ok "Text::CSV_XS", ();
@@ -424,4 +424,31 @@ foreach my $bin (0, 1) {
     $str .= "0";
     is ( $csv->parse ($str),   1,		"Parse trailing ESC");
     is_deeply ([ $csv->fields ], [ 1,3,"\0" ],	"Parse passed");
+    }
+
+{   # An unquoted field of only blanks under allow_whitespace is stripped
+    # to empty without looking before the start of the field.  The out of
+    # bounds access this guards against shows under valgrind or ASan only.
+    my $csv = Text::CSV_XS->new ({ binary => 1, allow_whitespace => 1, escape_char => "\\" });
+    ok ($csv->parse ("\\  ,x"), "parse escaped blanks");
+    is_deeply ([ $csv->fields ], [ "", "x" ], "Blank field stripped to empty");
+
+    ok ($csv->parse ("\\ \t \t,x"), "parse escaped blanks and tabs");
+    is_deeply ([ $csv->fields ], [ "", "x" ], "Blank and tab field stripped to empty");
+
+    use Config;
+    if (exists  $Config{useperlio} &&
+	defined $Config{useperlio} &&
+		$Config{useperlio} eq "define") {
+	$csv = Text::CSV_XS->new ({ binary => 1, allow_whitespace => 1 });
+	open my $fh, "<", \qq{"   "\r\r\nx,y\n} or die "$!";
+	ok ($csv->getline ($fh), "getline CR CR auto-detection");
+	ok ($csv->parse ("a  , b "), "Trailing blanks on non-blank fields");
+	is_deeply ([ $csv->fields ], [ "a", "b" ], "Stripped");
+	}
+    else {
+	ok (1, "Test skipped: no PerlIO");
+	ok (1, "Test skipped: no PerlIO");
+	ok (1, "Test skipped: no PerlIO");
+	}
     }
