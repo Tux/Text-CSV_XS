@@ -14,6 +14,7 @@ appveyor\.yml
 \.whitesource
 ^00ideas
 ^blib/
+^cna/
 ^cover_db/
 ^doc/
 ^sandbox/

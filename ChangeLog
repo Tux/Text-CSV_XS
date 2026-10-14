@@ -1,5 +1,6 @@
-1.65	- 2026-09-02, H.Merijn Brand
+1.65	- 2026-10-14, H.Merijn Brand
     * CPAN.org does not forward email anymore
+    * parse (): report a trailing lone CR, do not store EOF as 0xFF
 
 1.64	- 2026-06-22, H.Merijn Brand
     * Fix syntax error in csv2xlsx

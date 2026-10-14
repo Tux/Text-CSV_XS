@@ -2102,6 +2102,11 @@ EOLX:
 #endif
 		    unless (seenSomething)
 			break;
+		    /* parse (): a CR at the very end of the input is not part
+		     * of an EOL, as for a non-empty last field; do not go on
+		     * with EOF as if it were a data byte */
+		    unless (csv->useIO)
+			ERROR_INSIDE_FIELD (2032);
 		    goto restart;
 		    }
 
