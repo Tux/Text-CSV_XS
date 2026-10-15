@@ -1,13 +1,13 @@
-1.65	- 2026-10-14, H.Merijn Brand
+1.65	- 2026-10-15, H.Merijn Brand
     * CPAN.org does not forward email anymore
-    * parse (): report a trailing lone CR, do not store EOF as 0xFF
-    * Under allow_whitespace, do not strip beyond field start
-    * combine (): decide quoting from the bytes, not the numeric flags
-    * Flush saved bytes in Combine ()
-    * Re-use AHEAD with \r instead of copying
-    * getline (): free the result array when the parse fails
-    * Do not free the bound column scalar in skip_empty_rows
-    * fragment (): do not size memory by the selector integers
+    * parse (): report trailing lone CR, do not store EOF as 0xFF (CVE-2026-110759)
+    * Under allow_whitespace, do not strip beyond field start     (CVE-2026-110758)
+    * combine (): decide quoting from the bytes, not the NV flags (CVE-2026-110757)
+    * Flush saved bytes in Combine ()                             (CVE-2026-110756)
+    * Re-use AHEAD with \r instead of copying                     (CVE-2026-110755)
+    * getline (): free the result array when the parse fails      (CVE-2026-110754)
+    * Do not free the bound column scalar in skip_empty_rows      (CVE-2026-110753)
+    * fragment (): do not size memory by the selector integers    (CVE-2026-110752)
 
 1.64	- 2026-06-22, H.Merijn Brand
     * Fix syntax error in csv2xlsx
