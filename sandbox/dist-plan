@@ -20,7 +20,7 @@
 [ ] 0:00:01  make install UNINST=1
 [ ] 0:20:03  perl sandbox/used-by.pl
 
-[ ] 0:09:00  cd ../CSV ; Text-CSV-speed.pl --run --top --graph --no-ask
+[ ] 0:09:00  cd ../CSV ; Text-CSV-speed.pl --run --top --graph --no-ask --no-1
 [ ]          cd ../CSV ; run-perl.pl -gbls -t1 ;\
                          Text-CSV-speed.pl --perl --graph --log=CSV-5.0*.log
 

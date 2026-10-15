@@ -11,6 +11,8 @@ BEGIN {
     plan skip_all => "Cannot load Text::CSV_XS" if $@;
     }
 
+my $bsdr = eval { require BSD::Resource; 1; };
+
 # Some assorted examples from the modules history and other sources
 
 # "Pavel Kotala" <pkotala@logis.cz>
@@ -33,11 +35,15 @@ BEGIN {
     is ($list[1], $olist[1],		"field 2");
     }
 
-if (-e "/proc/self/statm" and
+if ($bsdr || -e "/proc/self/statm" and
        exists  $Config{useperlio} &&
        defined $Config{useperlio} &&
        $Config{useperlio} eq "define") {
     sub rss {
+	if ($bsdr) {
+	    my @br = BSD::Resource::getrusage ();
+	    return $br[2] * 1000;
+	    }
 	open my $fh, "<", "/proc/self/statm" or die "$!";
 	(split m/\s+/ => scalar <$fh>)[1] * 4096;
 	} # rss

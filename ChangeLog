@@ -1,3 +1,6 @@
+1.66	- 2026-10-15, H.Merijn Brand
+    * 
+
 1.65	- 2026-10-15, H.Merijn Brand
     * CPAN.org does not forward email anymore
     * parse (): report trailing lone CR, do not store EOF as 0xFF (CVE-2026-110759)
