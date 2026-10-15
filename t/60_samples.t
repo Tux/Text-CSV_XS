@@ -33,9 +33,10 @@ BEGIN {
     is ($list[1], $olist[1],		"field 2");
     }
 
-if (exists  $Config{useperlio} &&
-	defined $Config{useperlio} &&
-	$Config{useperlio} eq "define") {
+if (-e "/proc/self/statm" and
+       exists  $Config{useperlio} &&
+       defined $Config{useperlio} &&
+       $Config{useperlio} eq "define") {
     sub rss {
 	open my $fh, "<", "/proc/self/statm" or die "$!";
 	(split m/\s+/ => scalar <$fh>)[1] * 4096;
@@ -78,7 +79,7 @@ if (exists  $Config{useperlio} &&
     cmp_ok ($grow, "<", 8_000_000, "print (\$fh, undef) does not keep an array");
     }
 else {
-    ok (1, "No PerlIO available for this test") for 1..4;
+    ok (1, "This test only runs on Linux with PerlIO") for 1..4;
     }
 
 1;
